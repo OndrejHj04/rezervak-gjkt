@@ -9,6 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Sign } from "crypto";
 import SigninButton from "@/components/SigninButton";
+import useStore from "@/store/store";
 
 export default function Navbar() {
   return (

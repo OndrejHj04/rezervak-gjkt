@@ -17,10 +17,10 @@ export default async function RootLayout({
   pageProps: { session: any };
 }) {
   return (
-      <html lang="en">
-        <body className={inter.className}>
-          <Provider>{children}</Provider>
-        </body>
-      </html>
+    <html lang="en">
+      <body className={inter.className}>
+        <Provider>{children}</Provider>
+      </body>
+    </html>
   );
 }

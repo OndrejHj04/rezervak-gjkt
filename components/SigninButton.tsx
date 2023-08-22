@@ -13,7 +13,7 @@ export default function SigninButton() {
     return (
       <Button
         variant="contained"
-        className="rounded-full flex gap-2 py-0 pl-2 pr-4"
+        className="rounded-full flex gap-2 py-0 px-2"
         sx={{ textTransform: "none" }}
         onClick={() => signOut()}
       >
@@ -24,7 +24,7 @@ export default function SigninButton() {
           alt="profile"
           className="rounded-full"
         />
-        <div className="flex flex-col items-start">
+        <div className="sm:flex hidden flex-col items-start">
           <Typography variant="h6">{session?.user?.name}</Typography>
           <Typography variant="caption">{session?.user?.email}</Typography>
         </div>

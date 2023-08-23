@@ -17,10 +17,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import EventIcon from "@mui/icons-material/Event";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useBearStore } from "@/store/store";
+import { store } from "@/store/store";
 
 export default function SlidingPanel() {
-  const { panel, setPanel } = useBearStore();
+  const { panel, setPanel } = store();
 
   return (
     <div>

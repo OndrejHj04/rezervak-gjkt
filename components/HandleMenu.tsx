@@ -1,10 +1,10 @@
 "use client";
-import { useBearStore } from "@/store/store";
+import { store } from "@/store/store";
 import MenuIcon from "@mui/icons-material/Menu";
 import { IconButton } from "@mui/material";
 
 export default function HandleMenu() {
-  const { setPanel, panel } = useBearStore();
+  const { setPanel, panel } = store();
 
   return (
     <IconButton

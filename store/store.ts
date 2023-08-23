@@ -1,9 +1,11 @@
 import { create } from "zustand";
 
-export const useBearStore = create((set) => ({
-  bears: 0,
+interface stateInterface {
+  panel: boolean;
+  setPanel: (action: boolean) => void;
+}
+
+export const store = create<stateInterface>((set) => ({
   panel: false,
   setPanel: (action) => set((state) => ({ panel: action })),
-  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
-  removeAllBears: () => set({ bears: 0 }),
 }));

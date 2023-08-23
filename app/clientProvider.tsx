@@ -2,7 +2,6 @@
 import { ThemeProvider } from "@mui/material/styles";
 import { createTheme } from "@mui/material";
 import { SessionProvider } from "next-auth/react";
-import useStore from "@/store/store";
 
 const darkTheme = createTheme({
   palette: {

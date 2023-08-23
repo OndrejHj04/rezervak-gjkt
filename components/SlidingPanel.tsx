@@ -2,6 +2,7 @@
 import {
   Box,
   Button,
+  Dialog,
   FormControlLabel,
   Modal,
   Slide,
@@ -20,17 +21,31 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { store } from "@/store/store";
 import { signOut } from "next-auth/react";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles({
+  paper: {
+    position: "absolute",
+    top: "0px",
+    left: "0px",
+    minHeight: "100%",
+    height: "100%",
+  },
+});
 
 export default function SlidingPanel() {
   const { panel, setPanel, darkMode, toggleDarkMode } = store();
-  console.log(darkMode);
+  const classes = useStyles();
   return (
-    <Modal
+    <Dialog
+      classes={{
+        paper: classes.paper,
+      }}
+      sx={{ ".MuiPaper-root": { margin: 0 } }}
       open={panel}
       onClose={() => setPanel(false)}
-      className="outline-none"
     >
-      <Paper className="absolute h-full border-0 outline-none flex flex-col justify-between">
+      <div className="flex flex-col justify-between h-full">
         <MenuList>
           <MenuItem className="flex gap-2">
             <ListItemIcon>
@@ -60,7 +75,7 @@ export default function SlidingPanel() {
             </ListItemText>
           </MenuItem>
         </MenuList>
-      </Paper>
-    </Modal>
+      </div>
+    </Dialog>
   );
 }

@@ -7,6 +7,7 @@ import {
   Modal,
   Switch,
   Typography,
+  makeStyles,
 } from "@mui/material";
 import { forwardRef, useState } from "react";
 import Divider from "@mui/material/Divider";
@@ -20,19 +21,8 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { store } from "@/store/store";
 import { signOut } from "next-auth/react";
-import { makeStyles } from "@mui/styles";
 import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
-
-const useStyles = makeStyles({
-  paper: {
-    position: "absolute",
-    top: "0px",
-    left: "0px",
-    minHeight: "100%",
-    height: "100%",
-  },
-});
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -45,14 +35,19 @@ const Transition = forwardRef(function Transition(
 
 export default function SlidingPanel() {
   const { panel, setPanel, darkMode, toggleDarkMode } = store();
-  const classes = useStyles();
   return (
     <Dialog
       TransitionComponent={Transition}
-      classes={{
-        paper: classes.paper,
+      sx={{
+        ".MuiPaper-root": {
+          margin: 0,
+          position: "absolute",
+          top: 0,
+          minHeight: "100%",
+          height: "100%",
+          left: 0,
+        },
       }}
-      sx={{ ".MuiPaper-root": { margin: 0 } }}
       open={panel}
       onClose={() => setPanel(false)}
       transitionDuration={500}

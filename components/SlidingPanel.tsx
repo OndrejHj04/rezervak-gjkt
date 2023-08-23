@@ -5,11 +5,10 @@ import {
   Dialog,
   FormControlLabel,
   Modal,
-  Slide,
   Switch,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import MenuList from "@mui/material/MenuList";
@@ -22,6 +21,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { store } from "@/store/store";
 import { signOut } from "next-auth/react";
 import { makeStyles } from "@mui/styles";
+import Slide from "@mui/material/Slide";
+import { TransitionProps } from "@mui/material/transitions";
 
 const useStyles = makeStyles({
   paper: {
@@ -33,17 +34,28 @@ const useStyles = makeStyles({
   },
 });
 
+const Transition = forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="right" ref={ref} {...props} />;
+});
+
 export default function SlidingPanel() {
   const { panel, setPanel, darkMode, toggleDarkMode } = store();
   const classes = useStyles();
   return (
     <Dialog
+      TransitionComponent={Transition}
       classes={{
         paper: classes.paper,
       }}
       sx={{ ".MuiPaper-root": { margin: 0 } }}
       open={panel}
       onClose={() => setPanel(false)}
+      transitionDuration={500}
     >
       <div className="flex flex-col justify-between h-full">
         <MenuList>

@@ -1,5 +1,8 @@
 import GoogleProvider from "next-auth/providers/google";
-
+import { User } from "next-auth";
+interface type {
+  name: string;
+}
 const authOptions = {
   secret: process.env.NEXTAUTH_SECRET as string,
   jwt: {
@@ -12,6 +15,23 @@ const authOptions = {
       clientSecret: "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",
     }),
   ],
+  callbacks: {
+    async signIn({ user }: { user: User }) {
+      const userObject = {
+        full_name: user.name,
+        email: user.email,
+        theme: "light",
+      };
+      const req = await fetch("http://localhost:3000/api/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userObject),
+      });
+      return true;
+    },
+  },
 };
 
 export default authOptions;

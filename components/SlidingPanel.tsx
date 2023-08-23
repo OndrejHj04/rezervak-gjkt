@@ -20,8 +20,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { store } from "@/store/store";
 
 export default function SlidingPanel() {
-  const { panel, setPanel } = store();
-
+  const { panel, setPanel, darkMode, toggleDarkMode } = store();
+  console.log(darkMode);
   return (
     <div>
       <Modal
@@ -39,14 +39,14 @@ export default function SlidingPanel() {
                 <Typography variant="h6">Moje rezervace</Typography>
               </ListItemText>
             </MenuItem>
-            <MenuItem className="flex gap-2">
+            <MenuItem className="flex gap-2" onClick={toggleDarkMode}>
               <ListItemIcon>
                 <DarkModeIcon fontSize="large" />
               </ListItemIcon>
               <ListItemText>
                 <Typography variant="h6">Tmavý mód</Typography>
               </ListItemText>
-              <Switch />
+              <Switch checked={darkMode} />
             </MenuItem>
           </MenuList>
 

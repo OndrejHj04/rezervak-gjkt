@@ -1,7 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { getServerSession } from "next-auth/next";
 import ClientProvider from "./clientProvider";
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,7 +13,6 @@ export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-  pageProps: { session: any };
 }) {
   return (
     <html lang="en">

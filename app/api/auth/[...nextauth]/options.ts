@@ -21,13 +21,14 @@ const authOptions = {
         email: user.email,
         theme: "light",
       };
-      const req = await fetch("http://localhost:3000/api/signin", {
+      const req = await fetch(`http://${process.env.NEXT_URL}/api/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(userObject),
       });
+      console.log(req);
       return true;
     },
   },

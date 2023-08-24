@@ -21,7 +21,7 @@ const authOptions = {
         email: user.email,
         theme: "light",
       };
-      const req = await fetch(`http://${process.env.NEXT_URL}/api/signin`, {
+      const req = await fetch(`${process.env.NEXT_URL}/api/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

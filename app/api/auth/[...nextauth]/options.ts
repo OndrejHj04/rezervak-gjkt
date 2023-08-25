@@ -1,8 +1,5 @@
 import GoogleProvider from "next-auth/providers/google";
 import { User } from "next-auth";
-interface type {
-  name: string;
-}
 const authOptions = {
   secret: process.env.NEXTAUTH_SECRET as string,
   jwt: {

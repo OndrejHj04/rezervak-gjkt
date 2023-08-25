@@ -38,7 +38,9 @@ export default function SlidingPanel() {
   const { panel, setPanel, theme, toggleTheme } = store();
   const setSwitch = theme === "dark" ? true : false;
   const handleTheme = () => {
-    toggleTheme(session?.user?.email);
+    if (session?.user?.email) {
+      toggleTheme(session.user.email);
+    }
   };
   return (
     <Dialog

@@ -16,7 +16,7 @@ export default function SigninButton() {
   const { data: session, status } = useSession();
   const { setTheme, theme } = store();
   useEffect(() => {
-    if (session) {
+    if (session?.user) {
       const { email } = session.user;
       fetch(`http://localhost:3000/api/gettheme?email=${email}`)
         .then((res) => res.json())

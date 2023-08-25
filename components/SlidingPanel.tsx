@@ -20,7 +20,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { store } from "@/store/store";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 
@@ -34,7 +34,17 @@ const Transition = forwardRef(function Transition(
 });
 
 export default function SlidingPanel() {
+  const { data: session, status } = useSession();
   const { panel, setPanel, darkMode, toggleDarkMode } = store();
+
+  const handleTheme = () => {
+    if (session) {
+      toggleDarkMode(session.user.email);
+    } else {
+      toggleDarkMode()
+    }
+  };
+
   return (
     <Dialog
       TransitionComponent={Transition}
@@ -62,7 +72,7 @@ export default function SlidingPanel() {
               <Typography variant="h6">Můj profil</Typography>
             </ListItemText>
           </MenuItem>
-          <MenuItem className="flex gap-2" onClick={toggleDarkMode}>
+          <MenuItem className="flex gap-2" onClick={handleTheme}>
             <ListItemIcon>
               <DarkModeIcon fontSize="large" />
             </ListItemIcon>

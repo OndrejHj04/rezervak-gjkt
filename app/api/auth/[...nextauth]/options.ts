@@ -21,15 +21,20 @@ const authOptions = {
         email: user.email,
         theme: "light",
       };
-      const req = await fetch(`${process.env.NEXT_URL}/api/signin`, {
+      await fetch(`${process.env.NEXT_URL}/api/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(userObject),
       });
-      console.log(req);
-      return true;
+
+      const req = await fetch(
+        `${process.env.NEXT_URL}/api/gettheme?email=${user.email}`
+      );
+      const res = await req.json();
+
+      return { theme: res };
     },
   },
 };

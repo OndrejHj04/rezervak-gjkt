@@ -38,13 +38,8 @@ export default function SlidingPanel() {
   const { panel, setPanel, darkMode, toggleDarkMode } = store();
 
   const handleTheme = () => {
-    if (session) {
-      toggleDarkMode(session.user.email);
-    } else {
-      toggleDarkMode()
-    }
+    toggleDarkMode(session?.user?.email);
   };
-
   return (
     <Dialog
       TransitionComponent={Transition}
@@ -72,7 +67,11 @@ export default function SlidingPanel() {
               <Typography variant="h6">Můj profil</Typography>
             </ListItemText>
           </MenuItem>
-          <MenuItem className="flex gap-2" onClick={handleTheme}>
+          <MenuItem
+            className="flex gap-2"
+            disabled={!session}
+            onClick={handleTheme}
+          >
             <ListItemIcon>
               <DarkModeIcon fontSize="large" />
             </ListItemIcon>

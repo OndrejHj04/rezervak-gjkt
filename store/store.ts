@@ -2,28 +2,27 @@ import { create } from "zustand";
 
 interface stateInterface {
   panel: boolean;
-  darkMode: boolean;
+  theme: "light" | "dark";
   setPanel: (action: boolean) => void;
-  toggleDarkMode: (email: any) => void;
-  setDarkMode: (action: boolean) => void;
+  toggleTheme: (email: string) => void;
+  setTheme: (action: "light" | "dark") => void;
 }
 
 export const store = create<stateInterface>((set) => ({
   panel: false,
   setPanel: (action) => set((state) => ({ panel: action })),
-  darkMode: false,
-  toggleDarkMode: (email) =>
+  theme: "light",
+  toggleTheme: (email) =>
     set((state) => {
       if (email) {
         fetch(`http://localhost:3000/api/changetheme?email=${email}`, {
           method: "POST",
         });
       }
-      return { darkMode: !state.darkMode };
+      return { theme: state.theme === "dark" ? "light" : "dark" };
     }),
-  setDarkMode: (action) =>
+  setTheme: (action) =>
     set((state) => {
-      console.log(action);
-      return { darkMode: action };
+      return { theme: action };
     }),
 }));

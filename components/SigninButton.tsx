@@ -14,18 +14,14 @@ import { useEffect, useState } from "react";
 
 export default function SigninButton() {
   const { data: session, status } = useSession();
-  const { darkMode, setDarkMode } = store();
+  const { setTheme, theme } = store();
   useEffect(() => {
     if (session) {
       const { email } = session.user;
       fetch(`http://localhost:3000/api/gettheme?email=${email}`)
         .then((res) => res.json())
-        .then((data) => {
-          if (data === "dark") {
-            setDarkMode(true);
-          } else {
-            setDarkMode(false);
-          }
+        .then((theme) => {
+          setTheme(theme);
         });
     }
   }, [session]);

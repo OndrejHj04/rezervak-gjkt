@@ -21,8 +21,9 @@ export default function ClientProvider({
 }: {
   children: React.ReactNode;
 }): React.ReactNode {
-  const { darkMode } = store();
-  const mode = darkMode ? darkTheme : lightTheme;
+  const { theme } = store();
+  console.log(theme);
+  const mode = theme === "dark" ? darkTheme : lightTheme;
   return (
     <ThemeProvider theme={mode}>
       <SessionProvider>{children}</SessionProvider>

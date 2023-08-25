@@ -35,10 +35,10 @@ const Transition = forwardRef(function Transition(
 
 export default function SlidingPanel() {
   const { data: session, status } = useSession();
-  const { panel, setPanel, darkMode, toggleDarkMode } = store();
-
+  const { panel, setPanel, theme, toggleTheme } = store();
+  const setSwitch = theme === "dark" ? true : false;
   const handleTheme = () => {
-    toggleDarkMode(session?.user?.email);
+    toggleTheme(session?.user?.email);
   };
   return (
     <Dialog
@@ -78,7 +78,7 @@ export default function SlidingPanel() {
             <ListItemText>
               <Typography variant="h6">Tmavý mód</Typography>
             </ListItemText>
-            <Switch checked={darkMode} />
+            <Switch checked={setSwitch} />
           </MenuItem>
         </MenuList>
         <MenuList>

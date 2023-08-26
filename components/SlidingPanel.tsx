@@ -35,8 +35,8 @@ const Transition = forwardRef(function Transition(
 
 export default function SlidingPanel() {
   const { data: session, status } = useSession();
-  const { panel, setPanel, theme, toggleTheme } = store();
-  const setSwitch = theme === "dark" ? true : false;
+  const { panel, user, toggleTheme } = store();
+  const setSwitch = user.theme === "dark" ? true : false;
   const handleTheme = () => {
     if (session?.user?.email) {
       toggleTheme(session.user.email);
@@ -56,7 +56,7 @@ export default function SlidingPanel() {
         },
       }}
       open={panel}
-      onClose={() => setPanel(false)}
+      onClose={() => store.setState({ panel: false })}
       transitionDuration={500}
     >
       <div className="flex flex-col justify-between h-full">

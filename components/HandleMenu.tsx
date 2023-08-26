@@ -4,8 +4,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { IconButton } from "@mui/material";
 
 export default function HandleMenu() {
-  const { setPanel, panel } = store();
-
   return (
     <IconButton
       size="large"
@@ -13,7 +11,7 @@ export default function HandleMenu() {
       color="inherit"
       aria-label="menu"
       sx={{ mr: 2 }}
-      onClick={() => setPanel(true)}
+      onClick={() => store.setState({ panel: true })}
     >
       <MenuIcon />
     </IconButton>

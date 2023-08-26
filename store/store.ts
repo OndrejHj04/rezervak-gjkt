@@ -3,18 +3,15 @@ import { create } from "zustand";
 
 interface stateInterface {
   panel: boolean;
-  theme: "light" | "dark";
-  user: Session["user"] & { theme?: string | null };
-  setPanel: (action: boolean) => void;
+  user: Session["user"] & { theme?: string | null } & {
+    status?: "authenticated" | "loading" | "unauthenticated" | null;
+  };
   toggleTheme: (email: string) => void;
-  setTheme: (action: "light" | "dark") => void;
 }
 
 export const store = create<stateInterface>((set) => ({
   panel: false,
-  setPanel: (action) => set((state) => ({ panel: action })),
-  theme: "light",
-  user: {},
+  user: { status: "loading" },
   toggleTheme: (email) =>
     set((state) => {
       if (email) {
@@ -22,10 +19,11 @@ export const store = create<stateInterface>((set) => ({
           method: "POST",
         });
       }
-      return { theme: state.theme === "dark" ? "light" : "dark" };
-    }),
-  setTheme: (action) =>
-    set((state) => {
-      return { theme: action };
+      return {
+        user: {
+          ...state.user,
+          theme: state.user.theme === "dark" ? "light" : "dark",
+        },
+      };
     }),
 }));

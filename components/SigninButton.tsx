@@ -14,18 +14,20 @@ import { useEffect, useState } from "react";
 
 export default function SigninButton() {
   const { data: session, status } = useSession();
-  const { setTheme } = store();
+  const { user } = store();
   useEffect(() => {
-    if (session?.user) {
-      const { email } = session.user;
-      fetch(`http://localhost:3000/api/gettheme?email=${email}`)
+    if (status === "authenticated") {
+      fetch(`http://localhost:3000/api/gettheme?email=${session.user?.email}`)
         .then((res) => res.json())
         .then((theme) => {
-          setTheme(theme);
-          store.setState({ user: { ...session.user, theme } });
+          store.setState({ user: { ...session.user, theme, status } });
         });
     }
-  }, [session]);
+
+    if (status === "unauthenticated") {
+      store.setState({ user: { theme: "light", status } });
+    }
+  }, [session, status]);
 
   if (status === "loading") return <Typography>Loading...</Typography>;
 

@@ -26,14 +26,16 @@ export default function ClientProvider({
 }: {
   children: React.ReactNode;
 }): React.ReactNode {
-  const { theme, user } = store();
-  console.log(user, theme);
-  const mode = theme === "dark" ? darkTheme : lightTheme;
+  const { user } = store();
+  const mode = user.theme === "dark" ? darkTheme : lightTheme;
+
   return (
     <ThemeProvider theme={mode}>
       <SessionProvider>
-        <div className={`${!user && "opacity-0"}`}>{children}</div>
-        {!user && (
+        <div className={`${user.status === "loading" && "opacity-0"}`}>
+          {children}
+        </div>
+        {user.status === "loading" && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-5">
             <CircularProgress size={60} />
           </div>

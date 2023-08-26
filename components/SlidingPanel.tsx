@@ -9,9 +9,8 @@ import {
   Typography,
   makeStyles,
 } from "@mui/material";
-import { forwardRef, useState } from "react";
-import Divider from "@mui/material/Divider";
-import Paper from "@mui/material/Paper";
+import { forwardRef } from "react";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -63,6 +62,14 @@ export default function SlidingPanel() {
     >
       <div className="flex flex-col justify-between h-full">
         <MenuList>
+          <MenuItem className="flex gap-2" onClick={() => navigation.push("/")}>
+            <ListItemIcon>
+              <DashboardIcon fontSize="large" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography variant="h6">Přehled</Typography>
+            </ListItemText>
+          </MenuItem>
           <MenuItem
             className="flex gap-2"
             onClick={() => navigation.push("/profile")}
@@ -74,6 +81,8 @@ export default function SlidingPanel() {
               <Typography variant="h6">Můj profil</Typography>
             </ListItemText>
           </MenuItem>
+        </MenuList>
+        <MenuList>
           <MenuItem
             className="flex gap-2"
             disabled={!session}
@@ -87,8 +96,6 @@ export default function SlidingPanel() {
             </ListItemText>
             <Switch checked={setSwitch} />
           </MenuItem>
-        </MenuList>
-        <MenuList>
           <MenuItem className="flex gap-2" onClick={() => signOut()}>
             <ListItemIcon>
               <LogoutIcon fontSize="large" color="error" />

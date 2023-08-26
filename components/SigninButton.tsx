@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 
 export default function SigninButton() {
   const { data: session, status } = useSession();
-  const { setTheme, theme } = store();
+  const { setTheme } = store();
   useEffect(() => {
     if (session?.user) {
       const { email } = session.user;
@@ -22,6 +22,7 @@ export default function SigninButton() {
         .then((res) => res.json())
         .then((theme) => {
           setTheme(theme);
+          store.setState({ user: { ...session.user, theme } });
         });
     }
   }, [session]);

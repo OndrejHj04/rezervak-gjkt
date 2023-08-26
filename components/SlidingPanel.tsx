@@ -23,6 +23,7 @@ import { store } from "@/store/store";
 import { signOut, useSession } from "next-auth/react";
 import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
+import { useRouter } from "next/navigation";
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -36,6 +37,7 @@ const Transition = forwardRef(function Transition(
 export default function SlidingPanel() {
   const { data: session, status } = useSession();
   const { panel, user, toggleTheme } = store();
+  const navigation = useRouter();
   const setSwitch = user.theme === "dark" ? true : false;
   const handleTheme = () => {
     if (session?.user?.email) {
@@ -61,7 +63,10 @@ export default function SlidingPanel() {
     >
       <div className="flex flex-col justify-between h-full">
         <MenuList>
-          <MenuItem className="flex gap-2">
+          <MenuItem
+            className="flex gap-2"
+            onClick={() => navigation.push("/profile")}
+          >
             <ListItemIcon>
               <AccountCircleIcon fontSize="large" />
             </ListItemIcon>

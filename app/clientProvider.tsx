@@ -8,6 +8,8 @@ import {
 } from "@mui/material";
 import { SessionProvider } from "next-auth/react";
 import { store } from "@/store/store";
+import Navbar from "@/components/Navbar";
+import SlidingPanel from "@/components/SlidingPanel";
 
 const darkTheme = createTheme({
   palette: {
@@ -33,6 +35,8 @@ export default function ClientProvider({
     <ThemeProvider theme={mode}>
       <SessionProvider>
         <div className={`${user.status === "loading" && "opacity-0"}`}>
+          <Navbar />
+          <SlidingPanel />
           {children}
         </div>
         {user.status === "loading" && (

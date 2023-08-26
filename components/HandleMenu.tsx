@@ -2,8 +2,15 @@
 import { store } from "@/store/store";
 import MenuIcon from "@mui/icons-material/Menu";
 import { IconButton } from "@mui/material";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 export default function HandleMenu() {
+  const path = usePathname();
+
+  useEffect(() => {
+    store.setState({ panel: false });
+  }, [path]);
   return (
     <IconButton
       size="large"

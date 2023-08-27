@@ -7,6 +7,7 @@ interface stateInterface {
     theme?: string | null;
     status?: "authenticated" | "loading" | "unauthenticated" | null;
     id?: number | null;
+    photo?: string | null;
   };
   toggleTheme: (email: string) => void;
 }

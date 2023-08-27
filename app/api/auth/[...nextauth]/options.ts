@@ -17,6 +17,7 @@ const authOptions = {
         full_name: user.name,
         email: user.email,
         theme: "light",
+        photo: user.image,
       };
       await fetch(`${process.env.NEXT_URL}/api/signin`, {
         method: "POST",

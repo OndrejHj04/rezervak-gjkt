@@ -19,8 +19,8 @@ export default function SigninButton() {
     if (status === "authenticated") {
       fetch(`http://localhost:3000/api/gettheme?email=${session.user?.email}`)
         .then((res) => res.json())
-        .then((theme) => {
-          store.setState({ user: { ...session.user, theme, status } });
+        .then((data) => {
+          store.setState({ user: { ...session.user, status, ...data } });
         });
     }
 

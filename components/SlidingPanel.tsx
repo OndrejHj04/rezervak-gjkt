@@ -43,6 +43,7 @@ export default function SlidingPanel() {
       toggleTheme(session.user.email);
     }
   };
+
   return (
     <Dialog
       TransitionComponent={Transition}
@@ -72,7 +73,7 @@ export default function SlidingPanel() {
           </MenuItem>
           <MenuItem
             className="flex gap-2"
-            onClick={() => navigation.push("/profile")}
+            onClick={() => navigation.push(`/profile/${user?.id}`)}
           >
             <ListItemIcon>
               <AccountCircleIcon fontSize="large" />

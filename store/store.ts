@@ -3,8 +3,10 @@ import { create } from "zustand";
 
 interface stateInterface {
   panel: boolean;
-  user: Session["user"] & { theme?: string | null } & {
+  user: Session["user"] & {
+    theme?: string | null;
     status?: "authenticated" | "loading" | "unauthenticated" | null;
+    id?: number | null;
   };
   toggleTheme: (email: string) => void;
 }

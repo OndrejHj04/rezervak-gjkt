@@ -7,12 +7,12 @@ export async function GET(req: Request) {
   const email = URL.query.email;
   const theme = (await query({
     query: `
-    SELECT theme
+    SELECT theme, id
 FROM users
 WHERE email = ?;
 `,
     values: [email],
   })) as { theme: string }[];
 
-  return NextResponse.json(theme[0].theme);
+  return NextResponse.json(theme[0]);
 }

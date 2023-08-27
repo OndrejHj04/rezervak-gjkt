@@ -11,9 +11,12 @@ export default function ChangeIcon({ photo }) {
       onMouseLeave={() => setHover(false)}
       className="relative"
     >
-      <Avatar className={`w-16 h-16 ${hover && "opacity-50"}`} src={photo} />
+      <Avatar
+        className={`w-full h-full ${hover && "opacity-50"}`}
+        src={photo}
+      />
       <IconButton
-        className={`w-16 h-16 z-30 absolute top-0 opacity-0 transition-all  ${
+        className={`w-full h-full z-30 absolute top-0 opacity-0 transition-all  ${
           hover && "opacity-100"
         }`}
         color="info"

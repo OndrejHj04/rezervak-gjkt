@@ -6,19 +6,14 @@ const getUserData = async (id) => {
     cache: "no-cache",
     method: "GET",
   });
-  const data = await req.json();
-  return data;
+
+  return req.json();
 };
 
 export default async function Profile({ params: { id } }) {
-  const data = await getUserData(id);
-  const { full_name, email } = data;
-
-  return (
-    <div>
-      <Typography variant="h4">Profile</Typography>
-      <Typography variant="h6">Full Name: {full_name}</Typography>
-      <Typography variant="h6">Email: {email}</Typography>
-    </div>
-  );
+  const { data } = await getUserData(id);
+  if (!data) {
+    return <Typography variant="h4">User not found</Typography>;
+  }
+  return <Typography variant="h4">Jméno: {data.full_name}</Typography>;
 }

@@ -1,32 +1,11 @@
-import { Session } from "next-auth";
 import { create } from "zustand";
 
 interface stateInterface {
   panel: boolean;
-  user: Session["user"] & {
-    theme?: string | null;
-    status?: "authenticated" | "loading" | "unauthenticated" | null;
-    id?: number | null;
-    photo?: string | null;
-  };
-  toggleTheme: (email: string) => void;
+  setPanel: (panel: boolean) => void;
 }
 
 export const store = create<stateInterface>((set) => ({
   panel: false,
-  user: { status: "loading" },
-  toggleTheme: (email) =>
-    set((state) => {
-      if (email) {
-        fetch(`http://localhost:3000/api/changetheme?email=${email}`, {
-          method: "POST",
-        });
-      }
-      return {
-        user: {
-          ...state.user,
-          theme: state.user.theme === "dark" ? "light" : "dark",
-        },
-      };
-    }),
+  setPanel: (panel) => set({ panel }),
 }));

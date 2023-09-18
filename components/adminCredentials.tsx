@@ -2,6 +2,7 @@
 import { AdminCredentialsType } from "@/models/User";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 function AdminCredentials({
   data: { password, username },
@@ -19,8 +20,11 @@ function AdminCredentials({
       method: "POST",
       body: JSON.stringify(data),
     })
-      .then((res) => console.log(res))
-      .catch((e) => console.log(e));
+      .then((res) => res.json())
+      .then((res) => {
+        toast.info(res.message);
+      })
+      .catch((e) => toast.error("Something went wrong"));
   };
 
   return (

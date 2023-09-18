@@ -15,7 +15,12 @@ function AdminCredentials({
   } = useForm<AdminCredentialsType>();
 
   const onSubmit = (data: AdminCredentialsType) => {
-    console.log(data);
+    fetch(process.env.NEXT_PUBLIC_API_URL + "/api/admin/edit-credentials", {
+      method: "POST",
+      body: JSON.stringify(data),
+    })
+      .then((res) => console.log(res))
+      .catch((e) => console.log(e));
   };
 
   return (

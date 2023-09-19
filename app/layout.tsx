@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ClientProvider>
-          <div className="flex">{children}</div>
+          <div className="flex p-5 gap-2">{children}</div>
         </ClientProvider>
         <ToastContainer />
       </body>

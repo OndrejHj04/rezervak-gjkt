@@ -7,5 +7,5 @@ export default function ClientProvider({
 }: {
   children: React.ReactNode;
 }): React.ReactNode {
-  return children;
+  return <SessionProvider>{children}</SessionProvider>;
 }

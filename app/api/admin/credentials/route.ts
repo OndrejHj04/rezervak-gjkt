@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const data = await query({
-      query: "SELECT username, password FROM users WHERE role = 'admin'",
+      query: "SELECT * FROM users WHERE role = 'admin'",
       values: [],
     });
 

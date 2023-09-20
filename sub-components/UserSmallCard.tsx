@@ -1,4 +1,5 @@
 "use client";
+import { User } from "@/models/User";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Avatar,
@@ -29,7 +30,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
-export default function UserSmallCard({ user }) {
+export default function UserSmallCard({ user }: { user: User }) {
   const [expanded, setExpanded] = useState(false);
 
   return (

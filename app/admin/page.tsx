@@ -1,4 +1,5 @@
 import AdminCredentials from "@/components/adminCredentials";
+import WhiteList from "@/components/whiteList";
 import { AdminCredentialsType } from "@/models/User";
 
 async function getAdminCredentials() {
@@ -13,5 +14,10 @@ async function getAdminCredentials() {
 export default async function Admin() {
   const data = await getAdminCredentials();
 
-  return <AdminCredentials data={data} />;
+  return (
+    <div className="flex gap-2">
+      <AdminCredentials data={data} />
+      <WhiteList />
+    </div>
+  );
 }

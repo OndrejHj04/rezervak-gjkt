@@ -3,6 +3,8 @@ import { Avatar, Button, Paper, Typography } from "@mui/material";
 import { getServerSession } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import LogoutButton from "./logoutButton";
+import LoginButton from "./loginButton";
 
 export default async function AuthComponent() {
   const session = await getServerSession(authOptions);
@@ -27,10 +29,14 @@ export default async function AuthComponent() {
             <Typography variant="h6">{session.user.name}</Typography>
             <Typography variant="body2">{session.user.email}</Typography>
             <Typography>#{session.user.role}</Typography>
+            <LogoutButton />
           </div>
         </div>
       ) : (
-        "Uživatel není přihlášen"
+        <div>
+          <Typography>Uživatel není přihlášen</Typography>
+          <LoginButton />
+        </div>
       )}
     </Paper>
   );

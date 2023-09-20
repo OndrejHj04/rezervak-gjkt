@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 export default function LoginPage() {
   const { register, handleSubmit } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: any) => {
     signIn("credentials", {
       username: data.username,
       password: data.password,

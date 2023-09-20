@@ -28,7 +28,7 @@ function AdminCredentials({
   };
 
   return (
-    <Paper className="p-2 flex flex-col gap-2">
+    <Paper className="p-2 flex flex-col gap-2 h-min">
       <Typography variant="h5">Administrátorské přihlášení</Typography>
       <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
         <TextField

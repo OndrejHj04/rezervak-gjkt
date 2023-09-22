@@ -20,13 +20,11 @@ export async function GET() {
   JOIN
       roles r
   ON
-      u.role = r.id
-  WHERE
-      r.id = 1;
+      u.role = r.id;
     `,
       values: [],
     });
-    data.map((item) => (item.role = JSON.parse(item.role)));
+
     return NextResponse.json({
       success: true,
       message: "Operation successful",

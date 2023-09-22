@@ -1,5 +1,13 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { Avatar, Button, Paper, Typography } from "@mui/material";
+import {
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  Chip,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { getServerSession } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -8,7 +16,6 @@ import LoginButton from "./loginButton";
 
 export default async function AuthComponent() {
   const session = await getServerSession(authOptions);
-  console.log(session);
   return (
     <Paper className="flex flex-col p-2">
       <Typography variant="h5">Stav přihlášení</Typography>
@@ -28,7 +35,19 @@ export default async function AuthComponent() {
           <div>
             <Typography variant="h6">{session.user.name}</Typography>
             <Typography variant="body2">{session.user.email}</Typography>
-            <Typography>#{session.user.role}</Typography>
+            <div>
+              <Chip
+                sx={{
+                  backgroundColor: session.user.role.role_color,
+                  marginBlock: 0.5,
+                }}
+                label={
+                  <Typography variant="body2">
+                    #{session.user.role.role_name}
+                  </Typography>
+                }
+              />
+            </div>
             <LogoutButton />
           </div>
         </div>

@@ -1,9 +1,10 @@
 import { query } from "@/lib/db";
+import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const data = await query({
+    const data = (await query({
       query: `
       SELECT
       u.id AS user_id,
@@ -25,8 +26,10 @@ export async function GET() {
       r.id = 1;
     `,
       values: [],
-    });
-    data.map((item) => (item.role = JSON.parse(item.role)));
+    })) as User[];
+
+    data.map((item) => (item.role = JSON.parse(item.role as any)));
+
     return NextResponse.json({
       success: true,
       message: "Operation successful",

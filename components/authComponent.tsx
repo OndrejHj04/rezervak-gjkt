@@ -16,6 +16,7 @@ import LoginButton from "./loginButton";
 
 export default async function AuthComponent() {
   const session = await getServerSession(authOptions);
+
   return (
     <Paper className="flex flex-col p-2">
       <Typography variant="h5">Stav přihlášení</Typography>

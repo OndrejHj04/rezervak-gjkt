@@ -5,13 +5,24 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const roles = url.searchParams.get("roles")?.split(",");
+    const email = url.searchParams.get("email");
     const placeholders = roles?.map((role) => "?").join(", ") || 0;
 
-    const data = await query({
-      query: `SELECT * FROM users ${
+    let sql = "SELECT * FROM users";
+    let values = [];
+    if (roles) {
+      sql = `SELECT * FROM users ${
         placeholders ? `WHERE role IN (${placeholders})` : ""
-      }`,
-      values: roles || [],
+      }`;
+      values = roles;
+    } else if (email) {
+      sql = `SELECT * FROM users WHERE email = ?`;
+      values = [email];
+    }
+
+    const data = await query({
+      query: sql,
+      values: values,
     });
     return NextResponse.json({
       success: true,

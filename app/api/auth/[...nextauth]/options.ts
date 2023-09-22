@@ -8,13 +8,16 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
-      profile(profile: GoogleProfile) {
-        return {
-          ...profile,
-          role: "user",
-          id: profile.sub,
-          image: profile.picture,
-        };
+      async profile(profile: GoogleProfile) {
+        const req = await fetch(
+          `http://localhost:3000/api/users/list?email=${profile.email}`
+        );
+        const { data } = await req.json();
+        if (data.length) {
+          return { ...data[0], status: true };
+        } else {
+          return { ...profile, id: profile.sub, status: false };
+        }
       },
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
@@ -65,9 +68,19 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async signIn({ user, credentials }) {
+      if (!user.status) {
+        if (credentials) {
+          return true;
+        }
+        return false;
+      }
+      return true;
+    },
   },
   pages: {
     signIn: "/login",
+    error: "/auth/invalid",
   },
   session: {
     maxAge: 60 * 60 * 24,

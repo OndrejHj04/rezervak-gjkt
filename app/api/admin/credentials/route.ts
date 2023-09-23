@@ -7,7 +7,7 @@ export async function GET() {
     const data = (await query({
       query: `
       SELECT
-      u.id AS user_id,
+      u.id,
       u.username,
       u.password,
       u.email,

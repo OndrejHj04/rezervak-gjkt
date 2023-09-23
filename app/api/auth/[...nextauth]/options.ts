@@ -14,7 +14,7 @@ export const authOptions: NextAuthOptions = {
         );
         const { data } = await req.json();
         if (data.length) {
-          return { ...data[0], status: true };
+          return { ...data[0], status: true, name: profile.name, image: profile.picture };
         } else {
           return { ...profile, id: profile.sub, status: false };
         }

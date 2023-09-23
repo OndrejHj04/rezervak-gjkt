@@ -19,11 +19,20 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
+import * as yup from "yup";
+import _ from "lodash";
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
+
+const schema = yup.object().shape({
+  id: yup.number().required(),
+  role_name: yup.string().required(),
+  role_color: yup.string().required().min(6).max(6),
+});
 
 const ExpandMore = styled((props: ExpandMoreProps) => {
   const { expand, ...other } = props;
@@ -47,8 +56,10 @@ export default function RoleSmallCard({
   const {
     register,
     handleSubmit,
-    formState: { isDirty },
-  } = useForm<Role>();
+    formState: { isDirty, errors },
+  } = useForm<Role>({
+    resolver: yupResolver(schema),
+  });
 
   const onSubmit = (role: Role) => {
     fetch("http://localhost:3000/api/roles/edit", {
@@ -96,6 +107,7 @@ export default function RoleSmallCard({
               />
               <TextField
                 variant="outlined"
+                error={!!errors.role_name}
                 defaultValue={role.role_name}
                 label="Název role"
                 {...register("role_name")}
@@ -104,6 +116,7 @@ export default function RoleSmallCard({
                 variant="outlined"
                 label="Barva role"
                 {...register("role_color")}
+                error={!!errors.role_color}
                 defaultValue={role.role_color.slice(1)}
                 InputProps={{
                   startAdornment: (

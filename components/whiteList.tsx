@@ -21,7 +21,7 @@ const getUsers = async () => {
 
 export default async function WhiteList() {
   const data = await getUsers();
-  console.log(data);
+
   return (
     <Paper className="flex flex-col p-2 gap-2 h-min">
       <Typography variant="h5">Seznam uživatelů</Typography>

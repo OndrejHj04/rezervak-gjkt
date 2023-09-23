@@ -1,5 +1,4 @@
 "use client";
-import { User } from "@/models/User";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Avatar,
@@ -7,12 +6,14 @@ import {
   CardActions,
   CardContent,
   CardHeader,
+  Chip,
   Collapse,
   IconButton,
   IconButtonProps,
   Typography,
   styled,
 } from "@mui/material";
+import { User } from "next-auth";
 import { useEffect, useRef, useState } from "react";
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -32,7 +33,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 
 export default function UserSmallCard({ user }: { user: User }) {
   const [expanded, setExpanded] = useState(false);
-
+  console.log(user);
   return (
     <Card key={user.id}>
       <CardHeader
@@ -47,7 +48,16 @@ export default function UserSmallCard({ user }: { user: User }) {
             <ExpandMoreIcon />
           </ExpandMore>
         }
-        title={<Typography>{user.username}</Typography>}
+        title={
+          <div className="flex gap-2">
+            <Typography>{user.username}</Typography>
+            <Chip
+              sx={{ backgroundColor: user.role.role_color }}
+              size="small"
+              label={<Typography>#{user.role.role_name}</Typography>}
+            />
+          </div>
+        }
         subheader={<Typography variant="body2">{user.email}</Typography>}
       ></CardHeader>
       <Collapse in={expanded} timeout="auto" unmountOnExit>

@@ -1,4 +1,5 @@
 import AdminCredentials from "@/components/adminCredentials";
+import RolesComponent from "@/components/rolesComponent";
 import WhiteList from "@/components/whiteList";
 import { AdminCredentialsType } from "@/models/User";
 
@@ -18,6 +19,7 @@ export default async function Admin() {
     <div className="flex gap-2">
       <AdminCredentials data={data} />
       <WhiteList />
+      <RolesComponent />
     </div>
   );
 }

@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -43,8 +44,16 @@ export default function RoleSmallCard({ role }: { role: Role }) {
     formState: { isDirty },
   } = useForm<Role>();
 
-  const onSubmit = ({ role_color, role_name }: Role) => {
-    console.log(role_name, role_color);
+  const onSubmit = (role: Role) => {
+    fetch("http://localhost:3000/api/roles/edit", {
+      body: JSON.stringify(role),
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        toast.info(res.message);
+      })
+      .catch((e) => toast.error("Something went wrong"));
   };
 
   return (
@@ -69,6 +78,15 @@ export default function RoleSmallCard({ role }: { role: Role }) {
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="flex flex-col gap-2">
+              <TextField
+                variant="outlined"
+                defaultValue={role.id}
+                InputProps={{
+                  readOnly: true,
+                }}
+                label="ID"
+                {...register("id")}
+              />
               <TextField
                 variant="outlined"
                 defaultValue={role.role_name}

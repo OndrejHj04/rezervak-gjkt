@@ -36,7 +36,13 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
-export default function RoleSmallCard({ role }: { role: Role }) {
+export default function RoleSmallCard({
+  role,
+  refresh,
+}: {
+  role: Role;
+  refresh: () => void;
+}) {
   const [expanded, setExpanded] = useState(false);
   const {
     register,
@@ -51,6 +57,7 @@ export default function RoleSmallCard({ role }: { role: Role }) {
     })
       .then((res) => res.json())
       .then((res) => {
+        refresh();
         toast.info(res.message);
       })
       .catch((e) => toast.error("Something went wrong"));

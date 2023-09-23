@@ -14,7 +14,12 @@ export const authOptions: NextAuthOptions = {
         );
         const { data } = await req.json();
         if (data.length) {
-          return { ...data[0], status: true, name: profile.name, image: profile.picture };
+          return {
+            ...data[0],
+            status: true,
+            name: profile.name,
+            image: profile.picture,
+          };
         } else {
           return { ...profile, id: profile.sub, status: false };
         }
@@ -25,10 +30,10 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: {
-          label: "Username",
+        name: {
+          label: "Name",
           type: "text",
-          placeholder: "enter username",
+          placeholder: "enter name",
         },
         password: {
           label: "Password",
@@ -43,10 +48,10 @@ export const authOptions: NextAuthOptions = {
         );
         const { data } = await request.json();
         if (
-          credentials?.username === data[0].username &&
+          credentials?.name === data[0].name &&
           credentials?.password === data[0].password
         ) {
-          return { ...data[0], name: data[0].username };
+          return { ...data[0], name: data[0].name };
         } else {
           return null;
         }

@@ -8,7 +8,7 @@ export async function GET() {
       query: `
       SELECT
       u.id,
-      u.username,
+      u.name,
       u.password,
       u.email,
       JSON_OBJECT(

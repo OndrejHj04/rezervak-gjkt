@@ -33,7 +33,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 
 export default function UserSmallCard({ user }: { user: User }) {
   const [expanded, setExpanded] = useState(false);
-
+  console.log(user)
   return (
     <Card key={user.id}>
       <CardHeader
@@ -50,7 +50,7 @@ export default function UserSmallCard({ user }: { user: User }) {
         }
         title={
           <div className="flex gap-2">
-            <Typography>{user.username}</Typography>
+            <Typography>{user.name}</Typography>
             <Chip
               sx={{ backgroundColor: user.role.role_color }}
               size="small"

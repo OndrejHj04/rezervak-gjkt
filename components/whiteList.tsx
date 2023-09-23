@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import UserSmallCard from "@/sub-components/UserSmallCard";
-import { User } from "@/models/User";
+import { User } from "next-auth";
 
 const getUsers = async () => {
   const response = await fetch(

@@ -1,5 +1,5 @@
 import { Button, Typography } from "@mui/material";
-import { AdminCredentialsType, User } from "../models/User";
+import { AdminCredentialsType } from "../models/User";
 import AdminCredentials from "@/components/adminCredentials";
 import { toast } from "react-toastify";
 import LoginPage from "@/components/loginPage";

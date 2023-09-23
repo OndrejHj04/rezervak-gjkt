@@ -8,7 +8,7 @@ export default function LoginPage() {
 
   const onSubmit = (data: any) => {
     signIn("credentials", {
-      username: data.username,
+      name: data.name,
       password: data.password,
       redirect: false,
     }).then((res) => {
@@ -28,7 +28,7 @@ export default function LoginPage() {
           type="text"
           label="Uživatelské jméno"
           variant="outlined"
-          {...register("username")}
+          {...register("name")}
         />
         <TextField
           type="password"

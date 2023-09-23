@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 function AdminCredentials({
-  data: { password, username },
+  data: { password, name },
 }: {
   data: AdminCredentialsType;
 }) {
@@ -34,9 +34,9 @@ function AdminCredentials({
         <TextField
           variant="outlined"
           type="text"
-          {...register("username")}
+          {...register("name")}
           label="Uživatelské jméno"
-          defaultValue={username}
+          defaultValue={name}
         />
         <TextField
           variant="outlined"

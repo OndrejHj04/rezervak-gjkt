@@ -29,14 +29,17 @@ export default function TopBar() {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Rezervak GJKT
         </Typography>
-        <Button className="normal-case">
+        <Button>
           {data ? (
             <>
-              <div className="flex flex-col mx-4 items-end text-white">
-                <Typography component="span" className="font-semibold flex">
+              <div className="flex flex-col mx-4 items-end normal-case text-white">
+                <Typography
+                  className="font-semibold capitalize"
+                  variant="body1"
+                >
                   {data.user.name}
                 </Typography>
-                <Typography className="text-11 fon4t-medium capitalize">
+                <Typography variant="body2">
                   {data.user.role.role_name}
                 </Typography>
               </div>

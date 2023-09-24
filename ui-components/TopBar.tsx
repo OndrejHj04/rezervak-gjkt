@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { store } from "@/store/store";
-import { Avatar, Chip, Skeleton } from "@mui/material";
+import { Avatar, Popover, Skeleton } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -24,6 +24,7 @@ export default function TopBar() {
           color="inherit"
           aria-label="menu"
           sx={{ mr: 2 }}
+          onClick={() => setPanel(true)}
         >
           <MenuIcon />
         </IconButton>

@@ -4,6 +4,9 @@ import { Inter } from "next/font/google";
 import ClientProvider from "./clientProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import TopBar from "@/ui-components/TopBar";
+import SlidingMenu from "@/ui-components/SlidingMenu";
+import SpeedComponent from "@/ui-components/SpeedComponent";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -20,6 +23,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ClientProvider>
+          <TopBar />
+          <SlidingMenu />
+          <SpeedComponent />
           <div className="flex p-5 gap-2">{children}</div>
         </ClientProvider>
         <ToastContainer />

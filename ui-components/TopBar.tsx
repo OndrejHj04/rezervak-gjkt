@@ -36,20 +36,22 @@ export default function TopBar() {
         ) : (
           <>
             {data ? (
-              <Button>
-                <div className="flex flex-col mx-4 items-end normal-case text-white">
-                  <Typography
-                    className="font-semibold capitalize"
-                    variant="body1"
-                  >
-                    {data.user.name}
-                  </Typography>
-                  <Typography variant="body2">
-                    {data.user.role.role_name}
-                  </Typography>
-                </div>
-                <Avatar />
-              </Button>
+              <Link href={`/user/detail/${data.user.id}`}>
+                <Button>
+                  <div className="flex flex-col mx-4 items-end normal-case text-white">
+                    <Typography
+                      className="font-semibold capitalize"
+                      variant="body1"
+                    >
+                      {data.user.name}
+                    </Typography>
+                    <Typography variant="body2">
+                      {data.user.role.role_name}
+                    </Typography>
+                  </div>
+                  <Avatar />
+                </Button>
+              </Link>
             ) : (
               <Link href="/login">
                 <Button className="text-white">Přihlásit se</Button>

@@ -1,3 +1,4 @@
+import ChangeAvatar from "@/sub-components/ChangeAvatar";
 import { Role } from "@/types";
 import {
   Avatar,
@@ -5,11 +6,13 @@ import {
   Button,
   FormControl,
   FormHelperText,
+  IconButton,
   InputLabel,
   MenuItem,
   Paper,
   Select,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { User } from "next-auth";
@@ -45,9 +48,9 @@ export default async function UserDetail({
       </Box>
       <Box className="w-full flex gap-4">
         <Paper className="p-4 flex flex-col gap-2 aspect-square items-center justify-center">
-          <Avatar sx={{ width: 110, height: 110 }} />
+          <ChangeAvatar />
         </Paper>
-        <Paper className="p-4 flex flex-col gap-2 h-fit">
+        <Paper className="p-4 flex flex-col gap-2">
           <TextField defaultValue={data.name} label="Uživatelské jméno" />
           <TextField defaultValue={data.email} label="Email" />
         </Paper>

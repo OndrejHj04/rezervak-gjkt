@@ -1,15 +1,74 @@
-const getUserData = async (id) => {
+import { Role } from "@/types";
+import {
+  Avatar,
+  Box,
+  Button,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { User } from "next-auth";
+
+const getUserData = async (id: String) => {
   const req = await fetch(`http://localhost:3000/api/users/detail/${id}`);
   const { data } = await req.json();
-  return data;
+  return data as User;
 };
 
-export default async function UserDetail({ params: { id } }) {
+const getUserRoles = async () => {
+  const req = await fetch(`http://localhost:3000/api/roles/list`, {
+    cache: "no-cache",
+  });
+  const { data } = await req.json();
+  return data as Role[];
+};
+
+export default async function UserDetail({
+  params: { id },
+}: {
+  params: { id: string };
+}) {
   const data = await getUserData(id);
-  console.log(data);
+  const roles = await getUserRoles();
+
   return (
-    <div>
-      <h1>User Detail</h1>
-    </div>
+    <Box className="w-full">
+      <Box className="w-full flex items-end">
+        <Button variant="contained" className="ml-auto">
+          Uložit
+        </Button>
+      </Box>
+      <Box className="w-full flex gap-4">
+        <Paper className="p-4 flex flex-col gap-2 aspect-square items-center justify-center">
+          <Avatar sx={{ width: 110, height: 110 }} />
+        </Paper>
+        <Paper className="p-4 flex flex-col gap-2 h-fit">
+          <TextField defaultValue={data.name} label="Uživatelské jméno" />
+          <TextField defaultValue={data.email} label="Email" />
+        </Paper>
+        <Paper className="p-4 flex flex-col gap-2">
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Role</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              defaultValue={data.role.role_id}
+              label="Role"
+            >
+              {roles.map((role) => (
+                <MenuItem key={role.id} value={role.id}>
+                  {role.role_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Paper>
+      </Box>
+    </Box>
   );
 }

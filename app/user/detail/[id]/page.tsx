@@ -15,10 +15,13 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { setServers } from "dns";
 import { User } from "next-auth";
 
 const getUserData = async (id: String) => {
-  const req = await fetch(`http://localhost:3000/api/users/detail/${id}`);
+  const req = await fetch(`http://localhost:3000/api/users/detail/${id}`, {
+    cache: "no-cache",
+  });
   const { data } = await req.json();
   return data as User;
 };
@@ -48,7 +51,7 @@ export default async function UserDetail({
       </Box>
       <Box className="w-full flex gap-4">
         <Paper className="p-4 flex flex-col gap-2 aspect-square items-center justify-center">
-          <ChangeAvatar />
+          <ChangeAvatar img={data.image} />
         </Paper>
         <Paper className="p-4 flex flex-col gap-2">
           <TextField defaultValue={data.name} label="Uživatelské jméno" />

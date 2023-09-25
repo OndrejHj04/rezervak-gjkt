@@ -6,7 +6,6 @@ export async function GET(
   req: Request,
   { params: { id } }: { params: { id: string } }
 ) {
-
   try {
     const data = (await query({
       query: `
@@ -14,6 +13,7 @@ export async function GET(
       u.id,
       u.name,
       u.password,
+      u.image,
       u.email,
       JSON_OBJECT(
           'role_id', r.id,

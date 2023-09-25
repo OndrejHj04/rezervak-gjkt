@@ -3,7 +3,7 @@ import { Avatar, IconButton } from "@mui/material";
 import ModeIcon from "@mui/icons-material/Mode";
 import { useState } from "react";
 
-export default function ChangeAvatar() {
+export default function ChangeAvatar({ img }: { img: string }) {
   const [hover, setHover] = useState(false);
 
   return (
@@ -21,7 +21,10 @@ export default function ChangeAvatar() {
           color: "primary.main",
         }}
       />
-      <Avatar sx={{ width: 100, height: 100, opacity: hover ? 0.6 : 1 }} />
+      <Avatar
+        sx={{ width: 100, height: 100, opacity: hover ? 0.6 : 1 }}
+        src={img}
+      />
     </IconButton>
   );
 }

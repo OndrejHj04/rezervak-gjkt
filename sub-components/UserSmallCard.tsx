@@ -33,7 +33,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 
 export default function UserSmallCard({ user }: { user: User }) {
   const [expanded, setExpanded] = useState(false);
-  console.log(user)
+
   return (
     <Card key={user.id}>
       <CardHeader

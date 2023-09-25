@@ -14,7 +14,7 @@ import Link from "next/link";
 export default function TopBar() {
   const { setPanel } = store();
   const { data, status } = useSession();
-  console.log(data);
+
   return (
     <AppBar position="static">
       <Toolbar>

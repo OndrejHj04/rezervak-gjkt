@@ -6,6 +6,8 @@ interface stateInterface {
   setPanel: (panel: boolean) => void;
   roles: Role[];
   setRoles: (panel: Role[]) => void;
+  modal: string;
+  setModal: (string: string) => void;
 }
 
 export const store = create<stateInterface>((set) => ({
@@ -13,4 +15,6 @@ export const store = create<stateInterface>((set) => ({
   setPanel: (panel) => set({ panel }),
   roles: [],
   setRoles: (roles) => set({ roles }),
+  modal: "",
+  setModal: (modal) => set({ modal }),
 }));

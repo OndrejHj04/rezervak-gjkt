@@ -1,3 +1,4 @@
+import { store } from "@/store/store";
 import {
   Autocomplete,
   Box,
@@ -21,6 +22,8 @@ export default function AddUserModal({
 }: {
   setModal: (string: string) => void;
 }) {
+  const { roles } = store();
+
   return (
     <Modal
       open={true}
@@ -37,7 +40,10 @@ export default function AddUserModal({
           <Autocomplete
             disablePortal
             id="combo-box-demo"
-            options={[{ label: "The Shawshank Redemption", year: 1994 }]}
+            options={roles.map((role) => ({
+              label: role.role_name,
+              value: role.id,
+            }))}
             renderInput={(params) => <TextField {...params} label="Role" />}
           />
           <Button variant="outlined">Přidat</Button>

@@ -1,4 +1,5 @@
 "use client";
+import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { Avatar, TableCell, TableRow } from "@mui/material";
 import { User } from "next-auth";
 import { useRouter } from "next/navigation";
@@ -13,7 +14,7 @@ export default function UserListItem({ user }: { user: User }) {
       sx={{ cursor: "pointer" }}
     >
       <TableCell>
-        <Avatar src={user.image} />
+        <AvatarWrapper user={user} />
       </TableCell>
       <TableCell>
         {user.first_name} {user.last_name}

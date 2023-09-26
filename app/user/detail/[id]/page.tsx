@@ -54,7 +54,8 @@ export default async function UserDetail({
           <ChangeAvatar img={data.image} />
         </Paper>
         <Paper className="p-4 flex flex-col gap-2">
-          <TextField defaultValue={data.name} label="Uživatelské jméno" />
+          <TextField defaultValue={data.first_name} label="Email" />
+          <TextField defaultValue={data.last_name} label="Email" />
           <TextField defaultValue={data.email} label="Email" />
         </Paper>
         <Paper className="p-4 flex flex-col gap-2">

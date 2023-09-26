@@ -10,6 +10,7 @@ import { store } from "@/store/store";
 import { Avatar, Popover, Skeleton } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import AvatarWrapper from "./AvatarWrapper";
 
 export default function TopBar() {
   const { setPanel } = store();
@@ -49,7 +50,7 @@ export default function TopBar() {
                       {data.user.role.role_name}
                     </Typography>
                   </div>
-                  <Avatar />
+                  <AvatarWrapper />
                 </Button>
               </Link>
             ) : (

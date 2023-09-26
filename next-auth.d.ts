@@ -10,6 +10,7 @@ declare module "next-auth" {
         role_color: string;
       };
       id: string;
+      image: string;
     } & DefaullSession;
   }
 
@@ -20,6 +21,7 @@ declare module "next-auth" {
       role_color: string;
     };
     id: string;
+    image: string;
   }
 }
 
@@ -31,5 +33,6 @@ declare module "next-auth/jwt" {
       role_color: string;
     };
     id: string;
+    image: string;
   }
 }

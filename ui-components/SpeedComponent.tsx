@@ -1,20 +1,22 @@
+"use client";
 import * as React from "react";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
-import FileCopyIcon from "@mui/icons-material/FileCopyOutlined";
-import SaveIcon from "@mui/icons-material/Save";
-import PrintIcon from "@mui/icons-material/Print";
-import ShareIcon from "@mui/icons-material/Share";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import { usePathname } from "next/navigation";
 
 const actions = [
-  { icon: <FileCopyIcon />, name: "Copy" },
-  { icon: <SaveIcon />, name: "Save" },
-  { icon: <PrintIcon />, name: "Print" },
-  { icon: <ShareIcon />, name: "Share" },
+  {
+    icon: <GroupAddIcon />,
+    name: "Přidat uživatele",
+    action: () => console.log("copy"),
+  },
 ];
 
 export default function SpeedComponent() {
+  const path = usePathname();
+
   return (
     <SpeedDial
       ariaLabel="IsShowSpeed dial"
@@ -26,6 +28,7 @@ export default function SpeedComponent() {
           key={action.name}
           icon={action.icon}
           tooltipTitle={action.name}
+          onClick={action.action}
         />
       ))}
     </SpeedDial>

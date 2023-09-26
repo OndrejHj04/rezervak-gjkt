@@ -17,9 +17,8 @@ const actions = [
 ];
 
 export default function SpeedComponent() {
-  const path = usePathname();
   const { modal, setModal } = store();
-  console.log(modal);
+ 
   return (
     <>
       <SpeedDial
@@ -36,7 +35,7 @@ export default function SpeedComponent() {
           />
         ))}
       </SpeedDial>
-      {modal === "addUser" && <AddUserModal setModal={setModal} />}
+      <AddUserModal setModal={setModal} />
     </>
   );
 }

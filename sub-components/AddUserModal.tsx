@@ -1,15 +1,19 @@
-import { Box, Modal, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Modal,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
+  outline: "none",
   transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
 };
 
 export default function AddUserModal({
@@ -24,14 +28,21 @@ export default function AddUserModal({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={style}>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
-          Text in a modal
-        </Typography>
-        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-        </Typography>
-      </Box>
+      <Paper sx={style} className="p-2">
+        <Typography variant="h4">Přidat uživatele</Typography>
+        <Box className="flex flex-col gap-2">
+          <TextField label="Jméno" />
+          <TextField label="Příjmení" />
+          <TextField label="Email" />
+          <Autocomplete
+            disablePortal
+            id="combo-box-demo"
+            options={[{ label: "The Shawshank Redemption", year: 1994 }]}
+            renderInput={(params) => <TextField {...params} label="Role" />}
+          />
+          <Button variant="outlined">Přidat</Button>
+        </Box>
+      </Paper>
     </Modal>
   );
 }

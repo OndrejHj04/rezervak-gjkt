@@ -18,7 +18,7 @@ const actions = [
 
 export default function SpeedComponent() {
   const { modal, setModal } = store();
- 
+
   return (
     <>
       <SpeedDial
@@ -35,7 +35,7 @@ export default function SpeedComponent() {
           />
         ))}
       </SpeedDial>
-      <AddUserModal setModal={setModal} />
+      {modal === "addUser" && <AddUserModal setModal={setModal} />}
     </>
   );
 }

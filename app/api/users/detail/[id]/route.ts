@@ -11,7 +11,8 @@ export async function GET(
       query: `
       SELECT
       u.id,
-      u.name,
+      u.first_name,
+      u.last_name,
       u.password,
       u.image,
       u.email,

@@ -43,7 +43,7 @@ export default function TopBar() {
                       className="font-semibold capitalize"
                       variant="body1"
                     >
-                      {data.user.name}
+                      {data.user.first_name} {data.user.last_name}
                     </Typography>
                     <Typography variant="body2">
                       {data.user.role.role_name}

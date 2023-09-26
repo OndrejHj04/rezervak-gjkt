@@ -8,12 +8,11 @@ export default function LoginPage() {
 
   const onSubmit = (data: any) => {
     signIn("credentials", {
-      name: data.name,
+      email: data.email,
       password: data.password,
       redirect: false,
     }).then((res) => {
       if (res?.error) {
-        //chyba
       } else {
         window.location.href = "/";
       }
@@ -26,9 +25,9 @@ export default function LoginPage() {
       <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
         <TextField
           type="text"
-          label="Uživatelské jméno"
+          label="Email"
           variant="outlined"
-          {...register("name")}
+          {...register("email")}
         />
         <TextField
           type="password"

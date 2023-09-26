@@ -15,7 +15,9 @@ export default function UserListItem({ user }: { user: User }) {
       <TableCell>
         <Avatar src={user.image} />
       </TableCell>
-      <TableCell>{user.name}</TableCell>
+      <TableCell>
+        {user.first_name} {user.last_name}
+      </TableCell>
       <TableCell>{user.email}</TableCell>
       <TableCell>{user.role.role_name}</TableCell>
     </TableRow>

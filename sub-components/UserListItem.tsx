@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function UserListItem({ user }: { user: User }) {
   const { push } = useRouter();
+
   return (
     <TableRow
       hover

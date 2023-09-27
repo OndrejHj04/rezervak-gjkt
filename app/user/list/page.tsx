@@ -13,7 +13,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 const getUsers = async () => {
-  const req = await fetch("http://localhost:3000/api/users/list");
+  const req = await fetch("http://localhost:3000/api/users/list", {
+    cache: "no-cache",
+  });
   const { data } = await req.json();
   return data as User[];
 };

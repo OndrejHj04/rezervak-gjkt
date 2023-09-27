@@ -10,11 +10,10 @@ import {
 } from "@mui/material";
 import { User } from "next-auth";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const getUsers = async () => {
-  const req = await fetch("http://localhost:3000/api/users/list", {
-    cache: "no-cache",
-  });
+  const req = await fetch("http://localhost:3000/api/users/list");
   const { data } = await req.json();
   return data as User[];
 };
@@ -34,15 +33,11 @@ export default async function UserList() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.length ? (
-            data.map((user) => <UserListItem key={user.id} user={user} />)
-          ) : (
-            <TableRow>
-              <TableCell colSpan={4}>Žádní uživatelé</TableCell>
-            </TableRow>
-          )}
+          {data &&
+            data.map((user) => <UserListItem key={user.id} user={user} />)}
         </TableBody>
       </Table>
     </Paper>
   );
 }
+// zde je potřeba pořešit, že když se přidá uživatel pomocí modalu, taxe zavře, ale zde se nový uživatel neobjeví -> loading && zobrazit

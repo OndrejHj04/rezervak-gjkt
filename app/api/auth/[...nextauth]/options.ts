@@ -1,4 +1,5 @@
 import { NextAuthOptions } from "next-auth";
+import { AdapterUser } from "next-auth/adapters";
 
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -12,8 +13,7 @@ export const authOptions: NextAuthOptions = {
         const req = await fetch(
           `http://localhost:3000/api/users/list?email=${profile.email}`
         );
-        const { data } = await req.json(); 
-
+        const { data } = await req.json();
         if (data.length) {
           return {
             ...data[0],

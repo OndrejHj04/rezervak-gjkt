@@ -9,8 +9,8 @@ export default function AvatarWrapper({ user }: { user?: User }) {
     if (!user.image?.length) {
       return (
         <Avatar>
-          {user.first_name[0]}
-          {user.last_name[0]}
+          {user.first_name[0].toUpperCase()}
+          {user.last_name[0].toUpperCase()}
         </Avatar>
       );
     } else {
@@ -20,8 +20,8 @@ export default function AvatarWrapper({ user }: { user?: User }) {
 
   if (!data?.user.image?.length) {
     <Avatar>
-      {data?.user.first_name[0]}
-      {data?.user.last_name[0]}
+      {data?.user.first_name[0].toUpperCase()}
+      {data?.user.last_name[0].toUpperCase()}
     </Avatar>;
   }
   return <Avatar />;

@@ -1,10 +1,8 @@
 "use client";
-import { useState } from "react";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import { usePathname } from "next/navigation";
 import AddUserModal from "@/sub-components/AddUserModal";
 import { store } from "@/store/store";
 
@@ -31,11 +29,11 @@ export default function SpeedComponent() {
             key={action.name}
             icon={action.icon}
             tooltipTitle={action.name}
-            onClick={() => setModal(action.string)}
+            onClick={() => setModal(true)}
           />
         ))}
       </SpeedDial>
-      {modal === "addUser" && <AddUserModal setModal={setModal} />}
+      <AddUserModal />
     </>
   );
 }

@@ -19,14 +19,10 @@ const style = {
   transform: "translate(-50%, -50%)",
 };
 
-export default function AddUserModal({
-  setModal,
-}: {
-  setModal: (string: string) => void;
-}) {
-  const { register, handleSubmit, setValue } = useForm();
-  const { roles } = store();
-  const close = () => setModal("");
+export default function AddUserModal() {
+  const { register, handleSubmit, setValue, reset } = useForm();
+  const { roles, modal, setModal } = store();
+  const close = () => setModal(false);
 
   const onSubmit = (data: any) => {
     fetch("http://localhost:3000/api/users/new", {
@@ -37,11 +33,12 @@ export default function AddUserModal({
       .then(({ message }) => toast.info(message))
       .catch((e) => toast.error("Something went wrong"));
     close();
+    reset();
   };
 
   return (
     <Modal
-      open={true}
+      open={modal}
       onClose={close}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"

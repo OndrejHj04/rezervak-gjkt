@@ -65,6 +65,7 @@ export const authOptions: NextAuthOptions = {
         token.first_name = user.first_name;
         token.last_name = user.last_name;
         token.id = user.id;
+        token.verified = user.verified;
       }
       return token;
     },
@@ -76,6 +77,7 @@ export const authOptions: NextAuthOptions = {
         session.user.first_name = token.first_name;
         session.user.last_name = token.last_name;
         session.user.id = token.id;
+        session.user.verified = token.verified;
       }
       return session;
     },

@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <>
       <div className="absolute z-50">
-        <VerifyUser />
+        <VerifyUser id={data?.user.id} />
       </div>
       <Box sx={{ filter: "blur(5px)" }}>{homepage}</Box>
     </>

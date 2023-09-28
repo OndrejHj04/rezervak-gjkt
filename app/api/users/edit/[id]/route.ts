@@ -10,7 +10,7 @@ export async function POST(
     const { password, newPassword } = await req.json();
 
     const data = (await query({
-      query: `UPDATE users SET password = ? WHERE id = ? AND password = ?`,
+      query: `UPDATE users SET password = ?, verified = 1 WHERE id = ? AND password = ?`,
       values: [newPassword, id, password],
     })) as User[] | any;
 
@@ -23,10 +23,16 @@ export async function POST(
         { status: 500 }
       );
     }
+    
+    const user = (await query({
+      query: `SELECT * FROM users WHERE id = ?`,
+      values: [id],
+    })) as User[]
+
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: [],
+      data: user[0],
     });
   } catch (e) {
     return NextResponse.json(

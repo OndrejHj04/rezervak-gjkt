@@ -19,10 +19,12 @@ export default function AvatarWrapper({ user }: { user?: User }) {
   }
 
   if (!data?.user.image?.length) {
-    <Avatar>
-      {data?.user.first_name[0].toUpperCase()}
-      {data?.user.last_name[0].toUpperCase()}
-    </Avatar>;
+    return (
+      <Avatar>
+        {data?.user.first_name[0].toUpperCase()}
+        {data?.user.last_name[0].toUpperCase()}
+      </Avatar>
+    );
   }
-  return <Avatar />;
+  return <Avatar src={data?.user.image} />;
 }

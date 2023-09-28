@@ -18,7 +18,6 @@ export const authOptions: NextAuthOptions = {
           return {
             ...data[0],
             status: true,
-            name: profile.name,
             image: profile.picture,
           };
         } else {
@@ -53,7 +52,7 @@ export const authOptions: NextAuthOptions = {
           credentials?.email === data[0].email &&
           credentials?.password === data[0].password
         ) {
-          return { ...data[0], first_name: data[0].first_name };
+          return { ...data[0] };
         } else {
           return null;
         }

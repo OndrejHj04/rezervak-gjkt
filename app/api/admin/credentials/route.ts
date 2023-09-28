@@ -9,6 +9,7 @@ export async function GET() {
       SELECT
       u.id,
       u.first_name,
+      u.image,
       u.last_name,
       u.password,
       u.email,

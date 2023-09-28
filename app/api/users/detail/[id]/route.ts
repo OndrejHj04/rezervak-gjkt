@@ -10,12 +10,7 @@ export async function GET(
     const data = (await query({
       query: `
       SELECT
-      u.id,
-      u.first_name,
-      u.last_name,
-      u.password,
-      u.image,
-      u.email,
+      u.*,
       JSON_OBJECT(
           'role_id', r.id,
           'role_name', r.role_name,

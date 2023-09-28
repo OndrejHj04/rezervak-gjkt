@@ -8,7 +8,7 @@ export async function GET(req: Request) {
     const roles = url.searchParams.get("roles")?.split(",");
     const email = url.searchParams.get("email");
     const data = (await query({
-      query: `SELECT u.id, u.first_name, u.last_name, u.email, u.image, JSON_OBJECT('role_id', r.id, 'role_name', r.role_name, 'role_color', r.role_color) AS role FROM users u JOIN roles r ON u.role = r.id ${
+      query: `SELECT u.*, JSON_OBJECT('role_id', r.id, 'role_name', r.role_name, 'role_color', r.role_color) AS role FROM users u JOIN roles r ON u.role = r.id ${
         roles || email
           ? `${roles ? `WHERE r.id = ${roles}` : `WHERE u.email = "${email}"`}`
           : ""

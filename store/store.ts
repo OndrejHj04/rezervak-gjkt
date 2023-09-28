@@ -1,4 +1,5 @@
 import { Role } from "@/types";
+import { User } from "next-auth";
 import { create } from "zustand";
 
 interface stateInterface {
@@ -8,6 +9,8 @@ interface stateInterface {
   setRoles: (panel: Role[]) => void;
   modal: boolean;
   setModal: (value: boolean) => void;
+  user: User | null;
+  setUser: (user: User) => void;
 }
 
 export const store = create<stateInterface>((set) => ({
@@ -17,4 +20,6 @@ export const store = create<stateInterface>((set) => ({
   setRoles: (roles) => set({ roles }),
   modal: false,
   setModal: (modal) => set({ modal }),
+  user: null,
+  setUser: (user) => set({ user }),
 }));

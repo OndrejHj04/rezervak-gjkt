@@ -25,10 +25,26 @@ export async function POST(
     }
     
     const user = (await query({
-      query: `SELECT * FROM users WHERE id = ?`,
+      query: `SELECT
+      u.*,
+      JSON_OBJECT(
+          'role_id', r.id,
+          'role_name', r.role_name,
+          'role_color', r.role_color
+      ) AS role
+  FROM
+      users u
+  JOIN
+      roles r
+  ON
+      u.role = r.id
+  WHERE
+      u.id = ?`,
       values: [id],
     })) as User[]
 
+    user.map((item) => (item.role = JSON.parse(item.role as any)));
+    
     return NextResponse.json({
       success: true,
       message: "Operation successful",

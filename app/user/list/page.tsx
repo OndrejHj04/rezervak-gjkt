@@ -37,7 +37,6 @@ export default function UserList() {
       .then((data) => {
         setLoading(false);
         setData(data.data);
-        console.log(data.data);
       });
   };
   useEffect(() => {

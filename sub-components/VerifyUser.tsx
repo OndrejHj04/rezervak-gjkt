@@ -1,14 +1,16 @@
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import RunningWithErrorsIcon from "@mui/icons-material/RunningWithErrors";
 import { useForm } from "react-hook-form";
+import { store } from "@/store/store";
 
 interface passwordForm {
   password: string;
   newPassword: string;
 }
 
-export default function VerifyUser({ id }: { id: number }) {
+export default function VerifyUser({ id }: { id?: string }) {
   const { handleSubmit, register } = useForm<passwordForm>();
+  const { setUser } = store();
 
   const onSubmit = (data: passwordForm) => {
     fetch(`http://localhost:3000/api/users/edit/${id}`, {
@@ -16,8 +18,9 @@ export default function VerifyUser({ id }: { id: number }) {
       body: JSON.stringify(data),
     })
       .then((res) => res.json())
-      .then((res) => console.log(res))
-      .catch((e) => console.log(e));
+      .then((res) => {
+        setUser(res.data);
+      });
   };
 
   return (

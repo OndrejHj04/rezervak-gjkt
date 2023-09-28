@@ -14,7 +14,7 @@ import ErrorIcon from "@mui/icons-material/Error";
 
 export default function TopBar() {
   const { setPanel } = store();
-  const { data, status } = useSession();
+  const { user } = store();
 
   return (
     <AppBar position="static">
@@ -32,26 +32,26 @@ export default function TopBar() {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Rezervak GJKT
         </Typography>
-        {status === "loading" ? (
+        {false ? (
           <Skeleton variant="rounded" width={180} height={50} />
         ) : (
           <>
-            {data ? (
-              <Link href={`/user/detail/${data.user.id}`}>
+            {user ? (
+              <Link href={`/user/detail/${user.id}`}>
                 <Button>
                   <div className="flex flex-col mx-4 items-end normal-case text-white">
                     <Typography
                       className="font-semibold capitalize"
                       variant="body1"
                     >
-                      {data.user.first_name} {data.user.last_name}
+                      {user.first_name} {user.last_name}
                     </Typography>
                     <div className="flex gap-1 items-center">
-                      {!data.user.verified && (
+                      {!user.verified && (
                         <ErrorIcon sx={{ color: "#ED9191" }} />
                       )}
                       <Typography variant="body2">
-                        {data.user.role.role_name}
+                        {user.role.role_name}
                       </Typography>
                     </div>
                   </div>

@@ -31,11 +31,13 @@ export default function UserList() {
   const { modal } = store();
 
   const fetchUsers = () => {
+    setLoading(true);
     fetch("http://localhost:3000/api/users/list")
       .then((res) => res.json())
       .then((data) => {
         setLoading(false);
         setData(data.data);
+        console.log(data.data);
       });
   };
   useEffect(() => {
@@ -47,7 +49,7 @@ export default function UserList() {
   if (loading) {
     return (
       <Paper className="w-full p-2 flex justify-center">
-        <CircularProgress className="mx-auto"/>
+        <CircularProgress className="mx-auto" />
       </Paper>
     );
   }

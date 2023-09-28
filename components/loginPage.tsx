@@ -2,6 +2,7 @@
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const { register, handleSubmit } = useForm();
@@ -13,6 +14,7 @@ export default function LoginPage() {
       redirect: false,
     }).then((res) => {
       if (res?.error) {
+        toast.error("Nepodařilo se přihlásit.");
       } else {
         window.location.href = "/";
       }

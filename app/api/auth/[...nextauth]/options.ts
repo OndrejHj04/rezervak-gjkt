@@ -43,19 +43,16 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         //tady budu dělat request na server s tím abych zjistil jestli je uživatel v databázi
-        const request = await fetch(
-          "http://localhost:3000/api/admin/credentials"
-        );
+        const request = await fetch("http://localhost:3000/api/users/login", {
+          method: "POST",
+          body: JSON.stringify({
+            email: credentials?.email,
+            password: credentials?.password,
+          }),
+        });
         const { data } = await request.json();
 
-        if (
-          credentials?.email === data[0].email &&
-          credentials?.password === data[0].password
-        ) {
-          return { ...data[0] };
-        } else {
-          return null;
-        }
+        return data || null;
       },
     }),
   ],

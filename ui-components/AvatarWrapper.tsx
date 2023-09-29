@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 
 export default function AvatarWrapper({ data }: { data?: User }) {
   const { user } = store();
-  
+
   if (data) {
     if (!data?.image?.length) {
       return (
@@ -21,7 +21,9 @@ export default function AvatarWrapper({ data }: { data?: User }) {
   }
 
   if (user) {
-    if (!user.image?.length) {
+    if (user.image?.length) {
+      return <Avatar src={user?.image} />;
+    } else {
       return (
         <Avatar>
           {user.first_name[0].toUpperCase()}
@@ -30,5 +32,6 @@ export default function AvatarWrapper({ data }: { data?: User }) {
       );
     }
   }
-  return <Avatar src={user.image} />;
+
+  return <Avatar />;
 }

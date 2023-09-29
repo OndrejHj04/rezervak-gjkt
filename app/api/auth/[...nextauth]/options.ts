@@ -14,6 +14,16 @@ export const authOptions: NextAuthOptions = {
           `http://localhost:3000/api/users/list?email=${profile.email}`
         );
         const { data } = await req.json();
+
+        if (!data.picture && profile.picture) {
+          await fetch(`http://localhost:3000/api/login/upload-pic`, {
+            method: "POST",
+            body: JSON.stringify({
+              picture: profile.picture,
+              id: data[0].id,
+            }),
+          });
+        }
         if (data.length) {
           return {
             ...data[0],

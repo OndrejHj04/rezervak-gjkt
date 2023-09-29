@@ -15,7 +15,7 @@ export default function UserListItem({ user }: { user: User }) {
       sx={{ cursor: "pointer" }}
     >
       <TableCell>
-        <AvatarWrapper user={user} />
+        <AvatarWrapper data={user} />
       </TableCell>
       <TableCell>
         {user.first_name} {user.last_name}

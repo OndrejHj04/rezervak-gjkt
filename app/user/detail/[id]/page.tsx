@@ -1,5 +1,6 @@
 import ChangeAvatar from "@/sub-components/ChangeAvatar";
 import { Role } from "@/types";
+import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Avatar,
   Box,
@@ -51,7 +52,7 @@ export default async function UserDetail({
       </Box>
       <Box className="w-full flex gap-4">
         <Paper className="p-4 flex flex-col gap-2 aspect-square items-center justify-center">
-          <ChangeAvatar img={data.image} />
+          <AvatarWrapper />
         </Paper>
         <Paper className="p-4 flex flex-col gap-2">
           <TextField defaultValue={data.first_name} label="Email" />

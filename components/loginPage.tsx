@@ -1,4 +1,5 @@
 "use client";
+import { store } from "@/store/store";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -6,6 +7,7 @@ import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const { register, handleSubmit } = useForm();
+  const { setUserLoading } = store();
 
   const onSubmit = (data: any) => {
     signIn("credentials", {
@@ -16,6 +18,7 @@ export default function LoginPage() {
       if (res?.error) {
         toast.error("Nepodařilo se přihlásit.");
       } else {
+        setUserLoading(true);
         window.location.href = "/";
       }
     });

@@ -1,12 +1,13 @@
 "use client";
 import { store } from "@/store/store";
 import VerifyUser from "@/sub-components/VerifyUser";
-import { Box, Typography } from "@mui/material";
+import WelcomeComponent from "@/sub-components/WelcomeComponent";
+import { Box, Skeleton, Typography } from "@mui/material";
 import { useSession } from "next-auth/react";
 
 export default function Home() {
-  const { user } = store();
-  
+  const { user, userLoading } = store();
+
   const homepage = (
     <Typography>
       Lorem ipsum, dolor sit amet consectetur adipisicing elit. Accusantium
@@ -16,14 +17,28 @@ export default function Home() {
     </Typography>
   );
 
-  if (user?.verified) return homepage;
+  if (userLoading)
+    return (
+      <>
+        <Skeleton variant="rectangular" width={300} height={170} />
+        <Skeleton variant="rectangular" width={200} height={250} />
+        <Skeleton variant="rectangular" width={300} height={170} />
+        <Skeleton variant="circular" width={30} height={30} />
+      </>
+    );
 
-  return (
-    <>
-      <div className="absolute z-50">
-        <VerifyUser id={user?.id} />
-      </div>
-      <Box sx={{ filter: "blur(5px)" }}>{homepage}</Box>
-    </>
-  );
+  if (!user && !userLoading) {
+    return <WelcomeComponent />;
+  }
+  if (!user?.verified) {
+    return (
+      <>
+        <div className="absolute z-50">
+          <VerifyUser id={user?.id} />
+        </div>
+        <Box sx={{ filter: "blur(5px)" }}>{homepage}</Box>
+      </>
+    );
+  }
+  return homepage;
 }

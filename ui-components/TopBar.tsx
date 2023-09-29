@@ -14,7 +14,7 @@ import ErrorIcon from "@mui/icons-material/Error";
 
 export default function TopBar() {
   const { setPanel } = store();
-  const { user } = store();
+  const { user, userLoading } = store();
 
   return (
     <AppBar position="static">
@@ -32,7 +32,7 @@ export default function TopBar() {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Rezervak GJKT
         </Typography>
-        {false ? (
+        {userLoading ? (
           <Skeleton variant="rounded" width={180} height={50} />
         ) : (
           <>

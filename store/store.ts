@@ -11,6 +11,8 @@ interface stateInterface {
   setModal: (value: boolean) => void;
   user: User | null;
   setUser: (user: User) => void;
+  userLoading: boolean;
+  setUserLoading: (value: boolean) => void;
 }
 
 export const store = create<stateInterface>((set) => ({
@@ -22,4 +24,6 @@ export const store = create<stateInterface>((set) => ({
   setModal: (modal) => set({ modal }),
   user: null,
   setUser: (user) => set({ user }),
+  userLoading: true,
+  setUserLoading: (userLoading) => set({ userLoading }),
 }));

@@ -10,15 +10,17 @@ interface passwordForm {
 
 export default function VerifyUser({ id }: { id?: string }) {
   const { handleSubmit, register } = useForm<passwordForm>();
-  const { setUser } = store();
+  const { setUser, setUserLoading } = store();
 
   const onSubmit = (data: passwordForm) => {
+    setUserLoading(false);
     fetch(`http://localhost:3000/api/users/edit/${id}`, {
       method: "POST",
       body: JSON.stringify(data),
     })
       .then((res) => res.json())
       .then((res) => {
+        setUserLoading(false);
         setUser(res.data);
       });
   };

@@ -15,8 +15,8 @@ const actions = [
 ];
 
 export default function SpeedComponent() {
-  const { modal, setModal } = store();
-
+  const { modal, setModal, user } = store();
+  if (user?.role.role_id !== 1) return null;
   return (
     <>
       <SpeedDial

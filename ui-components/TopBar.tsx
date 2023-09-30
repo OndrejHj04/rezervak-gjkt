@@ -60,7 +60,7 @@ export default function TopBar() {
               </Link>
             ) : (
               <Link href="/login">
-                <Button className="text-white">Přihlásit se</Button>
+                <Button style={{ color: "white" }}>Přihlásit se</Button>
               </Link>
             )}
           </>

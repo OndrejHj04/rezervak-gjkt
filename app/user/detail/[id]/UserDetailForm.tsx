@@ -53,7 +53,7 @@ export default function UserDetailForm({ id }: { id: string }) {
       <Box className="w-full flex items-end">
         <Button
           variant="contained"
-          className="ml-auto"
+          style={{ marginLeft: "auto" }}
           type="submit"
           disabled={!isDirty}
         >

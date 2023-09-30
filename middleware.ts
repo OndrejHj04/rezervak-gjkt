@@ -8,17 +8,6 @@ export default async function middleware(req: NextRequest) {
   const role = token?.role;
   const verified = token?.verified;
 
-  if (
-    !(
-      req.nextUrl.pathname.includes("/api") ||
-      req.nextUrl.pathname.includes("/_next")
-    )
-  ) {
-    if (!verified && req.nextUrl.pathname !== "/") {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-  }
-
   if (req.nextUrl.pathname.startsWith("/login") && role) {
     return NextResponse.redirect(new URL("/", req.url));
   }

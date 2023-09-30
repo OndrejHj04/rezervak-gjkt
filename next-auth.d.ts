@@ -14,6 +14,7 @@ declare module "next-auth" {
       verified: boolean;
       first_name: string;
       last_name: string;
+      status?: boolean;
     } & DefaullSession;
   }
 
@@ -28,6 +29,7 @@ declare module "next-auth" {
     verified: boolean;
     first_name: string;
     last_name: string;
+    status?: boolean;
   }
 }
 
@@ -43,5 +45,6 @@ declare module "next-auth/jwt" {
     verified: boolean;
     first_name: string;
     last_name: string;
+    status?: boolean;
   }
 }

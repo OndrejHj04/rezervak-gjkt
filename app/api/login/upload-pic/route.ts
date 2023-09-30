@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const { picture, id } = await req.json();
-  console.log(picture, id);
+
   try {
     const data = await query({
       query: `UPDATE users SET image = ? WHERE id = ?`,

@@ -14,16 +14,37 @@ export async function POST(
         Object.keys(user).length - 1 !== i ? ", " : ""
       }`;
     });
-    console.log(`UPDATE users SET ${str} WHERE id = ${id}`)
+
     const data = (await query({
       query: `UPDATE users SET ${str} WHERE id = ${id}`,
       values: [],
     })) as User[] | any;
 
+    const userDetail = (await query({
+      query: `SELECT
+      u.*,
+      JSON_OBJECT(
+          'role_id', r.id,
+          'role_name', r.role_name,
+          'role_color', r.role_color
+      ) AS role
+  FROM
+      users u
+  JOIN
+      roles r
+  ON
+      u.role = r.id
+  WHERE
+      u.id = ?`,
+      values: [id],
+    })) as User[];
+
+    userDetail.map((item) => (item.role = JSON.parse(item.role as any)));
+
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: data,
+      data: userDetail[0],
     });
   } catch (e) {
     return NextResponse.json(

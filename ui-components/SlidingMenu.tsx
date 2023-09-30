@@ -20,7 +20,7 @@ export default function SlidingMenu() {
     push(string);
     setPanel(false);
   };
-  console.log(user);
+
   return (
     <Drawer anchor="left" open={panel} onClose={() => setPanel(false)}>
       <div className="h-full flex flex-col justify-between">

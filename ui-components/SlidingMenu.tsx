@@ -32,7 +32,11 @@ export default function SlidingMenu() {
                 route.roles.includes(user?.role.role_id as number))
             ) {
               return (
-                <MenuItem onClick={() => redirect(route.path)} key={i}>
+                <MenuItem
+                  onClick={() => redirect(route.path)}
+                  key={i}
+                  disabled={Boolean(route.roles.length && !user?.verified)}
+                >
                   <ListItemIcon>{route.icon}</ListItemIcon>
                   <ListItemText>
                     <Typography variant="h6">{route.name}</Typography>

@@ -27,15 +27,14 @@ export default function SlidingMenu() {
         <MenuList>
           {navConfig.map((route, i) => {
             if (
-              route.icon &&
-              (!route.roles.length ||
-                route.roles.includes(user?.role.role_id as number))
+              route.roles.includes(user?.role.role_id!) ||
+              route.roles.length === 0
             ) {
               return (
                 <MenuItem
                   onClick={() => redirect(route.path)}
                   key={i}
-                  disabled={Boolean(route.roles.length && !user?.verified)}
+                  disabled={Boolean(!user?.verified && route.roles.length)}
                 >
                   <ListItemIcon>{route.icon}</ListItemIcon>
                   <ListItemText>

@@ -2,6 +2,8 @@ import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import RunningWithErrorsIcon from "@mui/icons-material/RunningWithErrors";
 import { useForm } from "react-hook-form";
 import { store } from "@/store/store";
+import { signIn, useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
 interface passwordForm {
   password: string;
@@ -20,8 +22,10 @@ export default function VerifyUser({ id }: { id?: string }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        setUserLoading(false);
-        setUser(res.data);
+        signIn("credentials", {
+          password: data.newPassword,
+          email: res.data.email,
+        });
       });
   };
 

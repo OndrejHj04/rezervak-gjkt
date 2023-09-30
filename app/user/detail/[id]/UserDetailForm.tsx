@@ -102,6 +102,7 @@ export default function UserDetailForm({ id }: { id: string }) {
             <FormControlLabel
               control={
                 <Switch
+                  disabled
                   defaultChecked={user.verified}
                   {...register("verified")}
                 />

@@ -36,7 +36,6 @@ export default function SlidingMenu() {
                   key={i}
                   disabled={Boolean(!user?.verified && route.roles.length)}
                 >
-                  <ListItemIcon>{route.icon}</ListItemIcon>
                   <ListItemText>
                     <Typography variant="h6">{route.name}</Typography>
                   </ListItemText>

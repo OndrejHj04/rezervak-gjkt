@@ -39,6 +39,14 @@ export default function VerifyUser({ id }: { id?: string }) {
   const errors = methods.formState.errors;
 
   const onSubmit = (data: verifyForm) => {
+    // "ID_code": "111111111",
+    // "street": "Bezová 148",
+    // "town": "sadfasdf",
+    // "post_number": "50009",
+    // "password": "asfdaaa",
+    // "newPassword": "asfdasf",
+    // "birth_date": "2023-01-26"
+
     const body = {
       ID_code: data.ID_code,
       birth_date: data.birth_date,
@@ -61,8 +69,6 @@ export default function VerifyUser({ id }: { id?: string }) {
     //   });
     // });
   };
-
-  console.log(errors.ID_code);
 
   return (
     <Paper className="p-2">
@@ -135,6 +141,10 @@ export default function VerifyUser({ id }: { id?: string }) {
               label="Současné heslo"
               {...methods.register("password", {
                 required: "Toto pole je povinné",
+                pattern: {
+                  value: /^.{6,}$/,
+                  message: "Heslo musí mít alespoň 6 znaků",
+                },
               })}
               error={!!errors.password}
               helperText={errors.password?.message}
@@ -158,6 +168,10 @@ export default function VerifyUser({ id }: { id?: string }) {
               label="Nové heslo"
               {...methods.register("newPassword", {
                 required: "Toto pole je povinné",
+                pattern: {
+                  value: /^.{6,}$/,
+                  message: "Heslo musí mít alespoň 6 znaků",
+                },
               })}
               error={!!errors.newPassword}
               helperText={errors.newPassword?.message}

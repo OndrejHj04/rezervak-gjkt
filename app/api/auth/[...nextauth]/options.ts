@@ -28,7 +28,6 @@ export const authOptions: NextAuthOptions = {
           return {
             ...data[0],
             status: true,
-            image: profile.picture,
           };
         } else {
           return { ...profile, id: profile.sub, status: false };
@@ -71,9 +70,6 @@ export const authOptions: NextAuthOptions = {
       //credentials
       if (user) {
         token.role = user.role;
-        token.image = user.image;
-        token.first_name = user.first_name;
-        token.last_name = user.last_name;
         token.id = user.id;
         token.verified = user.verified;
       }
@@ -83,9 +79,6 @@ export const authOptions: NextAuthOptions = {
       //provider
       if (session?.user) {
         session.user.role = token.role;
-        session.user.image = token.image;
-        session.user.first_name = token.first_name;
-        session.user.last_name = token.last_name;
         session.user.id = token.id;
         session.user.verified = token.verified;
       }

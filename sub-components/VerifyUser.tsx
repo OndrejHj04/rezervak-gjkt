@@ -6,7 +6,10 @@ import {
   InputAdornment,
   Paper,
   TextField,
+  Tooltip,
   Typography,
+  createStyles,
+  makeStyles,
 } from "@mui/material";
 import RunningWithErrorsIcon from "@mui/icons-material/RunningWithErrors";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
@@ -16,7 +19,7 @@ import { Session } from "next-auth";
 import DateInput from "./DateInput";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Cleave from "cleave.js/react";
 
 export interface verifyForm {
@@ -30,9 +33,11 @@ export interface verifyForm {
 }
 
 export default function VerifyUser({ id }: { id?: string }) {
-  const methods = useForm<verifyForm>();
+  const methods = useForm<verifyForm>({ mode: "onBlur" });
   const { setUser, setUserLoading } = store();
   const [hidePassword, setHidePassword] = useState(true);
+  const errors = methods.formState.errors;
+
   const onSubmit = (data: verifyForm) => {
     const body = {
       ID_code: data.ID_code,
@@ -41,7 +46,6 @@ export default function VerifyUser({ id }: { id?: string }) {
       password: data.password,
       newPassword: data.newPassword,
     };
-
     // setUserLoading(false);
     // fetch(`http://localhost:3000/api/account/verify/${id}`, {
     //   method: "POST",
@@ -57,6 +61,8 @@ export default function VerifyUser({ id }: { id?: string }) {
     //   });
     // });
   };
+
+  console.log(errors.ID_code);
 
   return (
     <Paper className="p-2">
@@ -77,20 +83,15 @@ export default function VerifyUser({ id }: { id?: string }) {
             <TextField
               {...methods.register("ID_code", {
                 required: "Toto pole je povinné",
+                pattern: {
+                  value: /^\d{9}$/,
+                  message: "Číslo OP musí mít 9 číslic",
+                },
               })}
+              error={!!errors.ID_code}
+              helperText={errors.ID_code?.message}
               label="Číslo OP"
               sx={{ width: 215, marginTop: 1 }}
-              InputProps={{
-                inputComponent: (props) => (
-                  <Cleave
-                    options={{
-                      numericOnly: true,
-                      blocks: [9],
-                    }}
-                    {...props}
-                  />
-                ),
-              }}
             />
             <DateInput />
           </div>
@@ -100,6 +101,8 @@ export default function VerifyUser({ id }: { id?: string }) {
               {...methods.register("street", {
                 required: "Toto pole je povinné",
               })}
+              error={!!errors.street}
+              helperText={errors.street?.message}
               sx={{ width: 130 }}
             />
             <TextField
@@ -107,28 +110,23 @@ export default function VerifyUser({ id }: { id?: string }) {
               {...methods.register("town", {
                 required: "Toto pole je povinné",
               })}
+              error={!!errors.town}
+              helperText={errors.town?.message}
               sx={{ width: 160 }}
             />
 
             <TextField
               {...methods.register("post_number", {
                 required: "Toto pole je povinné",
-                pattern: /[0-9 ]{6}$/,
+                pattern: {
+                  value: /^\d{5}$/,
+                  message: "PSČ musí mít 5 číslic",
+                },
               })}
+              error={!!errors.post_number}
+              helperText={errors.post_number?.message}
               label="PSČ"
               sx={{ width: 130 }}
-              InputProps={{
-                inputComponent: (props) => (
-                  <Cleave
-                    options={{
-                      numericOnly: true,
-                      blocks: [3, 2],
-                      delimiter: " ",
-                    }}
-                    {...props}
-                  />
-                ),
-              }}
             />
           </div>
 
@@ -138,6 +136,8 @@ export default function VerifyUser({ id }: { id?: string }) {
               {...methods.register("password", {
                 required: "Toto pole je povinné",
               })}
+              error={!!errors.password}
+              helperText={errors.password?.message}
               sx={{ width: 215 }}
               type={hidePassword ? "password" : "text"}
               InputProps={{
@@ -159,6 +159,8 @@ export default function VerifyUser({ id }: { id?: string }) {
               {...methods.register("newPassword", {
                 required: "Toto pole je povinné",
               })}
+              error={!!errors.newPassword}
+              helperText={errors.newPassword?.message}
               sx={{ width: 215 }}
               type={hidePassword ? "password" : "text"}
               InputProps={{
@@ -177,7 +179,7 @@ export default function VerifyUser({ id }: { id?: string }) {
             />
           </div>
 
-          <Button variant="contained" type="submit">
+          <Button variant="contained" type="submit" className="w-full">
             Odeslat
           </Button>
         </form>

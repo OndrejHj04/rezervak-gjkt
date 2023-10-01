@@ -19,6 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { User } from "next-auth";
+import { signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { set, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -45,6 +46,11 @@ export default function UserDetailForm({ id }: { id: string }) {
       .then(({ data }) => {
         toast.success("Uživatel byl upraven");
         setUser(data);
+
+        signIn("credentials", {
+          email: data.email,
+          password: data.password, //průser!!
+        });
       });
   };
 
@@ -102,13 +108,15 @@ export default function UserDetailForm({ id }: { id: string }) {
             <FormControlLabel
               control={
                 <Switch
-                  disabled
                   defaultChecked={user.verified}
                   {...register("verified")}
                 />
               }
               label="Ověřený účet"
             />
+            <Button color="error" variant="outlined">
+              uspat uživatele
+            </Button>
           </Paper>
         </Box>
       )}

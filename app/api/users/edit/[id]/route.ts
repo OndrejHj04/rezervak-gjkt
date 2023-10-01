@@ -10,16 +10,16 @@ export async function POST(
     const user = await req.json();
     let str = "";
     Object.keys(user).forEach((key, i) => {
-      str += `${key} = "${user[key]}"${
-        Object.keys(user).length - 1 !== i ? ", " : ""
-      }`;
+      str += `${key} = ${typeof user[key] === "string" ? "'" : ""}${user[key]}${
+        typeof user[key] === "string" ? "'" : ""
+      }${Object.keys(user).length - 1 !== i ? ", " : ""}`;
     });
 
     const data = (await query({
       query: `UPDATE users SET ${str} WHERE id = ${id}`,
       values: [],
     })) as User[] | any;
-
+    console.log(`UPDATE users SET ${str} WHERE id = ${id}`);
     const userDetail = (await query({
       query: `SELECT
       u.*,

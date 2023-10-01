@@ -7,7 +7,7 @@ export default async function middleware(req: NextRequest) {
   const role = token?.role;
   const config = navConfig.find((item) => item.path === req.nextUrl.pathname);
   const verified = token?.verified;
-  console.log(verified);
+
   if (req.nextUrl.pathname.startsWith("/login") && role) {
     return NextResponse.redirect(new URL("/", req.url));
   }

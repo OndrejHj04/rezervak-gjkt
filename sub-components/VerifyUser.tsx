@@ -18,8 +18,9 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 
-interface verifyForm {
+export interface verifyForm {
   ID_code: string;
+  birth_date: string;
   street: string;
   town: string;
   post_number: string;
@@ -32,19 +33,29 @@ export default function VerifyUser({ id }: { id?: string }) {
   const { setUser, setUserLoading } = store();
   const [hidePassword, setHidePassword] = useState(true);
   const onSubmit = (data: verifyForm) => {
-    //form validation!!
+
+    const body = {
+      ID_code: data.ID_code,
+      birth_date: data.birth_date,
+      adress: `${data.street}, ${data.town}, ${data.post_number}`,
+      password: data.password,
+      newPassword: data.newPassword,
+    };
+
     setUserLoading(false);
     fetch(`http://localhost:3000/api/account/verify/${id}`, {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify(body),
     })
       .then((res) => res.json())
-      .then((res) => {
-        signIn("credentials", {
-          password: data.newPassword,
-          email: res.data.email,
-        });
-      });
+      .then((data) => console.log(data))
+      .catch((e) => console.log(e));
+    // .then((res) => {
+    //   signIn("credentials", {
+    //     password: data.newPassword,
+    //     email: res.data.email,
+    //   });
+    // });
   };
 
   return (

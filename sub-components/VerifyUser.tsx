@@ -17,6 +17,7 @@ import DateInput from "./DateInput";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
+import Cleave from "cleave.js/react";
 
 export interface verifyForm {
   ID_code: string;
@@ -33,7 +34,6 @@ export default function VerifyUser({ id }: { id?: string }) {
   const { setUser, setUserLoading } = store();
   const [hidePassword, setHidePassword] = useState(true);
   const onSubmit = (data: verifyForm) => {
-
     const body = {
       ID_code: data.ID_code,
       birth_date: data.birth_date,
@@ -42,14 +42,14 @@ export default function VerifyUser({ id }: { id?: string }) {
       newPassword: data.newPassword,
     };
 
-    setUserLoading(false);
-    fetch(`http://localhost:3000/api/account/verify/${id}`, {
-      method: "POST",
-      body: JSON.stringify(body),
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data))
-      .catch((e) => console.log(e));
+    // setUserLoading(false);
+    // fetch(`http://localhost:3000/api/account/verify/${id}`, {
+    //   method: "POST",
+    //   body: JSON.stringify(body),
+    // })
+    //   .then((res) => res.json())
+    //   .then((data) => console.log(data))
+    //   .catch((e) => console.log(e));
     // .then((res) => {
     //   signIn("credentials", {
     //     password: data.newPassword,
@@ -75,34 +75,69 @@ export default function VerifyUser({ id }: { id?: string }) {
         >
           <div className="flex gap-2">
             <TextField
-              {...methods.register("ID_code")}
-              label="Číslo občanského průkazu"
-              sx={{ marginTop: 1, width: 215 }}
+              {...methods.register("ID_code", {
+                required: "Toto pole je povinné",
+              })}
+              label="Číslo OP"
+              sx={{ width: 215, marginTop: 1 }}
+              InputProps={{
+                inputComponent: (props) => (
+                  <Cleave
+                    options={{
+                      numericOnly: true,
+                      blocks: [9],
+                    }}
+                    {...props}
+                  />
+                ),
+              }}
             />
             <DateInput />
           </div>
           <div className="flex gap-2">
             <TextField
               label="Ulice a ČP"
-              {...methods.register("street")}
+              {...methods.register("street", {
+                required: "Toto pole je povinné",
+              })}
               sx={{ width: 130 }}
             />
             <TextField
               label="Město"
-              {...methods.register("town")}
+              {...methods.register("town", {
+                required: "Toto pole je povinné",
+              })}
               sx={{ width: 160 }}
             />
+
             <TextField
+              {...methods.register("post_number", {
+                required: "Toto pole je povinné",
+                pattern: /[0-9 ]{6}$/,
+              })}
               label="PSČ"
-              {...methods.register("post_number")}
               sx={{ width: 130 }}
+              InputProps={{
+                inputComponent: (props) => (
+                  <Cleave
+                    options={{
+                      numericOnly: true,
+                      blocks: [3, 2],
+                      delimiter: " ",
+                    }}
+                    {...props}
+                  />
+                ),
+              }}
             />
           </div>
 
           <div className="flex gap-2">
             <TextField
               label="Současné heslo"
-              {...methods.register("password")}
+              {...methods.register("password", {
+                required: "Toto pole je povinné",
+              })}
               sx={{ width: 215 }}
               type={hidePassword ? "password" : "text"}
               InputProps={{
@@ -121,7 +156,9 @@ export default function VerifyUser({ id }: { id?: string }) {
             />
             <TextField
               label="Nové heslo"
-              {...methods.register("newPassword")}
+              {...methods.register("newPassword", {
+                required: "Toto pole je povinné",
+              })}
               sx={{ width: 215 }}
               type={hidePassword ? "password" : "text"}
               InputProps={{

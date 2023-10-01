@@ -12,7 +12,7 @@ export default function DateInput() {
         <DatePicker
           label="Datum narození"
           sx={{ width: 215 }}
-          {...register("birth_date")}
+          {...register("birth_date", { required: "Toto pole je povinné" })}
           onChange={(date: Dayjs | null) =>
             setValue("birth_date", date?.format("YYYY-MM-DD"))
           }

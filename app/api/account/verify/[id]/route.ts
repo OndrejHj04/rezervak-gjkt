@@ -12,11 +12,11 @@ export async function POST(
       await req.json();
 
     const data = (await query({
-      query: `UPDATE users SET password = "${newPassword}", ID_code = "${ID_code}", birth_date = "${birth_date}", adress = "${adress}" WHERE id = 13 AND password = "${password}"`, // verified = 1!! pak přidat
+      query: `UPDATE users SET password = "${newPassword}", ID_code = "${ID_code}", verified = 1, birth_date = "${birth_date}", adress = "${adress}" WHERE id = 13 AND password = "${password}"`, // verified = 1!! pak přidat
       values: [],
     })) as User[] | any;
-
-    if (data.changedRows === 0) {
+     console.log(data)
+    if (data.affectedRows === 0) {
       return NextResponse.json(
         {
           success: false,
@@ -26,8 +26,8 @@ export async function POST(
       );
     }
 
-      const user = (await query({
-        query: `SELECT
+    const user = (await query({
+      query: `SELECT
         u.*,
         JSON_OBJECT(
             'role_id', r.id,
@@ -42,10 +42,10 @@ export async function POST(
         u.role = r.id
     WHERE
         u.id = ?`,
-        values: [id],
-      })) as User[];
+      values: [id],
+    })) as User[];
 
-      user.map((item) => (item.role = JSON.parse(item.role as any)));
+    user.map((item) => (item.role = JSON.parse(item.role as any)));
 
     return NextResponse.json({
       success: true,

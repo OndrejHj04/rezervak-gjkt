@@ -15,15 +15,6 @@ export default function DateInput() {
     clearErrors,
     setError,
   } = useFormContext();
-  const watching = watch("birth_date");
-
-  useEffect(() => {
-    if (!Boolean(watching && dayjs(watching).isValid())) {
-      setError("birth_date", { message: "Neplatné datum" });
-    } else {
-      clearErrors("birth_date");
-    }
-  }, [watching]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

@@ -21,6 +21,8 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useEffect, useState } from "react";
 import Cleave from "cleave.js/react";
+import { toast } from "react-toastify";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 export interface verifyForm {
   ID_code: string;
@@ -33,20 +35,14 @@ export interface verifyForm {
 }
 
 export default function VerifyUser({ id }: { id?: string }) {
-  const methods = useForm<verifyForm>({ mode: "onBlur" });
+  const methods = useForm<verifyForm>();
   const { setUser, setUserLoading } = store();
   const [hidePassword, setHidePassword] = useState(true);
   const errors = methods.formState.errors;
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = (data: verifyForm) => {
-    // "ID_code": "111111111",
-    // "street": "Bezová 148",
-    // "town": "sadfasdf",
-    // "post_number": "50009",
-    // "password": "asfdaaa",
-    // "newPassword": "asfdasf",
-    // "birth_date": "2023-01-26"
-
+    setLoading(true);
     const body = {
       ID_code: data.ID_code,
       birth_date: data.birth_date,
@@ -54,20 +50,27 @@ export default function VerifyUser({ id }: { id?: string }) {
       password: data.password,
       newPassword: data.newPassword,
     };
-    // setUserLoading(false);
-    // fetch(`http://localhost:3000/api/account/verify/${id}`, {
-    //   method: "POST",
-    //   body: JSON.stringify(body),
-    // })
-    //   .then((res) => res.json())
-    //   .then((data) => console.log(data))
-    //   .catch((e) => console.log(e));
-    // .then((res) => {
-    //   signIn("credentials", {
-    //     password: data.newPassword,
-    //     email: res.data.email,
-    //   });
-    // });
+
+    fetch(`http://localhost:3000/api/account/verify/${id}`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          signIn("credentials", {
+            password: data.newPassword,
+            email: res.data.email,
+          });
+        } else {
+          methods.setError("password", { message: "Nesprávné heslo" });
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        toast.error("Něco se nepovedlo");
+        setLoading(false);
+      });
   };
 
   return (
@@ -193,9 +196,13 @@ export default function VerifyUser({ id }: { id?: string }) {
             />
           </div>
 
-          <Button variant="contained" type="submit" className="w-full">
+          <LoadingButton
+            loading={methods.formState.isSubmitting || loading}
+            variant="contained"
+            type="submit"
+          >
             Odeslat
-          </Button>
+          </LoadingButton>
         </form>
       </FormProvider>
     </Paper>

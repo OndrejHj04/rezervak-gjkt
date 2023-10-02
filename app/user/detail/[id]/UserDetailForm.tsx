@@ -6,6 +6,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Divider,
   FormControl,
   FormControlLabel,
@@ -26,6 +27,7 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import NoAccountsIcon from "@mui/icons-material/NoAccounts";
+import HotelIcon from "@mui/icons-material/Hotel";
 
 const style = {
   position: "absolute" as "absolute",
@@ -92,7 +94,7 @@ export default function UserDetailForm({ id }: { id: string }) {
       });
   };
 
-  return (
+  const content = (
     <>
       <Modal open={sleep} onClose={() => setSleep(false)}>
         <Paper sx={style} className="p-4 flex flex-col gap-2 max-w-sm">
@@ -204,4 +206,38 @@ export default function UserDetailForm({ id }: { id: string }) {
       </FormProvider>
     </>
   );
+
+  if (loading)
+    return (
+      <Paper className="flex p-4 justify-center">
+        <CircularProgress />
+      </Paper>
+    );
+
+  if (user && !user.active) {
+    return (
+      <>
+        <div className="absolute z-50">
+          <Paper className="p-4 flex flex-col gap-2 max-w-sm">
+            <Box className="flex justify-between items-center gap-5">
+              <HotelIcon sx={{ color: "#4579ac", fontSize: 36 }} />
+              <Typography variant="h5">Pššš! Tento účet spí</Typography>
+              <HotelIcon sx={{ color: "#4579ac", fontSize: 36 }} />
+            </Box>
+
+            <Typography variant="h6" className="text-center">
+              Uživatel: {user.first_name} {user.last_name}
+            </Typography>
+            <Divider />
+            <Typography className="text-justify">
+              Tato akce byla vyvolána administrátorem.
+            </Typography>
+          </Paper>
+        </div>
+        <Box sx={{ filter: "blur(5px)", pointerEvents: "none" }}>{content}</Box>
+      </>
+    );
+  }
+
+  return content;
 }

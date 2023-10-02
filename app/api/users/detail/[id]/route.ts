@@ -40,7 +40,7 @@ export async function GET(
       return NextResponse.json({
         success: false,
         message: "User not found",
-        data: [],
+        data: null,
       });
     }
   } catch (e) {

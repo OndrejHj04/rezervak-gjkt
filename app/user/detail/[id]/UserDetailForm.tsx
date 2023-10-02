@@ -25,7 +25,23 @@ import { set, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function UserDetailForm({ id }: { id: string }) {
-  const { roles, user, setUser } = store();
+  const { roles } = store();
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+
+  const fetchUser = async () => {
+    fetch(`http://localhost:3000/api/users/detail/${id}`)
+      .then((res) => res.json())
+      .then(({ data }) => {
+        setUser(data);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -44,13 +60,8 @@ export default function UserDetailForm({ id }: { id: string }) {
     })
       .then((res) => res.json())
       .then(({ data }) => {
-        toast.success("Uživatel byl upraven");
         setUser(data);
-
-        signIn("credentials", {
-          email: data.email,
-          password: data.password, //průser!!
-        });
+        toast.success("Uživatel byl upraven");
       });
   };
 
@@ -69,7 +80,7 @@ export default function UserDetailForm({ id }: { id: string }) {
       {user && (
         <Box className="w-full flex gap-4">
           <Paper className="p-4 flex flex-col gap-2 aspect-square items-center justify-center">
-            <AvatarWrapper />
+            <AvatarWrapper data={user} />
           </Paper>
           <Paper className="p-4 flex flex-col gap-2">
             <TextField

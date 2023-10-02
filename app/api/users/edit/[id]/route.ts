@@ -19,7 +19,7 @@ export async function POST(
       query: `UPDATE users SET ${str} WHERE id = ${id}`,
       values: [],
     })) as User[] | any;
-    console.log(`UPDATE users SET ${str} WHERE id = ${id}`);
+
     const userDetail = (await query({
       query: `SELECT
       u.*,

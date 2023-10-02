@@ -1,9 +1,5 @@
 "use client";
 import { store } from "@/store/store";
-import { CssBaseline } from "@mui/material";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { stat } from "fs";
-import { getToken } from "next-auth/jwt";
 
 import { SessionProvider, signIn, useSession } from "next-auth/react";
 import { useEffect } from "react";
@@ -23,12 +19,7 @@ function WrapWrap() {
             role: { role_id },
             verified,
           } = data.user;
-          console.log(
-            role_id,
-            verified,
-            res.data.role.role_id,
-            res.data.verified
-          );
+
           if (
             role_id !== res.data.role.role_id ||
             verified !== res.data.verified

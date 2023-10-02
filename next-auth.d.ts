@@ -15,6 +15,9 @@ declare module "next-auth" {
       first_name: string;
       last_name: string;
       status?: boolean;
+      adress: string;
+      ID_code: string;
+      birth_date: string;
     } & DefaullSession;
   }
 
@@ -30,6 +33,9 @@ declare module "next-auth" {
     first_name: string;
     last_name: string;
     status?: boolean;
+    birth_date: string;
+    adress: string;
+    ID_code: string;
   }
 }
 
@@ -46,5 +52,8 @@ declare module "next-auth/jwt" {
     first_name: string;
     last_name: string;
     status?: boolean;
+    adress: string;
+    ID_code: string;
+    birth_date: string;
   }
 }

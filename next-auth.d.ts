@@ -9,7 +9,7 @@ declare module "next-auth" {
         role_name: string;
         role_color: string;
       };
-      id: string;
+      id: number;
       image: string;
       verified: boolean;
       first_name: string;
@@ -27,7 +27,7 @@ declare module "next-auth" {
       role_name: string;
       role_color: string;
     };
-    id: string;
+    id: number;
     image: string;
     verified: boolean;
     first_name: string;
@@ -46,7 +46,7 @@ declare module "next-auth/jwt" {
       role_name: string;
       role_color: string;
     };
-    id: string;
+    id: number;
     image: string;
     verified: boolean;
     first_name: string;

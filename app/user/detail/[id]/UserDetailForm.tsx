@@ -94,7 +94,7 @@ export default function UserDetailForm({ id }: { id: string }) {
         );
       });
   };
-
+  console.log(user);
   const content = (
     <>
       <Modal open={sleep} onClose={() => setSleep(false)}>
@@ -126,7 +126,7 @@ export default function UserDetailForm({ id }: { id: string }) {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box className="w-full flex items-end gap-2">
             <Box className="ml-auto flex gap-2">
-              {isAdmin ? (
+              {isAdmin && data?.role.role_id !== 1 && (
                 <Button
                   color="error"
                   variant="outlined"
@@ -134,8 +134,6 @@ export default function UserDetailForm({ id }: { id: string }) {
                 >
                   Uspat uživatele
                 </Button>
-              ) : (
-                <Button variant="outlined">Vyžádat změnu údajů</Button>
               )}
 
               <Button variant="contained" type="submit" disabled={!isDirty}>
@@ -184,7 +182,7 @@ export default function UserDetailForm({ id }: { id: string }) {
                   </Select>
                 </FormControl>
                 <FormControlLabel
-                  disabled={!isAdmin}
+                  disabled={!isAdmin || data.role.role_id === 1}
                   control={
                     <Switch
                       defaultChecked={data.verified}
@@ -208,6 +206,9 @@ export default function UserDetailForm({ id }: { id: string }) {
                   {...register("ID_code")}
                 />
                 <DateDefaultInput birth={data.birth_date} isAdmin={isAdmin} />
+                {!isAdmin && (
+                  <Button variant="outlined">Vyžádat změnu údajů</Button>
+                )}
               </Paper>
             </Box>
           )}

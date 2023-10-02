@@ -18,11 +18,13 @@ function WrapWrap() {
           const {
             role: { role_id },
             verified,
+            active,
           } = data.user;
 
           if (
             role_id !== res.data.role.role_id ||
-            verified !== res.data.verified
+            verified !== res.data.verified ||
+            active !== res.data.active
           ) {
             signIn("credentials", {
               email: res.data.email,

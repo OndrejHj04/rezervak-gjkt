@@ -7,13 +7,15 @@ export default async function middleware(req: NextRequest) {
   const role = token?.role;
   const config = navConfig.find((item) => item.path === req.nextUrl.pathname);
   const verified = token?.verified;
+  const active = token?.active;
 
+  console.log(active);
   if (req.nextUrl.pathname.startsWith("/login") && role) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
   if (req.nextUrl.pathname.startsWith("/user/detail")) {
-    if (!verified) {
+    if (!verified || !active) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
@@ -28,7 +30,7 @@ export default async function middleware(req: NextRequest) {
   if (config) {
     if (
       config.roles.length &&
-      (!config.roles.includes(role?.role_id!) || !verified)
+      (!config.roles.includes(role?.role_id!) || !verified || !active)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }

@@ -1,5 +1,6 @@
 "use client";
 import { store } from "@/store/store";
+import SleepingUserInfo from "@/sub-components/SleepingUserInfo";
 import VerifyUser from "@/sub-components/VerifyUser";
 import WelcomeComponent from "@/sub-components/WelcomeComponent";
 import { Box, Skeleton, Typography } from "@mui/material";
@@ -30,7 +31,19 @@ export default function Home() {
   if (!user && !userLoading) {
     return <WelcomeComponent />;
   }
-  if (!user?.verified) {
+
+  if (!user?.active && user?.role.role_id !== 1) {
+    return (
+      <>
+        <div className="absolute z-50">
+          <SleepingUserInfo />
+        </div>
+        <Box sx={{ filter: "blur(5px)" }}>{homepage}</Box>
+      </>
+    );
+  }
+
+  if (!user?.verified && user?.role.role_id !== 1) {
     return (
       <>
         <div className="absolute z-50">
@@ -40,5 +53,6 @@ export default function Home() {
       </>
     );
   }
+
   return homepage;
 }

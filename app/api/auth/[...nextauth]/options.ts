@@ -70,8 +70,9 @@ export const authOptions: NextAuthOptions = {
       //credentials
       if (user) {
         token.role = user.role;
-        token.id = user.id;
+        token.id = user.id as number;
         token.verified = user.verified;
+        token.active = user.active;
       }
       return token;
     },
@@ -81,6 +82,7 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role;
         session.user.id = token.id;
         session.user.verified = token.verified;
+        session.user.active = token.active;
       }
       return session;
     },

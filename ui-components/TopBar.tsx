@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import AvatarWrapper from "./AvatarWrapper";
 import ErrorIcon from "@mui/icons-material/Error";
+import HotelIcon from "@mui/icons-material/Hotel";
 
 export default function TopBar() {
   const { setPanel } = store();
@@ -47,6 +48,7 @@ export default function TopBar() {
                       {user.first_name} {user.last_name}
                     </Typography>
                     <div className="flex gap-1 items-center">
+                      {!user.active && <HotelIcon sx={{ color: "#ED9191" }} />}
                       {!user.verified && (
                         <ErrorIcon sx={{ color: "#ED9191" }} />
                       )}

@@ -38,9 +38,9 @@ const style = {
 };
 
 export default function UserDetailForm({ id }: { id: string }) {
-  const { roles } = store();
+  const { roles, user } = store();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
+  const [data, setUser] = useState<User | null>(null);
   const [sleep, setSleep] = useState(false);
   const fetchUser = async () => {
     fetch(`http://localhost:3000/api/users/detail/${id}`)
@@ -50,6 +50,7 @@ export default function UserDetailForm({ id }: { id: string }) {
         setLoading(false);
       });
   };
+  const isAdmin = user?.role.role_id === 1;
 
   useEffect(() => {
     fetchUser();
@@ -81,7 +82,7 @@ export default function UserDetailForm({ id }: { id: string }) {
   };
 
   const makeUserSleep = () => {
-    fetch(`http://localhost:3000/api/users/edit/${user?.id}`, {
+    fetch(`http://localhost:3000/api/users/edit/${data?.id}`, {
       body: JSON.stringify({ active: false }),
       method: "POST",
     })
@@ -89,7 +90,7 @@ export default function UserDetailForm({ id }: { id: string }) {
       .then(({ data }) => {
         setSleep(false);
         toast.success(
-          `Uživatel ${user?.first_name} ${user?.last_name} byl uspán`
+          `Uživatel ${data?.first_name} ${data?.last_name} byl uspán`
         );
       });
   };
@@ -105,9 +106,9 @@ export default function UserDetailForm({ id }: { id: string }) {
           </div>
           <Divider />
           <Box className="flex items-center gap-2">
-            <AvatarWrapper data={user!} />
+            <AvatarWrapper data={data!} />
             <Typography variant="h6">
-              {user?.first_name} {user?.last_name}
+              {data?.first_name} {data?.last_name}
             </Typography>
           </Box>
           <Divider />
@@ -125,37 +126,41 @@ export default function UserDetailForm({ id }: { id: string }) {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box className="w-full flex items-end gap-2">
             <Box className="ml-auto flex gap-2">
-              <Button
-                color="error"
-                variant="outlined"
-                onClick={() => setSleep(true)}
-              >
-                Uspat uživatele
-              </Button>
+              {isAdmin ? (
+                <Button
+                  color="error"
+                  variant="outlined"
+                  onClick={() => setSleep(true)}
+                >
+                  Uspat uživatele
+                </Button>
+              ) : (
+                <Button variant="outlined">Vyžádat změnu údajů</Button>
+              )}
 
               <Button variant="contained" type="submit" disabled={!isDirty}>
                 Uložit
               </Button>
             </Box>
           </Box>
-          {user && (
+          {data && (
             <Box className="w-full flex gap-4">
               <Paper className="p-4 flex flex-col gap-2 aspect-square items-center justify-center">
-                <AvatarWrapper data={user} />
+                <AvatarWrapper data={data} />
               </Paper>
               <Paper className="p-4 flex flex-col gap-2">
                 <TextField
-                  defaultValue={user.first_name}
+                  defaultValue={data.first_name}
                   label="Jméno"
                   {...register("first_name")}
                 />
                 <TextField
-                  defaultValue={user.last_name}
+                  defaultValue={data.last_name}
                   label="Příjmení"
                   {...register("last_name")}
                 />
                 <TextField
-                  defaultValue={user.email}
+                  defaultValue={data.email}
                   label="Email"
                   {...register("email")}
                 />
@@ -166,7 +171,8 @@ export default function UserDetailForm({ id }: { id: string }) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    defaultValue={user.role.role_id}
+                    defaultValue={data.role.role_id}
+                    disabled={!isAdmin}
                     label="Role"
                     {...register("role")}
                   >
@@ -178,9 +184,10 @@ export default function UserDetailForm({ id }: { id: string }) {
                   </Select>
                 </FormControl>
                 <FormControlLabel
+                  disabled={!isAdmin}
                   control={
                     <Switch
-                      defaultChecked={user.verified}
+                      defaultChecked={data.verified}
                       {...register("verified")}
                     />
                   }
@@ -189,16 +196,18 @@ export default function UserDetailForm({ id }: { id: string }) {
               </Paper>
               <Paper className="p-4 flex flex-col gap-2">
                 <TextField
-                  defaultValue={user.adress}
+                  defaultValue={data.adress}
                   label="Adresa"
+                  disabled={!isAdmin}
                   {...register("adress")}
                 />
                 <TextField
-                  defaultValue={user.ID_code}
+                  defaultValue={data.ID_code}
                   label="Číslo OP"
+                  disabled={!isAdmin}
                   {...register("ID_code")}
                 />
-                <DateDefaultInput birth={user.birth_date} />
+                <DateDefaultInput birth={data.birth_date} isAdmin={isAdmin} />
               </Paper>
             </Box>
           )}
@@ -214,7 +223,7 @@ export default function UserDetailForm({ id }: { id: string }) {
       </Paper>
     );
 
-  if (user && !user.active) {
+  if (data && !data.active) {
     return (
       <>
         <div className="absolute z-50">
@@ -226,7 +235,7 @@ export default function UserDetailForm({ id }: { id: string }) {
             </Box>
 
             <Typography variant="h6" className="text-center">
-              Uživatel: {user.first_name} {user.last_name}
+              Uživatel: {data.first_name} {data.last_name}
             </Typography>
             <Divider />
             <Typography className="text-justify">

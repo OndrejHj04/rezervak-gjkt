@@ -5,7 +5,13 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useFormContext } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
 
-export default function DateDefaultInput({ birth }: { birth: string }) {
+export default function DateDefaultInput({
+  birth,
+  isAdmin,
+}: {
+  birth: string;
+  isAdmin: boolean;
+}) {
   const { register, setValue } = useFormContext();
 
   return (
@@ -14,6 +20,7 @@ export default function DateDefaultInput({ birth }: { birth: string }) {
         <DatePicker
           label="Datum narození"
           defaultValue={dayjs(birth)}
+          disabled={!isAdmin}
           sx={{ width: 215 }}
           {...register("birth_date")}
           onChange={(date: Dayjs | null) => {

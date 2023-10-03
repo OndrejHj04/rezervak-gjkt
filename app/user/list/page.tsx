@@ -69,6 +69,8 @@ export default function UserList() {
             <TableCell>Jméno</TableCell>
             <TableCell>Email</TableCell>
             <TableCell>Role</TableCell>
+            <TableCell>Datum narození</TableCell>
+            <TableCell>Ověřený účet</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

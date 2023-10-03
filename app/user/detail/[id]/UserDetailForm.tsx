@@ -28,6 +28,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import NoAccountsIcon from "@mui/icons-material/NoAccounts";
 import HotelIcon from "@mui/icons-material/Hotel";
+import GoogleIcon from "@mui/icons-material/Google";
 
 const style = {
   position: "absolute" as "absolute",
@@ -51,6 +52,7 @@ export default function UserDetailForm({ id }: { id: string }) {
       });
   };
   const isAdmin = user?.role.role_id === 1;
+  const googleAccount = data?.email.split("@")[1] === "gmail.com";
 
   useEffect(() => {
     fetchUser();
@@ -94,7 +96,7 @@ export default function UserDetailForm({ id }: { id: string }) {
         );
       });
   };
-  console.log(user);
+
   const content = (
     <>
       <Modal open={sleep} onClose={() => setSleep(false)}>
@@ -191,6 +193,15 @@ export default function UserDetailForm({ id }: { id: string }) {
                   }
                   label="Ověřený účet"
                 />
+                {googleAccount && (
+                  <Paper className="w-full flex gap-2 items-center">
+                    <GoogleIcon sx={{ width: 28, height: 28 }} />
+                    <Typography variant="body2">
+                      Tento účet je propojen s Google
+                    </Typography>
+                    <GoogleIcon sx={{ width: 28, height: 28 }} />
+                  </Paper>
+                )}
               </Paper>
               <Paper className="p-4 flex flex-col gap-2">
                 <TextField

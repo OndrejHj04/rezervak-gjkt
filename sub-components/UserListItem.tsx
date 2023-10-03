@@ -6,16 +6,17 @@ import { useRouter } from "next/navigation";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import dayjs from "dayjs";
+import HotelIcon from "@mui/icons-material/Hotel";
 
 export default function UserListItem({ user }: { user: User }) {
   const { push } = useRouter();
-  console.log(user);
+
   return (
     <TableRow
       hover
       key={user.id}
       onClick={() => push(`/user/detail/${user.id}`)}
-      sx={{ cursor: "pointer" }}
+      sx={{ cursor: "pointer", opacity: user.active ? 1 : 0.2 }}
     >
       <TableCell>
         <AvatarWrapper data={user} />

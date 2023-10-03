@@ -1,6 +1,10 @@
 import { query } from "@/lib/db";
-import { User } from "next-auth";
+import { User as NextAuthUser } from "next-auth";
 import { NextResponse } from "next/server";
+
+interface User extends NextAuthUser {
+  full_name: string;
+}
 
 export async function GET(req: Request) {
   try {
@@ -15,7 +19,11 @@ export async function GET(req: Request) {
       }`,
       values: [],
     })) as User[];
-    data.map((item) => (item.role = JSON.parse(item.role as any)));
+    data.map((item) => {
+      item.role = JSON.parse(item.role as any);
+      item.full_name = `${item.first_name} ${item.last_name}`;
+      return item;
+    });
     return NextResponse.json({
       success: true,
       message: "Operation successful",

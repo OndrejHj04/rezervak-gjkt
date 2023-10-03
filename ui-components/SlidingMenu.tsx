@@ -11,6 +11,17 @@ import { Typography } from "@mui/material";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { navConfig } from "@/lib/navigationConfig";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import CollectionsIcon from "@mui/icons-material/Collections";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+
+const icons = [
+  DashboardIcon,
+  CollectionsIcon,
+  AdminPanelSettingsIcon,
+  FormatListBulletedIcon,
+];
 
 export default function SlidingMenu() {
   const { panel, setPanel, user, userLoading } = store();
@@ -36,6 +47,12 @@ export default function SlidingMenu() {
                   key={i}
                   disabled={Boolean(!user?.verified && route.roles.length)}
                 >
+                  <ListItemIcon sx={{ marginRight: 1 }}>
+                    {React.createElement(icons[i], {
+                      fontSize: "large",
+                      color: "primary",
+                    })}
+                  </ListItemIcon>
                   <ListItemText>
                     <Typography variant="h6">{route.name}</Typography>
                   </ListItemText>
@@ -47,7 +64,7 @@ export default function SlidingMenu() {
 
         <MenuList>
           <MenuItem onClick={() => signOut()} disabled={!user && !userLoading}>
-            <ListItemIcon>
+            <ListItemIcon sx={{ marginRight: 1 }}>
               <LogoutIcon fontSize="large" color="error" />
             </ListItemIcon>
             <ListItemText>

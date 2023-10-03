@@ -9,7 +9,6 @@ export default async function middleware(req: NextRequest) {
   const verified = token?.verified;
   const active = token?.active;
 
-  console.log(active);
   if (req.nextUrl.pathname.startsWith("/login") && role) {
     return NextResponse.redirect(new URL("/", req.url));
   }

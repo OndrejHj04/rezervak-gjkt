@@ -40,7 +40,7 @@ export default function VerifyUser({ id }: { id?: number }) {
   const [hidePassword, setHidePassword] = useState(true);
   const errors = methods.formState.errors;
   const [loading, setLoading] = useState(false);
-  console.log(methods.formState.isSubmitting || loading);
+
   const onSubmit = (data: verifyForm) => {
     setLoading(true);
     const body = {

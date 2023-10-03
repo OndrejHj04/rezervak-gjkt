@@ -8,6 +8,7 @@ declare module "next-auth" {
         role_id: number;
         role_name: string;
         role_color: string;
+        icon: string;
       };
       id: number;
       image: string;
@@ -27,6 +28,7 @@ declare module "next-auth" {
       role_id: number;
       role_name: string;
       role_color: string;
+      icon: string;
     };
     id: number;
     image: string;
@@ -47,6 +49,7 @@ declare module "next-auth/jwt" {
       role_id: number;
       role_name: string;
       role_color: string;
+      icon: string;
     };
     id: number;
     image: string;

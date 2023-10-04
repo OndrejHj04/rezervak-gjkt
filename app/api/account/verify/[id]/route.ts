@@ -48,18 +48,7 @@ export async function POST(
 
     user.map((item) => (item.role = JSON.parse(item.role as any)));
 
-    const email = await fetch("http://localhost:3000/api/send", {
-      method: "POST",
-      body: JSON.stringify({
-        to: "ondra.hajku@seznam.cz", //user[0].email
-        from: "onboarding@resend.dev",
-        style: "public-send-password",
-      }),
-    });
-    const make = await email.json();
-
     return NextResponse.json({
-      mail: make,
       success: true,
       message: "Operation successful",
       data: user[0],

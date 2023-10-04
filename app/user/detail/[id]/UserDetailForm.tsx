@@ -41,7 +41,7 @@ const style = {
 export default function UserDetailForm({ id }: { id: string }) {
   const { roles, user } = store();
   const [loading, setLoading] = useState(true);
-  const [data, setUser] = useState<User | null>(null);
+  const [data, setUser] = useState<User | null | any>(null);
   const [sleep, setSleep] = useState(false);
   const fetchUser = async () => {
     fetch(`http://localhost:3000/api/users/detail/${id}`)

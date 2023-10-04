@@ -12,7 +12,7 @@ function WrapWrap() {
     if (status === "loading") setUserLoading(true);
     if (status === "authenticated") {
       setUserLoading(true);
-      fetch(`http://localhost:3000/api/users/detail/${data?.user?.id}`)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${data?.user?.id}`)
         .then((res) => res.json())
         .then((res) => {
           const {
@@ -49,7 +49,7 @@ export default function ClientProvider({
 }): React.ReactNode {
   const { setRoles, user } = store();
   useEffect(() => {
-    fetch("http://localhost:3000/api/roles/list")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/list`)
       .then((res) => res.json())
       .then(({ data }) => setRoles(data));
   }, []);

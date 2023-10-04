@@ -25,7 +25,7 @@ export default function AddUserModal() {
   const close = () => setModal(false);
 
   const onSubmit = (data: any) => {
-    fetch("http://localhost:3000/api/users/new", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/new`, {
       method: "POST",
       body: JSON.stringify(data),
     })

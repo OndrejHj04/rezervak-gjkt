@@ -61,7 +61,7 @@ export default function RoleSmallCard({
   });
 
   const onSubmit = (role: Role) => {
-    fetch("http://localhost:3000/api/roles/edit", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/edit`, {
       body: JSON.stringify(role),
       method: "POST",
     })

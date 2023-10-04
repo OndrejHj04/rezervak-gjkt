@@ -57,7 +57,7 @@ export default function UserList() {
 
   const fetchUsers = () => {
     setLoading(true);
-    fetch("http://localhost:3000/api/users/list")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)
       .then((res) => res.json())
       .then((data) => {
         setLoading(false);

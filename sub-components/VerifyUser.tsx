@@ -51,7 +51,7 @@ export default function VerifyUser({ id }: { id?: number }) {
       newPassword: data.newPassword,
     };
 
-    fetch(`http://localhost:3000/api/account/verify/${id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/account/verify/${id}`, {
       method: "POST",
       body: JSON.stringify(body),
     })

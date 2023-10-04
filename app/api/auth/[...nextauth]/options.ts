@@ -11,12 +11,12 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       async profile(profile: GoogleProfile) {
         const req = await fetch(
-          `http://localhost:3000/api/users/list?email=${profile.email}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users/list?email=${profile.email}`
         );
         const { data } = await req.json();
 
         if (!data.picture && profile.picture) {
-          await fetch(`http://localhost:3000/api/login/upload-pic`, {
+          await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`, {
             method: "POST",
             body: JSON.stringify({
               picture: profile.picture,
@@ -52,7 +52,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         //tady budu dělat request na server s tím abych zjistil jestli je uživatel v databázi
-        const request = await fetch("http://localhost:3000/api/users/login", {
+        const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
           method: "POST",
           body: JSON.stringify({
             email: credentials?.email,

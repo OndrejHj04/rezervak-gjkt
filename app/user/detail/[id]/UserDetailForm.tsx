@@ -44,7 +44,7 @@ export default function UserDetailForm({ id }: { id: string }) {
   const [data, setUser] = useState<User | null | any>(null);
   const [sleep, setSleep] = useState(false);
   const fetchUser = async () => {
-    fetch(`http://localhost:3000/api/users/detail/${id}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${id}`)
       .then((res) => res.json())
       .then(({ data }) => {
         setUser(data);
@@ -72,7 +72,7 @@ export default function UserDetailForm({ id }: { id: string }) {
       body[key] = data[key];
     });
 
-    fetch(`http://localhost:3000/api/users/edit/${id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/edit/${id}`, {
       body: JSON.stringify(body),
       method: "POST",
     })
@@ -84,7 +84,7 @@ export default function UserDetailForm({ id }: { id: string }) {
   };
 
   const makeUserSleep = () => {
-    fetch(`http://localhost:3000/api/users/edit/${data?.id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/edit/${data?.id}`, {
       body: JSON.stringify({ active: false }),
       method: "POST",
     })

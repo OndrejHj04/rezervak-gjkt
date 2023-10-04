@@ -10,7 +10,7 @@ export default function RolesComponent() {
 
   const getRoles = () => {
     setLoading(true);
-    fetch("http://localhost:3000/api/roles/list")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/list`)
       .then((res) => res.json())
       .then(({ data }) => {
         setRoles(data);

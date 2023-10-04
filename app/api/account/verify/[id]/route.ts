@@ -1,5 +1,6 @@
 import { query } from "@/lib/db";
 import { verifyForm } from "@/sub-components/VerifyUser";
+import { verifyAccount } from "@/templates/store/verifyAccount";
 import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
@@ -47,7 +48,18 @@ export async function POST(
 
     user.map((item) => (item.role = JSON.parse(item.role as any)));
 
+    const email = await fetch("http://localhost:3000/api/send", {
+      method: "POST",
+      body: JSON.stringify({
+        to: "ondra.hajku@seznam.cz", //user[0].email
+        from: "onboarding@resend.dev",
+        style: "public-send-password",
+      }),
+    });
+    const make = await email.json();
+
     return NextResponse.json({
+      mail: make,
       success: true,
       message: "Operation successful",
       data: user[0],

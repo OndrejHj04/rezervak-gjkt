@@ -3,13 +3,11 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   try {
-    const url = new URL(req.url);
-    const roles = url.searchParams.get("roles")?.split(",");
-    const email = url.searchParams.get("email");
-    const data = await query({
-      query: `SELECT * FROM users`,
+    const data = (await query({
+      query: `SELECT u.*, JSON_OBJECT('role_id', r.id, 'role_name', r.role_name, 'role_color', r.role_color, 'icon',  r.icon) AS role FROM users u JOIN roles r ON u.role = r.id`,
       values: [],
-    });
+    })) as any;
+
     return NextResponse.json({
       success: true,
       message: "Operation successful",

@@ -2,9 +2,10 @@ import { query } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const roles = url.searchParams.get("roles")?.split(",");
-  const email = url.searchParams.get("email");
+  // const url = new URL(req.url);
+  // const roles = url.searchParams.get("roles")?.split(",");
+  // const email = url.searchParams.get("email");
+  
   try {
     const data = (await query({
       query: `SELECT u.*, CONCAT('{', 

@@ -3,6 +3,7 @@ import { store } from "@/store/store";
 import UserListItem from "@/sub-components/UserListItem";
 import {
   Avatar,
+  Checkbox,
   Chip,
   CircularProgress,
   Icon,
@@ -37,6 +38,7 @@ const getUsers = async () => {
 };
 
 export default function UserList() {
+  const { setSelectedUsers, selectedUsers } = store();
   const [users, setUsers] = useState<User[]>([]);
   const [data, setData] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,6 +57,15 @@ export default function UserList() {
     }
   }, [search, users]);
 
+  const handleSelectUsers = () => {
+    if (selectedUsers.length === users.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(data.map((user) => user.id));
+    }
+  };
+
+  console.log(selectedUsers);
   const fetchUsers = () => {
     setLoading(true);
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)
@@ -120,6 +131,15 @@ export default function UserList() {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>
+                <Checkbox
+                  onClick={handleSelectUsers}
+                  indeterminate={Boolean(
+                    selectedUsers.length && selectedUsers.length < users.length
+                  )}
+                  checked={selectedUsers.length === users.length}
+                />
+              </TableCell>
               <TableCell></TableCell>
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Jméno" />

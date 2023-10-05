@@ -12,7 +12,6 @@ export async function GET(req: Request) {
     const roles = url.searchParams.get("roles")?.split(",");
     const email = url.searchParams.get("email");
 
-    console.log("before query");
     const data = (await query({
       query: `SELECT u.*, JSON_OBJECT('role_id', r.id, 'role_name', r.role_name, 'role_color', r.role_color, 'icon',  r.icon) AS role FROM users u JOIN roles r ON u.role = r.id ${
         roles || email
@@ -21,8 +20,6 @@ export async function GET(req: Request) {
       }`,
       values: [],
     })) as User[];
-
-    console.log("after query", data);
 
     data.map((item) => {
       item.role = JSON.parse(item.role as any);

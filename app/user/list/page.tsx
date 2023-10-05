@@ -3,13 +3,21 @@ import { store } from "@/store/store";
 import UserListItem from "@/sub-components/UserListItem";
 import {
   Avatar,
+  Button,
   Checkbox,
   Chip,
   CircularProgress,
   Icon,
   IconButton,
   InputAdornment,
+  List,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   Paper,
+  Popover,
+  PopoverOrigin,
   Table,
   TableBody,
   TableCell,
@@ -24,6 +32,8 @@ import { useRouter } from "next/router";
 import { use, useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import CancelIcon from "@mui/icons-material/Cancel";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 
 interface User extends NextAuthUser {
   full_name: string;
@@ -42,6 +52,7 @@ export default function UserList() {
   const [users, setUsers] = useState<User[]>([]);
   const [data, setData] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [menu, setMenu] = useState<EventTarget | null>(null);
   const [search, setSearch] = useState("");
   const { modal } = store();
 
@@ -65,7 +76,11 @@ export default function UserList() {
     }
   };
 
-  console.log(selectedUsers);
+  const handleDelete = () => {
+    setMenu(null);
+    console.log("delete");
+  };
+
   const fetchUsers = () => {
     setLoading(true);
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)
@@ -106,6 +121,50 @@ export default function UserList() {
     />
   );
 
+  const actionMenu = (
+    <>
+      <IconButton
+        aria-describedby={"popover"}
+        color="info"
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+          setMenu(e.currentTarget);
+        }}
+        disabled={selectedUsers.length === 0}
+      >
+        <MenuOpenIcon fontSize="large" />
+      </IconButton>
+      <Menu
+        id="basic-menu"
+        anchorEl={menu as Element}
+        open={Boolean(menu)}
+        onClose={() => setMenu(null)}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        sx={{
+          "& .MuiMenu-list": {
+            display: "flex",
+            padding: 0,
+          },
+        }}
+      >
+        <MenuItem onClick={handleDelete}>
+          <ListItemIcon>
+            <DeleteForeverIcon />
+          </ListItemIcon>
+          <ListItemText primary="Smazat" />
+        </MenuItem>
+        <MenuItem onClick={() => setMenu(null)}>
+          <ListItemIcon>
+            <DeleteForeverIcon />
+          </ListItemIcon>
+          <ListItemText primary="Smazat" />
+        </MenuItem>
+      </Menu>
+    </>
+  );
+
   if (loading) {
     return (
       <Paper className="w-full p-2 flex justify-center">
@@ -126,7 +185,10 @@ export default function UserList() {
 
   return (
     <div className="flex flex-col w-full gap-2">
-      {searchBar}
+      <div className="flex gap-2 items-center">
+        {searchBar}
+        {actionMenu}
+      </div>
       <Paper className="w-full p-2">
         <Table>
           <TableHead>

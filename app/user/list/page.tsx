@@ -34,6 +34,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
+import { toast } from "react-toastify";
 
 interface User extends NextAuthUser {
   full_name: string;
@@ -78,7 +79,21 @@ export default function UserList() {
 
   const handleDelete = () => {
     setMenu(null);
-    console.log("delete");
+
+    fetch("http://localhost:3000/api/users/delete", {
+      method: "DELETE",
+      body: JSON.stringify({ users: selectedUsers }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.sucess) {
+          toast.success("Uživatelé byli úspěšně smazáni");
+          fetchUsers();
+        } else {
+          toast.error("Něco se pokazilo");
+        }
+      })
+      .catch(() => toast.error("Něco se pokazilo"));
   };
 
   const fetchUsers = () => {

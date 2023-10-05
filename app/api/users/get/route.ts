@@ -4,7 +4,14 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   try {
     const data = (await query({
-      query: `SELECT u.*, JSON_OBJECT('role_id', r.id, 'role_name', r.role_name, 'role_color', r.role_color, 'icon',  r.icon) AS role FROM users u JOIN roles r ON u.role = r.id`,
+      query: `SELECT u.*, CONCAT('{', 
+      '"role_id":', r.id, ',',
+      '"role_name":"', r.role_name, '",',
+      '"role_color":"', r.role_color, '",',
+      '"icon":"', r.icon, '"',
+      '}') AS role 
+    FROM users u 
+    JOIN roles r ON u.role = r.id`,
       values: [],
     })) as any;
 

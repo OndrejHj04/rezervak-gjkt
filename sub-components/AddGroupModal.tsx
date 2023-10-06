@@ -12,6 +12,7 @@ import {
 import { User as NextAuthUser } from "next-auth";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 interface User extends NextAuthUser {
   full_name: string;
@@ -39,8 +40,16 @@ export default function AddGroupModal() {
   const close = () => setModal("");
 
   const onSubmit = (data: any) => {
-    console.log(data);
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/create`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then(() => toast.success(`Skupina ${data.name} vytvořena`))
+      .catch(() => toast.error("Něco se nepovedlo"));
   };
+
   return (
     <Modal
       open={true}
@@ -58,6 +67,14 @@ export default function AddGroupModal() {
             label="Název skupiny"
             {...register("name")}
           />
+          <TextField
+            multiline
+            label="Popis"
+            minRows={2}
+            maxRows={10}
+            {...register("description")}
+          />
+
           {accounts && (
             <Autocomplete
               disablePortal

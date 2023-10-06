@@ -15,12 +15,14 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import GroupIcon from "@mui/icons-material/Group";
 
 const icons = [
   DashboardIcon,
   CollectionsIcon,
   AdminPanelSettingsIcon,
   FormatListBulletedIcon,
+  GroupIcon,
 ];
 
 export default function SlidingMenu() {

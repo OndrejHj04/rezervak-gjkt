@@ -14,6 +14,12 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
+interface createGroup {
+  name: string;
+  description: string;
+  owner: number;
+}
+
 interface User extends NextAuthUser {
   full_name: string;
 }
@@ -28,7 +34,14 @@ const style = {
 
 export default function AddGroupModal() {
   const { modal, setModal } = store();
-  const { register, handleSubmit, setValue, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<createGroup>();
   const [accounts, setAccounts] = useState<User[] | null>(null);
 
   useEffect(() => {
@@ -40,7 +53,6 @@ export default function AddGroupModal() {
   const close = () => setModal("");
 
   const onSubmit = (data: any) => {
-
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/create`, {
       method: "POST",
       body: JSON.stringify(data),
@@ -48,11 +60,13 @@ export default function AddGroupModal() {
       .then((res) => res.json())
       .then(() => toast.success(`Skupina ${data.name} vytvořena`))
       .catch(() => toast.error("Něco se nepovedlo"));
+    setModal("");
+    reset();
   };
 
   return (
     <Modal
-      open={true}
+      open={modal === "addGroup"}
       onClose={close}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
@@ -65,7 +79,9 @@ export default function AddGroupModal() {
           <TextField
             variant="outlined"
             label="Název skupiny"
-            {...register("name")}
+            {...register("name", { required: "Toto pole je povinné" })}
+            error={!!errors.name}
+            helperText={errors.name?.message}
           />
           <TextField
             multiline
@@ -78,7 +94,8 @@ export default function AddGroupModal() {
           {accounts && (
             <Autocomplete
               disablePortal
-              {...register("owner")}
+
+              {...register("owner", { required: "Toto pole je povinné" })}
               onChange={(e, value) => setValue("owner", value?.value)}
               id="combo-box-demo"
               renderOption={(props: any, option: any) => (
@@ -99,7 +116,12 @@ export default function AddGroupModal() {
                 last_name: acc.last_name,
               }))}
               renderInput={(params) => (
-                <TextField {...params} label="Správce skupiny" />
+                <TextField
+                  {...params}
+                  label="Správce skupiny"
+                  error={!!errors.owner}
+                  helperText={errors.owner?.message}
+                />
               )}
             />
           )}

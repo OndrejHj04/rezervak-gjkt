@@ -1,4 +1,5 @@
 import { store } from "@/store/store";
+import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Autocomplete,
   Box,
@@ -8,9 +9,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { User as NextAuthUser } from "next-auth";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
+interface User extends NextAuthUser {
+  full_name: string;
+}
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -22,7 +28,14 @@ const style = {
 export default function AddUserModal() {
   const { register, handleSubmit, setValue, reset } = useForm();
   const { roles, modal, setModal } = store();
+  const [accounts, setAccounts] = useState<User[] | null>(null);
   const close = () => setModal(false);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list?roles=1,2,3`)
+      .then((res) => res.json())
+      .then((data) => setAccounts(data.data));
+  }, []);
 
   const onSubmit = (data: any) => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/new`, {
@@ -60,6 +73,34 @@ export default function AddUserModal() {
             }))}
             renderInput={(params) => <TextField {...params} label="Role" />}
           />
+          {accounts && (
+            <Autocomplete
+              disablePortal
+              {...register("parent")}
+              onChange={(e, value) => setValue("parent", value?.value)}
+              id="combo-box-demo"
+              renderOption={(props: any, option: any) => (
+                <div {...props}>
+                  <Box className="flex items-center gap-2">
+                    <AvatarWrapper data={option} />
+                    <Typography className="ml-2">
+                      {option.first_name} {option.last_name}
+                    </Typography>
+                  </Box>
+                </div>
+              )}
+              options={accounts.map((acc) => ({
+                label: acc.full_name,
+                value: acc.id,
+                image: acc.image,
+                first_name: acc.first_name,
+                last_name: acc.last_name,
+              }))}
+              renderInput={(params) => (
+                <TextField {...params} label="Rodičovský účet" />
+              )}
+            />
+          )}
           <Button variant="outlined" type="submit">
             Přidat
           </Button>

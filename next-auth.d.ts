@@ -20,6 +20,8 @@ declare module "next-auth" {
       ID_code: string;
       birth_date: string;
       active: boolean;
+      children: number[];
+      parent: number;
     } & DefaullSession;
   }
 
@@ -40,6 +42,8 @@ declare module "next-auth" {
     adress: string;
     ID_code: string;
     active: boolean;
+    children: number[];
+    parent: number;
   }
 }
 
@@ -61,5 +65,7 @@ declare module "next-auth/jwt" {
     ID_code: string;
     birth_date: string;
     active: boolean;
+    children: number[];
+    parent: number;
   }
 }

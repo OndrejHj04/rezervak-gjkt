@@ -7,8 +7,8 @@ interface stateInterface {
   setPanel: (panel: boolean) => void;
   roles: Role[];
   setRoles: (panel: Role[]) => void;
-  modal: boolean;
-  setModal: (value: boolean) => void;
+  modal: string;
+  setModal: (value: string) => void;
   user: User | null;
   setUser: (user: User) => void;
   userLoading: boolean;
@@ -22,7 +22,7 @@ export const store = create<stateInterface>((set) => ({
   setPanel: (panel) => set({ panel }),
   roles: [],
   setRoles: (roles) => set({ roles }),
-  modal: false,
+  modal: "",
   setModal: (modal) => set({ modal }),
   user: null,
   setUser: (user) => set({ user }),

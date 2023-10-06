@@ -12,11 +12,11 @@ import {
 import { User as NextAuthUser } from "next-auth";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 
 interface User extends NextAuthUser {
   full_name: string;
 }
+
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -25,11 +25,10 @@ const style = {
   transform: "translate(-50%, -50%)",
 };
 
-export default function AddUserModal() {
+export default function AddGroupModal() {
+  const { modal, setModal } = store();
   const { register, handleSubmit, setValue, reset } = useForm();
-  const { roles, modal, setModal } = store();
   const [accounts, setAccounts] = useState<User[] | null>(null);
-  const close = () => setModal("");
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list?roles=1,2,3`)
@@ -37,47 +36,33 @@ export default function AddUserModal() {
       .then((data) => setAccounts(data.data));
   }, []);
 
-  const onSubmit = (data: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/new`, {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then(({ message }) => toast.info(message))
-      .catch((e) => toast.error("Something went wrong"));
-    close();
-    reset();
-  };
+  const close = () => setModal("");
 
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };
   return (
     <Modal
-      open={modal === "addUser"}
+      open={true}
       onClose={close}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Paper sx={style} className="p-2">
-        <Typography variant="h4">Přidat uživatele</Typography>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
-          <TextField label="Jméno" {...register("first_name")} />
-          <TextField label="Příjmení" {...register("last_name")} />
-          <TextField label="Email" {...register("email")} />
-          <Autocomplete
-            disablePortal
-            {...register("role")}
-            onChange={(e, value) => setValue("role", value?.value)}
-            id="combo-box-demo"
-            options={roles.map((role) => ({
-              label: role.role_name,
-              value: role.id,
-            }))}
-            renderInput={(params) => <TextField {...params} label="Role" />}
+      <Paper sx={style} className="p-2 flex gap-2 flex-col">
+        <Typography variant="h5" className="text-center">
+          Vytvořit skupinu
+        </Typography>
+        <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
+          <TextField
+            variant="outlined"
+            label="Název skupiny"
+            {...register("name")}
           />
           {accounts && (
             <Autocomplete
               disablePortal
-              {...register("parent")}
-              onChange={(e, value) => setValue("parent", value?.value)}
+              {...register("owner")}
+              onChange={(e, value) => setValue("owner", value?.value)}
               id="combo-box-demo"
               renderOption={(props: any, option: any) => (
                 <div {...props}>
@@ -97,12 +82,12 @@ export default function AddUserModal() {
                 last_name: acc.last_name,
               }))}
               renderInput={(params) => (
-                <TextField {...params} label="Rodičovský účet" />
+                <TextField {...params} label="Správce skupiny" />
               )}
             />
           )}
           <Button variant="outlined" type="submit">
-            Přidat
+            Vytvořit
           </Button>
         </form>
       </Paper>

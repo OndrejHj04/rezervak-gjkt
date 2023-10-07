@@ -14,7 +14,7 @@ export async function GET() {
 
     const users = (await query({
       query: `
-      SELECT id, image, first_name, last_name FROM users
+      SELECT id, image, first_name, last_name, email FROM users
     `,
       values: [],
     })) as GroupOwner[];

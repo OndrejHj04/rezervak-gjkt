@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import GroupListItem from "../GroupListItem";
+import GroupListItem from "../../../sub-components/GroupListItem";
 
 export default function Page() {
   const [groups, setGroups] = useState<Group[]>([]);
@@ -38,6 +38,7 @@ export default function Page() {
             <TableCell sx={{ padding: 1.5 }}>
               <Chip label="Vlastník" />
             </TableCell>
+            <TableCell sx={{ padding: 1.5 }}></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

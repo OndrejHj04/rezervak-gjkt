@@ -11,6 +11,7 @@ export interface GroupOwner {
   image: string;
   first_name: string;
   last_name: string;
+  email: string;
 }
 
 export interface Group {

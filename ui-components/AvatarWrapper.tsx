@@ -1,10 +1,11 @@
 "use client";
 import { store } from "@/store/store";
+import { GroupOwner } from "@/types";
 import { Avatar } from "@mui/material";
 import { User } from "next-auth";
 import { useSession } from "next-auth/react";
 
-export default function AvatarWrapper({ data }: { data?: User }) {
+export default function AvatarWrapper({ data }: { data?: User | GroupOwner }) {
   const { user } = store();
 
   if (data) {

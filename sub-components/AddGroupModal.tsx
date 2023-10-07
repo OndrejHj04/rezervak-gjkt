@@ -94,7 +94,6 @@ export default function AddGroupModal() {
           {accounts && (
             <Autocomplete
               disablePortal
-
               {...register("owner", { required: "Toto pole je povinné" })}
               onChange={(e, value) => setValue("owner", value?.value)}
               id="combo-box-demo"

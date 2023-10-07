@@ -43,7 +43,7 @@ export default function Home() {
     );
   }
 
-  if (!user?.verified && user?.role.role_id !== 1) {
+  if (!user?.verified) {
     return (
       <>
         <div className="absolute z-50">

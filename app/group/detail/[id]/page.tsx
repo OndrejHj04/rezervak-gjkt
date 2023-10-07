@@ -4,6 +4,7 @@ import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Autocomplete,
   Avatar,
+  Box,
   Button,
   Checkbox,
   CircularProgress,
@@ -16,6 +17,7 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
+  TextField,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -29,6 +31,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState<Group | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   const getGroupDetail = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`)
@@ -68,6 +71,9 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
 
   useEffect(() => {
     getGroupDetail();
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)
+      .then((res) => res.json())
+      .then((res) => setUsers(res.data));
   }, []);
 
   if (loading)
@@ -101,9 +107,33 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           </div>
         </Paper>
 
-        <Paper className="flex flex-col p-2 gap-1 h-min">
+        <Paper className="flex flex-col p-2 gap-1 h-min w-60">
           <Typography variant="h5">Přidat uživatele</Typography>
           <Divider />
+          <Autocomplete
+            disablePortal
+            id="combo-box-demo"
+            renderOption={(props: any, option: any) => (
+              <div {...props}>
+                <Box className="flex items-center gap-2">
+                  <AvatarWrapper data={option} />
+                  <Typography className="ml-2">
+                    {option.first_name} {option.last_name}
+                  </Typography>
+                </Box>
+              </div>
+            )}
+            options={users.map((acc) => ({
+              label: `${acc.first_name} ${acc.last_name}`,
+              value: acc.id,
+              image: acc.image,
+              first_name: acc.first_name,
+              last_name: acc.last_name,
+            }))}
+            renderInput={(params) => (
+              <TextField {...params} label="Vybrat uživatele" />
+            )}
+          />
           <Button variant="outlined">Přidat</Button>
         </Paper>
 

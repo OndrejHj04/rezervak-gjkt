@@ -12,15 +12,17 @@ export async function GET() {
       values: [],
     })) as Group[];
 
-    const owner = (await query({
+    const users = (await query({
       query: `
-      SELECT id, image, first_name, last_name FROM users WHERE id = ${data[0].owner}
+      SELECT id, image, first_name, last_name FROM users
     `,
       values: [],
     })) as GroupOwner[];
 
     data.map((item) => {
-      item.owner = owner[0];
+      item.owner = users.find(
+        (user) => user.id === (item.owner as unknown as number)
+      ) as unknown as GroupOwner;
       item.users = item.users ? JSON.parse(item.users as any) : [];
       return item;
     });

@@ -2,6 +2,7 @@
 import { Group, GroupOwner } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
+  Autocomplete,
   Avatar,
   Button,
   Checkbox,
@@ -21,11 +22,41 @@ import { useEffect, useState } from "react";
 import AddUserToGroupModal from "../../modal/AddUserToGroupModal";
 import { User } from "next-auth";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { toast } from "react-toastify";
+import { set } from "react-hook-form";
 
 export default function Page({ params: { id } }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState<Group | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
+
+  const getGroupDetail = () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`)
+      .then((res) => res.json())
+      .then((res) => {
+        setGroup(res.data);
+        setLoading(false);
+        setChecked([]);
+      })
+      .catch((e) => setLoading(false));
+  };
+
+  const handleDeleteMembers = () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove-member`, {
+      method: "POST",
+      body: JSON.stringify({
+        group: group?.id,
+        currentMembers: group?.users.map((user) => user.id),
+        membersForRemove: checked,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        toast.success("Uživatelé odebráni");
+        getGroupDetail();
+      })
+      .catch((e) => toast.error("Něco se nepovedlo"));
+  };
 
   const handleCheck = (user: GroupOwner) => {
     if (checked.includes(user.id)) {
@@ -36,13 +67,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
   };
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`)
-      .then((res) => res.json())
-      .then((res) => {
-        setGroup(res.data);
-        setLoading(false);
-      })
-      .catch((e) => setLoading(false));
+    getGroupDetail();
   }, []);
 
   if (loading)
@@ -77,46 +102,49 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
         </Paper>
 
         <Paper className="flex flex-col p-2 gap-1 h-min">
-          <Typography variant="h5">Akce</Typography>
+          <Typography variant="h5">Přidat uživatele</Typography>
           <Divider />
-          <div className="flex flex-col gap-2">
-            <Button variant="outlined">Přidat uživatele</Button>
-            <Button variant="outlined">Vytvořit rezervaci</Button>
-            <Button variant="outlined">Odebrat uživatele</Button>
-          </div>
+          <Button variant="outlined">Přidat</Button>
         </Paper>
 
         <Paper className="flex flex-col p-2 gap-0 h-min">
           <Typography variant="h5">Uživatelé ve skupině</Typography>
           <Divider />
           <List>
-            {group.users.map((user) => (
-              <ListItem disablePadding key={user.id}>
-                <ListItemButton
-                  sx={{ padding: 1 }}
-                  onClick={() => handleCheck(user)}
-                >
-                  <ListItemIcon>
-                    <AvatarWrapper data={user} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={
-                      <Typography>
-                        {user.first_name} {user.last_name}
-                      </Typography>
-                    }
-                    secondary={user.email}
-                  />
-                  <Checkbox checked={checked.includes(user.id)} />
-                </ListItemButton>
-              </ListItem>
-            ))}
+            {group.users.length ? (
+              group.users.map((user) => (
+                <ListItem disablePadding key={user.id}>
+                  <ListItemButton
+                    sx={{ padding: 1 }}
+                    onClick={() => handleCheck(user)}
+                  >
+                    <ListItemIcon>
+                      <AvatarWrapper data={user} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Typography>
+                          {user.first_name} {user.last_name}
+                        </Typography>
+                      }
+                      secondary={user.email}
+                    />
+                    <Checkbox checked={checked.includes(user.id)} />
+                  </ListItemButton>
+                </ListItem>
+              ))
+            ) : (
+              <>
+                <Typography>Žádní uživatelé ve skupině</Typography>
+              </>
+            )}
           </List>
           <Button
             variant="contained"
             color="error"
             endIcon={<DeleteForeverIcon />}
             disabled={checked.length === 0}
+            onClick={handleDeleteMembers}
           >
             Odebrat vybrané uživatele
           </Button>

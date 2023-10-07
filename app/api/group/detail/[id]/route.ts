@@ -24,13 +24,17 @@ export async function GET(
     return item;
   });
 
-  const members = (await query({
-    query: `
-    SELECT id, image, first_name, last_name, email FROM users WHERE id IN (${data[0].users.join()})`,
-    values: [],
-  })) as GroupOwner[];
+  if (data[0].users.length !== 0) {
+    const members = (await query({
+      query: `
+      SELECT id, image, first_name, last_name, email FROM users WHERE id IN (${data[0].users.join(
+        ","
+      )})`,
+      values: [],
+    })) as GroupOwner[];
 
-  data[0].users = members;
+    data[0].users = members;
+  }
 
   try {
     return NextResponse.json({

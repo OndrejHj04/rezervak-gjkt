@@ -4,17 +4,25 @@ import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Avatar,
   Button,
+  Checkbox,
   CircularProgress,
   Divider,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Paper,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import AddUserToGroupModal from "../../modal/AddUserToGroupModal";
+import { User } from "next-auth";
 
 export default function Page({ params: { id } }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState<Group | null>(null);
-
+  const [users, setUsers] = useState<User[]>([]);
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`)
       .then((res) => res.json())
@@ -40,30 +48,56 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
     );
   }
   return (
-    <div className="flex gap-2">
-      <Paper className="flex flex-col p-2 gap-1 h-min">
-        <Typography variant="h5">Majitel skupiny</Typography>
-        <Divider />
-        <div className="flex gap-2">
-          <AvatarWrapper size={58} data={group.owner} />
-          <div className="flex flex-col justify-between">
-            <Typography variant="h6">
-              {group.owner.first_name} {group.owner.last_name}
-            </Typography>
-            <Typography>{group.owner.email}</Typography>
+    <>
+      <div className="flex gap-2">
+        <Paper className="flex flex-col p-2 gap-1 h-min">
+          <Typography variant="h5">Majitel skupiny</Typography>
+          <Divider />
+          <div className="flex gap-2">
+            <AvatarWrapper size={58} data={group.owner} />
+            <div className="flex flex-col justify-between">
+              <Typography variant="h6">
+                {group.owner.first_name} {group.owner.last_name}
+              </Typography>
+              <Typography>{group.owner.email}</Typography>
+            </div>
           </div>
-        </div>
-      </Paper>
+        </Paper>
 
-      <Paper className="flex flex-col p-2 gap-1">
-        <Typography variant="h5">Akce</Typography>
-        <Divider />
-        <div className="flex flex-col gap-2">
-          <Button variant="outlined">Přidat uživatele</Button>
-          <Button variant="outlined">Vytvořit rezervaci</Button>
-          <Button variant="outlined">Odebrat uživatele</Button>
-        </div>
-      </Paper>
-    </div>
+        <Paper className="flex flex-col p-2 gap-1 h-min">
+          <Typography variant="h5">Akce</Typography>
+          <Divider />
+          <div className="flex flex-col gap-2">
+            <Button variant="outlined">Přidat uživatele</Button>
+            <Button variant="outlined">Vytvořit rezervaci</Button>
+            <Button variant="outlined">Odebrat uživatele</Button>
+          </div>
+        </Paper>
+
+        <Paper className="flex flex-col p-2 gap-1 h-min">
+          <Typography variant="h5">Uživatelé ve skupině</Typography>
+          <Divider />
+          <List>
+            {users.map((user) => (
+              <ListItem disablePadding key={user.id}>
+                <ListItemButton sx={{ padding: 1 }}>
+                  <ListItemIcon>
+                    <AvatarWrapper data={user} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Typography>
+                        {user.first_name} {user.last_name}
+                      </Typography>
+                    }
+                  />
+                  <Checkbox disableRipple />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+      </div>
+    </>
   );
 }

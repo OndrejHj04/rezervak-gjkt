@@ -18,6 +18,6 @@ export interface Group {
   id: number;
   name: string;
   description: string;
-  users: number[];
+  users: GroupOwner[];
   owner: GroupOwner;
 }

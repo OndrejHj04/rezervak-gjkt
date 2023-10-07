@@ -1,5 +1,5 @@
 "use client";
-import { Group } from "@/types";
+import { Group, GroupOwner } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Avatar,
@@ -7,6 +7,8 @@ import {
   Checkbox,
   CircularProgress,
   Divider,
+  Icon,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -18,11 +20,21 @@ import {
 import { useEffect, useState } from "react";
 import AddUserToGroupModal from "../../modal/AddUserToGroupModal";
 import { User } from "next-auth";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 export default function Page({ params: { id } }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState<Group | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
+  const [checked, setChecked] = useState<number[]>([]);
+
+  const handleCheck = (user: GroupOwner) => {
+    if (checked.includes(user.id)) {
+      setChecked(checked.filter((id) => id !== user.id));
+    } else {
+      setChecked([...checked, user.id]);
+    }
+  };
+
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`)
       .then((res) => res.json())
@@ -74,13 +86,16 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           </div>
         </Paper>
 
-        <Paper className="flex flex-col p-2 gap-1 h-min">
+        <Paper className="flex flex-col p-2 gap-0 h-min">
           <Typography variant="h5">Uživatelé ve skupině</Typography>
           <Divider />
           <List>
-            {users.map((user) => (
+            {group.users.map((user) => (
               <ListItem disablePadding key={user.id}>
-                <ListItemButton sx={{ padding: 1 }}>
+                <ListItemButton
+                  sx={{ padding: 1 }}
+                  onClick={() => handleCheck(user)}
+                >
                   <ListItemIcon>
                     <AvatarWrapper data={user} />
                   </ListItemIcon>
@@ -90,12 +105,21 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
                         {user.first_name} {user.last_name}
                       </Typography>
                     }
+                    secondary={user.email}
                   />
-                  <Checkbox disableRipple />
+                  <Checkbox checked={checked.includes(user.id)} />
                 </ListItemButton>
               </ListItem>
             ))}
           </List>
+          <Button
+            variant="contained"
+            color="error"
+            endIcon={<DeleteForeverIcon />}
+            disabled={checked.length === 0}
+          >
+            Odebrat vybrané uživatele
+          </Button>
         </Paper>
       </div>
     </>

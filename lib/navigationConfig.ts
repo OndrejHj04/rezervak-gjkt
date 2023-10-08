@@ -22,6 +22,6 @@ export const navConfig = [
   {
     path: "/group/list",
     name: "Skupiny",
-    roles: [1, 2],
+    roles: [1, 2, 3],
   },
 ];

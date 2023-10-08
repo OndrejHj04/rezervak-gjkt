@@ -26,6 +26,26 @@ export default async function middleware(req: NextRequest) {
     }
   }
 
+  if (req.nextUrl.pathname.startsWith("/group/detail")) {
+    if (!verified || !active) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    if (role?.role_id === 4) {
+      const group = req.nextUrl.pathname.split("/")[3];
+      const userId = token?.id.toString();
+
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/group/is-member?id=${userId}&group=${group}`
+      );
+      const { isMember } = await request.json();
+
+      if (!isMember) {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+    }
+  }
+
   if (config) {
     if (
       config.roles.length &&

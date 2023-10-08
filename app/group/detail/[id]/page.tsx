@@ -40,14 +40,30 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
   const [group, setGroup] = useState<Group | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
-  const { control, register, handleSubmit } = useForm<{ users: [] }>({
+  const { control, register, handleSubmit, reset } = useForm<{ users: [] }>({
     defaultValues: { users: [] },
   });
   const [users, setUsers] = useState<User[]>([]);
   const [options, setOptions] = useState<selecteUser[]>([]);
 
   const onSubmit = ({ users }: { users: selecteUser[] }) => {
-    console.log(users);
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/add-member`, {
+      method: "POST",
+      body: JSON.stringify({
+        currentMembers: group?.users.map((user) => user.id),
+        newMembers: users.map((user) => user.value),
+        group: group?.id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        toast.success("Uživatelé přidáni");
+        getGroupDetail();
+        reset();
+      })
+      .catch(() => {
+        toast.error("Něco se nepovedlo");
+      });
   };
 
   const getGroupDetail = () => {
@@ -63,10 +79,10 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
 
   useEffect(() => {
     if (users.length && group?.users.length) {
-      const members = users
-        .filter((user) => {
-          return group.users.some((groupUser) => groupUser.id !== user.id);
-        })
+      const options = users
+        .filter(
+          (user) => !group?.users.map((user) => user.id).includes(user.id)
+        )
         .map((user) => ({
           label: `${user.first_name} ${user.last_name}`,
           value: user.id,
@@ -74,7 +90,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           first_name: user.first_name,
           last_name: user.last_name,
         }));
-      setOptions(members);
+      setOptions(options);
     }
   }, [users, group?.users]);
 

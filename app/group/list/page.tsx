@@ -14,7 +14,7 @@ import GroupListItem from "../../../sub-components/GroupListItem";
 
 export default function Page() {
   const [groups, setGroups] = useState<Group[]>([]);
-
+  const [selected, setSelected] = useState<number[]>([]);
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/list`)
       .then((res) => res.json())
@@ -26,6 +26,7 @@ export default function Page() {
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell sx={{ padding: 1.5 }} />
             <TableCell sx={{ padding: 1.5 }}>
               <Chip label="Název" />
             </TableCell>
@@ -43,7 +44,12 @@ export default function Page() {
         </TableHead>
         <TableBody>
           {groups.map((group) => (
-            <GroupListItem key={group.id} group={group} />
+            <GroupListItem
+              key={group.id}
+              group={group}
+              setSelected={setSelected}
+              selected={selected}
+            />
           ))}
         </TableBody>
       </Table>

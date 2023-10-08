@@ -58,7 +58,7 @@ export default function AddGroupModal() {
       body: JSON.stringify(data),
     })
       .then((res) => res.json())
-      .then(() => toast.success(`Skupina ${data.name} vytvořena`))
+      .then(({ data }) => toast.success(`Skupina ${data.name} vytvořena`))
       .catch(() => toast.error("Něco se nepovedlo"));
     setModal("");
     reset();

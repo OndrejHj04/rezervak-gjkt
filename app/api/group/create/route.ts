@@ -8,24 +8,16 @@ export async function POST(req: Request) {
     const members = users ? [...users, owner] : [owner];
 
     const data = await query({
-      query: `INSERT INTO groups(name, description, owner, users) VALUES ("${name}","${description}", "${owner}", "${JSON.stringify(
-        members
-      )}")`,
+      query: `INSERT INTO groups(name, description, owner, users) VALUES ("${name}", ${description ? `"${description}"` : null}, "${owner}", "${JSON.stringify(members)}")`,
       values: [],
     });
 
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: data,
+      data: { name },
     });
-  } catch (e) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Something went wrong",
-      },
-      { status: 500 }
-    );
+  } catch (e: any) {
+    return NextResponse.error();
   }
 }

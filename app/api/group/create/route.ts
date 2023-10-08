@@ -5,10 +5,12 @@ export async function POST(req: Request) {
   try {
     const { name, description, owner, users } = await req.json();
 
+    const members = users ? [...users, owner] : [owner];
+
     const data = await query({
-      query: `INSERT INTO groups(name, description, owner, users) VALUES ("${name}","${description}", "${owner}", "${
-        users || "[]"
-      }")`,
+      query: `INSERT INTO groups(name, description, owner, users) VALUES ("${name}","${description}", "${owner}", "${JSON.stringify(
+        members
+      )}")`,
       values: [],
     });
 

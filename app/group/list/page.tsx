@@ -16,11 +16,13 @@ import { useEffect, useState } from "react";
 import GroupListItem from "../../../sub-components/GroupListItem";
 import { toast } from "react-toastify";
 import { group } from "console";
+import { store } from "@/store/store";
 
 export default function Page() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const { modal } = store();
 
   const getGroupList = () => {
     setLoading(true);
@@ -46,8 +48,10 @@ export default function Page() {
   };
 
   useEffect(() => {
-    getGroupList();
-  }, []);
+    if (modal.length === 0) {
+      getGroupList();
+    }
+  }, [modal]);
 
   if (loading) {
     return (

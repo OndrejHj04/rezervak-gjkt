@@ -25,13 +25,30 @@ import AddUserToGroupModal from "../../modal/AddUserToGroupModal";
 import { User } from "next-auth";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { toast } from "react-toastify";
-import { set } from "react-hook-form";
+import { Controller, set, useForm } from "react-hook-form";
+
+interface selecteUser {
+  label: string;
+  value: number;
+  image: string;
+  first_name: string;
+  last_name: string;
+}
 
 export default function Page({ params: { id } }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState<Group | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
+  const [selected, setSelected] = useState<number[]>([]);
+  const { control, register, handleSubmit } = useForm<{ users: [] }>({
+    defaultValues: { users: [] },
+  });
   const [users, setUsers] = useState<User[]>([]);
+  const [options, setOptions] = useState<selecteUser[]>([]);
+
+  const onSubmit = ({ users }: { users: selecteUser[] }) => {
+    console.log(users);
+  };
 
   const getGroupDetail = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`)
@@ -43,6 +60,23 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
       })
       .catch((e) => setLoading(false));
   };
+
+  useEffect(() => {
+    if (users.length && group?.users.length) {
+      const members = users
+        .filter((user) => {
+          return group.users.some((groupUser) => groupUser.id !== user.id);
+        })
+        .map((user) => ({
+          label: `${user.first_name} ${user.last_name}`,
+          value: user.id,
+          image: user.image,
+          first_name: user.first_name,
+          last_name: user.last_name,
+        }));
+      setOptions(members);
+    }
+  }, [users, group?.users]);
 
   const handleDeleteMembers = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove-member`, {
@@ -110,31 +144,44 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
         <Paper className="flex flex-col p-2 gap-1 h-min w-60">
           <Typography variant="h5">Přidat uživatele</Typography>
           <Divider />
-          <Autocomplete
-            disablePortal
-            id="combo-box-demo"
-            renderOption={(props: any, option: any) => (
-              <div {...props}>
-                <Box className="flex items-center gap-2">
-                  <AvatarWrapper data={option} />
-                  <Typography className="ml-2">
-                    {option.first_name} {option.last_name}
-                  </Typography>
-                </Box>
-              </div>
-            )}
-            options={users.map((acc) => ({
-              label: `${acc.first_name} ${acc.last_name}`,
-              value: acc.id,
-              image: acc.image,
-              first_name: acc.first_name,
-              last_name: acc.last_name,
-            }))}
-            renderInput={(params) => (
-              <TextField {...params} label="Vybrat uživatele" />
-            )}
-          />
-          <Button variant="outlined">Přidat</Button>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Controller
+              control={control}
+              {...register("users")}
+              render={({ field: { onChange, value } }) => (
+                <Autocomplete
+                  isOptionEqualToValue={(option, value) =>
+                    option.value === value.value
+                  }
+                  filterSelectedOptions
+                  disablePortal
+                  value={value}
+                  onChange={(e, value) => {
+                    onChange(value);
+                  }}
+                  id="combo-box-demo"
+                  multiple
+                  renderOption={(props: any, option: any) => (
+                    <div {...props}>
+                      <Box className="flex items-center gap-2">
+                        <AvatarWrapper data={option} />
+                        <Typography className="ml-2">
+                          {option.first_name} {option.last_name}
+                        </Typography>
+                      </Box>
+                    </div>
+                  )}
+                  options={options}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Vybrat uživatele" />
+                  )}
+                />
+              )}
+            />
+            <Button variant="outlined" type="submit" className="w-full mt-2">
+              Přidat
+            </Button>
+          </form>
         </Paper>
 
         <Paper className="flex flex-col p-2 gap-0 h-min">

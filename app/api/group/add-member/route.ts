@@ -4,13 +4,31 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { currentMembers, newMembers, group } = await req.json();
-    console.log(currentMembers, newMembers, group )
+
     const data = await query({
       query: `UPDATE groups SET users = "${JSON.stringify([
         ...currentMembers,
         ...newMembers,
       ])}" WHERE id = ${group}`,
       values: [],
+    });
+
+    newMembers.forEach(async (member: any) => {
+      const user = (await query({
+        query: `SELECT groups FROM users WHERE id = ${member}`,
+        values: [],
+      })) as any;
+
+      const groups = user[0].groups ? JSON.parse(user[0].groups) : [];
+
+      groups.push(group);
+
+      await query({
+        query: `UPDATE users SET groups = "${JSON.stringify(
+          groups
+        )}" WHERE id = ${member}`,
+        values: [],
+      });
     });
 
     return NextResponse.json({

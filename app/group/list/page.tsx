@@ -22,7 +22,7 @@ export default function Page() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
-  const { modal } = store();
+  const { modal, user } = store();
 
   const getGroupList = () => {
     setLoading(true);
@@ -63,16 +63,18 @@ export default function Page() {
 
   return (
     <div className="flex flex-col w-full gap-2">
-      <div className="flex justify-end">
-        <Button
-          variant="contained"
-          color="error"
-          disabled={!selected.length}
-          onClick={handleRemoveGroups}
-        >
-          odstranit skupiny
-        </Button>
-      </div>
+      {user?.role.role_id === 1 && (
+        <div className="flex justify-end">
+          <Button
+            variant="contained"
+            color="error"
+            disabled={!selected.length}
+            onClick={handleRemoveGroups}
+          >
+            odstranit skupiny
+          </Button>
+        </div>
+      )}
       <Paper className="w-full p-2">
         <Table>
           <TableHead>

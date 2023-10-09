@@ -26,6 +26,7 @@ import { User } from "next-auth";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { toast } from "react-toastify";
 import { Controller, set, useForm } from "react-hook-form";
+import { store } from "@/store/store";
 
 interface selecteUser {
   label: string;
@@ -45,6 +46,8 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
   });
   const [users, setUsers] = useState<User[]>([]);
   const [options, setOptions] = useState<selecteUser[]>([]);
+  const { user } = store();
+  const isOwner = group?.owner.id === user?.id || user?.role.role_id === 1;
 
   const onSubmit = ({ users }: { users: selecteUser[] }) => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/add-member`, {
@@ -157,48 +160,50 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           </div>
         </Paper>
 
-        <Paper className="flex flex-col p-2 gap-1 h-min w-60">
-          <Typography variant="h5">Přidat uživatele</Typography>
-          <Divider />
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Controller
-              control={control}
-              {...register("users")}
-              render={({ field: { onChange, value } }) => (
-                <Autocomplete
-                  isOptionEqualToValue={(option, value) =>
-                    option.value === value.value
-                  }
-                  filterSelectedOptions
-                  disablePortal
-                  value={value}
-                  onChange={(e, value) => {
-                    onChange(value);
-                  }}
-                  id="combo-box-demo"
-                  multiple
-                  renderOption={(props: any, option: any) => (
-                    <div {...props}>
-                      <Box className="flex items-center gap-2">
-                        <AvatarWrapper data={option} />
-                        <Typography className="ml-2">
-                          {option.first_name} {option.last_name}
-                        </Typography>
-                      </Box>
-                    </div>
-                  )}
-                  options={options}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Vybrat uživatele" />
-                  )}
-                />
-              )}
-            />
-            <Button variant="outlined" type="submit" className="w-full mt-2">
-              Přidat
-            </Button>
-          </form>
-        </Paper>
+        {isOwner && (
+          <Paper className="flex flex-col p-2 gap-1 h-min w-60">
+            <Typography variant="h5">Přidat uživatele</Typography>
+            <Divider />
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Controller
+                control={control}
+                {...register("users")}
+                render={({ field: { onChange, value } }) => (
+                  <Autocomplete
+                    isOptionEqualToValue={(option, value) =>
+                      option.value === value.value
+                    }
+                    filterSelectedOptions
+                    disablePortal
+                    value={value}
+                    onChange={(e, value) => {
+                      onChange(value);
+                    }}
+                    id="combo-box-demo"
+                    multiple
+                    renderOption={(props: any, option: any) => (
+                      <div {...props}>
+                        <Box className="flex items-center gap-2">
+                          <AvatarWrapper data={option} />
+                          <Typography className="ml-2">
+                            {option.first_name} {option.last_name}
+                          </Typography>
+                        </Box>
+                      </div>
+                    )}
+                    options={options}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Vybrat uživatele" />
+                    )}
+                  />
+                )}
+              />
+              <Button variant="outlined" type="submit" className="w-full mt-2">
+                Přidat
+              </Button>
+            </form>
+          </Paper>
+        )}
 
         <Paper className="flex flex-col p-2 gap-0 h-min">
           <Typography variant="h5">Uživatelé ve skupině</Typography>
@@ -222,7 +227,9 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
                       }
                       secondary={user.email}
                     />
-                    <Checkbox checked={checked.includes(user.id)} />
+                    {isOwner && (
+                      <Checkbox checked={checked.includes(user.id)} />
+                    )}
                   </ListItemButton>
                 </ListItem>
               ))
@@ -232,15 +239,17 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
               </>
             )}
           </List>
-          <Button
-            variant="contained"
-            color="error"
-            endIcon={<DeleteForeverIcon />}
-            disabled={checked.length === 0}
-            onClick={handleDeleteMembers}
-          >
-            Odebrat vybrané uživatele
-          </Button>
+          {isOwner && (
+            <Button
+              variant="contained"
+              color="error"
+              endIcon={<DeleteForeverIcon />}
+              disabled={checked.length === 0}
+              onClick={handleDeleteMembers}
+            >
+              Odebrat vybrané uživatele
+            </Button>
+          )}
         </Paper>
       </div>
     </>

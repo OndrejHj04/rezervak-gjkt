@@ -53,6 +53,7 @@ export default function AddGroupModal() {
   const close = () => setModal("");
 
   const onSubmit = (data: any) => {
+
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/create`, {
       method: "POST",
       body: JSON.stringify(data),

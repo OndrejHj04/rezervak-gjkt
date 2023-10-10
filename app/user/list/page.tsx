@@ -80,7 +80,7 @@ export default function UserList() {
   const handleDelete = () => {
     setMenu(null);
 
-    fetch("http://localhost:3000/api/users/delete", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}api/users/delete`, {
       method: "DELETE",
       body: JSON.stringify({ users: selectedUsers }),
     })

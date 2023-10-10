@@ -24,7 +24,9 @@ export default function Home() {
 
   useEffect(() => {
     if (user?.id) {
-      fetch(`http://localhost:3000/api/users/detail/${user?.id}/groups`)
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${user?.id}/groups`
+      )
         .then((res) => res.json())
         .then(({ data }) => {
           setGroups(data);

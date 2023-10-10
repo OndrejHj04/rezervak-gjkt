@@ -31,6 +31,9 @@ export async function GET(
       data: groupsDetail,
     });
   } catch (e) {
-    NextResponse.error();
+    return NextResponse.json({
+      success: false,
+      message: "Something went wrong",
+    });
   }
 }

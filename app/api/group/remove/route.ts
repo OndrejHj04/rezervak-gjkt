@@ -9,6 +9,34 @@ export async function POST(req: Request) {
     values: [],
   });
 
+  groups.map(async (group) => {
+    const userGroups = (await query({
+      query: `SELECT id, groups FROM users`,
+      values: [],
+    })) as any;
+
+    userGroups.map(async (user: any) => {
+      let groupsData = user.groups ? JSON.parse(user.groups) : null;
+
+      if (groupsData.includes(group)) {
+        groupsData = groupsData.filter((num: number) => num !== group);
+        if (groupsData.length) {
+          await query({
+            query: `UPDATE users SET groups = "${JSON.stringify(
+              groupsData
+            )}" WHERE id = "${user.id}"`,
+            values: [],
+          });
+        } else {
+          await query({
+            query: `UPDATE users SET groups = null WHERE id = "${user.id}"`,
+            values: [],
+          });
+        }
+      }
+    });
+  });
+
   try {
     return NextResponse.json({
       success: true,

@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     values: [],
   });
 
-  groups.map(async (group) => {
+  groups.map(async (group: any) => {
     const userGroups = (await query({
       query: `SELECT id, groups FROM users`,
       values: [],

@@ -7,17 +7,17 @@ export async function POST(req: Request) {
 
     const members = users ? [...users, owner] : [owner];
 
-    const data = await query({
+    const data = (await query({
       query: `INSERT INTO groups(name, description, owner, users) VALUES ("${name}", ${
         description ? `"${description}"` : null
       }, "${owner}", "${JSON.stringify(members)}")`,
       values: [],
-    });
+    })) as any;
     const newGroupId = data.insertId;
-    const groups = await query({
+    const groups = (await query({
       query: `SELECT groups FROM users WHERE id = "${owner}"`,
       values: [],
-    });
+    })) as any;
     const userGroups = JSON.parse(groups[0].groups);
 
     const editGroups = await query({

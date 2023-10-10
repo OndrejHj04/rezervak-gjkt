@@ -19,12 +19,6 @@ export async function POST(req: Request) {
       values: [],
     });
     const userGroups = JSON.parse(groups[0].groups);
-    
-    console.log(`UPDATE users SET groups = ${
-      userGroups
-        ? JSON.stringify([...userGroups, newGroupId])
-        : JSON.stringify([newGroupId])
-    } WHERE id = "${owner}"`)
 
     const editGroups = await query({
       query: `UPDATE users SET groups = "${

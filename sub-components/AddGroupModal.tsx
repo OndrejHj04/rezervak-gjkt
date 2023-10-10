@@ -43,7 +43,7 @@ export default function AddGroupModal() {
     formState: { errors },
   } = useForm<createGroup>();
   const [accounts, setAccounts] = useState<User[] | null>(null);
-  console.log("test");
+
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list?roles=1,2,3`)
       .then((res) => res.json())

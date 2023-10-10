@@ -3,19 +3,61 @@ import { store } from "@/store/store";
 import SleepingUserInfo from "@/sub-components/SleepingUserInfo";
 import VerifyUser from "@/sub-components/VerifyUser";
 import WelcomeComponent from "@/sub-components/WelcomeComponent";
-import { Box, Skeleton, Typography } from "@mui/material";
-import { useSession } from "next-auth/react";
+import {
+  Box,
+  MenuItem,
+  MenuList,
+  Paper,
+  Skeleton,
+  Typography,
+} from "@mui/material";
+import GroupIcon from "@mui/icons-material/Group";
+import { useEffect, useState } from "react";
+import { Group } from "@/types";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { user, userLoading } = store();
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const { push } = useRouter();
+
+  useEffect(() => {
+    if (user?.id) {
+      fetch(`http://localhost:3000/api/users/detail/${user?.id}/groups`)
+        .then((res) => res.json())
+        .then(({ data }) => {
+          setGroups(data);
+          setLoading(false);
+        })
+        .catch((e) => {});
+    }
+  }, [user]);
 
   const homepage = (
-    <Typography>
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Accusantium
-      assumenda, consectetur aliquid omnis, est, labore similique sapiente
-      numquam unde voluptatum consequatur quae eum ea. Praesentium quia hic
-      asperiores exercitationem repudiandae.
-    </Typography>
+    <>
+      <Paper className="p-2">
+        <div className="flex justify-between items-center gap-3">
+          <GroupIcon color="primary" />
+          <Typography variant="h5">Moje skupiny</Typography>
+          <GroupIcon color="primary" />
+        </div>
+        <MenuList>
+          {groups.length ? (
+            groups.map((group) => (
+              <MenuItem
+                onClick={() => push(`/group/detail/${group.id}`)}
+                key={group.id}
+              >
+                {group.name}
+              </MenuItem>
+            ))
+          ) : (
+            <Typography>Žádné skupiny</Typography>
+          )}
+        </MenuList>
+      </Paper>
+    </>
   );
 
   if (userLoading)

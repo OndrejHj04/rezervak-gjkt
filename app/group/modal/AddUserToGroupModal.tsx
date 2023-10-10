@@ -38,7 +38,7 @@ export default function AddUserToGroupModal({ group }: { group: Group }) {
       .then((res) => res.json())
       .then(({ data }) => setUsers(data));
   }, []);
-  console.log(users);
+
   return (
     <Modal open={true}>
       <Paper sx={style} className="p-4 flex flex-col max-w-sm">

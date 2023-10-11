@@ -4,12 +4,12 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const count = await query({
+    const count = (await query({
       query: `
                SELECT count FROM numbers WHERE id = 1
               `,
       values: [],
-    });
+    })) as any;
 
     const makeCount = await query({
       query: `

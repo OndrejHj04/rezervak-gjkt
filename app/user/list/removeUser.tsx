@@ -2,13 +2,33 @@
 import { store } from "@/store/store";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Badge, IconButton } from "@mui/material";
+import { toast } from "react-toastify";
+import MakeRefetch from "./refetch";
 
 export default function RemoveUser() {
   const { selectedUsers, setSelectedUsers } = store();
 
   const deleteUsers = () => {
-    console.log("delete users");
-  }
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/delete`, {
+      method: "DELETE",
+      body: JSON.stringify({ users: selectedUsers }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          toast.success("Uživatelé byli úspěšně smazáni");
+        } else {
+          toast.error("Něco se pokazilo");
+        }
+      })
+      .catch((e) => {
+        toast.error("Něco se pokazilo");
+      })
+      .finally(() => {
+        setSelectedUsers([]);
+        MakeRefetch();
+      });
+  };
 
   return (
     <div>

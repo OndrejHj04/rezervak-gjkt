@@ -1,3 +1,4 @@
+import MakeRefetch from "@/app/user/list/refetch";
 import { store } from "@/store/store";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
@@ -44,7 +45,10 @@ export default function AddUserModal() {
     })
       .then((res) => res.json())
       .then(({ message }) => toast.info(message))
-      .catch((e) => toast.error("Something went wrong"));
+      .catch((e) => toast.error("Something went wrong"))
+      .finally(() => {
+        MakeRefetch();
+      });
     close();
     reset();
   };

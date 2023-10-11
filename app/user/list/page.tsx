@@ -1,6 +1,5 @@
-"use client";
 import { store } from "@/store/store";
-import UserListItem from "@/sub-components/UserListItem";
+import UserListItem from "@/app/user/list/UserListItem";
 import {
   Avatar,
   Button,
@@ -35,187 +34,34 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { toast } from "react-toastify";
+import RemoveUser from "./removeUser";
+import CheckboxComponent from "./checkboxComponent";
 
 interface User extends NextAuthUser {
   full_name: string;
 }
 
 const getUsers = async () => {
-  const req = await fetch("", {
+  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`, {
     cache: "no-cache",
   });
   const { data } = await req.json();
+
   return data as User[];
 };
 
-export default function UserList() {
-  const { setSelectedUsers, selectedUsers } = store();
-  const [users, setUsers] = useState<User[]>([]);
-  const [data, setData] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [menu, setMenu] = useState<EventTarget | null>(null);
-  const [search, setSearch] = useState("");
-  const { modal } = store();
-
-  useEffect(() => {
-    if (search.length) {
-      const filtered = users.filter((user) => {
-        return user.full_name.toLowerCase().includes(search.toLowerCase());
-      });
-
-      setData(filtered);
-    } else {
-      setData(users);
-    }
-  }, [search, users]);
-
-  const handleSelectUsers = () => {
-    if (selectedUsers.length === users.length) {
-      setSelectedUsers([]);
-    } else {
-      setSelectedUsers(data.map((user) => user.id));
-    }
-  };
-
-  const handleDelete = () => {
-    setMenu(null);
-
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}api/users/delete`, {
-      method: "DELETE",
-      body: JSON.stringify({ users: selectedUsers }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.sucess) {
-          toast.success("Uživatelé byli úspěšně smazáni");
-          fetchUsers();
-        } else {
-          toast.error("Něco se pokazilo");
-        }
-      })
-      .catch(() => toast.error("Něco se pokazilo"));
-  };
-
-  const fetchUsers = () => {
-    setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)
-      .then((res) => res.json())
-      .then((data) => {
-        setLoading(false);
-        setUsers(data.data);
-      });
-  };
-  useEffect(() => {
-    if (!modal) {
-      fetchUsers();
-    }
-  }, [modal]);
-
-  const searchBar = (
-    <TextField
-      placeholder="Hledat"
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-      className="w-64"
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon />
-          </InputAdornment>
-        ),
-        endAdornment: (
-          <InputAdornment position="end">
-            {!!search.length && (
-              <IconButton onClick={() => setSearch("")}>
-                <CancelIcon />
-              </IconButton>
-            )}
-          </InputAdornment>
-        ),
-      }}
-    />
-  );
-
-  const actionMenu = (
-    <>
-      <IconButton
-        aria-describedby={"popover"}
-        color="info"
-        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-          setMenu(e.currentTarget);
-        }}
-        disabled={selectedUsers.length === 0}
-      >
-        <MenuOpenIcon fontSize="large" />
-      </IconButton>
-      <Menu
-        id="basic-menu"
-        anchorEl={menu as Element}
-        open={Boolean(menu)}
-        onClose={() => setMenu(null)}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        sx={{
-          "& .MuiMenu-list": {
-            display: "flex",
-            padding: 0,
-          },
-        }}
-      >
-        <MenuItem onClick={handleDelete}>
-          <ListItemIcon>
-            <DeleteForeverIcon />
-          </ListItemIcon>
-          <ListItemText primary="Smazat" />
-        </MenuItem>
-        <MenuItem onClick={() => setMenu(null)}>
-          <ListItemIcon>
-            <DeleteForeverIcon />
-          </ListItemIcon>
-          <ListItemText primary="Smazat" />
-        </MenuItem>
-      </Menu>
-    </>
-  );
-
-  if (loading) {
-    return (
-      <Paper className="w-full p-2 flex justify-center">
-        <CircularProgress className="mx-auto" />
-      </Paper>
-    );
-  }
-  if (data.length === 0) {
-    return (
-      <div className="flex flex-col w-full gap-2">
-        {searchBar}
-        <Paper className="w-full p-2 flex justify-center">
-          <Typography variant="h5">Žádní uživatelé k zobrazení</Typography>
-        </Paper>
-      </div>
-    );
-  }
+export default async function UserList() {
+  const users = await getUsers();
 
   return (
     <div className="flex flex-col w-full gap-2">
-      <div className="flex gap-2 items-center">
-        {searchBar}
-        {actionMenu}
-      </div>
+      <RemoveUser />
       <Paper className="w-full p-2">
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>
-                <Checkbox
-                  onClick={handleSelectUsers}
-                  indeterminate={Boolean(
-                    selectedUsers.length && selectedUsers.length < users.length
-                  )}
-                  checked={selectedUsers.length === users.length}
-                />
+                <CheckboxComponent users={users} />
               </TableCell>
               <TableCell></TableCell>
               <TableCell sx={{ padding: 1.5 }}>
@@ -236,7 +82,7 @@ export default function UserList() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((user) => (
+            {users.map((user) => (
               <UserListItem key={user.id} user={user} />
             ))}
           </TableBody>
@@ -245,4 +91,3 @@ export default function UserList() {
     </div>
   );
 }
-// zde je potřeba pořešit, že když se přidá uživatel pomocí modalu, taxe zavře, ale zde se nový uživatel neobjeví -> loading && zobrazit

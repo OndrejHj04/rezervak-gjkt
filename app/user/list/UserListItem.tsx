@@ -1,7 +1,7 @@
 "use client";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
-  Avatar,
+  Button,
   Checkbox,
   Chip,
   TableCell,
@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { User } from "next-auth";
-import { useRouter } from "next/navigation";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import dayjs from "dayjs";
@@ -17,12 +16,12 @@ import SecurityIcon from "@mui/icons-material/Security";
 import BuildIcon from "@mui/icons-material/Build";
 import PersonIcon from "@mui/icons-material/Person";
 import PublicIcon from "@mui/icons-material/Public";
+import { useRouter } from "next/navigation";
 import { store } from "@/store/store";
 
 export default function UserListItem({ user }: { user: User }) {
   const { push } = useRouter();
-  const { setSelectedUsers, selectedUsers } = store();
-  const selected = selectedUsers.includes(user.id);
+  const { selectedUsers, setSelectedUsers } = store();
   const iconMap: { [key: string]: JSX.Element } = {
     SecurityIcon: <SecurityIcon />,
     BuildIcon: <BuildIcon />,
@@ -30,7 +29,7 @@ export default function UserListItem({ user }: { user: User }) {
     PublicIcon: <PublicIcon />,
   };
 
-  const handleSelectUser = (e: any) => {
+  const handleSelect = (e: any) => {
     e.stopPropagation();
     if (selectedUsers.includes(user.id)) {
       setSelectedUsers(selectedUsers.filter((id) => id !== user.id));
@@ -43,11 +42,14 @@ export default function UserListItem({ user }: { user: User }) {
     <TableRow
       hover
       key={user.id}
+      sx={{ cursor: "pointer", opacity: user.active ? 1 : 0.5 }}
       onClick={() => push(`/user/detail/${user.id}`)}
-      sx={{ cursor: "pointer", opacity: user.active ? 1 : 0.2 }}
     >
       <TableCell>
-        <Checkbox onClick={handleSelectUser} checked={selected} />
+        <Checkbox
+          checked={selectedUsers.includes(user.id)}
+          onClick={handleSelect}
+        />
       </TableCell>
       <TableCell>
         <AvatarWrapper data={user} />
@@ -62,7 +64,6 @@ export default function UserListItem({ user }: { user: User }) {
             <Typography variant="subtitle2">{user.role.role_name}</Typography>
           }
           deleteIcon={iconMap[user.role.icon]}
-          onDelete={() => {}}
         />
       </TableCell>
       <TableCell>

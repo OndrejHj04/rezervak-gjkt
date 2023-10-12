@@ -25,7 +25,7 @@ export default async function DisplayGroups() {
     <Paper className="p-2">
       <div className="flex justify-between items-center gap-3">
         <GroupIcon color="primary" />
-        <Typography variant="h5">Moje skupiny</Typography>
+        <Typography variant="h5">Nadcházející rezervace</Typography>
         <GroupIcon color="primary" />
       </div>
       <MenuList>

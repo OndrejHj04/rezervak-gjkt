@@ -15,9 +15,17 @@ import { Group } from "@/types";
 import { useRouter } from "next/navigation";
 import DisplayGroups from "@/sub-components/DisplayGroups";
 import HomepageLoading from "@/sub-components/HomepageLoading";
+import DisplayReservations from "@/sub-components/DisplayReservations";
+import HomepageCalendar from "@/sub-components/HomepageCalendar";
 
 export default function Home() {
-  const homepage = <DisplayGroups />;
+  const homepage = (
+    <>
+      <DisplayGroups />
+      <DisplayReservations />
+      <HomepageCalendar />
+    </>
+  );
 
   return <HomepageLoading homepage={homepage} />;
 }

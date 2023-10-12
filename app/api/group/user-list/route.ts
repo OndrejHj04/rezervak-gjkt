@@ -26,6 +26,19 @@ export async function GET(req: Request) {
         })) as any)
       : [];
 
+    const ownerDetail = (await query({
+      query: `
+        SELECT first_name, last_name, image, email FROM users WHERE id IN (${getUserGroups.map(
+          (group: any) => group.owner
+        )})
+        `,
+      values: [],
+    })) as any;
+
+    getUserGroups.forEach((group: Group, index: number) => {
+      group.owner = ownerDetail[index];
+    });
+
     return NextResponse.json({
       success: true,
       message: "Operation successful",

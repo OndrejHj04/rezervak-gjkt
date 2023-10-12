@@ -1,13 +1,18 @@
 "use client";
 import { Group } from "@/types";
-import { MenuItem } from "@mui/material";
+import AvatarWrapper from "@/ui-components/AvatarWrapper";
+import { Avatar, Card, CardHeader, MenuItem, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 export default function SingleGroup({ group }: { group: Group }) {
   const { push } = useRouter();
   return (
-    <MenuItem onClick={() => push(`/group/detail/${group.id}`)}>
-      {group.name}
+    <MenuItem className="p-0" onClick={() => push(`/group/detail/${group.id}`)}>
+      <CardHeader
+        avatar={<Avatar>{group.name[0]}</Avatar>}
+        title={group.name}
+        subheader={`Majitel: ${group.owner.first_name} ${group.owner.last_name}`}
+      />
     </MenuItem>
   );
 }

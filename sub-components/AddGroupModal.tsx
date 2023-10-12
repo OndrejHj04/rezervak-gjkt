@@ -1,3 +1,4 @@
+import MakeRefetch from "@/app/group/list/refetch";
 import { store } from "@/store/store";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
@@ -59,7 +60,10 @@ export default function AddGroupModal() {
     })
       .then((res) => res.json())
       .then(({ data }) => toast.success(`Skupina ${data.name} vytvořena`))
-      .catch(() => toast.error("Něco se nepovedlo"));
+      .catch(() => toast.error("Něco se nepovedlo"))
+      .finally(() => {
+        MakeRefetch();
+      });
     setModal("");
     reset();
   };

@@ -15,6 +15,8 @@ interface stateInterface {
   setUserLoading: (value: boolean) => void;
   selectedUsers: number[];
   setSelectedUsers: (users: number[]) => void;
+  selectedGroups: number[];
+  setSelectedGroups: (groups: number[]) => void;
 }
 
 export const store = create<stateInterface>((set) => ({
@@ -30,4 +32,6 @@ export const store = create<stateInterface>((set) => ({
   setUserLoading: (userLoading) => set({ userLoading }),
   selectedUsers: [],
   setSelectedUsers: (selectedUsers) => set({ selectedUsers }),
+  selectedGroups: [],
+  setSelectedGroups: (selectedGroups) => set({ selectedGroups }),
 }));

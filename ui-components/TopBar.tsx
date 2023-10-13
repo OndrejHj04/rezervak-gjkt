@@ -6,16 +6,17 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { store } from "@/store/store";
-import { Skeleton } from "@mui/material";
+import { Icon, Skeleton } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import AvatarWrapper from "./AvatarWrapper";
 import ErrorIcon from "@mui/icons-material/Error";
 import HotelIcon from "@mui/icons-material/Hotel";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 
 export default function TopBar() {
-  const { setPanel } = store();
-  const { user, userLoading } = store();
+  const { user, userLoading, setPanel, darkMode, setDarkMode } = store();
 
   return (
     <AppBar position="static">
@@ -37,6 +38,13 @@ export default function TopBar() {
           <Skeleton variant="rounded" width={180} height={50} />
         ) : (
           <>
+            <IconButton>
+              {darkMode ? (
+                <LightModeIcon onClick={() => setDarkMode(false)} />
+              ) : (
+                <DarkModeIcon onClick={() => setDarkMode(true)} />
+              )}
+            </IconButton>
             {user ? (
               <Link href={`/user/detail/${user.id}`}>
                 <Button>

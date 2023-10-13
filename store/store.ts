@@ -17,6 +17,8 @@ interface stateInterface {
   setSelectedUsers: (users: number[]) => void;
   selectedGroups: number[];
   setSelectedGroups: (groups: number[]) => void;
+  darkMode: boolean;
+  setDarkMode: (value: boolean) => void;
 }
 
 export const store = create<stateInterface>((set) => ({
@@ -34,4 +36,6 @@ export const store = create<stateInterface>((set) => ({
   setSelectedUsers: (selectedUsers) => set({ selectedUsers }),
   selectedGroups: [],
   setSelectedGroups: (selectedGroups) => set({ selectedGroups }),
+  darkMode: true,
+  setDarkMode: (darkMode) => set({ darkMode }),
 }));

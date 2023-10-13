@@ -1,5 +1,6 @@
 "use client";
 import { store } from "@/store/store";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 
 import { SessionProvider, signIn, useSession } from "next-auth/react";
 import { useEffect } from "react";
@@ -12,7 +13,9 @@ function WrapWrap() {
     if (status === "loading") setUserLoading(true);
     if (status === "authenticated") {
       setUserLoading(true);
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${data?.user?.id}`)
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${data?.user?.id}`
+      )
         .then((res) => res.json())
         .then((res) => {
           const {
@@ -47,17 +50,26 @@ export default function ClientProvider({
 }: {
   children: React.ReactNode;
 }): React.ReactNode {
-  const { setRoles, user } = store();
+  const { setRoles, user, darkMode } = store();
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/list`)
       .then((res) => res.json())
       .then(({ data }) => setRoles(data));
   }, []);
 
+  const mode = createTheme({
+    palette: {
+      mode: darkMode ? "dark" : "light",
+    },
+  });
+
   return (
-    <SessionProvider>
-      <WrapWrap />
-      {children}
-    </SessionProvider>
+    <ThemeProvider theme={mode}>
+      <CssBaseline />
+      <SessionProvider>
+        <WrapWrap />
+        {children}
+      </SessionProvider>
+    </ThemeProvider>
   );
 }

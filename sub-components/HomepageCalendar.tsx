@@ -6,12 +6,11 @@ import dayjs from "dayjs";
 import CzechLocale from "dayjs/locale/cs";
 
 export default function HomepageCalendar() {
-
   return (
     <Paper className="p-2">
       <LocalizationProvider
         dateAdapter={AdapterDayjs}
-        adapterLocale={CzechLocale}
+        adapterLocale={CzechLocale as any}
         localeText={
           csCZ.components.MuiLocalizationProvider.defaultProps.localeText
         }

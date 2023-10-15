@@ -3,6 +3,7 @@ import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import EditCalendar from "@mui/icons-material/EditCalendar";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import AddUserModal from "@/sub-components/AddUserModal";
 import { store } from "@/store/store";
@@ -18,6 +19,11 @@ const actions = [
     icon: <GroupAddIcon />,
     name: "Přidat skupinu",
     string: "addGroup",
+  },
+  {
+    icon: <EditCalendar />,
+    name: "Vytvořit rezervaci",
+    path: "/reservations/create",
   },
 ];
 
@@ -37,7 +43,10 @@ export default function SpeedComponent() {
             key={action.name}
             icon={action.icon}
             tooltipTitle={action.name}
-            onClick={() => setModal(action.string)}
+            onClick={() => {
+              if (action.string) setModal(action.string);
+              else if (action.path) window.location.href = action.path;
+            }}
           />
         ))}
       </SpeedDial>

@@ -1,12 +1,21 @@
 "use client";
 import { Group } from "@/types";
-import ReservationCalendarPicker from "./ReservationCalendarPicket";
-import ReservationMembersForm from "./ReservationMembersForm";
-import ReservationRoomsSlider from "./ReservationRoomsSlider";
 import { User } from "next-auth";
-import { FormProvider, useForm } from "react-hook-form";
-import { Button, Typography } from "@mui/material";
+import {
+  Button,
+  IconButton,
+  Pagination,
+  PaginationItem,
+  Paper,
+  Typography,
+} from "@mui/material";
 
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
+import ChairIcon from "@mui/icons-material/Chair";
+import LeaderboardIcon from "@mui/icons-material/Leaderboard";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import { useState } from "react";
 export default function CreateReservationWrapper({
   groups,
   users,
@@ -14,37 +23,32 @@ export default function CreateReservationWrapper({
   groups: Group[];
   users: User[];
 }) {
-  const methods = useForm({
-    defaultValues: {
-      users: [],
-      groups: [],
-      rooms: 1,
-      fromDate: null,
-      toDate: null,
-    },
-  });
-
-  const { handleSubmit } = methods;
-
-  const onSubmit = (data: any) => {
-    console.log(data);
-  };
-
+  const icons = [
+    <CalendarMonthIcon key={1} />,
+    <EmojiPeopleIcon key={2} />,
+    <ChairIcon key={3} />,
+    <LeaderboardIcon key={4} />,
+  ];
+  const [navigate, setNavigate] = useState(0);
   return (
-    <FormProvider {...methods}>
-      <form className="flex flex-col w-full" onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex mb-2 justify-between items-center w-full">
-          <Typography variant="h4">Nová rezervace</Typography>
-          <Button variant="contained" type="submit">
-            Uložit
-          </Button>
-        </div>
-        <div className="flex gap-2">
-          <ReservationMembersForm groups={groups} users={users} />
-          <ReservationRoomsSlider />
-          <ReservationCalendarPicker />
-        </div>
-      </form>
-    </FormProvider>
+    <Paper className="p-2 w-full max-w-2xl mx-auto flex flex-col items-center">
+      <div className="flex flex-1"></div>
+      <Pagination
+        count={4}
+        renderItem={(item: any) => {
+          if (item.type === "page") {
+            return (
+              <IconButton onClick={() => setNavigate(item.page - 1)}>
+                {navigate >= item.page ? (
+                  <DoneAllIcon color="success" />
+                ) : (
+                  <>{icons[item.page - 1]}</>
+                )}
+              </IconButton>
+            );
+          }
+        }}
+      />
+    </Paper>
   );
 }

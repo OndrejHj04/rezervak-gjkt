@@ -22,13 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ClientProvider>
-          <TopBar />
-          <SlidingMenu />
-          <SpeedComponent />
-          <div className="flex p-5 gap-2">{children}</div>
-        </ClientProvider>
-        <ToastContainer />
+        <div className="flex h-screen flex-col">
+          <ClientProvider>
+            <TopBar />
+            <SlidingMenu />
+            <SpeedComponent />
+            <div className="flex flex-1 p-5">{children}</div>
+          </ClientProvider>
+          <ToastContainer />
+        </div>
       </body>
     </html>
   );

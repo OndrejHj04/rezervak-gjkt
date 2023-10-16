@@ -19,10 +19,5 @@ export default async function CreateReservation() {
   const users = await getUsers();
   const groups = await getGroups();
 
-  return (
-    <div>
-      <Typography variant="h4">Nová rezervace</Typography>
-      <CreateReservationWrapper groups={groups} users={users} />
-    </div>
-  );
+  return <CreateReservationWrapper groups={groups} users={users} />;
 }

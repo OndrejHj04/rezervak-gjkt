@@ -1,3 +1,4 @@
+"use client";
 import { Paper, Slider, Typography } from "@mui/material";
 
 export default function ReservationRoomsSlider() {

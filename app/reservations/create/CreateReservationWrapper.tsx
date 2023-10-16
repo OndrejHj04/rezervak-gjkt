@@ -15,7 +15,7 @@ export default function CreateReservationWrapper({
   users: User[];
 }) {
   const methods = useForm({
-    defaultValues: { users: [], rooms: 1 },
+    defaultValues: { users: [], groups: [], rooms: 1 },
   });
 
   const { handleSubmit } = methods;

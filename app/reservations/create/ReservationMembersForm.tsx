@@ -34,10 +34,15 @@ export default function ReservationMembersForm({
         "users",
         selectedUsers.filter((id: any) => !group.users.includes(id))
       );
+      setValue(
+        "groups",
+        watch("groups").filter((id: any) => id !== group.id)
+      );
     } else {
       const mergedUsers: any = Array.from(
         new Set(selectedUsers.concat(group.users))
       );
+      setValue("groups", [...watch("groups"), group.id]);
       setValue("users", mergedUsers);
     }
   };

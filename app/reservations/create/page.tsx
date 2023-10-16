@@ -8,7 +8,9 @@ const getUsers = async () => {
 };
 
 const getGroups = async () => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/list`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/list`, {
+    cache: "no-cache",
+  });
   const { data } = await res.json();
   return data;
 };

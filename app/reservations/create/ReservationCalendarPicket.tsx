@@ -1,14 +1,21 @@
 "use client";
 import { Paper, Typography } from "@mui/material";
-import { DateCalendar, LocalizationProvider, csCZ } from "@mui/x-date-pickers";
+import {
+  DateCalendar,
+  DatePicker,
+  LocalizationProvider,
+  csCZ,
+} from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import dayjs from "dayjs";
 import CzechLocale from "dayjs/locale/cs";
+import { useFormContext } from "react-hook-form";
 
 export default function ReservationCalendarPicker() {
+  const { watch, setValue } = useFormContext();
   return (
-    <Paper className="p-2">
+    <Paper className="p-2 h-min">
       <Typography variant="h5">Výběr data</Typography>
       <LocalizationProvider
         dateAdapter={AdapterDayjs}
@@ -17,17 +24,21 @@ export default function ReservationCalendarPicker() {
           csCZ.components.MuiLocalizationProvider.defaultProps.localeText
         }
       >
-        <DateCalendar
-          sx={{
-            ".MuiDateCalendar-root": {
-              width: 280,
-            },
-            ".MuiPickersCalendarHeader-root": {
-              margin: 0,
-              padding: 0,
-            },
-          }}
-        />
+        <div className="flex flex-col gap-2 mt-2">
+          <DatePicker
+            label="Začátek rezervace"
+            className="w-48"
+            value={watch("fromDate")}
+            onChange={(date) => setValue("fromDate", date)}
+          />
+
+          <DatePicker
+            label="Konec rezervace"
+            className="w-48"
+            value={watch("toDate")}
+            onChange={(date) => setValue("fromDate", date)}
+          />
+        </div>
       </LocalizationProvider>
     </Paper>
   );

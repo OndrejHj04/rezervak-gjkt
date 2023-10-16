@@ -6,6 +6,8 @@ import ReservationRoomsSlider from "./ReservationRoomsSlider";
 import { User } from "next-auth";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button, Typography } from "@mui/material";
+import { watch } from "fs";
+import dayjs from "dayjs";
 
 export default function CreateReservationWrapper({
   groups,
@@ -15,7 +17,13 @@ export default function CreateReservationWrapper({
   users: User[];
 }) {
   const methods = useForm({
-    defaultValues: { users: [], groups: [], rooms: 1 },
+    defaultValues: {
+      users: [],
+      groups: [],
+      rooms: 1,
+      fromDate: null,
+      toDate: null,
+    },
   });
 
   const { handleSubmit } = methods;

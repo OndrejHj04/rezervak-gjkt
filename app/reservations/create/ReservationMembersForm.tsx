@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { User } from "next-auth";
 import { useState } from "react";
+import { useFormContext } from "react-hook-form";
 
 export default function ReservationMembersForm({
   groups,
@@ -21,29 +22,34 @@ export default function ReservationMembersForm({
   groups: Group[];
   users: User[];
 }) {
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const { setValue, watch } = useFormContext();
+  const selectedUsers = watch("users");
 
   const handleGroupCheck = (group: Group | any) => {
     const allSelected = group.users.every((id: any) =>
       selectedUsers.includes(id)
     );
     if (allSelected) {
-      setSelectedUsers(
+      setValue(
+        "users",
         selectedUsers.filter((id: any) => !group.users.includes(id))
       );
     } else {
       const mergedUsers: any = Array.from(
         new Set(selectedUsers.concat(group.users))
       );
-      setSelectedUsers(mergedUsers);
+      setValue("users", mergedUsers);
     }
   };
 
   const handleUserCheck = (userId: number) => {
     if (selectedUsers.includes(userId)) {
-      setSelectedUsers(selectedUsers.filter((id) => id !== userId));
+      setValue(
+        "users",
+        selectedUsers.filter((id: any) => id !== userId)
+      );
     } else {
-      setSelectedUsers([...selectedUsers, userId]);
+      setValue("users", [...selectedUsers, userId]);
     }
   };
 

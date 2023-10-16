@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { User } from "next-auth";
+import { useState } from "react";
 
 export default function ReservationMembersForm({
   groups,
@@ -20,32 +21,70 @@ export default function ReservationMembersForm({
   groups: Group[];
   users: User[];
 }) {
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+
+  const handleGroupCheck = (group: Group | any) => {
+    const allSelected = group.users.every((id: any) =>
+      selectedUsers.includes(id)
+    );
+    if (allSelected) {
+      setSelectedUsers(
+        selectedUsers.filter((id: any) => !group.users.includes(id))
+      );
+    } else {
+      const mergedUsers: any = Array.from(
+        new Set(selectedUsers.concat(group.users))
+      );
+      setSelectedUsers(mergedUsers);
+    }
+  };
+
+  const handleUserCheck = (userId: number) => {
+    if (selectedUsers.includes(userId)) {
+      setSelectedUsers(selectedUsers.filter((id) => id !== userId));
+    } else {
+      setSelectedUsers([...selectedUsers, userId]);
+    }
+  };
 
   return (
     <Paper className="p-2">
-      <Typography variant="h5">Účastníci: 0</Typography>
+      <Typography variant="h5">Účastníci: {selectedUsers.length}</Typography>
       <Typography variant="h6">Skupiny</Typography>
       <List>
-        {groups.map((group) => (
-          <ListItem key={group.id} disablePadding>
-            <ListItemButton>
-              <ListItemAvatar>
-                <Avatar>{group.name[0]}</Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={group.name}
-                secondary={`Počet členů: ${group.users.length}`}
-              />
-              <Checkbox />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {groups.map((group) => {
+          const allSelected = group.users.every((id: any) =>
+            selectedUsers.includes(id)
+          );
+
+          return (
+            <ListItem key={group.id} disablePadding>
+              <ListItemButton onClick={() => handleGroupCheck(group)}>
+                <ListItemAvatar>
+                  <Avatar>{group.name[0]}</Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={group.name}
+                  secondary={`Počet členů: ${group.users.length}`}
+                />
+                <Checkbox
+                  disableRipple
+                  checked={allSelected}
+                  indeterminate={
+                    !allSelected &&
+                    group.users.some((id: any) => selectedUsers.includes(id))
+                  }
+                />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
       <Typography variant="h6">Uživatelé</Typography>
       <List>
         {users.map((user) => (
           <ListItem key={user.id} disablePadding>
-            <ListItemButton>
+            <ListItemButton onClick={() => handleUserCheck(user.id)}>
               <ListItemAvatar>
                 <AvatarWrapper data={user} />
               </ListItemAvatar>
@@ -53,7 +92,10 @@ export default function ReservationMembersForm({
                 primary={`${user.first_name} ${user.last_name}`}
                 secondary={user.email}
               />
-              <Checkbox />
+              <Checkbox
+                disableRipple
+                checked={selectedUsers.includes(user.id)}
+              />
             </ListItemButton>
           </ListItem>
         ))}

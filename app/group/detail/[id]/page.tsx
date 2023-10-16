@@ -53,7 +53,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/add-member`, {
       method: "POST",
       body: JSON.stringify({
-        currentMembers: group?.users.map((user) => user.id),
+        currentMembers: group?.users.map((user: any) => user.id),
         newMembers: users.map((user) => user.value),
         group: group?.id,
       }),
@@ -84,7 +84,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
     if (users.length && group?.users.length) {
       const options = users
         .filter(
-          (user) => !group?.users.map((user) => user.id).includes(user.id)
+          (user) => !group?.users.map((user: any) => user.id).includes(user.id)
         )
         .map((user) => ({
           label: `${user.first_name} ${user.last_name}`,
@@ -102,7 +102,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
       method: "POST",
       body: JSON.stringify({
         group: group?.id,
-        currentMembers: group?.users.map((user) => user.id),
+        currentMembers: group?.users.map((user: any) => user.id),
         membersForRemove: checked,
       }),
     })
@@ -210,7 +210,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           <Divider />
           <List>
             {group.users.length ? (
-              group.users.map((user) => (
+              group.users.map((user: any) => (
                 <ListItem disablePadding key={user.id}>
                   <ListItemButton
                     sx={{ padding: 1 }}

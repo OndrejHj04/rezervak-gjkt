@@ -20,11 +20,11 @@ import HomepageCalendar from "@/sub-components/HomepageCalendar";
 
 export default function Home() {
   const homepage = (
-    <>
+    <div className="flex gap-2 h-min">
       <DisplayGroups />
       <DisplayReservations />
       <HomepageCalendar />
-    </>
+    </div>
   );
 
   return <HomepageLoading homepage={homepage} />;

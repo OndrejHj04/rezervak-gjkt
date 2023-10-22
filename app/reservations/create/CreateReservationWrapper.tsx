@@ -21,7 +21,7 @@ export default function CreateReservationWrapper({
   users: User[];
 }) {
   return (
-    <form className="flex flex-col">
+    <div className="flex flex-col">
       <div className="flex justify-between mb-2 items-center">
         <Typography variant="h4">Nová rezervace</Typography>
         <Button variant="outlined" type="submit">
@@ -29,6 +29,6 @@ export default function CreateReservationWrapper({
         </Button>
       </div>
       <ReservationDates />
-    </form>
+    </div>
   );
 }

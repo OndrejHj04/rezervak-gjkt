@@ -30,12 +30,35 @@ import dayjs from "dayjs";
 import * as isBetween from "dayjs/plugin/isBetween";
 import * as isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-
+import HotelIcon from "@mui/icons-material/Hotel";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useForm } from "react-hook-form";
 dayjs.extend(isBetween as any);
 dayjs.extend(isSameOrAfter as any);
 dayjs.extend(isSameOrBefore as any);
+
+const renderDay = (props: any) => {
+  const { day, outsideCurrentMonth, reservations, ...other } = props;
+
+  const isReservation = reservations.some((r: any) =>
+    dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
+  );
+
+  return (
+    <Badge
+      variant="dot"
+      sx={{ "& .MuiBadge-badge": { transform: "translate(-5px, 5px)" } }}
+      color="error"
+      invisible={outsideCurrentMonth || !isReservation}
+    >
+      <PickersDay
+        {...other}
+        day={day}
+        outsideCurrentMonth={outsideCurrentMonth}
+      />
+    </Badge>
+  );
+};
 
 export default function ReservationDatesRender({
   reservations,
@@ -45,7 +68,7 @@ export default function ReservationDatesRender({
   const [expanded, setExpanded] = useState(true);
   const isValid = true;
   const [selectedDates, setSelectedDates] = useState<any[]>([null, null]);
-  console.log(selectedDates);
+
   const { handleSubmit } = useForm();
   const onSubmit = (data: any) => {
     console.log(data);
@@ -96,11 +119,17 @@ export default function ReservationDatesRender({
                 }
                 onChange={(date) => setSelectedDates([date, selectedDates[1]])}
                 disableHighlightToday
-                slotProps={{ actionBar: { actions: ["cancel"] } }}
+                slotProps={{
+                  actionBar: { actions: ["cancel"] },
+                  day: { reservations },
+                }}
               />
               <StaticDatePicker
                 sx={{ width: 200 }}
                 value={selectedDates[1]}
+                slots={{
+                  day: renderDay,
+                }}
                 shouldDisableDate={(date) =>
                   reservations.some(
                     (r) =>
@@ -116,7 +145,10 @@ export default function ReservationDatesRender({
                 }
                 onChange={(date) => setSelectedDates([selectedDates[0], date])}
                 disableHighlightToday
-                slotProps={{ actionBar: { actions: ["cancel"] } }}
+                slotProps={{
+                  actionBar: { actions: ["cancel"] },
+                  day: { reservations },
+                }}
               />
             </div>
           </LocalizationProvider>

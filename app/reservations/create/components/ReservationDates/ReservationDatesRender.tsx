@@ -33,6 +33,7 @@ import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import HotelIcon from "@mui/icons-material/Hotel";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useForm } from "react-hook-form";
+
 dayjs.extend(isBetween as any);
 dayjs.extend(isSameOrAfter as any);
 dayjs.extend(isSameOrBefore as any);
@@ -69,14 +70,15 @@ export default function ReservationDatesRender({
   const isValid = true;
   const [selectedDates, setSelectedDates] = useState<any[]>([null, null]);
   const [afterReservation, setAfterReservation] = useState(Infinity);
+  const [beforeReservation, setBeforeReservation] = useState(Infinity);
 
   const { handleSubmit } = useForm();
   const onSubmit = (data: any) => {
     console.log(data);
   };
-
+  console.log("xdd");
   useEffect(() => {
-    if (selectedDates[0]) {
+    if (selectedDates[0] && !selectedDates[1]) {
       const lowestDiff = reservations.reduce((lowest, r) => {
         if (dayjs(selectedDates[0]).isBefore(r.from_date, "day")) {
           const diff = dayjs(r.from_date).diff(selectedDates[0], "day");
@@ -86,7 +88,18 @@ export default function ReservationDatesRender({
       }, Infinity);
       setAfterReservation(lowestDiff);
     }
-  }, [selectedDates]);
+
+    if (!selectedDates[0] && selectedDates[1]) {
+      const lowestDiff = reservations.reduce((lowest, r) => {
+        if (dayjs(selectedDates[1]).isAfter(r.to_date, "day")) {
+          const diff = dayjs(selectedDates[1]).diff(r.to_date, "day");
+          return diff < lowest ? diff : lowest;
+        }
+        return lowest;
+      }, Infinity);
+      setBeforeReservation(lowestDiff);
+    }
+  }, [selectedDates, reservations]);
 
   const toDateDisabled = (date: any) => {
     return (
@@ -97,6 +110,18 @@ export default function ReservationDatesRender({
       ((dayjs(date).isAfter(dayjs(selectedDates[0])) &&
         dayjs(date).diff(dayjs(selectedDates[0]), "day")) as number) >
         afterReservation
+    );
+  };
+
+  const afterDateDisabled = (date: any) => {
+    return (
+      reservations.some((r) =>
+        dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
+      ) ||
+      dayjs(date).isSameOrAfter(selectedDates[1], "day") ||
+      ((dayjs(date).isBefore(dayjs(selectedDates[1])) &&
+        dayjs(selectedDates[1]).diff(dayjs(date), "day")) as number) >
+        beforeReservation
     );
   };
 
@@ -133,11 +158,7 @@ export default function ReservationDatesRender({
                 slots={{
                   day: renderDay,
                 }}
-                shouldDisableDate={(date) =>
-                  reservations.some((r) =>
-                    dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
-                  ) || dayjs(date).isSameOrAfter(selectedDates[1], "day")
-                }
+                shouldDisableDate={(date) => afterDateDisabled(date)}
                 onChange={(date) => setSelectedDates([date, selectedDates[1]])}
                 disableHighlightToday
                 slotProps={{

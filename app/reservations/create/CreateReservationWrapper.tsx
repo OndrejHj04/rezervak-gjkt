@@ -2,24 +2,15 @@
 import { Group } from "@/types";
 import { User } from "next-auth";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Button,
-  IconButton,
-  Pagination,
-  PaginationItem,
   Paper,
   Typography,
 } from "@mui/material";
-
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
-import ChairIcon from "@mui/icons-material/Chair";
-import LeaderboardIcon from "@mui/icons-material/Leaderboard";
-import DoneAllIcon from "@mui/icons-material/DoneAll";
-import { useState } from "react";
-import ReservationDatePicker from "./slides/ReservationDatePicker";
-import ReservationConclusion from "./slides/ReservationConclusion";
-import ReservationRoomsPicker from "./slides/ReservationRoomsPicker";
-import ReservationMembersPicker from "./slides/ReservationMembersPicker";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 export default function CreateReservationWrapper({
   groups,
   users,
@@ -27,46 +18,56 @@ export default function CreateReservationWrapper({
   groups: Group[];
   users: User[];
 }) {
-  const icons = [
-    <CalendarMonthIcon key={1} />,
-    <EmojiPeopleIcon key={2} />,
-    <ChairIcon key={3} />,
-    <LeaderboardIcon key={4} />,
-  ];
-
-  const slide = [
-    <ReservationDatePicker key={1} />,
-    <ReservationMembersPicker key={2} />,
-    <ReservationRoomsPicker key={3} />,
-    <ReservationConclusion key={4} />,
-  ];
-  const [navigate, setNavigate] = useState(3);
   return (
-    <div className="w-full h-full flex justify-center items-center">
-      <Paper
-        sx={{ height: 672 }}
-        className="p-2 w-full max-w-2xl flex flex-col"
-      >
-        <div className="flex-1">{slide[navigate]}</div>
-        <div className="mx-auto">
-          <Pagination
-            count={4}
-            renderItem={(item: any) => {
-              if (item.type === "page") {
-                return (
-                  <IconButton onClick={() => setNavigate(item.page - 1)}>
-                    {navigate >= item.page ? (
-                      <DoneAllIcon color="success" />
-                    ) : (
-                      <>{icons[item.page - 1]}</>
-                    )}
-                  </IconButton>
-                );
-              }
-            }}
-          />
-        </div>
-      </Paper>
-    </div>
+    <form className="flex flex-col">
+      <div className="flex justify-between mb-2 items-center">
+        <Typography variant="h4">Nová rezervace</Typography>
+        <Button variant="outlined" type="submit">
+          Uložit
+        </Button>
+      </div>
+      <Accordion>
+        <AccordionSummary expandIcon={<CheckCircleIcon color="success" />}>
+          <div className="flex gap-5 items-center">
+            <Typography variant="h6">Termín rezervace</Typography>
+            <Typography>15. 6. 2002 - 15. 6. 2002</Typography>
+          </div>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            malesuada lacus ex, sit amet blandit leo lobortis eget.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <div className="flex gap-5 items-center">
+            <Typography variant="h6">Účastníci rezervace</Typography>
+            <Typography>20 účastníků</Typography>
+          </div>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            malesuada lacus ex, sit amet blandit leo lobortis eget.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <div className="flex gap-5 items-center">
+            <Typography variant="h6">Ubytování</Typography>
+            <Typography>5 pokojů</Typography>
+          </div>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            malesuada lacus ex, sit amet blandit leo lobortis eget.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+    </form>
   );
 }

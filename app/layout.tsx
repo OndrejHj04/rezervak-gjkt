@@ -27,7 +27,7 @@ export default function RootLayout({
             <TopBar />
             <SlidingMenu />
             <SpeedComponent />
-            <div className="flex flex-1 p-5">{children}</div>
+            <div className="p-5">{children}</div>
           </ClientProvider>
           <ToastContainer />
         </div>

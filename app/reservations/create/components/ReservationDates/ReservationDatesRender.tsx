@@ -28,9 +28,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CzechLocale from "dayjs/locale/cs";
 import dayjs from "dayjs";
 import * as isBetween from "dayjs/plugin/isBetween";
+import * as isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useForm } from "react-hook-form";
 dayjs.extend(isBetween as any);
+dayjs.extend(isSameOrAfter as any);
+dayjs.extend(isSameOrBefore as any);
 
 export default function ReservationDatesRender({
   reservations,
@@ -77,8 +82,16 @@ export default function ReservationDatesRender({
                 sx={{ width: 200 }}
                 value={selectedDates[0]}
                 shouldDisableDate={(date) =>
-                  reservations.some((r) =>
-                    dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
+                  reservations.some(
+                    (r) =>
+                      reservations.some((r) =>
+                        dayjs(date).isBetween(
+                          r.from_date,
+                          r.to_date,
+                          "day",
+                          "[]"
+                        )
+                      ) || dayjs(date).isSameOrAfter(selectedDates[1], "day")
                   )
                 }
                 onChange={(date) => setSelectedDates([date, selectedDates[1]])}
@@ -89,8 +102,16 @@ export default function ReservationDatesRender({
                 sx={{ width: 200 }}
                 value={selectedDates[1]}
                 shouldDisableDate={(date) =>
-                  reservations.some((r) =>
-                    dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
+                  reservations.some(
+                    (r) =>
+                      reservations.some((r) =>
+                        dayjs(date).isBetween(
+                          r.from_date,
+                          r.to_date,
+                          "day",
+                          "[]"
+                        )
+                      ) || dayjs(date).isSameOrBefore(selectedDates[0], "day")
                   )
                 }
                 onChange={(date) => setSelectedDates([selectedDates[0], date])}

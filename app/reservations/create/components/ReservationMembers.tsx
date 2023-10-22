@@ -1,3 +1,4 @@
+"use client";
 import {
   Accordion,
   AccordionDetails,
@@ -6,11 +7,23 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useState } from "react";
 
 export default function ReservationMembers() {
+  const [expanded, setExpanded] = useState(false);
+  const isValid = true;
+
   return (
-    <Accordion>
-      <AccordionSummary expandIcon={<CheckCircleIcon color="success" />}>
+    <Accordion expanded={expanded} onClick={() => setExpanded((c) => !c)}>
+      <AccordionSummary
+        expandIcon={
+          isValid && !expanded ? (
+            <CheckCircleIcon color="success" />
+          ) : (
+            <ExpandMoreIcon />
+          )
+        }
+      >
         <div className="flex gap-5 items-center">
           <Typography variant="h6">Účastníci rezervace</Typography>
           <Typography>15 účastníků</Typography>

@@ -11,6 +11,9 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ReservationMembers from "./components/ReservationMembers";
+import ReservationDates from "./components/ReservationDates";
+import ReservationRooms from "./components/ReservationRooms";
 export default function CreateReservationWrapper({
   groups,
   users,
@@ -26,48 +29,9 @@ export default function CreateReservationWrapper({
           Uložit
         </Button>
       </div>
-      <Accordion>
-        <AccordionSummary expandIcon={<CheckCircleIcon color="success" />}>
-          <div className="flex gap-5 items-center">
-            <Typography variant="h6">Termín rezervace</Typography>
-            <Typography>15. 6. 2002 - 15. 6. 2002</Typography>
-          </div>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <div className="flex gap-5 items-center">
-            <Typography variant="h6">Účastníci rezervace</Typography>
-            <Typography>20 účastníků</Typography>
-          </div>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <div className="flex gap-5 items-center">
-            <Typography variant="h6">Ubytování</Typography>
-            <Typography>5 pokojů</Typography>
-          </div>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
+      <ReservationDates />
+      <ReservationMembers />
+      <ReservationRooms />
     </form>
   );
 }

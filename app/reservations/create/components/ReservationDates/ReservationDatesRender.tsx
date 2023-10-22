@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Reservations } from "@/types";
 import {
   DateCalendar,
@@ -68,10 +68,36 @@ export default function ReservationDatesRender({
   const [expanded, setExpanded] = useState(true);
   const isValid = true;
   const [selectedDates, setSelectedDates] = useState<any[]>([null, null]);
+  const [afterReservation, setAfterReservation] = useState(Infinity);
 
   const { handleSubmit } = useForm();
   const onSubmit = (data: any) => {
     console.log(data);
+  };
+
+  useEffect(() => {
+    if (selectedDates[0]) {
+      const lowestDiff = reservations.reduce((lowest, r) => {
+        if (dayjs(selectedDates[0]).isBefore(r.from_date, "day")) {
+          const diff = dayjs(r.from_date).diff(selectedDates[0], "day");
+          return diff < lowest ? diff : lowest;
+        }
+        return lowest;
+      }, Infinity);
+      setAfterReservation(lowestDiff);
+    }
+  }, [selectedDates]);
+
+  const toDateDisabled = (date: any) => {
+    return (
+      reservations.some((r) =>
+        dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
+      ) ||
+      dayjs(date).isSameOrBefore(selectedDates[0], "day") ||
+      ((dayjs(date).isAfter(dayjs(selectedDates[0])) &&
+        dayjs(date).diff(dayjs(selectedDates[0]), "day")) as number) >
+        afterReservation
+    );
   };
 
   return (
@@ -104,24 +130,19 @@ export default function ReservationDatesRender({
               <StaticDatePicker
                 sx={{ width: 200 }}
                 value={selectedDates[0]}
+                slots={{
+                  day: renderDay,
+                }}
                 shouldDisableDate={(date) =>
-                  reservations.some(
-                    (r) =>
-                      reservations.some((r) =>
-                        dayjs(date).isBetween(
-                          r.from_date,
-                          r.to_date,
-                          "day",
-                          "[]"
-                        )
-                      ) || dayjs(date).isSameOrAfter(selectedDates[1], "day")
-                  )
+                  reservations.some((r) =>
+                    dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
+                  ) || dayjs(date).isSameOrAfter(selectedDates[1], "day")
                 }
                 onChange={(date) => setSelectedDates([date, selectedDates[1]])}
                 disableHighlightToday
                 slotProps={{
                   actionBar: { actions: ["cancel"] },
-                  day: { reservations },
+                  day: { reservations: reservations } as any,
                 }}
               />
               <StaticDatePicker
@@ -130,24 +151,12 @@ export default function ReservationDatesRender({
                 slots={{
                   day: renderDay,
                 }}
-                shouldDisableDate={(date) =>
-                  reservations.some(
-                    (r) =>
-                      reservations.some((r) =>
-                        dayjs(date).isBetween(
-                          r.from_date,
-                          r.to_date,
-                          "day",
-                          "[]"
-                        )
-                      ) || dayjs(date).isSameOrBefore(selectedDates[0], "day")
-                  )
-                }
+                shouldDisableDate={(date) => toDateDisabled(date)}
                 onChange={(date) => setSelectedDates([selectedDates[0], date])}
                 disableHighlightToday
                 slotProps={{
                   actionBar: { actions: ["cancel"] },
-                  day: { reservations },
+                  day: { reservations } as any,
                 }}
               />
             </div>

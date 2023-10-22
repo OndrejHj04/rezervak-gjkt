@@ -1,4 +1,3 @@
-"use client";
 import { Group } from "@/types";
 import { User } from "next-auth";
 import {
@@ -12,7 +11,7 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ReservationMembers from "./components/ReservationMembers";
-import ReservationDates from "./components/ReservationDates";
+import ReservationDates from "./components/ReservationDates/ReservationDates";
 import ReservationRooms from "./components/ReservationRooms";
 export default function CreateReservationWrapper({
   groups,
@@ -30,8 +29,6 @@ export default function CreateReservationWrapper({
         </Button>
       </div>
       <ReservationDates />
-      <ReservationMembers />
-      <ReservationRooms />
     </form>
   );
 }

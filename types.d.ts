@@ -21,3 +21,15 @@ export interface Group {
   users: GroupOwner[] | number[];
   owner: GroupOwner;
 }
+
+export interface Reservations {
+  id: number;
+  from_date: string;
+  to_date: string;
+  rooms: number;
+  purpose: string;
+  leader: id;
+  groups: number[];
+  users: number[];
+  code: string;
+}

@@ -1,3 +1,4 @@
+"use client";
 import {
   Accordion,
   AccordionDetails,
@@ -7,8 +8,13 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
+import { Reservations } from "@/types";
 
-export default function ReservationDates() {
+export default function ReservationDatesRender({
+  reservations,
+}: {
+  reservations: Reservations;
+}) {
   const [expanded, setExpanded] = useState(false);
   const isValid = true;
 

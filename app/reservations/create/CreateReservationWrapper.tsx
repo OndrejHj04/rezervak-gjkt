@@ -10,6 +10,7 @@ export default function CreateReservationWrapper() {
         <CreateButton />
       </div>
       <ReservationDates />
+      <ReservationMembers />
     </div>
   );
 }

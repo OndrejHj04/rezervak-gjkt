@@ -9,10 +9,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
 
-export default function ReservationMembers() {
+export default function ReservationMembersRender() {
   const [expanded, setExpanded] = useState(false);
   const isValid = true;
-
   return (
     <Accordion expanded={expanded} onClick={() => setExpanded((c) => !c)}>
       <AccordionSummary

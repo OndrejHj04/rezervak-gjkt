@@ -1,4 +1,4 @@
-import { Role } from "@/types";
+import { NewReservation, Role } from "@/types";
 import { User } from "next-auth";
 import { create } from "zustand";
 
@@ -19,6 +19,8 @@ interface stateInterface {
   setSelectedGroups: (groups: number[]) => void;
   darkMode: boolean;
   setDarkMode: (value: boolean) => void;
+  createReservation: NewReservation;
+  setCreateReservation: (value: NewReservation) => void;
 }
 
 export const store = create<stateInterface>((set) => ({
@@ -38,4 +40,6 @@ export const store = create<stateInterface>((set) => ({
   setSelectedGroups: (selectedGroups) => set({ selectedGroups }),
   darkMode: true,
   setDarkMode: (darkMode) => set({ darkMode }),
+  createReservation: { from_date: "", to_date: "" },
+  setCreateReservation: (createReservation) => set({ createReservation }),
 }));

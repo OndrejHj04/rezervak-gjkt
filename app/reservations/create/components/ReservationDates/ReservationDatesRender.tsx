@@ -16,9 +16,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useEffect, useState } from "react";
 import { Reservations } from "@/types";
 import {
-  DateCalendar,
-  DatePicker,
-  DatePickerToolbar,
   LocalizationProvider,
   PickersDay,
   StaticDatePicker,
@@ -30,9 +27,9 @@ import dayjs from "dayjs";
 import * as isBetween from "dayjs/plugin/isBetween";
 import * as isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import HotelIcon from "@mui/icons-material/Hotel";
-import CancelIcon from "@mui/icons-material/Cancel";
-import { Controller, set, useForm } from "react-hook-form";
+
+import { Controller, useForm } from "react-hook-form";
+import { store } from "@/store/store";
 
 dayjs.extend(isBetween as any);
 dayjs.extend(isSameOrAfter as any);
@@ -66,8 +63,9 @@ export default function ReservationDatesRender({
 }: {
   reservations: Reservations[];
 }) {
-  const [expanded, setExpanded] = useState(true);
-  const isValid = true;
+  const { createReservation, setCreateReservation } = store();
+  const [expanded, setExpanded] = useState(false);
+  const isValid = createReservation.from_date && createReservation.to_date;
   const [afterReservation, setAfterReservation] = useState(Infinity);
   const [beforeReservation, setBeforeReservation] = useState(Infinity);
   const [finalDate, setFinalDate] = useState("");
@@ -75,13 +73,20 @@ export default function ReservationDatesRender({
     defaultValues: { from_date: null, to_date: null },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = ({
+    from_date,
+    to_date,
+  }: {
+    from_date: string;
+    to_date: string;
+  }) => {
     setFinalDate(
-      `${dayjs(data.from_date).format("DD.MM.YYYY")} - ${dayjs(
-        data.to_date
-      ).format("DD.MM.YYYY")}`
+      `${dayjs(from_date).format("DD.MM.YYYY")} - ${dayjs(to_date).format(
+        "DD.MM.YYYY"
+      )}`
     );
     setExpanded(false);
+    setCreateReservation({ ...createReservation, from_date, to_date });
   };
 
   useEffect(() => {
@@ -133,7 +138,7 @@ export default function ReservationDatesRender({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit as any)}>
       <Accordion expanded={expanded}>
         <AccordionSummary
           onClick={() => setExpanded((c) => !c)}
@@ -217,6 +222,11 @@ export default function ReservationDatesRender({
                   onClick={() => {
                     reset();
                     setFinalDate("");
+                    setCreateReservation({
+                      ...createReservation,
+                      from_date: "",
+                      to_date: "",
+                    });
                   }}
                 >
                   zrušit

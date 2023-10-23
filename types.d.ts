@@ -22,6 +22,11 @@ export interface Group {
   owner: GroupOwner;
 }
 
+export interface NewReservation {
+  from_date: string;
+  to_date: string;
+}
+
 export interface Reservations {
   id: number;
   from_date: string;

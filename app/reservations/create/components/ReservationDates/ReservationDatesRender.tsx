@@ -32,7 +32,7 @@ import * as isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import HotelIcon from "@mui/icons-material/Hotel";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { useForm } from "react-hook-form";
+import { Controller, set, useForm } from "react-hook-form";
 
 dayjs.extend(isBetween as any);
 dayjs.extend(isSameOrAfter as any);
@@ -68,20 +68,27 @@ export default function ReservationDatesRender({
 }) {
   const [expanded, setExpanded] = useState(true);
   const isValid = true;
-  const [selectedDates, setSelectedDates] = useState<any[]>([null, null]);
   const [afterReservation, setAfterReservation] = useState(Infinity);
   const [beforeReservation, setBeforeReservation] = useState(Infinity);
+  const [finalDate, setFinalDate] = useState("");
+  const { handleSubmit, control, watch, formState, reset } = useForm({
+    defaultValues: { from_date: null, to_date: null },
+  });
 
-  const { handleSubmit } = useForm();
   const onSubmit = (data: any) => {
-    console.log(data);
+    setFinalDate(
+      `${dayjs(data.from_date).format("DD.MM.YYYY")} - ${dayjs(
+        data.to_date
+      ).format("DD.MM.YYYY")}`
+    );
+    setExpanded(false);
   };
-  console.log("xdd");
+
   useEffect(() => {
-    if (selectedDates[0] && !selectedDates[1]) {
+    if (watch("from_date")) {
       const lowestDiff = reservations.reduce((lowest, r) => {
-        if (dayjs(selectedDates[0]).isBefore(r.from_date, "day")) {
-          const diff = dayjs(r.from_date).diff(selectedDates[0], "day");
+        if (dayjs(watch("from_date")).isBefore(r.from_date, "day")) {
+          const diff = dayjs(r.from_date).diff(watch("from_date"), "day");
           return diff < lowest ? diff : lowest;
         }
         return lowest;
@@ -89,26 +96,26 @@ export default function ReservationDatesRender({
       setAfterReservation(lowestDiff);
     }
 
-    if (!selectedDates[0] && selectedDates[1]) {
+    if (watch("to_date")) {
       const lowestDiff = reservations.reduce((lowest, r) => {
-        if (dayjs(selectedDates[1]).isAfter(r.to_date, "day")) {
-          const diff = dayjs(selectedDates[1]).diff(r.to_date, "day");
+        if (dayjs(watch("to_date")).isAfter(r.to_date, "day")) {
+          const diff = dayjs(watch("to_date")).diff(r.to_date, "day");
           return diff < lowest ? diff : lowest;
         }
         return lowest;
       }, Infinity);
       setBeforeReservation(lowestDiff);
     }
-  }, [selectedDates, reservations]);
+  }, [watch(), reservations]);
 
   const toDateDisabled = (date: any) => {
     return (
       reservations.some((r) =>
         dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
       ) ||
-      dayjs(date).isSameOrBefore(selectedDates[0], "day") ||
-      ((dayjs(date).isAfter(dayjs(selectedDates[0])) &&
-        dayjs(date).diff(dayjs(selectedDates[0]), "day")) as number) >
+      dayjs(date).isSameOrBefore(watch("from_date"), "day") ||
+      ((dayjs(date).isAfter(dayjs(watch("from_date"))) &&
+        dayjs(date).diff(dayjs(watch("from_date")), "day")) as number) >
         afterReservation
     );
   };
@@ -118,9 +125,9 @@ export default function ReservationDatesRender({
       reservations.some((r) =>
         dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
       ) ||
-      dayjs(date).isSameOrAfter(selectedDates[1], "day") ||
-      ((dayjs(date).isBefore(dayjs(selectedDates[1])) &&
-        dayjs(selectedDates[1]).diff(dayjs(date), "day")) as number) >
+      dayjs(date).isSameOrAfter(watch("to_date"), "day") ||
+      ((dayjs(date).isBefore(dayjs(watch("to_date"))) &&
+        dayjs(watch("to_date")).diff(dayjs(date), "day")) as number) >
         beforeReservation
     );
   };
@@ -140,7 +147,7 @@ export default function ReservationDatesRender({
         >
           <div className="flex gap-5 items-center">
             <Typography variant="h6">Termín rezervace</Typography>
-            <Typography>17. 6. 2020 - 14. 8. 2021</Typography>
+            {finalDate && <Typography>{finalDate}</Typography>}
           </div>
         </AccordionSummary>
         <AccordionDetails>
@@ -151,35 +158,70 @@ export default function ReservationDatesRender({
               csCZ.components.MuiLocalizationProvider.defaultProps.localeText
             }
           >
-            <div className="flex gap-2">
-              <StaticDatePicker
-                sx={{ width: 200 }}
-                value={selectedDates[0]}
-                slots={{
-                  day: renderDay,
-                }}
-                shouldDisableDate={(date) => afterDateDisabled(date)}
-                onChange={(date) => setSelectedDates([date, selectedDates[1]])}
-                disableHighlightToday
-                slotProps={{
-                  actionBar: { actions: ["cancel"] },
-                  day: { reservations: reservations } as any,
-                }}
+            <div className="flex gap-2 items-start">
+              <Controller
+                control={control}
+                rules={{ required: true }}
+                name="from_date"
+                render={({ field: { onChange, value } }) => (
+                  <StaticDatePicker
+                    sx={{ width: 200 }}
+                    value={value}
+                    slots={{
+                      day: renderDay,
+                    }}
+                    shouldDisableDate={(date) => afterDateDisabled(date)}
+                    onChange={(date) => onChange(date)}
+                    disableHighlightToday
+                    slotProps={{
+                      actionBar: { actions: [] },
+                      day: { reservations: reservations } as any,
+                    }}
+                  />
+                )}
               />
-              <StaticDatePicker
-                sx={{ width: 200 }}
-                value={selectedDates[1]}
-                slots={{
-                  day: renderDay,
-                }}
-                shouldDisableDate={(date) => toDateDisabled(date)}
-                onChange={(date) => setSelectedDates([selectedDates[0], date])}
-                disableHighlightToday
-                slotProps={{
-                  actionBar: { actions: ["cancel"] },
-                  day: { reservations } as any,
-                }}
+
+              <Controller
+                name="to_date"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <StaticDatePicker
+                    sx={{ width: 200 }}
+                    value={value}
+                    slots={{
+                      day: renderDay,
+                    }}
+                    shouldDisableDate={(date) => toDateDisabled(date)}
+                    onChange={(date) => onChange(date)}
+                    disableHighlightToday
+                    slotProps={{
+                      actionBar: { actions: [] },
+                      day: { reservations } as any,
+                    }}
+                  />
+                )}
               />
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="contained"
+                  type="submit"
+                  disabled={!formState.isValid}
+                >
+                  Uložit
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  disabled={!formState.isDirty}
+                  onClick={() => {
+                    reset();
+                    setFinalDate("");
+                  }}
+                >
+                  zrušit
+                </Button>
+              </div>
             </div>
           </LocalizationProvider>
         </AccordionDetails>

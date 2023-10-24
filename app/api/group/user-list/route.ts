@@ -28,7 +28,7 @@ export async function GET(req: Request) {
 
     const ownerDetail = (await query({
       query: `
-        SELECT first_name, last_name, image, email FROM users WHERE id IN (${getUserGroups.map(
+        SELECT id, first_name, last_name, image, email FROM users WHERE id IN (${getUserGroups.map(
           (group: any) => group.owner
         )})
         `,
@@ -36,7 +36,7 @@ export async function GET(req: Request) {
     })) as any;
 
     getUserGroups.forEach((group: Group, index: number) => {
-      group.owner = ownerDetail[index];
+      group.owner = ownerDetail.find((owner: any) => owner.id === group.owner);
     });
 
     return NextResponse.json({

@@ -7,11 +7,13 @@ import {
   Button,
   Checkbox,
   IconButton,
+  InputAdornment,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  TextField,
   Typography,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -21,6 +23,8 @@ import { Group, GroupOwner } from "@/types";
 import { User } from "next-auth";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { store } from "@/store/store";
+import SearchIcon from "@mui/icons-material/Search";
+import { set } from "lodash";
 
 export default function ReservationMembersRender({
   groups,
@@ -30,16 +34,45 @@ export default function ReservationMembersRender({
   users: User[];
 }) {
   const { setCreateReservation, createReservation } = store();
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const isValid = createReservation.members.length;
   const [groupsIncluded, setGroupsIncluded] = useState<number[]>([]);
   const [members, setMembers] = useState<number[]>([]);
+  const [groupsFilter, setGroupsFilter] = useState<Group[]>(groups);
+  const [groupsSearch, setGroupsSearch] = useState("");
+
+  const [usersFilter, setUsersFilter] = useState<User[]>(users);
+  const [usersSearch, setUsersSearch] = useState("");
 
   const makeReset = () => {
     setMembers([]);
     setGroupsIncluded([]);
     setCreateReservation({ ...createReservation, members: [], groups: [] });
   };
+
+  useEffect(() => {
+    if (!usersSearch) {
+      setUsersFilter(users);
+    } else {
+      setUsersFilter(
+        users.filter((user: any) =>
+          user.full_name.toLowerCase().includes(usersSearch.toLowerCase())
+        )
+      );
+    }
+  }, [usersSearch]);
+
+  useEffect(() => {
+    if (!groupsSearch) {
+      setGroupsFilter(groups);
+    } else {
+      setGroupsFilter(
+        groups.filter((group) =>
+          group.name.toLowerCase().includes(groupsSearch.toLowerCase())
+        )
+      );
+    }
+  }, [groupsSearch]);
 
   const handleSubmit = () => {
     setCreateReservation({
@@ -71,9 +104,30 @@ export default function ReservationMembersRender({
           )}
         </div>
       </AccordionSummary>
-      <AccordionDetails className="flex">
-        <List subheader={<Typography variant="h6">Skupiny</Typography>}>
-          {groups.map((group) => {
+      <AccordionDetails className="flex gap-2">
+        <List
+          sx={{ width: 320 }}
+          subheader={
+            <div className="flex items-center gap-2">
+              <Typography variant="h6">Skupiny</Typography>
+              <TextField
+                value={groupsSearch}
+                onChange={(e) => setGroupsSearch(e.target.value)}
+                sx={{ width: 200 }}
+                size="small"
+                label="Hledat skupinu..."
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+          }
+        >
+          {groupsFilter.map((group) => {
             const isChecked = groupsIncluded.includes(group.id);
             const handleClick = () => {
               if (isChecked) {
@@ -102,29 +156,52 @@ export default function ReservationMembersRender({
             );
           })}
         </List>
-        <List subheader={<Typography variant="h6">Uživatelé</Typography>}>
-          {users.map((user) => {
-            const isChecked = members.includes(user.id);
-            const handleClick = () => {
-              if (isChecked) {
-                setMembers((c) => c.filter((i) => i !== user.id));
-              } else {
-                setMembers((c) => [...c, user.id]);
-              }
-            };
-            return (
-              <ListItemButton key={user.id} onClick={handleClick}>
-                <Checkbox checked={isChecked} />
-                <ListItemIcon>
-                  <AvatarWrapper data={user} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={`${user.first_name} ${user.last_name}`}
-                  secondary={user.email}
-                />
-              </ListItemButton>
-            );
-          })}
+        <List
+          sx={{ width: 320 }}
+          subheader={
+            <div className="flex items-center gap-2">
+              <Typography variant="h6">Uživatelé</Typography>
+              <TextField
+                value={usersSearch}
+                onChange={(e) => setUsersSearch(e.target.value)}
+                sx={{ width: 200 }}
+                size="small"
+                label="Hledat uživatele..."
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+          }
+        >
+          <div style={{ overflow: "auto", height: 250 }}>
+            {usersFilter.map((user) => {
+              const isChecked = members.includes(user.id);
+              const handleClick = () => {
+                if (isChecked) {
+                  setMembers((c) => c.filter((i) => i !== user.id));
+                } else {
+                  setMembers((c) => [...c, user.id]);
+                }
+              };
+              return (
+                <ListItemButton key={user.id} onClick={handleClick}>
+                  <Checkbox checked={isChecked} />
+                  <ListItemIcon>
+                    <AvatarWrapper data={user} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={`${user.first_name} ${user.last_name}`}
+                    secondary={user.email}
+                  />
+                </ListItemButton>
+              );
+            })}
+          </div>
         </List>
         <div className="flex flex-col gap-2">
           <Button

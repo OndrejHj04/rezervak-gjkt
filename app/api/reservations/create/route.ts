@@ -12,17 +12,17 @@ export async function POST(req: Request) {
     //users = [id]
     //code = string
 
-    const { fromDate, toDate, leader, rooms, groups, purpouse, users } =
+    const { from_date, to_date, leader, rooms, groups, purpouse, members } =
       await req.json();
-
-    const data = (await query({
-      query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, groups, users, code) VALUES ("${fromDate}", "${toDate}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
-        groups
-      )}", "${JSON.stringify(users)}", "${Math.round(
-        Math.random() * 1000000
-      )}")`,
-      values: [],
-    })) as any;
+    console.log(from_date, to_date, leader, rooms, groups, purpouse, members);
+    // const data = (await query({
+    //   query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, groups, users, code) VALUES ("${fromDate}", "${toDate}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
+    //     groups
+    //   )}", "${JSON.stringify(users)}", "${Math.round(
+    //     Math.random() * 1000000
+    //   )}")`,
+    //   values: [],
+    // })) as any;
 
     return NextResponse.json({
       success: true,

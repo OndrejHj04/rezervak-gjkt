@@ -8,7 +8,11 @@ export default function CreateButton() {
   const { createReservation } = store();
 
   const handleSubmit = () => {
-    console.log(createReservation);
+    console.log("submit");
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/create`, {
+      method: "POST",
+      body: JSON.stringify(createReservation),
+    });
   };
 
   return (
@@ -16,7 +20,14 @@ export default function CreateButton() {
       variant="outlined"
       type="submit"
       onClick={handleSubmit}
-      disabled={_.some(createReservation, _.isEmpty)}
+      disabled={
+        !Object.values(createReservation).every((value: any) => {
+          if (Array.isArray(value)) {
+            return value.length > 0;
+          }
+          return Boolean(value);
+        })
+      }
     >
       Uložit
     </Button>

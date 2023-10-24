@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { Group, GroupOwner } from "@/types";
 import { User } from "next-auth";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
+import { store } from "@/store/store";
 
 export default function ReservationMembersRender({
   groups,
@@ -28,14 +29,25 @@ export default function ReservationMembersRender({
   groups: Group[];
   users: User[];
 }) {
-  const [expanded, setExpanded] = useState(true);
-  const isValid = true;
+  const { setCreateReservation, createReservation } = store();
+  const [expanded, setExpanded] = useState(false);
+  const isValid = createReservation.members.length;
   const [groupsIncluded, setGroupsIncluded] = useState<number[]>([]);
   const [members, setMembers] = useState<number[]>([]);
 
   const makeReset = () => {
     setMembers([]);
     setGroupsIncluded([]);
+    setCreateReservation({ ...createReservation, members: [], groups: [] });
+  };
+
+  const handleSubmit = () => {
+    setCreateReservation({
+      ...createReservation,
+      members,
+      groups: groupsIncluded,
+    });
+    setExpanded(false);
   };
 
   return (
@@ -52,7 +64,11 @@ export default function ReservationMembersRender({
       >
         <div className="flex gap-5 items-center">
           <Typography variant="h6">Účastníci rezervace</Typography>
-          <Typography>15 účastníků</Typography>
+          {!!createReservation.members.length && (
+            <Typography>
+              {createReservation.members.length} Účastníků
+            </Typography>
+          )}
         </div>
       </AccordionSummary>
       <AccordionDetails className="flex">
@@ -111,7 +127,13 @@ export default function ReservationMembersRender({
           })}
         </List>
         <div className="flex flex-col gap-2">
-          <Button variant="outlined">Uložit</Button>
+          <Button
+            variant="contained"
+            disabled={!groupsIncluded.length && !members.length}
+            onClick={handleSubmit}
+          >
+            Uložit
+          </Button>
           <Button
             variant="contained"
             color="error"

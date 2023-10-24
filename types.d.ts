@@ -25,6 +25,8 @@ export interface Group {
 export interface NewReservation {
   from_date: string;
   to_date: string;
+  groups: number[];
+  members: number[];
 }
 
 export interface Reservations {

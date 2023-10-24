@@ -40,6 +40,6 @@ export const store = create<stateInterface>((set) => ({
   setSelectedGroups: (selectedGroups) => set({ selectedGroups }),
   darkMode: true,
   setDarkMode: (darkMode) => set({ darkMode }),
-  createReservation: { from_date: "", to_date: "" },
+  createReservation: { from_date: "", to_date: "", groups: [], members: [] },
   setCreateReservation: (createReservation) => set({ createReservation }),
 }));

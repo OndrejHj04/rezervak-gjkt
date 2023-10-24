@@ -27,6 +27,7 @@ export interface NewReservation {
   to_date: string;
   groups: number[];
   members: number[];
+  rooms: number;
 }
 
 export interface Reservations {

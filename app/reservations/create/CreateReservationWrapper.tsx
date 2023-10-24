@@ -2,6 +2,7 @@ import { Typography } from "@mui/material";
 import ReservationMembers from "./components/ReservationMembers/ReservationMembers";
 import ReservationDates from "./components/ReservationDates/ReservationDates";
 import CreateButton from "./CreateButton";
+import ReservationRooms from "./components/ReservationRooms/ReservationRooms";
 export default function CreateReservationWrapper() {
   return (
     <div className="flex flex-col">
@@ -11,6 +12,7 @@ export default function CreateReservationWrapper() {
       </div>
       <ReservationDates />
       <ReservationMembers />
+      <ReservationRooms />
     </div>
   );
 }

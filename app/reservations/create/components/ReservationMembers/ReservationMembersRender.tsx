@@ -34,7 +34,7 @@ export default function ReservationMembersRender({
   users: User[];
 }) {
   const { setCreateReservation, createReservation } = store();
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const isValid = createReservation.members.length;
   const [groupsIncluded, setGroupsIncluded] = useState<number[]>([]);
   const [members, setMembers] = useState<number[]>([]);
@@ -127,34 +127,36 @@ export default function ReservationMembersRender({
             </div>
           }
         >
-          {groupsFilter.map((group) => {
-            const isChecked = groupsIncluded.includes(group.id);
-            const handleClick = () => {
-              if (isChecked) {
-                setGroupsIncluded((c) => c.filter((i) => i !== group.id));
-                setMembers((c) =>
-                  c.filter((i) => !group.users.includes(i as any))
-                );
-              } else {
-                setGroupsIncluded((c) => [...c, group.id]);
-                setMembers((c) => [
-                  ...(new Set(c.concat(group.users as any)) as any),
-                ]);
-              }
-            };
-            return (
-              <ListItemButton key={group.id} onClick={handleClick}>
-                <Checkbox checked={isChecked} />
-                <ListItemIcon>
-                  <Avatar>{group.name[0].toUpperCase()}</Avatar>
-                </ListItemIcon>
-                <ListItemText
-                  primary={group.name}
-                  secondary={group.owner.email}
-                />
-              </ListItemButton>
-            );
-          })}
+          <div style={{ overflow: "auto", height: 250 }}>
+            {groupsFilter.map((group) => {
+              const isChecked = groupsIncluded.includes(group.id);
+              const handleClick = () => {
+                if (isChecked) {
+                  setGroupsIncluded((c) => c.filter((i) => i !== group.id));
+                  setMembers((c) =>
+                    c.filter((i) => !group.users.includes(i as any))
+                  );
+                } else {
+                  setGroupsIncluded((c) => [...c, group.id]);
+                  setMembers((c) => [
+                    ...(new Set(c.concat(group.users as any)) as any),
+                  ]);
+                }
+              };
+              return (
+                <ListItemButton key={group.id} onClick={handleClick}>
+                  <Checkbox checked={isChecked} />
+                  <ListItemIcon>
+                    <Avatar>{group.name[0].toUpperCase()}</Avatar>
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={group.name}
+                    secondary={group.owner.email}
+                  />
+                </ListItemButton>
+              );
+            })}
+          </div>
         </List>
         <List
           sx={{ width: 320 }}

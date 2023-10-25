@@ -28,6 +28,8 @@ export interface NewReservation {
   groups: number[];
   members: number[];
   rooms: number;
+  leader: number;
+  purpose: string;
 }
 
 export interface Reservations {

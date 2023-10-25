@@ -3,6 +3,7 @@ import ReservationMembers from "./components/ReservationMembers/ReservationMembe
 import ReservationDates from "./components/ReservationDates/ReservationDates";
 import CreateButton from "./CreateButton";
 import ReservationRooms from "./components/ReservationRooms/ReservationRooms";
+import ReservationDetail from "./components/ReservationDetail/ReservationDetail";
 export default function CreateReservationWrapper() {
   return (
     <div className="flex flex-col">
@@ -13,6 +14,7 @@ export default function CreateReservationWrapper() {
       <ReservationDates />
       <ReservationMembers />
       <ReservationRooms />
+      <ReservationDetail />
     </div>
   );
 }

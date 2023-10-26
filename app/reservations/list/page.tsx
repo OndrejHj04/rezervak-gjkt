@@ -11,6 +11,7 @@ import CheckboxComponent from "./components/CheckboxComponent";
 import UserListItem from "@/app/user/list/UserListItem";
 import { Reservation } from "@/types";
 import ReservationListItem from "./components/ReservationListItem";
+import TrashBin from "./components/TrashBin";
 
 const getReservations = async () => {
   const req = await fetch(
@@ -23,9 +24,10 @@ const getReservations = async () => {
 
 export default async function ReservationsListPage() {
   const reservations = await getReservations();
-  console.log(reservations);
+
   return (
     <div className="flex flex-col w-full gap-2">
+      <TrashBin />
       <Paper className="w-full p-2">
         <Table>
           <TableHead>
@@ -33,21 +35,23 @@ export default async function ReservationsListPage() {
               <TableCell>
                 <CheckboxComponent reservations={reservations} />
               </TableCell>
-              <TableCell></TableCell>
               <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Jméno" />
+                <Chip label="Začátek" />
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Email" />
+                <Chip label="Konec" />
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Role" />
+                <Chip label="Důvod" />
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Datum narození" />
+                <Chip label="Počet účastníků" />
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Ověřený účet" />
+                <Chip label="Vedoucí" />
+              </TableCell>
+              <TableCell sx={{ padding: 1.5 }}>
+                <Chip label="Skupiny" />
               </TableCell>
             </TableRow>
           </TableHead>

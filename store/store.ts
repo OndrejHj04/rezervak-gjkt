@@ -21,6 +21,8 @@ interface stateInterface {
   setDarkMode: (value: boolean) => void;
   createReservation: NewReservation;
   setCreateReservation: (value: NewReservation) => void;
+  selectedReservations: number[];
+  setSelectedReservations: (value: number[]) => void;
 }
 
 export const store = create<stateInterface>((set) => ({
@@ -50,4 +52,7 @@ export const store = create<stateInterface>((set) => ({
     purpouse: "",
   },
   setCreateReservation: (createReservation) => set({ createReservation }),
+  selectedReservations: [],
+  setSelectedReservations: (selectedReservations) =>
+    set({ selectedReservations }),
 }));

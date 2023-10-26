@@ -14,7 +14,7 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useEffect, useState } from "react";
-import { Reservations } from "@/types";
+import { Reservation } from "@/types";
 import {
   LocalizationProvider,
   PickersDay,
@@ -61,7 +61,7 @@ const renderDay = (props: any) => {
 export default function ReservationDatesRender({
   reservations,
 }: {
-  reservations: Reservations[];
+  reservations: Reservation[];
 }) {
   const { createReservation, setCreateReservation } = store();
   const [expanded, setExpanded] = useState(false);

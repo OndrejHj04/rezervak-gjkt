@@ -32,7 +32,7 @@ export interface NewReservation {
   purpouse: string;
 }
 
-export interface Reservations {
+export interface Reservation {
   id: number;
   from_date: string;
   to_date: string;

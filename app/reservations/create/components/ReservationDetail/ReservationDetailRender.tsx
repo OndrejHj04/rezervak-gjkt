@@ -23,9 +23,9 @@ import { set } from "lodash";
 export default function ReservationDetailRender({ users }: { users: User[] }) {
   const { data } = useSession();
   const { createReservation, setCreateReservation } = store();
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const reservationValidation =
-    createReservation.leader && createReservation.purpose;
+    createReservation.leader && createReservation.purpouse;
   const {
     control,
     handleSubmit,
@@ -40,8 +40,9 @@ export default function ReservationDetailRender({ users }: { users: User[] }) {
     setCreateReservation({
       ...createReservation,
       leader: data.leader.id,
-      purpose: data.purpose,
+      purpouse: data.purpouse,
     });
+    setExpanded(false);
   };
 
   useEffect(() => {
@@ -73,7 +74,7 @@ export default function ReservationDetailRender({ users }: { users: User[] }) {
               Vedoucí{" "}
               {
                 users.find((user) => user.id === createReservation.leader)
-                  ?.first_name
+                  ?.full_name
               }
             </Typography>
           )}
@@ -82,7 +83,7 @@ export default function ReservationDetailRender({ users }: { users: User[] }) {
       <AccordionDetails>
         <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2">
           <TextField
-            {...register("purpose", { required: true })}
+            {...register("purpouse", { required: true })}
             variant="outlined"
             label="Účel rezervace"
           />
@@ -134,10 +135,10 @@ export default function ReservationDetailRender({ users }: { users: User[] }) {
                 setCreateReservation({
                   ...createReservation,
                   leader: 0,
-                  purpose: "",
+                  purpouse: "",
                 });
                 reset({
-                  purpose: "",
+                  purpouse: "",
                   leader: users.find((user) => user.id === data?.user.id),
                 });
               }}

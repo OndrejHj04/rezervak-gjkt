@@ -44,6 +44,7 @@ declare module "next-auth" {
     active: boolean;
     children: number[];
     parent: number;
+    full_name: string;
   }
 }
 

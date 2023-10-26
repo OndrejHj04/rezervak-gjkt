@@ -115,6 +115,7 @@ export default function ReservationDatesRender({
 
   const toDateDisabled = (date: any) => {
     return (
+      dayjs().isAfter(date) ||
       reservations.some((r) =>
         dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
       ) ||
@@ -127,6 +128,7 @@ export default function ReservationDatesRender({
 
   const afterDateDisabled = (date: any) => {
     return (
+      dayjs().isAfter(date) ||
       reservations.some((r) =>
         dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
       ) ||

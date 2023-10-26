@@ -3,26 +3,17 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    //fromDate = YYYY-MM-DD
-    //toDate = YYYY-MM-DD
-    //leader = id
-    //rooms = [id]
-    //groups = [id]
-    //purpouse = string
-    //users = [id]
-    //code = string
-
     const { from_date, to_date, leader, rooms, groups, purpouse, members } =
       await req.json();
-    console.log(from_date, to_date, leader, rooms, groups, purpouse, members);
-    // const data = (await query({
-    //   query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, groups, users, code) VALUES ("${fromDate}", "${toDate}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
-    //     groups
-    //   )}", "${JSON.stringify(users)}", "${Math.round(
-    //     Math.random() * 1000000
-    //   )}")`,
-    //   values: [],
-    // })) as any;
+
+    const data = (await query({
+      query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, groups, users, code) VALUES ("${from_date}", "${to_date}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
+        groups
+      )}", "${JSON.stringify(members)}", "${Math.round(
+        Math.random() * 1000000
+      )}")`,
+      values: [],
+    })) as any;
 
     return NextResponse.json({
       success: true,

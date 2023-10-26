@@ -29,7 +29,7 @@ export interface NewReservation {
   members: number[];
   rooms: number;
   leader: number;
-  purpose: string;
+  purpouse: string;
 }
 
 export interface Reservations {
@@ -37,7 +37,7 @@ export interface Reservations {
   from_date: string;
   to_date: string;
   rooms: number;
-  purpose: string;
+  purpouse: string;
   leader: id;
   groups: number[];
   users: number[];

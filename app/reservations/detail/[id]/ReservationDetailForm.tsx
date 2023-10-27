@@ -10,6 +10,7 @@ import {
   CardHeader,
   Checkbox,
   Divider,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -22,13 +23,15 @@ import {
   Typography,
 } from "@mui/material";
 import ReservationCalendar from "./ReservationCalendar";
-import { use, useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import InfoIcon from "@mui/icons-material/Info";
+import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 
 export default function ReservationDetailForm({
   reservation,
@@ -48,7 +51,28 @@ export default function ReservationDetailForm({
   };
 
   const { push } = useRouter();
-  const handleCheck = (user: any) => {};
+  const [selectedUsers, setSelecetedUsers] = useState<number[]>([]);
+  const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
+
+  const handleCheckUser = (id: number) => {
+    if (selectedUsers.includes(id)) {
+      setSelecetedUsers(selectedUsers.filter((user) => user !== id));
+    } else {
+      setSelecetedUsers([...selectedUsers, id]);
+    }
+  };
+
+  const handleCheckGroup = (id: number) => {
+    if (selectedGroups.includes(id)) {
+      setSelectedGroups(selectedUsers.filter((group) => group !== id));
+    } else {
+      setSelectedGroups([...selectedUsers, id]);
+    }
+  };
+
+  const handleRemoveGroups = () => {};
+  const handleRemoveUsers = () => {};
+
   return (
     <>
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
@@ -132,7 +156,7 @@ export default function ReservationDetailForm({
                     <ListItem disablePadding key={user.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}
-                        onClick={() => push(`/user/detail/${user.id}`)}
+                        onClick={() => handleCheckUser(user.id)}
                       >
                         <ListItemIcon>
                           <AvatarWrapper data={user} />
@@ -145,7 +169,18 @@ export default function ReservationDetailForm({
                           }
                           secondary={user.email}
                         />
-                        <Checkbox disableRipple />
+                        <Checkbox
+                          disableRipple
+                          checked={selectedUsers.includes(user.id)}
+                        />
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            push(`/user/detail/${user.id}`);
+                          }}
+                        >
+                          <InfoIcon />
+                        </IconButton>
                       </ListItemButton>
                     </ListItem>
                   ))
@@ -160,10 +195,12 @@ export default function ReservationDetailForm({
                   variant="contained"
                   color="error"
                   endIcon={<DeleteForeverIcon />}
+                  disabled={!selectedUsers.length}
+                  onClick={handleRemoveUsers}
                 >
                   Odebrat vybrané uživatele
                 </Button>
-                <Button variant="contained" endIcon={<DeleteForeverIcon />}>
+                <Button variant="contained" endIcon={<AddToPhotosIcon />}>
                   Přidat skupiny
                 </Button>
               </div>
@@ -177,7 +214,7 @@ export default function ReservationDetailForm({
                     <ListItem disablePadding key={group.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}
-                        onClick={() => push(`/group/detail/${group.id}`)}
+                        onClick={() => handleCheckGroup(group.id)}
                       >
                         <ListItemIcon>
                           <Avatar />
@@ -186,7 +223,15 @@ export default function ReservationDetailForm({
                           primary={group.name}
                           secondary={"Počet členů: " + group.users.length}
                         />
-                        <Checkbox disableRipple />
+                        <Checkbox
+                          disableRipple
+                          checked={selectedGroups.includes(group.id)}
+                        />
+                        <IconButton
+                          onClick={() => push(`/group/detail/${group.id}`)}
+                        >
+                          <InfoIcon />
+                        </IconButton>
                       </ListItemButton>
                     </ListItem>
                   ))
@@ -201,10 +246,12 @@ export default function ReservationDetailForm({
                   variant="contained"
                   color="error"
                   endIcon={<DeleteForeverIcon />}
+                  disabled={!selectedGroups.length}
+                  onClick={handleRemoveGroups}
                 >
                   Odebrat vybrané skupiny
                 </Button>
-                <Button variant="contained" endIcon={<DeleteForeverIcon />}>
+                <Button variant="contained" endIcon={<AddToPhotosIcon />}>
                   Přidat skupiny
                 </Button>
               </div>

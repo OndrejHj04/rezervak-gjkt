@@ -21,7 +21,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import AddUserToGroupModal from "../../modal/AddUserToGroupModal";
 import { User } from "next-auth";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { toast } from "react-toastify";

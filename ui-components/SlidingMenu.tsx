@@ -16,6 +16,7 @@ import CollectionsIcon from "@mui/icons-material/Collections";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import GroupIcon from "@mui/icons-material/Group";
+import DateRangeIcon from "@mui/icons-material/DateRange";
 
 const icons = [
   DashboardIcon,
@@ -23,6 +24,7 @@ const icons = [
   AdminPanelSettingsIcon,
   FormatListBulletedIcon,
   GroupIcon,
+  DateRangeIcon,
 ];
 
 export default function SlidingMenu() {

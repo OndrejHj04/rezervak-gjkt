@@ -8,6 +8,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import AddUserModal from "@/sub-components/AddUserModal";
 import { store } from "@/store/store";
 import AddGroupModal from "@/sub-components/AddGroupModal";
+import { useRouter } from "next/navigation";
 
 const actions = [
   {
@@ -29,7 +30,7 @@ const actions = [
 
 export default function SpeedComponent() {
   const { modal, setModal, user } = store();
-
+  const { push } = useRouter();
   if (user?.role.role_id !== 1) return null;
   return (
     <>
@@ -45,7 +46,7 @@ export default function SpeedComponent() {
             tooltipTitle={action.name}
             onClick={() => {
               if (action.string) setModal(action.string);
-              else if (action.path) window.location.href = action.path;
+              else if (action.path) push(action.path);
             }}
           />
         ))}

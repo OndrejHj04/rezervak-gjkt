@@ -2,13 +2,14 @@
 import { store } from "@/store/store";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const { register, handleSubmit } = useForm();
   const { setUserLoading } = store();
-
+  const { push } = useRouter();
   const onSubmit = (data: any) => {
     signIn("credentials", {
       email: data.email,
@@ -19,7 +20,7 @@ export default function LoginPage() {
         toast.error("Nepodařilo se přihlásit.");
       } else {
         setUserLoading(true);
-        window.location.href = "/";
+        push("/");
       }
     });
   };

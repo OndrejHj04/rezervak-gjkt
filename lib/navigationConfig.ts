@@ -24,4 +24,9 @@ export const navConfig = [
     name: "Skupiny",
     roles: [1, 2, 3],
   },
+  {
+    path: "/reservations/list",
+    name: "Rezervace",
+    roles: [1, 2],
+  },
 ];

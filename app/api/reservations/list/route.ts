@@ -25,11 +25,15 @@ export async function GET(req: Request) {
         .join(",")})`,
       values: [],
     })) as any;
+    const groupIds = [
+      ...(new Set(data.map((item: any) => item.groups).flat()) as any),
+    ] as any;
+    const groupIdsList = groupIds.length ? groupIds : [-1];
 
     const groups = (await query({
-      query: `SELECT id, name FROM groups WHERE id IN(${[
-        ...(new Set(data.map((item: any) => item.groups).flat()) as any),
-      ]})`,
+      query: `SELECT id, name FROM groups WHERE id IN(${groupIdsList.join(
+        ","
+      )})`,
       values: [],
     })) as any;
 

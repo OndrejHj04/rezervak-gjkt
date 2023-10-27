@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { reservations } = await req.json();
-
+    console.log(reservations)
     const getReservations = (await query({
       query: `SELECT * FROM reservations WHERE id IN (${reservations.join(
         ","

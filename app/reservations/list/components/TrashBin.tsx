@@ -3,11 +3,25 @@ import { Badge, IconButton } from "@mui/material";
 import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { store } from "@/store/store";
+import MakeRefetch from "../refetch";
 
 export default function TrashBin() {
   const { selectedReservations, setSelectedReservations } = store();
 
-  const handleRemove = () => {};
+  const handleRemove = () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/delete`, {
+      method: "POST",
+      body: JSON.stringify({ reservations: selectedReservations }),
+    })      .then((res) => res.json())
+    .then((data) => {
+      toast.success("Skupiny byly úspěšně odstraněny");
+    })
+    .catch((err) => toast.error("Něco se pokazilo"))
+    .finally(() => {
+      MakeRefetch();
+      setSelectedReservations([]);
+    });
+  };
 
   return (
     <div>

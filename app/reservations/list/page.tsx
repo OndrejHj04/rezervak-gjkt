@@ -6,6 +6,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 import CheckboxComponent from "./components/CheckboxComponent";
 import UserListItem from "@/app/user/list/UserListItem";
@@ -56,12 +57,20 @@ export default async function ReservationsListPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {reservations.map((reservation) => (
-              <ReservationListItem
-                key={reservation.id}
-                reservation={reservation}
-              />
-            ))}
+            {reservations.length ? (
+              reservations.map((reservation) => (
+                <ReservationListItem
+                  key={reservation.id}
+                  reservation={reservation}
+                />
+              ))
+            ) : (
+              <TableCell colSpan={7}>
+                <Typography variant="h6">
+                  Žádné rezervace k zobrazení
+                </Typography>
+              </TableCell>
+            )}
           </TableBody>
         </Table>
       </Paper>

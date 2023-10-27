@@ -20,7 +20,10 @@ export default function CheckboxComponent({
   return (
     <Checkbox
       onClick={handleSelected}
-      checked={selectedReservations.length === reservations.length}
+      checked={
+        selectedReservations.length === reservations.length &&
+        Boolean(reservations.length)
+      }
     />
   );
 }

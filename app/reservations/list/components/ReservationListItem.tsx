@@ -14,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 
 export default function ReservationListItem({
   reservation,
@@ -21,7 +22,7 @@ export default function ReservationListItem({
   reservation: Reservation;
 }) {
   const { selectedReservations, setSelectedReservations } = store();
-
+  const { push } = useRouter();
   const handleSelect = (e: any) => {
     e.stopPropagation();
     if (selectedReservations.includes(reservation.id)) {
@@ -34,7 +35,10 @@ export default function ReservationListItem({
   };
 
   return (
-    <TableRow hover>
+    <TableRow
+      hover
+      onClick={() => push(`/reservations/detail/${reservation.id}`)}
+    >
       <TableCell>
         <Checkbox
           checked={selectedReservations.includes(reservation.id)}
@@ -59,7 +63,7 @@ export default function ReservationListItem({
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
-          <AvatarWrapper data={reservation.leader} />
+          <AvatarWrapper data={reservation.leader as any} />
           <Typography>
             {reservation.leader.first_name} {reservation.leader.last_name}
           </Typography>

@@ -22,7 +22,7 @@ export async function GET(
     });
 
     const leader = (await query({
-      query: `SELECT id, email, first_name, last_name FROM users WHERE id IN(${data.map(
+      query: `SELECT id, email, first_name, last_name, image FROM users WHERE id IN(${data.map(
         (reservation: any) => reservation.leader
       )})`,
       values: [],

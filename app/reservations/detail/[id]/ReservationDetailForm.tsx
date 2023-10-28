@@ -70,9 +70,9 @@ export default function ReservationDetailForm({
 
   const handleCheckGroup = (id: number) => {
     if (selectedGroups.includes(id)) {
-      setSelectedGroups(selectedUsers.filter((group) => group !== id));
+      setSelectedGroups(selectedGroups.filter((group) => group !== id));
     } else {
-      setSelectedGroups([...selectedUsers, id]);
+      setSelectedGroups([...selectedGroups, id]);
     }
   };
 
@@ -109,7 +109,9 @@ export default function ReservationDetailForm({
         <Modal open={usersModal} onClose={() => setUsersModal(false)}>
           {usersModal && (
             <AddUserModal
+              reservationId={reservation.id}
               currentUsers={reservation.users.map((user) => user.id)}
+              setModal={setUsersModal}
             />
           )}
         </Modal>
@@ -117,7 +119,9 @@ export default function ReservationDetailForm({
       {groupsModal && (
         <Modal open={groupsModal} onClose={() => setGroupsModal(false)}>
           <AddGroupsModal
+            reservationId={reservation.id}
             currentGroups={reservation.groups.map((group: any) => group.id)}
+            setModal={setGroupsModal}
           />
         </Modal>
       )}

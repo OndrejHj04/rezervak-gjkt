@@ -20,12 +20,8 @@ const style = {
 };
 
 export default function AddUserModal({
-  modal,
-  setModal,
   currentUsers,
 }: {
-  modal: boolean;
-  setModal: Dispatch<SetStateAction<boolean>>;
   currentUsers: number[];
 }) {
   const [users, setUsers] = useState(null);
@@ -37,44 +33,40 @@ export default function AddUserModal({
   }, []);
 
   return (
-    <Modal open={modal} onClose={() => setModal(false)}>
-      <Paper sx={style} className="p-2 flex flex-col">
-        <Typography variant="h5" className="mb-2 text-center">
-          Přidat uživatele
-        </Typography>
-        {users ? (
-          <Autocomplete
-            sx={{ width: 300 }}
-            multiple
-            filterSelectedOptions
-            getOptionDisabled={(option: any) =>
-              currentUsers.includes(option.id)
-            }
-            options={users}
-            getOptionLabel={(option: any) =>
-              `${option.first_name} ${option.last_name}`
-            }
-            renderOption={(props: any, option: any) => (
-              <div {...props}>
-                <Box className="flex items-center gap-2">
-                  <AvatarWrapper data={option} />
-                  <Typography className="ml-2">
-                    {option.first_name} {option.last_name}
-                  </Typography>
-                </Box>
-              </div>
-            )}
-            renderInput={(params) => (
-              <TextField {...params} label="Vybrat uživatele..." />
-            )}
-          />
-        ) : (
-          <CircularProgress />
-        )}
-        <Button variant="contained" className="mt-2">
-          Uložit
-        </Button>
-      </Paper>
-    </Modal>
+    <Paper sx={style} className="p-2 flex flex-col">
+      <Typography variant="h5" className="mb-2 text-center">
+        Přidat uživatele
+      </Typography>
+      {users ? (
+        <Autocomplete
+          sx={{ width: 300 }}
+          multiple
+          filterSelectedOptions
+          getOptionDisabled={(option: any) => currentUsers.includes(option.id)}
+          options={users}
+          getOptionLabel={(option: any) =>
+            `${option.first_name} ${option.last_name}`
+          }
+          renderOption={(props: any, option: any) => (
+            <div {...props}>
+              <Box className="flex items-center gap-2">
+                <AvatarWrapper data={option} />
+                <Typography className="ml-2">
+                  {option.first_name} {option.last_name}
+                </Typography>
+              </Box>
+            </div>
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Vybrat uživatele..." />
+          )}
+        />
+      ) : (
+        <CircularProgress />
+      )}
+      <Button variant="contained" className="mt-2">
+        Uložit
+      </Button>
+    </Paper>
   );
 }

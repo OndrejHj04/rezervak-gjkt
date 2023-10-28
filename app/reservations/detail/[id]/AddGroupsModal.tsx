@@ -20,12 +20,8 @@ const style = {
 };
 
 export default function AddGroupsModal({
-  modal,
-  setModal,
   currentGroups,
 }: {
-  modal: boolean;
-  setModal: Dispatch<SetStateAction<boolean>>;
   currentGroups: number[];
 }) {
   const [groups, setGroups] = useState(null);
@@ -37,32 +33,28 @@ export default function AddGroupsModal({
   }, []);
 
   return (
-    <Modal open={modal} onClose={() => setModal(false)}>
-      <Paper sx={style} className="p-2 flex flex-col">
-        <Typography variant="h5" className="mb-2 text-center">
-          Přidat skupiny
-        </Typography>
-        {groups ? (
-          <Autocomplete
-            sx={{ width: 300 }}
-            multiple
-            filterSelectedOptions
-            getOptionDisabled={(option: any) =>
-              currentGroups.includes(option.id)
-            }
-            options={groups}
-            getOptionLabel={(option: any) => option.name}
-            renderInput={(params) => (
-              <TextField {...params} label="Vybrat skupiny..." />
-            )}
-          />
-        ) : (
-          <CircularProgress />
-        )}
-        <Button variant="contained" className="mt-2">
-          Uložit
-        </Button>
-      </Paper>
-    </Modal>
+    <Paper sx={style} className="p-2 flex flex-col">
+      <Typography variant="h5" className="mb-2 text-center">
+        Přidat skupiny
+      </Typography>
+      {groups ? (
+        <Autocomplete
+          sx={{ width: 300 }}
+          multiple
+          filterSelectedOptions
+          getOptionDisabled={(option: any) => currentGroups.includes(option.id)}
+          options={groups}
+          getOptionLabel={(option: any) => option.name}
+          renderInput={(params) => (
+            <TextField {...params} label="Vybrat skupiny..." />
+          )}
+        />
+      ) : (
+        <CircularProgress />
+      )}
+      <Button variant="contained" className="mt-2">
+        Uložit
+      </Button>
+    </Paper>
   );
 }

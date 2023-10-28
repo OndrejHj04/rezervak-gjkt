@@ -17,6 +17,7 @@ import {
   ListItemIcon,
   ListItemText,
   MenuItem,
+  Modal,
   Paper,
   Select,
   TextField,
@@ -57,7 +58,7 @@ export default function ReservationDetailForm({
   const [selectedUsers, setSelecetedUsers] = useState<number[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
   const [usersModal, setUsersModal] = useState(false);
-  const [groupsModal, setGroupsModal] = useState(true);
+  const [groupsModal, setGroupsModal] = useState(false);
 
   const handleCheckUser = (id: number) => {
     if (selectedUsers.includes(id)) {
@@ -104,16 +105,23 @@ export default function ReservationDetailForm({
 
   return (
     <>
-      <AddUserModal
-        modal={usersModal}
-        setModal={setUsersModal}
-        currentUsers={reservation.users.map((user) => user.id)}
-      />
-      <AddGroupsModal
-        modal={groupsModal}
-        setModal={setGroupsModal}
-        currentGroups={reservation.groups.map((group: any) => group.id)}
-      />
+      {usersModal && (
+        <Modal open={usersModal} onClose={() => setUsersModal(false)}>
+          {usersModal && (
+            <AddUserModal
+              currentUsers={reservation.users.map((user) => user.id)}
+            />
+          )}
+        </Modal>
+      )}
+      {groupsModal && (
+        <Modal open={groupsModal} onClose={() => setGroupsModal(false)}>
+          <AddGroupsModal
+            currentGroups={reservation.groups.map((group: any) => group.id)}
+          />
+        </Modal>
+      )}
+
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-2 ml-auto flex gap-2">
           <Button variant="outlined" type="submit" color="error">

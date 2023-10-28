@@ -32,6 +32,7 @@ import { useRouter } from "next/navigation";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import InfoIcon from "@mui/icons-material/Info";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
+import { toast } from "react-toastify";
 
 export default function ReservationDetailForm({
   reservation,
@@ -70,8 +71,32 @@ export default function ReservationDetailForm({
     }
   };
 
-  const handleRemoveGroups = () => {};
-  const handleRemoveUsers = () => {};
+  const handleRemoveUsers = () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/remove-users`, {
+      method: "POST",
+      body: JSON.stringify({
+        reservation: reservation.id,
+        removeUsers: selectedUsers,
+        currentUsers: reservation.users.map((user: any) => user.id),
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => toast.success("Uživatelé byli odebráni z rezervace"))
+      .catch((e) => toast.error("Něco se nepovedlo"));
+  };
+  const handleRemoveGroups = () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/remove-groups`, {
+      method: "POST",
+      body: JSON.stringify({
+        reservation: reservation.id,
+        removeGroups: selectedGroups,
+        currentGroups: reservation.groups.map((group: any) => group.id),
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => toast.success("Skupiny byly odebrány z rezervace"))
+      .catch((e) => toast.error("Něco se nepovedlo"));
+  };
 
   return (
     <>

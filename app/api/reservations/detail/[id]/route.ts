@@ -36,12 +36,14 @@ export async function GET(
     })) as any;
     groups.map((group: any) => (group.users = JSON.parse(group.users as any)));
 
-    const users = (await query({
-      query: `SELECT id, first_name, last_name, email, image FROM users WHERE id IN(${data.map(
-        (reservation: any) => reservation.users.join(",")
-      )})`,
-      values: [],
-    })) as any;
+    const users = data.some((item: any) => item.users.length)
+      ? ((await query({
+          query: `SELECT id, first_name, last_name, email, image FROM users WHERE id IN(${data.map(
+            (reservation: any) => reservation.users.join(",")
+          )})`,
+          values: [],
+        })) as any)
+      : [];
 
     data.forEach((reservation: Reservation) => {
       reservation.leader = leader.find(

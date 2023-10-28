@@ -33,6 +33,8 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import InfoIcon from "@mui/icons-material/Info";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import { toast } from "react-toastify";
+import AddUserModal from "./AddUserModal";
+import AddGroupsModal from "./AddGroupsModal";
 
 export default function ReservationDetailForm({
   reservation,
@@ -54,6 +56,8 @@ export default function ReservationDetailForm({
   const { push } = useRouter();
   const [selectedUsers, setSelecetedUsers] = useState<number[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
+  const [usersModal, setUsersModal] = useState(false);
+  const [groupsModal, setGroupsModal] = useState(true);
 
   const handleCheckUser = (id: number) => {
     if (selectedUsers.includes(id)) {
@@ -100,6 +104,16 @@ export default function ReservationDetailForm({
 
   return (
     <>
+      <AddUserModal
+        modal={usersModal}
+        setModal={setUsersModal}
+        currentUsers={reservation.users.map((user) => user.id)}
+      />
+      <AddGroupsModal
+        modal={groupsModal}
+        setModal={setGroupsModal}
+        currentGroups={reservation.groups.map((group: any) => group.id)}
+      />
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-2 ml-auto flex gap-2">
           <Button variant="outlined" type="submit" color="error">
@@ -225,8 +239,12 @@ export default function ReservationDetailForm({
                 >
                   Odebrat vybrané uživatele
                 </Button>
-                <Button variant="contained" endIcon={<AddToPhotosIcon />}>
-                  Přidat skupiny
+                <Button
+                  variant="contained"
+                  onClick={() => setUsersModal(true)}
+                  endIcon={<AddToPhotosIcon />}
+                >
+                  Přidat uživatele
                 </Button>
               </div>
             </div>
@@ -276,7 +294,11 @@ export default function ReservationDetailForm({
                 >
                   Odebrat vybrané skupiny
                 </Button>
-                <Button variant="contained" endIcon={<AddToPhotosIcon />}>
+                <Button
+                  variant="contained"
+                  endIcon={<AddToPhotosIcon />}
+                  onClick={() => setGroupsModal(true)}
+                >
                   Přidat skupiny
                 </Button>
               </div>

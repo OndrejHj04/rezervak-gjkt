@@ -51,7 +51,19 @@ export default function ReservationDetailForm({
   } = useForm();
 
   const onSubmit = (data: any) => {
-    console.log(data);
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/edit-reservation/${reservation.id}`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          purpouse: data.purpouse,
+          rooms: Number(data.rooms),
+        }),
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => toast.success("Rezervace byla upravena"))
+      .catch((e) => toast.error("Něco se nepovedlo"));
   };
 
   const { push } = useRouter();
@@ -153,31 +165,18 @@ export default function ReservationDetailForm({
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <div className="flex flex-col gap-3 mx-3">
-                <Controller
-                  control={control}
-                  name="from_date"
-                  defaultValue={dayjs(reservation.from_date)}
-                  render={({ field: { onChange, value } }) => (
-                    <DatePicker
-                      value={value}
-                      onChange={onChange}
-                      label="Začátek rezervace"
-                      format="DD.MM.YYYY"
-                    />
-                  )}
+                <DatePicker
+                  value={dayjs(reservation.from_date)}
+                  disabled
+                  label="Začátek rezervace"
+                  format="DD.MM.YYYY"
                 />
-                <Controller
-                  control={control}
-                  name="to_date"
-                  defaultValue={dayjs(reservation.to_date)}
-                  render={({ field: { onChange, value } }) => (
-                    <DatePicker
-                      value={value}
-                      onChange={onChange}
-                      label="Konec rezervace"
-                      format="DD.MM.YYYY"
-                    />
-                  )}
+
+                <DatePicker
+                  value={dayjs(reservation.to_date)}
+                  disabled
+                  label="Konec rezervace"
+                  format="DD.MM.YYYY"
                 />
               </div>
             </LocalizationProvider>

@@ -30,6 +30,7 @@ export interface NewReservation {
   rooms: number;
   leader: number;
   purpouse: string;
+  instructions: string;
 }
 
 export interface Reservation {
@@ -43,4 +44,5 @@ export interface Reservation {
   users: { id: number; email: string; first_name: string; last_name: string }[];
   users: number[];
   code: string;
+  instructions: string;
 }

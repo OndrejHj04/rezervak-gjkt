@@ -9,7 +9,6 @@ import ReservationListMakeRefetch from "../list/refetch";
 
 export default function CreateButton() {
   const { createReservation, setCreateReservation } = store();
-  const { push } = useRouter();
 
   const setDefault = () => {
     setCreateReservation({
@@ -20,10 +19,10 @@ export default function CreateButton() {
       rooms: 0,
       leader: 0,
       purpouse: "",
+      instructions: "",
     });
   };
   const handleSubmit = () => {
-    console.log("submit");
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/create`, {
       method: "POST",
       body: JSON.stringify(createReservation),
@@ -31,7 +30,7 @@ export default function CreateButton() {
       .then((res) => res.json())
       .then((data) => {
         toast.success("Rezervace úspěšně vytvořena");
-        ReservationListMakeRefetch()
+        ReservationListMakeRefetch();
         setDefault();
       })
       .catch(() => {

@@ -87,13 +87,7 @@ export default function AddGroupModal() {
             error={!!errors.name}
             helperText={errors.name?.message}
           />
-          <TextField
-            multiline
-            label="Popis"
-            minRows={2}
-            maxRows={10}
-            {...register("description")}
-          />
+          <TextField multiline label="Popis" minRows={2} maxRows={10} />
 
           {accounts && (
             <Autocomplete

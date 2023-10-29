@@ -50,6 +50,7 @@ export const store = create<stateInterface>((set) => ({
     rooms: 0,
     leader: 0,
     purpouse: "",
+    instructions: "",
   },
   setCreateReservation: (createReservation) => set({ createReservation }),
   selectedReservations: [],

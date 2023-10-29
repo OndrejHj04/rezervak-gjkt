@@ -60,6 +60,7 @@ export default function ReservationDetailForm({
         body: JSON.stringify({
           purpouse: data.purpouse,
           rooms: Number(data.rooms),
+          instructions: data.instructions,
         }),
       }
     )
@@ -229,7 +230,14 @@ export default function ReservationDetailForm({
                 <MenuItem value={6}>Celá chata</MenuItem>
               </Select>
             </div>
-            <TextField multiline label="Popis" minRows={4} maxRows={4} />
+            <TextField
+              multiline
+              label="Pokyny pro účastníky"
+              minRows={4}
+              defaultValue={reservation.instructions}
+              maxRows={4}
+              {...register("instructions")}
+            />
           </div>
           <div className="flex gap-2">
             <div className="flex flex-col">

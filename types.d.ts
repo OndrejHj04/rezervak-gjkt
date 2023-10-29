@@ -45,4 +45,11 @@ export interface Reservation {
   users: number[];
   code: string;
   instructions: string;
+  status: {
+    id: number;
+    name: string;
+    color: string;
+    display_name: string;
+    icon: string;
+  };
 }

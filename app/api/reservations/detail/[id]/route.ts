@@ -1,5 +1,6 @@
 import { query } from "@/lib/db";
 import { Reservation } from "@/types";
+import { stat } from "fs";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -36,6 +37,13 @@ export async function GET(
     })) as any;
     groups.map((group: any) => (group.users = JSON.parse(group.users as any)));
 
+    const status = (await query({
+      query: `SELECT * FROM status WHERE id IN(${data.map(
+        (reservation: any) => reservation.status
+      )})`,
+      values: [],
+    })) as any;
+
     const users = data.some((item: any) => item.users.length)
       ? ((await query({
           query: `SELECT id, first_name, last_name, email, image FROM users WHERE id IN(${data.map(
@@ -55,6 +63,7 @@ export async function GET(
       reservation.users = reservation.users.map((user) =>
         users.find((grp: any) => grp.id === user)
       );
+      reservation.status = status[0];
     });
 
     return NextResponse.json({

@@ -39,12 +39,20 @@ export async function GET(req: Request) {
         values: [],
       })) as any;
 
+      const status = (await query({
+        query: `SELECT * FROM status`,
+        values: [],
+      })) as any;
+
       data.forEach((reservation: Reservation) => {
         reservation.leader = leader.find(
           (lead: any) => lead.id === reservation.leader
         );
         reservation.groups = reservation.groups.map((group) =>
           groups.find((grp: any) => grp.id === group)
+        );
+        reservation.status = status.find(
+          (state: any) => state.id === reservation.status
         );
       });
     }

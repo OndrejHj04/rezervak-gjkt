@@ -24,7 +24,7 @@ import { User } from "next-auth";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { store } from "@/store/store";
 import SearchIcon from "@mui/icons-material/Search";
-import { set } from "lodash";
+import PerfectScrollbar from "react-perfect-scrollbar";
 
 export default function ReservationMembersRender({
   groups,
@@ -127,35 +127,37 @@ export default function ReservationMembersRender({
             </div>
           }
         >
-          <div style={{ overflow: "auto", height: 250 }}>
-            {groupsFilter.map((group) => {
-              const isChecked = groupsIncluded.includes(group.id);
-              const handleClick = () => {
-                if (isChecked) {
-                  setGroupsIncluded((c) => c.filter((i) => i !== group.id));
-                  setMembers((c) =>
-                    c.filter((i) => !group.users.includes(i as any))
-                  );
-                } else {
-                  setGroupsIncluded((c) => [...c, group.id]);
-                  setMembers((c) => [
-                    ...(new Set(c.concat(group.users as any)) as any),
-                  ]);
-                }
-              };
-              return (
-                <ListItemButton key={group.id} onClick={handleClick}>
-                  <Checkbox checked={isChecked} />
-                  <ListItemIcon>
-                    <Avatar>{group.name[0].toUpperCase()}</Avatar>
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={group.name}
-                    secondary={group.owner.email}
-                  />
-                </ListItemButton>
-              );
-            })}
+          <div style={{ height: 250 }}>
+            <PerfectScrollbar>
+              {groupsFilter.map((group) => {
+                const isChecked = groupsIncluded.includes(group.id);
+                const handleClick = () => {
+                  if (isChecked) {
+                    setGroupsIncluded((c) => c.filter((i) => i !== group.id));
+                    setMembers((c) =>
+                      c.filter((i) => !group.users.includes(i as any))
+                    );
+                  } else {
+                    setGroupsIncluded((c) => [...c, group.id]);
+                    setMembers((c) => [
+                      ...(new Set(c.concat(group.users as any)) as any),
+                    ]);
+                  }
+                };
+                return (
+                  <ListItemButton key={group.id} onClick={handleClick}>
+                    <Checkbox checked={isChecked} />
+                    <ListItemIcon>
+                      <Avatar>{group.name[0].toUpperCase()}</Avatar>
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={group.name}
+                      secondary={group.owner.email}
+                    />
+                  </ListItemButton>
+                );
+              })}
+            </PerfectScrollbar>
           </div>
         </List>
         <List
@@ -180,29 +182,31 @@ export default function ReservationMembersRender({
             </div>
           }
         >
-          <div style={{ overflow: "auto", height: 250 }}>
-            {usersFilter.map((user) => {
-              const isChecked = members.includes(user.id);
-              const handleClick = () => {
-                if (isChecked) {
-                  setMembers((c) => c.filter((i) => i !== user.id));
-                } else {
-                  setMembers((c) => [...c, user.id]);
-                }
-              };
-              return (
-                <ListItemButton key={user.id} onClick={handleClick}>
-                  <Checkbox checked={isChecked} />
-                  <ListItemIcon>
-                    <AvatarWrapper data={user} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={`${user.first_name} ${user.last_name}`}
-                    secondary={user.email}
-                  />
-                </ListItemButton>
-              );
-            })}
+          <div style={{ height: 250 }}>
+            <PerfectScrollbar>
+              {usersFilter.map((user) => {
+                const isChecked = members.includes(user.id);
+                const handleClick = () => {
+                  if (isChecked) {
+                    setMembers((c) => c.filter((i) => i !== user.id));
+                  } else {
+                    setMembers((c) => [...c, user.id]);
+                  }
+                };
+                return (
+                  <ListItemButton key={user.id} onClick={handleClick}>
+                    <Checkbox checked={isChecked} />
+                    <ListItemIcon>
+                      <AvatarWrapper data={user} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={`${user.first_name} ${user.last_name}`}
+                      secondary={user.email}
+                    />
+                  </ListItemButton>
+                );
+              })}
+            </PerfectScrollbar>
           </div>
         </List>
         <div className="flex flex-col gap-2">

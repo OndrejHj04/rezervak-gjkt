@@ -8,6 +8,7 @@ import TopBar from "@/ui-components/TopBar";
 import SlidingMenu from "@/ui-components/SlidingMenu";
 import SpeedComponent from "@/ui-components/SpeedComponent";
 const inter = Inter({ subsets: ["latin"] });
+import "react-perfect-scrollbar/dist/css/styles.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",

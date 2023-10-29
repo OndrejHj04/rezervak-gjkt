@@ -172,13 +172,12 @@ export default function ReservationDatesRender({
                 name="from_date"
                 render={({ field: { onChange, value } }) => (
                   <StaticDatePicker
-                    sx={{ width: 200 }}
                     value={value}
                     slots={{
                       day: renderDay,
                     }}
-                    shouldDisableDate={(date) => afterDateDisabled(date)}
                     onChange={(date) => onChange(date)}
+                    disablePast
                     disableHighlightToday
                     slotProps={{
                       actionBar: { actions: [] },
@@ -194,7 +193,6 @@ export default function ReservationDatesRender({
                 rules={{ required: true }}
                 render={({ field: { onChange, value } }) => (
                   <StaticDatePicker
-                    sx={{ width: 200 }}
                     value={value}
                     slots={{
                       day: renderDay,

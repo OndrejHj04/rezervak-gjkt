@@ -38,6 +38,7 @@ import AddUserModal from "./AddUserModal";
 import AddGroupsModal from "./AddGroupsModal";
 import MakeReservationDetailRefetch from "./refetch";
 import MakeRefetch from "../../list/refetch";
+import PerfectScrollbar from "react-perfect-scrollbar";
 
 export default function ReservationDetailForm({
   reservation,
@@ -234,45 +235,47 @@ export default function ReservationDetailForm({
             <div className="flex flex-col">
               <Typography variant="h5">Uživatelé v rezervaci</Typography>
               <Divider />
-              <List sx={{ height: 400, overflowY: "auto" }}>
-                {reservation.users.length ? (
-                  reservation.users.map((user: any) => (
-                    <ListItem disablePadding key={user.id}>
-                      <ListItemButton
-                        sx={{ padding: 1 }}
-                        onClick={() => handleCheckUser(user.id)}
-                      >
-                        <ListItemIcon>
-                          <AvatarWrapper data={user} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Typography>
-                              {user.first_name} {user.last_name}
-                            </Typography>
-                          }
-                          secondary={user.email}
-                        />
-                        <Checkbox
-                          disableRipple
-                          checked={selectedUsers.includes(user.id)}
-                        />
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            push(`/user/detail/${user.id}`);
-                          }}
+              <List sx={{ height: 400 }}>
+                <PerfectScrollbar>
+                  {reservation.users.length ? (
+                    reservation.users.map((user: any) => (
+                      <ListItem disablePadding key={user.id}>
+                        <ListItemButton
+                          sx={{ padding: 1 }}
+                          onClick={() => handleCheckUser(user.id)}
                         >
-                          <InfoIcon />
-                        </IconButton>
-                      </ListItemButton>
-                    </ListItem>
-                  ))
-                ) : (
-                  <>
-                    <Typography>Žádní uživatelé ve rezervaci</Typography>
-                  </>
-                )}
+                          <ListItemIcon>
+                            <AvatarWrapper data={user} />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={
+                              <Typography>
+                                {user.first_name} {user.last_name}
+                              </Typography>
+                            }
+                            secondary={user.email}
+                          />
+                          <Checkbox
+                            disableRipple
+                            checked={selectedUsers.includes(user.id)}
+                          />
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              push(`/user/detail/${user.id}`);
+                            }}
+                          >
+                            <InfoIcon />
+                          </IconButton>
+                        </ListItemButton>
+                      </ListItem>
+                    ))
+                  ) : (
+                    <>
+                      <Typography>Žádní uživatelé ve rezervaci</Typography>
+                    </>
+                  )}
+                </PerfectScrollbar>
               </List>
               <div className="flex flex-col gap-2">
                 <Button
@@ -296,38 +299,40 @@ export default function ReservationDetailForm({
             <div className="flex flex-col">
               <Typography variant="h5">Skupiny v rezervaci</Typography>
               <Divider />
-              <List sx={{ height: 400, overflowY: "auto" }}>
-                {reservation.groups.length ? (
-                  reservation.groups.map((group: any) => (
-                    <ListItem disablePadding key={group.id}>
-                      <ListItemButton
-                        sx={{ padding: 1 }}
-                        onClick={() => handleCheckGroup(group.id)}
-                      >
-                        <ListItemIcon>
-                          <Avatar />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={group.name}
-                          secondary={"Počet členů: " + group.users.length}
-                        />
-                        <Checkbox
-                          disableRipple
-                          checked={selectedGroups.includes(group.id)}
-                        />
-                        <IconButton
-                          onClick={() => push(`/group/detail/${group.id}`)}
+              <List sx={{ height: 400 }}>
+                <PerfectScrollbar>
+                  {reservation.groups.length ? (
+                    reservation.groups.map((group: any) => (
+                      <ListItem disablePadding key={group.id}>
+                        <ListItemButton
+                          sx={{ padding: 1 }}
+                          onClick={() => handleCheckGroup(group.id)}
                         >
-                          <InfoIcon />
-                        </IconButton>
-                      </ListItemButton>
-                    </ListItem>
-                  ))
-                ) : (
-                  <>
-                    <Typography>Žádné skuiny v rezervaci</Typography>
-                  </>
-                )}
+                          <ListItemIcon>
+                            <Avatar />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={group.name}
+                            secondary={"Počet členů: " + group.users.length}
+                          />
+                          <Checkbox
+                            disableRipple
+                            checked={selectedGroups.includes(group.id)}
+                          />
+                          <IconButton
+                            onClick={() => push(`/group/detail/${group.id}`)}
+                          >
+                            <InfoIcon />
+                          </IconButton>
+                        </ListItemButton>
+                      </ListItem>
+                    ))
+                  ) : (
+                    <>
+                      <Typography>Žádné skuiny v rezervaci</Typography>
+                    </>
+                  )}
+                </PerfectScrollbar>
               </List>
               <div className="flex flex-col gap-2 ">
                 <Button

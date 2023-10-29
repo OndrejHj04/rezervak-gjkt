@@ -3,7 +3,7 @@ import { Badge, IconButton } from "@mui/material";
 import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { store } from "@/store/store";
-import MakeRefetch from "../refetch";
+import ReservationListMakeRefetch from "../refetch";
 
 export default function TrashBin() {
   const { selectedReservations, setSelectedReservations } = store();
@@ -18,7 +18,7 @@ export default function TrashBin() {
     })
     .catch((err) => toast.error("Něco se pokazilo"))
     .finally(() => {
-      MakeRefetch();
+      ReservationListMakeRefetch();
       setSelectedReservations([]);
     });
   };

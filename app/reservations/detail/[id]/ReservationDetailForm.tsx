@@ -37,7 +37,7 @@ import { toast } from "react-toastify";
 import AddUserModal from "./AddUserModal";
 import AddGroupsModal from "./AddGroupsModal";
 import MakeReservationDetailRefetch from "./refetch";
-import MakeRefetch from "../../list/refetch";
+import ReservationListMakeRefetch from "../../list/refetch";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 export default function ReservationDetailForm({
@@ -137,7 +137,7 @@ export default function ReservationDetailForm({
     })
       .then((res) => res.json())
       .then((data) => {
-        MakeRefetch();
+        ReservationListMakeRefetch();
         toast.success("Rezervace byla odstraněna");
       })
       .catch(() => {

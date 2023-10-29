@@ -5,10 +5,23 @@ import { Button } from "@mui/material";
 import * as _ from "lodash";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import ReservationListMakeRefetch from "../list/refetch";
 
 export default function CreateButton() {
-  const { createReservation } = store();
+  const { createReservation, setCreateReservation } = store();
   const { push } = useRouter();
+
+  const setDefault = () => {
+    setCreateReservation({
+      from_date: "",
+      to_date: "",
+      groups: [],
+      members: [],
+      rooms: 0,
+      leader: 0,
+      purpouse: "",
+    });
+  };
   const handleSubmit = () => {
     console.log("submit");
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/create`, {
@@ -18,7 +31,8 @@ export default function CreateButton() {
       .then((res) => res.json())
       .then((data) => {
         toast.success("Rezervace úspěšně vytvořena");
-        push("/");
+        ReservationListMakeRefetch()
+        setDefault();
       })
       .catch(() => {
         toast.error("Něco se nepovedlo");

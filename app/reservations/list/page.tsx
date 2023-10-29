@@ -54,6 +54,9 @@ export default async function ReservationsListPage() {
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Skupiny" />
               </TableCell>
+              <TableCell sx={{ padding: 1.5 }}>
+                <Chip label="Stav" />
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

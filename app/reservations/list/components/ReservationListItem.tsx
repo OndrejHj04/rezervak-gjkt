@@ -8,13 +8,21 @@ import {
   CardHeader,
   Checkbox,
   Chip,
+  IconButton,
   Table,
   TableCell,
   TableRow,
+  Tooltip,
   Typography,
+  createTheme,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
+import RunningWithErrorsIcon from "@mui/icons-material/RunningWithErrors";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import FolderDeleteIcon from "@mui/icons-material/FolderDelete";
+import GppBadIcon from "@mui/icons-material/GppBad";
+import { Icon } from "@mui/material";
 
 export default function ReservationListItem({
   reservation,
@@ -75,6 +83,27 @@ export default function ReservationListItem({
             <Chip key={group.id} label={group.name} />
           ))}
         </div>
+      </TableCell>
+      <TableCell>
+        <Tooltip
+          componentsProps={{
+            tooltip: {
+              sx: {
+                bgcolor: "transparent",
+              },
+            },
+          }}
+          title={
+            <Chip
+              sx={{ backgroundColor: "#ED9191", color: "black" }}
+              label={<Typography>zamítnuto</Typography>}
+            />
+          }
+        >
+          <IconButton onClick={(e) => e.stopPropagation()}>
+            <GppBadIcon sx={{ color: "#ED9191" }} />
+          </IconButton>
+        </Tooltip>
       </TableCell>
     </TableRow>
   );

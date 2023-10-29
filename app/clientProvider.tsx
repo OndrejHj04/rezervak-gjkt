@@ -4,6 +4,7 @@ import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 
 import { SessionProvider, signIn, useSession } from "next-auth/react";
 import { useEffect } from "react";
+import 'material-icons/iconfont/material-icons.css';
 
 function WrapWrap() {
   const { setUser, setUserLoading } = store();

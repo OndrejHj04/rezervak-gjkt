@@ -1,5 +1,5 @@
 "use client";
-import { Reservation } from "@/types";
+import { Reservation, ReservationStatus } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Autocomplete,
@@ -9,8 +9,13 @@ import {
   Card,
   CardHeader,
   Checkbox,
+  Chip,
   Divider,
+  FormControl,
+  FormControlLabel,
+  Icon,
   IconButton,
+  InputLabel,
   List,
   ListItem,
   ListItemButton,
@@ -19,6 +24,8 @@ import {
   MenuItem,
   Modal,
   Paper,
+  Radio,
+  RadioGroup,
   Select,
   TextField,
   Typography,
@@ -42,14 +49,17 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 
 export default function ReservationDetailForm({
   reservation,
+  reservationStatus,
 }: {
   reservation: Reservation;
+  reservationStatus: ReservationStatus[];
 }) {
   const {
     register,
     handleSubmit,
     reset,
     formState: { isDirty },
+    getValues,
   } = useForm();
 
   const onSubmit = (data: any) => {
@@ -78,6 +88,9 @@ export default function ReservationDetailForm({
   const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
   const [usersModal, setUsersModal] = useState(false);
   const [groupsModal, setGroupsModal] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<number>(
+    reservation.status.id
+  );
 
   const handleCheckUser = (id: number) => {
     if (selectedUsers.includes(id)) {
@@ -146,6 +159,26 @@ export default function ReservationDetailForm({
       });
   };
 
+  const handleUpdateStatus = () => {
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/edit-reservation/${reservation.id}`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          ...getValues(),
+          status: selectedStatus,
+        }),
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => toast.success("Statusr rezervace byl změněn"))
+      .catch((e) => toast.error("Něco se nepovedlo"))
+      .finally(() => {
+        MakeReservationDetailRefetch(reservation.id);
+        reset();
+      });
+  };
+
   return (
     <>
       {usersModal && (
@@ -195,6 +228,20 @@ export default function ReservationDetailForm({
                   </Typography>
                   <Typography>{reservation.leader.email}</Typography>
                 </div>
+              </div>
+              <div className="flex ">
+                <Typography variant="h6">Status:</Typography>
+                <Chip
+                  label={reservation.status.display_name}
+                  sx={{
+                    margin: "auto",
+                  }}
+                  icon={
+                    <Icon sx={{ "&&": { color: reservation.status.color } }}>
+                      {reservation.status.icon}
+                    </Icon>
+                  }
+                />
               </div>
             </div>
 
@@ -358,6 +405,47 @@ export default function ReservationDetailForm({
                   onClick={() => setGroupsModal(true)}
                 >
                   Přidat skupiny
+                </Button>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <Typography variant="h5">Status rezervace</Typography>
+              <Divider />
+              <List sx={{ height: 400 }}>
+                {reservationStatus.map((status) => (
+                  <ListItem disablePadding key={status.id} value={status.id}>
+                    <ListItemButton
+                      sx={{ padding: 1 }}
+                      onClick={() => setSelectedStatus(status.id)}
+                    >
+                      <Radio
+                        checked={selectedStatus === status.id}
+                        disableRipple
+                      />
+                      <Chip
+                        label={status.display_name}
+                        sx={{
+                          margin: "auto",
+                        }}
+                        icon={
+                          <Icon sx={{ "&&": { color: status.color } }}>
+                            {status.icon}
+                          </Icon>
+                        }
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+
+              <div className="flex flex-col gap-2 ">
+                <Button
+                  variant="contained"
+                  endIcon={<AddToPhotosIcon />}
+                  disabled={selectedStatus === reservation.status.id}
+                  onClick={handleUpdateStatus}
+                >
+                  Uložit stav
                 </Button>
               </div>
             </div>

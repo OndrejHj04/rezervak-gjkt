@@ -1,6 +1,6 @@
 "use client";
 import { store } from "@/store/store";
-import { Reservation } from "@/types";
+import { Reservation, ReservationStatus } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Avatar,
@@ -41,7 +41,7 @@ export default function ReservationListItem({
       setSelectedReservations([...selectedReservations, reservation.id]);
     }
   };
-
+  console.log(reservation);
   return (
     <TableRow
       hover
@@ -95,13 +95,15 @@ export default function ReservationListItem({
           }}
           title={
             <Chip
-              sx={{ backgroundColor: "#ED9191", color: "black" }}
-              label={<Typography>zamítnuto</Typography>}
+              sx={{ backgroundColor: reservation.status.color, color: "black" }}
+              label={<Typography>{reservation.status.display_name}</Typography>}
             />
           }
         >
           <IconButton onClick={(e) => e.stopPropagation()}>
-            <GppBadIcon sx={{ color: "#ED9191" }} />
+            <Icon sx={{ color: reservation.status.color }}>
+              {reservation.status.icon}
+            </Icon>
           </IconButton>
         </Tooltip>
       </TableCell>

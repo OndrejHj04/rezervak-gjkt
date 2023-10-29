@@ -1,22 +1,17 @@
 import { query } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-export async function POST(
-  req: Request,
-  { params: { id } }: { params: { id: string } }
-) {
+export async function GET() {
   try {
-    const { purpouse, rooms, instructions, status } = await req.json();
-
     const data = (await query({
-      query: `UPDATE reservations SET purpouse = "${purpouse}", instructions = "${instructions}", rooms = ${rooms}, status = ${status} WHERE id = ${id}`,
+      query: `SELECT * FROM status`,
       values: [],
     })) as any;
 
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: [],
+      data: data,
     });
   } catch (e) {
     return NextResponse.json({

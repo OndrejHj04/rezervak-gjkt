@@ -33,6 +33,14 @@ export interface NewReservation {
   instructions: string;
 }
 
+export interface ReservationStatus {
+  id: number;
+  name: string;
+  color: string;
+  display_name: string;
+  icon: string;
+}
+
 export interface Reservation {
   id: number;
   from_date: string;
@@ -45,11 +53,5 @@ export interface Reservation {
   users: number[];
   code: string;
   instructions: string;
-  status: {
-    id: number;
-    name: string;
-    color: string;
-    display_name: string;
-    icon: string;
-  };
+  status: ReservationStatus
 }

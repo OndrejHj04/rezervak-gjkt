@@ -12,6 +12,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import MakeRefetch from "./refetch";
 
 const style = {
   position: "absolute" as "absolute",
@@ -57,7 +58,10 @@ export default function AddUserModal({
       .then((req) => req.json())
       .then((data) => toast.success("Uživatelé úspěšně přidány"))
       .catch((err) => toast.error("Něco se nepovedlo"))
-      .finally(() => setModal(false));
+      .finally(() => {
+        MakeRefetch(reservationId);
+        setModal(false);
+      });
   };
 
   return (

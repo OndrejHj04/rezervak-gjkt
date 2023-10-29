@@ -36,6 +36,7 @@ import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import { toast } from "react-toastify";
 import AddUserModal from "./AddUserModal";
 import AddGroupsModal from "./AddGroupsModal";
+import MakeRefetch from "./refetch";
 
 export default function ReservationDetailForm({
   reservation,
@@ -44,9 +45,7 @@ export default function ReservationDetailForm({
 }) {
   const {
     register,
-    watch,
     handleSubmit,
-    control,
     formState: { isDirty },
   } = useForm();
 
@@ -63,7 +62,10 @@ export default function ReservationDetailForm({
     )
       .then((res) => res.json())
       .then((data) => toast.success("Rezervace byla upravena"))
-      .catch((e) => toast.error("Něco se nepovedlo"));
+      .catch((e) => toast.error("Něco se nepovedlo"))
+      .finally(() => {
+        MakeRefetch(reservation.id);
+      });
   };
 
   const { push } = useRouter();
@@ -99,7 +101,11 @@ export default function ReservationDetailForm({
     })
       .then((res) => res.json())
       .then((data) => toast.success("Uživatelé byli odebráni z rezervace"))
-      .catch((e) => toast.error("Něco se nepovedlo"));
+      .catch((e) => toast.error("Něco se nepovedlo"))
+      .finally(() => {
+        MakeRefetch(reservation.id);
+        setSelecetedUsers([]);
+      });
   };
   const handleRemoveGroups = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/remove-groups`, {
@@ -112,7 +118,11 @@ export default function ReservationDetailForm({
     })
       .then((res) => res.json())
       .then((data) => toast.success("Skupiny byly odebrány z rezervace"))
-      .catch((e) => toast.error("Něco se nepovedlo"));
+      .catch((e) => toast.error("Něco se nepovedlo"))
+      .finally(() => {
+        MakeRefetch(reservation.id);
+        setSelectedGroups([]);
+      });
   };
 
   return (

@@ -36,7 +36,8 @@ import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import { toast } from "react-toastify";
 import AddUserModal from "./AddUserModal";
 import AddGroupsModal from "./AddGroupsModal";
-import MakeRefetch from "./refetch";
+import MakeReservationDetailRefetch from "./refetch";
+import MakeRefetch from "../../list/refetch";
 
 export default function ReservationDetailForm({
   reservation,
@@ -46,6 +47,7 @@ export default function ReservationDetailForm({
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isDirty },
   } = useForm();
 
@@ -64,7 +66,8 @@ export default function ReservationDetailForm({
       .then((data) => toast.success("Rezervace byla upravena"))
       .catch((e) => toast.error("Něco se nepovedlo"))
       .finally(() => {
-        MakeRefetch(reservation.id);
+        MakeReservationDetailRefetch(reservation.id);
+        reset();
       });
   };
 
@@ -103,10 +106,11 @@ export default function ReservationDetailForm({
       .then((data) => toast.success("Uživatelé byli odebráni z rezervace"))
       .catch((e) => toast.error("Něco se nepovedlo"))
       .finally(() => {
-        MakeRefetch(reservation.id);
+        MakeReservationDetailRefetch(reservation.id);
         setSelecetedUsers([]);
       });
   };
+
   const handleRemoveGroups = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/remove-groups`, {
       method: "POST",
@@ -120,8 +124,23 @@ export default function ReservationDetailForm({
       .then((data) => toast.success("Skupiny byly odebrány z rezervace"))
       .catch((e) => toast.error("Něco se nepovedlo"))
       .finally(() => {
-        MakeRefetch(reservation.id);
+        MakeReservationDetailRefetch(reservation.id);
         setSelectedGroups([]);
+      });
+  };
+
+  const handleDeleteReservation = () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/delete`, {
+      method: "POST",
+      body: JSON.stringify({ reservations: [reservation.id] }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        MakeRefetch();
+        toast.success("Rezervace byla odstraněna");
+      })
+      .catch(() => {
+        toast.error("Něco se nepovedlo");
       });
   };
 
@@ -150,7 +169,11 @@ export default function ReservationDetailForm({
 
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-2 ml-auto flex gap-2">
-          <Button variant="outlined" type="submit" color="error">
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleDeleteReservation}
+          >
             Odstranit
           </Button>
           <Button variant="outlined" type="submit" disabled={!isDirty}>
@@ -190,7 +213,7 @@ export default function ReservationDetailForm({
                 />
               </div>
             </LocalizationProvider>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 mr-3">
               <TextField
                 {...register("purpouse")}
                 label="Účel rezervace"
@@ -205,6 +228,7 @@ export default function ReservationDetailForm({
                 <MenuItem value={6}>Celá chata</MenuItem>
               </Select>
             </div>
+            <TextField multiline label="Popis" minRows={4} maxRows={4} />
           </div>
           <div className="flex gap-2">
             <div className="flex flex-col">

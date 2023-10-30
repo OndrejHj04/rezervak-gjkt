@@ -34,6 +34,7 @@ import MakeRefetch from "../../list/refetch";
 import { useRouter } from "next/navigation";
 import MakeGroupDetailRefetch from "./refetch";
 import AddUsersToGroupModal from "./AddUsersToGroupModal";
+import AddGroupToReservationModal from "./AddGroupToReservationModal";
 
 interface selecteUser {
   label: string;
@@ -47,6 +48,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
   const { push } = useRouter();
   const [checked, setChecked] = useState<number[]>([]);
   const [usersModal, setUsersModal] = useState(false);
+  const [reservationModal, setReservationModal] = useState(false);
   const [selectReservation, setSelectReservation] = useState<number[]>([]);
   const {
     formState: { isDirty },
@@ -133,7 +135,16 @@ export default function GroupDetailForm({ group }: { group: Group }) {
           (reservation) => reservation.id
         ),
       }),
-    });
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        toast.success("Rezervace odstraněny");
+      })
+      .catch((e) => toast.error("Něco se nepovedlo"))
+      .finally(() => {
+        MakeGroupDetailRefetch(group.id);
+        setSelectReservation([]);
+      });
   };
 
   if (!group) {
@@ -152,6 +163,18 @@ export default function GroupDetailForm({ group }: { group: Group }) {
             groupId={group.id}
             setModal={setUsersModal}
             currentUsers={group.users.map((user: any) => user.id)}
+          />
+        </Modal>
+      )}
+      {reservationModal && (
+        <Modal
+          open={reservationModal}
+          onClose={() => setReservationModal(false)}
+        >
+          <AddGroupToReservationModal
+            groupId={group.id}
+            setModal={setReservationModal}
+            currentReservations={group.reservations.map((user: any) => user.id)}
           />
         </Modal>
       )}
@@ -300,9 +323,10 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                           checked={selectReservation.includes(reservation.id)}
                         />
                         <IconButton
-                          onClick={(e) =>
-                            push(`/reservations/detail/${reservation.id}`)
-                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            push(`/reservations/detail/${reservation.id}`);
+                          }}
                         >
                           <Icon>info_icon</Icon>
                         </IconButton>
@@ -324,6 +348,13 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                   onClick={() => removeFromReservations()}
                 >
                   Odebrat z vybraných rezervací
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => setReservationModal(true)}
+                  endIcon={<AddToPhotosIcon />}
+                >
+                  Přidat skupinu do rezervace
                 </Button>
               </div>
             </div>

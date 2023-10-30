@@ -42,7 +42,7 @@ export async function GET(
   if (data[0].reservations.length !== 0) {
     const reservations = (await query({
       query: `
-      SELECT id, from_date, to_date, users FROM reservations WHERE id IN (${data[0].reservations.join(
+      SELECT id, name, from_date, to_date, users FROM reservations WHERE id IN (${data[0].reservations.join(
         ","
       )})`,
       values: [],

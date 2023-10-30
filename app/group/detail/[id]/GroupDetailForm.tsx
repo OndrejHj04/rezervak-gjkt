@@ -29,6 +29,7 @@ import { Controller, set, useForm } from "react-hook-form";
 import { store } from "@/store/store";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import dayjs from "dayjs";
+import MakeRefetch from "../../list/refetch";
 
 interface selecteUser {
   label: string;
@@ -41,31 +42,29 @@ interface selecteUser {
 export default function GroupDetailForm({ group }: { group: Group }) {
   const [checked, setChecked] = useState<number[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
-  const { control, register, handleSubmit, reset } = useForm<{ users: [] }>({
-    defaultValues: { users: [] },
-  });
+  const {
+    formState: { isValid, isDirty },
+    register,
+    handleSubmit,
+    reset,
+  } = useForm();
   const [users, setUsers] = useState<User[]>([]);
   const [options, setOptions] = useState<selecteUser[]>([]);
   const { user } = store();
   const isOwner = group?.owner.id === user?.id || user?.role.role_id === 1;
 
-  const onSubmit = ({ users }: { users: selecteUser[] }) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/add-member`, {
+  const onSubmit = (data: any) => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/edit/${group.id}`, {
       method: "POST",
       body: JSON.stringify({
-        currentMembers: group?.users.map((user: any) => user.id),
-        newMembers: users.map((user) => user.value),
-        group: group?.id,
+        ...data,
       }),
     })
       .then((res) => res.json())
       .then((res) => {
-        toast.success("Uživatelé přidáni");
-        reset();
+        toast.success("Skupina upravena");
       })
-      .catch(() => {
-        toast.error("Něco se nepovedlo");
-      });
+      .catch((e) => toast.error("Něco se nepovedlo"));
   };
 
   useEffect(() => {
@@ -84,6 +83,23 @@ export default function GroupDetailForm({ group }: { group: Group }) {
       setOptions(options);
     }
   }, [users, group?.users]);
+
+  const handleRemoveGroup = () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove`, {
+      method: "POST",
+      body: JSON.stringify({
+        groups: [group.id],
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        toast.success("Skupina úspěšně odstraněna");
+      })
+      .catch((e) => toast.error("Něco se nepovedlo"))
+      .finally(() => {
+        MakeRefetch();
+      });
+  };
 
   const handleDeleteMembers = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove-member`, {
@@ -123,12 +139,12 @@ export default function GroupDetailForm({ group }: { group: Group }) {
     );
   }
   return (
-    <form className="flex flex-col">
+    <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2 ml-auto flex gap-2">
-        <Button variant="outlined" color="error" onClick={() => {}}>
+        <Button variant="outlined" color="error" onClick={handleRemoveGroup}>
           Odstranit
         </Button>
-        <Button variant="outlined" type="submit">
+        <Button variant="outlined" type="submit" disabled={!isDirty}>
           Uložit
         </Button>
       </div>
@@ -157,10 +173,16 @@ export default function GroupDetailForm({ group }: { group: Group }) {
             </div>
           </div>
           <div className="flex gap-2">
-            <TextField label="Jméno" />
             <TextField
+              label="Jméno"
+              {...register("name")}
+              defaultValue={group.name}
+            />
+            <TextField
+              {...register("description")}
+              defaultValue={group.description}
               multiline
-              label="Pokyny pro účastníky"
+              label="Popis skupiny"
               minRows={4}
               maxRows={4}
             />
@@ -169,7 +191,10 @@ export default function GroupDetailForm({ group }: { group: Group }) {
 
         <div className="flex gap-2">
           <div className="flex flex-col">
-            <Typography variant="h5">Uživatelé ve skupině</Typography>
+            <Typography variant="h5">
+              Uživatelé ve skupině{" "}
+              {group.users.length && <span>({group.users.length})</span>}
+            </Typography>
             <Divider />
             <List sx={{ height: 400 }}>
               {group.users.length ? (
@@ -222,7 +247,12 @@ export default function GroupDetailForm({ group }: { group: Group }) {
             </div>
           </div>
           <div className="flex flex-col">
-            <Typography variant="h5">Rezervace skupiny</Typography>
+            <Typography variant="h5">
+              Rezervace skupiny{" "}
+              {group.reservations.length && (
+                <span>({group.reservations.length})</span>
+              )}
+            </Typography>
             <Divider />
             <List sx={{ height: 400 }}>
               {group.reservations.length ? (
@@ -249,7 +279,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                 ))
               ) : (
                 <>
-                  <Typography>Žádní uživatelé ve skupině</Typography>
+                  <Typography>Žádní rezervace skupiny</Typography>
                 </>
               )}
             </List>

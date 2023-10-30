@@ -2,7 +2,8 @@ import GroupDetailForm from "./GroupDetailForm";
 
 const getGroupDetail = async (id: string) => {
   const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`
+    `${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`,
+    { cache: "no-cache" }
   );
   const { data } = await req.json();
   return data;

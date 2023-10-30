@@ -30,6 +30,8 @@ import { store } from "@/store/store";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import dayjs from "dayjs";
 import MakeRefetch from "../../list/refetch";
+import { useRouter } from "next/navigation";
+import MakeGroupDetailRefetch from "./refetch";
 
 interface selecteUser {
   label: string;
@@ -40,18 +42,14 @@ interface selecteUser {
 }
 
 export default function GroupDetailForm({ group }: { group: Group }) {
+  const { push } = useRouter();
   const [checked, setChecked] = useState<number[]>([]);
-  const [selected, setSelected] = useState<number[]>([]);
   const {
-    formState: { isValid, isDirty },
+    formState: { isDirty },
     register,
     handleSubmit,
     reset,
   } = useForm();
-  const [users, setUsers] = useState<User[]>([]);
-  const [options, setOptions] = useState<selecteUser[]>([]);
-  const { user } = store();
-  const isOwner = group?.owner.id === user?.id || user?.role.role_id === 1;
 
   const onSubmit = (data: any) => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/edit/${group.id}`, {
@@ -63,26 +61,10 @@ export default function GroupDetailForm({ group }: { group: Group }) {
       .then((res) => res.json())
       .then((res) => {
         toast.success("Skupina upravena");
+        reset();
       })
       .catch((e) => toast.error("Něco se nepovedlo"));
   };
-
-  useEffect(() => {
-    if (users.length && group?.users.length) {
-      const options = users
-        .filter(
-          (user) => !group?.users.map((user: any) => user.id).includes(user.id)
-        )
-        .map((user) => ({
-          label: `${user.first_name} ${user.last_name}`,
-          value: user.id,
-          image: user.image,
-          first_name: user.first_name,
-          last_name: user.last_name,
-        }));
-      setOptions(options);
-    }
-  }, [users, group?.users]);
 
   const handleRemoveGroup = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove`, {
@@ -114,22 +96,19 @@ export default function GroupDetailForm({ group }: { group: Group }) {
       .then((res) => {
         toast.success("Uživatelé odebráni");
       })
-      .catch((e) => toast.error("Něco se nepovedlo"));
+      .catch((e) => toast.error("Něco se nepovedlo"))
+      .finally(() => {
+        MakeGroupDetailRefetch(group.id);
+      });
   };
 
-  const handleCheck = (user: GroupOwner) => {
-    if (checked.includes(user.id)) {
-      setChecked(checked.filter((id) => id !== user.id));
+  const handleCheck = (Id: number) => {
+    if (checked.includes(Id)) {
+      setChecked(checked.filter((id) => id !== Id));
     } else {
-      setChecked([...checked, user.id]);
+      setChecked([...checked, Id]);
     }
   };
-
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)
-      .then((res) => res.json())
-      .then((res) => setUsers(res.data));
-  }, []);
 
   if (!group) {
     return (
@@ -138,6 +117,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
       </Paper>
     );
   }
+
   return (
     <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2 ml-auto flex gap-2">
@@ -202,7 +182,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                   <ListItem disablePadding key={user.id}>
                     <ListItemButton
                       sx={{ padding: 1 }}
-                      onClick={() => handleCheck(user)}
+                      onClick={() => handleCheck(user.id)}
                     >
                       <ListItemIcon>
                         <AvatarWrapper data={user} />
@@ -215,9 +195,15 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                         }
                         secondary={user.email}
                       />
-                      {isOwner && (
-                        <Checkbox checked={checked.includes(user.id)} />
-                      )}
+                      <Checkbox
+                        disableRipple
+                        checked={checked.includes(user.id)}
+                      />
+                      <IconButton
+                        onClick={(e) => push(`/user/detail/${user.id}`)}
+                      >
+                        <Icon>info_icon</Icon>
+                      </IconButton>
                     </ListItemButton>
                   </ListItem>
                 ))
@@ -235,14 +221,14 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                 disabled={checked.length === 0}
                 onClick={handleDeleteMembers}
               >
-                Odebrat vybrané uživatele
+                Odebrat vybrané uživatele ze skupiny
               </Button>
               <Button
                 variant="contained"
                 onClick={() => {}}
                 endIcon={<AddToPhotosIcon />}
               >
-                Přidat uživatele
+                Přidat uživatele do skupiny
               </Button>
             </div>
           </div>
@@ -271,7 +257,11 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                         )}`}
                       />
                       <Checkbox disableRipple />
-                      <IconButton onClick={(e) => {}}>
+                      <IconButton
+                        onClick={(e) =>
+                          push(`/reservations/detail/${reservation.id}`)
+                        }
+                      >
                         <Icon>info_icon</Icon>
                       </IconButton>
                     </ListItemButton>
@@ -288,17 +278,10 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                 variant="contained"
                 color="error"
                 endIcon={<DeleteForeverIcon />}
-                disabled={checked.length === 0}
-                onClick={handleDeleteMembers}
-              >
-                Odebrat vybrané uživatele
-              </Button>
-              <Button
-                variant="contained"
+                disabled
                 onClick={() => {}}
-                endIcon={<AddToPhotosIcon />}
               >
-                Přidat uživatele
+                Odebrat z vybraných rezervací
               </Button>
             </div>
           </div>

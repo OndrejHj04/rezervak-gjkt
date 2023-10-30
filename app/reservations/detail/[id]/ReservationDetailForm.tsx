@@ -68,6 +68,7 @@ export default function ReservationDetailForm({
       {
         method: "POST",
         body: JSON.stringify({
+          name: data.name,
           purpouse: data.purpouse,
           rooms: Number(data.rooms),
           instructions: data.instructions,
@@ -161,11 +162,10 @@ export default function ReservationDetailForm({
 
   const handleUpdateStatus = () => {
     fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/edit-reservation/${reservation.id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/update-status/${reservation.id}`,
       {
         method: "POST",
         body: JSON.stringify({
-          ...getValues(),
           status: selectedStatus,
         }),
       }
@@ -244,7 +244,13 @@ export default function ReservationDetailForm({
                 />
               </div>
             </div>
-
+            <div>
+              <TextField
+                label="Název"
+                {...register("name")}
+                defaultValue={reservation.name}
+              />
+            </div>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <div className="flex flex-col gap-3 mx-3">
                 <DatePicker
@@ -268,14 +274,25 @@ export default function ReservationDetailForm({
                 label="Účel rezervace"
                 defaultValue={reservation.purpouse}
               />
-              <Select defaultValue={reservation.rooms} {...register("rooms")}>
-                {[...Array(5)].map((_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {i + 1} Pokojů
-                  </MenuItem>
-                ))}
-                <MenuItem value={6}>Celá chata</MenuItem>
-              </Select>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">
+                  Počet pokojů
+                </InputLabel>
+                <Select
+                  id="demo-simple-select"
+                  labelId="demo-simple-select-label"
+                  defaultValue={reservation.rooms}
+                  label="Počet pokojů"
+                  {...register("rooms")}
+                >
+                  {[...Array(5)].map((_, i) => (
+                    <MenuItem key={i} value={i + 1}>
+                      {i + 1} Pokojů
+                    </MenuItem>
+                  ))}
+                  <MenuItem value={6}>Celá chata</MenuItem>
+                </Select>
+              </FormControl>
             </div>
             <TextField
               multiline

@@ -18,10 +18,7 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import RunningWithErrorsIcon from "@mui/icons-material/RunningWithErrors";
-import DoneAllIcon from "@mui/icons-material/DoneAll";
-import FolderDeleteIcon from "@mui/icons-material/FolderDelete";
-import GppBadIcon from "@mui/icons-material/GppBad";
+
 import { Icon } from "@mui/material";
 
 export default function ReservationListItem({
@@ -52,6 +49,9 @@ export default function ReservationListItem({
           checked={selectedReservations.includes(reservation.id)}
           onClick={handleSelect}
         />
+      </TableCell>
+      <TableCell>
+        <Typography>{reservation.name}</Typography>
       </TableCell>
       <TableCell>
         <Typography>

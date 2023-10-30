@@ -6,10 +6,10 @@ export async function POST(
   { params: { id } }: { params: { id: string } }
 ) {
   try {
-    const { purpouse, rooms, instructions, name } = await req.json();
+    const { status } = await req.json();
 
     const data = (await query({
-      query: `UPDATE reservations SET purpouse = "${purpouse}", name = "${name}", instructions = "${instructions}", rooms = ${rooms} WHERE id = ${id}`,
+      query: `UPDATE reservations SET status = ${status} WHERE id = ${id}`,
       values: [],
     })) as any;
 

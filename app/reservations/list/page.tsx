@@ -37,6 +37,9 @@ export default async function ReservationsListPage() {
                 <CheckboxComponent reservations={reservations} />
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>
+                <Chip label="Název" />
+              </TableCell>
+              <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Začátek" />
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>

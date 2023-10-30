@@ -46,6 +46,7 @@ export interface Reservation {
   id: number;
   from_date: string;
   to_date: string;
+  name: string;
   rooms: number;
   purpouse: string;
   leader: { id: number; email: string; first_name: string; last_name: string };

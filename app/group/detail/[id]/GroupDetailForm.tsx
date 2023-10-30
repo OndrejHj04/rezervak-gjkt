@@ -47,6 +47,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
   const { push } = useRouter();
   const [checked, setChecked] = useState<number[]>([]);
   const [usersModal, setUsersModal] = useState(false);
+  const [selectReservation, setSelectReservation] = useState<number[]>([]);
   const {
     formState: { isDirty },
     register,
@@ -112,6 +113,27 @@ export default function GroupDetailForm({ group }: { group: Group }) {
     } else {
       setChecked([...checked, Id]);
     }
+  };
+
+  const handleSelectReservation = (Id: number) => {
+    if (selectReservation.includes(Id)) {
+      setSelectReservation(selectReservation.filter((id) => id !== Id));
+    } else {
+      setSelectReservation([...selectReservation, Id]);
+    }
+  };
+
+  const removeFromReservations = () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove-reservations`, {
+      method: "POST",
+      body: JSON.stringify({
+        group: group.id,
+        removeReservaitons: selectReservation,
+        currentReservations: group.reservations.map(
+          (reservation) => reservation.id
+        ),
+      }),
+    });
   };
 
   if (!group) {
@@ -187,7 +209,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
             <div className="flex flex-col">
               <Typography variant="h5">
                 Uživatelé ve skupině{" "}
-                {group.users.length && <span>({group.users.length})</span>}
+                {!!group.users.length && <span>({group.users.length})</span>}
               </Typography>
               <Divider />
               <List sx={{ height: 400 }}>
@@ -249,7 +271,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
             <div className="flex flex-col">
               <Typography variant="h5">
                 Rezervace skupiny{" "}
-                {group.reservations.length && (
+                {!!group.reservations.length && (
                   <span>({group.reservations.length})</span>
                 )}
               </Typography>
@@ -258,7 +280,10 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                 {group.reservations.length ? (
                   group.reservations.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>
-                      <ListItemButton sx={{ padding: 1 }} onClick={() => {}}>
+                      <ListItemButton
+                        sx={{ padding: 1 }}
+                        onClick={() => handleSelectReservation(reservation.id)}
+                      >
                         <ListItemIcon>
                           <Avatar />
                         </ListItemIcon>
@@ -270,7 +295,10 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                             "DD.MM.YYYY"
                           )}`}
                         />
-                        <Checkbox disableRipple />
+                        <Checkbox
+                          disableRipple
+                          checked={selectReservation.includes(reservation.id)}
+                        />
                         <IconButton
                           onClick={(e) =>
                             push(`/reservations/detail/${reservation.id}`)
@@ -292,8 +320,8 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                   variant="contained"
                   color="error"
                   endIcon={<DeleteForeverIcon />}
-                  disabled
-                  onClick={() => {}}
+                  disabled={!selectReservation.length}
+                  onClick={() => removeFromReservations()}
                 >
                   Odebrat z vybraných rezervací
                 </Button>

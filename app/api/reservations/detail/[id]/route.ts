@@ -29,14 +29,18 @@ export async function GET(
       values: [],
     })) as any;
 
-    const groups = (await query({
-      query: `SELECT * FROM groups WHERE id IN(${data.map((reservation: any) =>
-        reservation.groups.join(",")
-      )})`,
-      values: [],
-    })) as any;
-    groups.map((group: any) => (group.users = JSON.parse(group.users as any)));
-
+    if (data[0].groups.length !== 0) {
+      const groups = (await query({
+        query: `SELECT * FROM groups WHERE id IN(${data.map(
+          (reservation: any) => reservation.groups.join(",")
+        )})`,
+        values: [],
+      })) as any;
+      groups.map(
+        (group: any) => (group.users = JSON.parse(group.users as any))
+      );
+      data[0].groups = groups;
+    }
     const status = (await query({
       query: `SELECT * FROM status WHERE id IN(${data.map(
         (reservation: any) => reservation.status
@@ -56,9 +60,6 @@ export async function GET(
     data.forEach((reservation: Reservation) => {
       reservation.leader = leader.find(
         (lead: any) => lead.id === reservation.leader
-      );
-      reservation.groups = reservation.groups.map((group) =>
-        groups.find((grp: any) => grp.id === group)
       );
       reservation.users = reservation.users.map((user) =>
         users.find((grp: any) => grp.id === user)

@@ -21,6 +21,9 @@ export async function GET(
   data.map((item) => {
     item.owner = owner[0];
     item.users = item.users ? JSON.parse(item.users as any) : [];
+    item.reservations = item.reservations
+      ? JSON.parse(item.reservations as any)
+      : [];
     return item;
   });
 
@@ -34,6 +37,21 @@ export async function GET(
     })) as GroupOwner[];
 
     data[0].users = members;
+  }
+
+  if (data[0].reservations.length !== 0) {
+    const reservations = (await query({
+      query: `
+      SELECT id, from_date, to_date, users FROM reservations WHERE id IN (${data[0].reservations.join(
+        ","
+      )})`,
+      values: [],
+    })) as any;
+    reservations.map(
+      (item: any) => (item.users = JSON.parse(item.users as any))
+    );
+
+    data[0].reservations = reservations;
   }
 
   try {

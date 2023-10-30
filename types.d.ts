@@ -20,6 +20,7 @@ export interface Group {
   description: string;
   users: GroupOwner[] | number[];
   owner: GroupOwner;
+  reservations: Reservation[];
 }
 
 export interface NewReservation {
@@ -53,5 +54,5 @@ export interface Reservation {
   users: number[];
   code: string;
   instructions: string;
-  status: ReservationStatus
+  status: ReservationStatus;
 }

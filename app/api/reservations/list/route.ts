@@ -4,13 +4,17 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   try {
-    const data = (await query({
-      query: `SELECT * FROM reservations`,
-      values: [],
-    })) as any;
+    const url = new URL(req.url);
+    const userId = Number(url.searchParams.get("user_id"));
 
-    if (data.length) {
-      data.map((reservation: any) => {
+    const data =
+      ((await query({
+        query: `SELECT * FROM reservations`,
+        values: [],
+      })) as any) || [];
+
+    const filtered = data
+      .map((reservation: any) => {
         reservation.groups = reservation.groups
           ? JSON.parse(reservation.groups as any)
           : [];
@@ -18,49 +22,53 @@ export async function GET(req: Request) {
           ? JSON.parse(reservation.users as any)
           : [];
         return reservation;
+      })
+      .filter((reservation: any) => {
+        return userId ? reservation.users.includes(userId) : true;
       });
 
-      const leader = (await query({
-        query: `SELECT id, email, first_name, last_name, image FROM users WHERE id IN(${data
+    const leader =
+      filtered.length &&
+      ((await query({
+        query: `SELECT id, email, first_name, last_name, image FROM users WHERE id IN(${filtered
           .map((reservation: any) => reservation.leader)
           .join(",")})`,
         values: [],
-      })) as any;
+      })) as any);
 
-      const groupIds = [
-        ...(new Set(data.map((item: any) => item.groups).flat()) as any),
-      ] as any;
-      const groupIdsList = groupIds.length ? groupIds : [-1];
+    const groupIds = [
+      ...(new Set(filtered.map((item: any) => item.groups).flat()) as any),
+    ] as any;
+    const groupIdsList = groupIds.length ? groupIds : [-1];
 
-      const groups = (await query({
-        query: `SELECT id, name FROM groups WHERE id IN(${groupIdsList.join(
-          ","
-        )})`,
-        values: [],
-      })) as any;
+    const groups = (await query({
+      query: `SELECT id, name FROM groups WHERE id IN(${groupIdsList.join(
+        ","
+      )})`,
+      values: [],
+    })) as any;
 
-      const status = (await query({
-        query: `SELECT * FROM status`,
-        values: [],
-      })) as any;
+    const status = (await query({
+      query: `SELECT * FROM status`,
+      values: [],
+    })) as any;
 
-      data.forEach((reservation: Reservation) => {
-        reservation.leader = leader.find(
-          (lead: any) => lead.id === reservation.leader
-        );
-        reservation.groups = reservation.groups.map((group) =>
-          groups.find((grp: any) => grp.id === group)
-        );
-        reservation.status = status.find(
-          (state: any) => state.id === reservation.status
-        );
-      });
-    }
+    filtered.forEach((reservation: Reservation) => {
+      reservation.leader = leader.find(
+        (lead: any) => lead.id === reservation.leader
+      );
+      reservation.groups = reservation.groups.map((group) =>
+        groups.find((grp: any) => grp.id === group)
+      );
+      reservation.status = status.find(
+        (state: any) => state.id === reservation.status
+      );
+    });
 
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: data,
+      data: filtered,
     });
   } catch (e) {
     return NextResponse.json({

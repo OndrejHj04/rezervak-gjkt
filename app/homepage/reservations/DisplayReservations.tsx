@@ -1,38 +1,40 @@
 import { MenuItem, MenuList, Paper, Typography } from "@mui/material";
-import GroupIcon from "@mui/icons-material/Group";
-import { Group } from "@/types";
+import { Group, Reservation } from "@/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import SingleGroup from "@/app/group/SingleGroup";
 import { store } from "@/store/store";
 import { User, getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import SingleReservation from "./SingleReservation";
+import EventIcon from "@mui/icons-material/Event";
 
-const getGroups = async (id: number) => {
+const getReservations = async (id: number) => {
   const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/group/user-list?user_id=${id}`
+    `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?user_id=${id}`
   );
   const { data } = await req.json();
 
   return data;
 };
 
-export default async function DisplayGroups() {
+export default async function DisplayReservations() {
   const { user } = (await getServerSession(authOptions)) as { user: User };
-  const groups = (await getGroups(user.id)) as Group[];
-
+  const reservations = (await getReservations(user.id)) as Reservation[];
+  console.log(reservations);
   return (
     <Paper className="p-2">
       <div className="flex justify-between items-center gap-3">
-        <GroupIcon color="primary" />
+        <EventIcon color="primary" />
         <Typography variant="h5">Nadcházející rezervace</Typography>
-        <GroupIcon color="primary" />
+        <EventIcon color="primary" />
       </div>
       <MenuList>
-        {groups.length ? (
-          groups.map((group) => <SingleGroup key={group.id} group={group} />)
+        {reservations.length ? (
+          reservations.map((reservation) => (
+            <SingleReservation key={reservation.id} resevation={reservation} />
+          ))
         ) : (
-          <Typography>nejste členem žádné skupiny</Typography>
+          <Typography>žádné rezervace</Typography>
         )}
       </MenuList>
     </Paper>

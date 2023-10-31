@@ -72,7 +72,7 @@ export default async function ReservationsListPage() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7}>
+                <TableCell colSpan={9}>
                   <Typography variant="h6">
                     Žádné rezervace k zobrazení
                   </Typography>

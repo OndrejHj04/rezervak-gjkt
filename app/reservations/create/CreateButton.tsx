@@ -6,6 +6,7 @@ import * as _ from "lodash";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import ReservationListMakeRefetch from "../list/refetch";
+import { NewReservation } from "@/types";
 
 export default function CreateButton() {
   const { createReservation, setCreateReservation } = store();
@@ -44,11 +45,12 @@ export default function CreateButton() {
       type="submit"
       onClick={handleSubmit}
       disabled={
-        !Object.values(createReservation).every((value: any) => {
-          if (Array.isArray(value)) {
-            return value.length > 0;
+        !Object.keys(createReservation).every((value: any) => {
+          const data = createReservation[value as keyof NewReservation];
+          if (value !== "groups" && Array.isArray(data)) {
+            return data.length > 0;
           }
-          return Boolean(value);
+          return Boolean(data);
         })
       }
     >

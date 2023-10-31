@@ -13,10 +13,10 @@ import {
 import { useEffect, useState } from "react";
 import { Group } from "@/types";
 import { useRouter } from "next/navigation";
-import DisplayGroups from "@/sub-components/DisplayGroups";
+import DisplayGroups from "@/app/homepage/reservations/DisplayReservations";
 import HomepageLoading from "@/sub-components/HomepageLoading";
-import DisplayReservations from "@/sub-components/DisplayReservations";
-import HomepageCalendar from "@/sub-components/HomepageCalendar";
+import DisplayReservations from "@/app/homepage/groups/DisplayGroups";
+import HomepageCalendar from "@/app/homepage/calendar/HomepageCalendar";
 
 export default function Home() {
   const homepage = (

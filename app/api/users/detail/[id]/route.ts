@@ -60,7 +60,7 @@ export async function GET(
       data[0].groups = groups;
     }
 
-    if (data[0].reservations) {
+    if (data[0].reservations.length) {
       const reservations = await query({
         query: `SELECT id, from_date, to_date, name FROM reservations WHERE id IN (${data[0].reservations.join(
           ","

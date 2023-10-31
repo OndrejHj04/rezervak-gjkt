@@ -101,7 +101,18 @@ export default function UserDetailForm({
     }
   };
 
-  const removeReservations = () => {};
+  const removeReservations = () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/remove-reservations`, {
+      method: "POST",
+      body: JSON.stringify({
+        user: userDetail.id,
+        currentReservations: userDetail.reservations.map(
+          (reservation) => reservation.id
+        ),
+        removeReservations: selectReservations,
+      }),
+    });
+  };
 
   return (
     <>

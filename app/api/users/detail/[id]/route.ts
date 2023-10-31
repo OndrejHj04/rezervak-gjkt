@@ -35,7 +35,7 @@ export async function GET(
       item.reservations = JSON.parse(item.reservations as any);
     });
 
-    if (data[0].groups) {
+    if (data[0].groups.length) {
       const groups = (await query({
         query: `SELECT id, name, owner, users FROM groups WHERE id IN (${data[0].groups.join(
           ","

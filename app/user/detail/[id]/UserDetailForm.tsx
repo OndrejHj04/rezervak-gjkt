@@ -30,6 +30,8 @@ import MakeUserDetailRefetch from "./refetch";
 import { useRouter } from "next/navigation";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { use, useState } from "react";
+import { group } from "console";
 
 export default function UserDetailForm({
   userDetail,
@@ -46,6 +48,10 @@ export default function UserDetailForm({
     formState: { isDirty },
   } = useForm();
   const { push } = useRouter();
+
+  const [selectGroups, setSelectGroups] = useState<number[]>([]);
+  const [selectReservations, setSelectReservation] = useState<number[]>([]);
+
   const onSubmit = (data: any) => {
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/edit/${userDetail.id}`,
@@ -65,7 +71,38 @@ export default function UserDetailForm({
         reset();
       });
   };
-  console.log(userDetail);
+
+  const handleCheckGroup = (id: number) => {
+    if (selectGroups.includes(id)) {
+      setSelectGroups(selectGroups.filter((group) => group !== id));
+    } else {
+      setSelectGroups([...selectGroups, id]);
+    }
+  };
+
+  const removeGroups = () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/remove-groups`, {
+      method: "POST",
+      body: JSON.stringify({
+        user: userDetail.id,
+        currentGroups: userDetail.groups.map((group) => group.id),
+        removeGroups: selectGroups,
+      }),
+    });
+  };
+
+  const handleCheckReservation = (id: number) => {
+    if (selectReservations.includes(id)) {
+      setSelectReservation(
+        selectReservations.filter((reservation) => reservation !== id)
+      );
+    } else {
+      setSelectReservation([...selectReservations, id]);
+    }
+  };
+
+  const removeReservations = () => {};
+
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
@@ -159,7 +196,10 @@ export default function UserDetailForm({
                 {userDetail.groups.length ? (
                   userDetail.groups.map((group: any) => (
                     <ListItem disablePadding key={group.id}>
-                      <ListItemButton sx={{ padding: 1 }} onClick={() => {}}>
+                      <ListItemButton
+                        sx={{ padding: 1 }}
+                        onClick={() => handleCheckGroup(group.id)}
+                      >
                         <ListItemIcon>
                           <Avatar />
                         </ListItemIcon>
@@ -167,7 +207,10 @@ export default function UserDetailForm({
                           primary={<Typography>{group.name}</Typography>}
                           secondary={`Počet členů: ${group.users.length}`}
                         />
-                        <Checkbox disableRipple />
+                        <Checkbox
+                          disableRipple
+                          checked={selectGroups.includes(group.id)}
+                        />
                         <IconButton
                           onClick={(e) => push(`/group/detail/${group.id}`)}
                         >
@@ -187,6 +230,8 @@ export default function UserDetailForm({
                   variant="contained"
                   color="error"
                   endIcon={<DeleteForeverIcon />}
+                  disabled={!selectGroups.length}
+                  onClick={removeGroups}
                 >
                   Odebrat uživatele z vybraných skupin
                 </Button>
@@ -207,7 +252,10 @@ export default function UserDetailForm({
                 {userDetail.reservations.length ? (
                   userDetail.reservations.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>
-                      <ListItemButton sx={{ padding: 1 }} onClick={() => {}}>
+                      <ListItemButton
+                        sx={{ padding: 1 }}
+                        onClick={() => handleCheckReservation(reservation.id)}
+                      >
                         <ListItemIcon>
                           <Avatar />
                         </ListItemIcon>
@@ -219,7 +267,10 @@ export default function UserDetailForm({
                             "DD.MM.YYYY"
                           )}`}
                         />
-                        <Checkbox disableRipple />
+                        <Checkbox
+                          disableRipple
+                          checked={selectReservations.includes(reservation.id)}
+                        />
                         <IconButton
                           onClick={(e) =>
                             push(`/reservations/detail/${reservation.id}`)
@@ -241,6 +292,8 @@ export default function UserDetailForm({
                   variant="contained"
                   color="error"
                   endIcon={<DeleteForeverIcon />}
+                  disabled={!selectReservations.length}
+                  onClick={removeReservations}
                 >
                   Odebrat vybrané uživatele ze skupiny
                 </Button>

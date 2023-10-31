@@ -1,17 +1,19 @@
-import { Box } from "@mui/material";
-import { User } from "next-auth";
 import UserDetailForm from "./UserDetailForm";
 
+const getUserDetail = async (id: string) => {
+  const req = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${id}`
+  );
+  const { data } = await req.json();
+  return data;
+};
 
 export default async function UserDetail({
   params: { id },
 }: {
   params: { id: string };
 }) {
+  const userDetail = await getUserDetail(id);
 
-  return (
-    <Box className="w-full">
-      <UserDetailForm id={id}/>
-    </Box>
-  );
+  return <UserDetailForm userDetail={userDetail}/>;
 }

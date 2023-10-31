@@ -20,7 +20,7 @@ const getReservations = async (id: number) => {
 export default async function DisplayReservations() {
   const { user } = (await getServerSession(authOptions)) as { user: User };
   const reservations = (await getReservations(user.id)) as Reservation[];
-  console.log(reservations);
+
   return (
     <Paper className="p-2">
       <div className="flex justify-between items-center gap-3">

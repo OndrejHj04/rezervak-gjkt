@@ -1,10 +1,12 @@
 import { MenuList, Paper, Typography } from "@mui/material";
 import SingleGroup from "./SingleGroup";
 import GroupIcon from "@mui/icons-material/Group";
+import { User, getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-const getGroups = async () => {
+const getGroups = async (id: number) => {
   const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/group/user-list?user_id=1`
+    `${process.env.NEXT_PUBLIC_API_URL}/api/group/user-list?user_id=${id}`
   );
   const { data } = await req.json();
 
@@ -12,7 +14,10 @@ const getGroups = async () => {
 };
 
 export default async function DisplayGroups() {
-  const groups = await getGroups();
+  const { user } = (await getServerSession(authOptions)) as { user: User };
+
+  const groups = await getGroups(user.id);
+
   return (
     <Paper className="p-2">
       <div className="flex justify-between items-center gap-3">

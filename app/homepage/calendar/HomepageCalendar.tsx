@@ -1,22 +1,18 @@
-"use client";
-import { Paper } from "@mui/material";
-import { DateCalendar, LocalizationProvider, csCZ } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
-import CzechLocale from "dayjs/locale/cs";
+import { User, getServerSession } from "next-auth";
+import RenderCalendar from "./RenderCalendar";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-export default function HomepageCalendar() {
-  return (
-    <Paper className="p-2">
-      <LocalizationProvider
-        dateAdapter={AdapterDayjs}
-        adapterLocale={CzechLocale as any}
-        localeText={
-          csCZ.components.MuiLocalizationProvider.defaultProps.localeText
-        }
-      >
-        <DateCalendar />
-      </LocalizationProvider>
-    </Paper>
+const getReservations = async (id: number) => {
+  const req = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?user_id=${id}`
   );
+  const { data } = await req.json();
+  return data;
+};
+
+export default async function HomepageCalendar() {
+  const { user } = (await getServerSession(authOptions)) as { user: User };
+  const reservations = await getReservations(user.id);
+  
+  return <RenderCalendar reservations={reservations} />;
 }

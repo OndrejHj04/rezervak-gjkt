@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import { group } from "console";
 import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
@@ -26,9 +27,49 @@ export async function GET(
       u.id = ?
     `,
       values: [id],
-    })) as User[];
+    })) as any;
 
-    data.map((item) => (item.role = JSON.parse(item.role as any)));
+    data.map((item: any) => {
+      item.role = JSON.parse(item.role as any);
+      item.groups = JSON.parse(item.groups as any);
+      item.reservations = JSON.parse(item.reservations as any);
+    });
+
+    if (data[0].groups) {
+      const groups = (await query({
+        query: `SELECT id, name, owner, users FROM groups WHERE id IN (${data[0].groups.join(
+          ","
+        )})`,
+        values: [],
+      })) as any;
+
+      const owner = (await query({
+        query: `SELECT id, first_name, last_name FROM users WHERE id IN (${groups
+          .map((group: any) => group.owner)
+          .join(",")})`,
+        values: [],
+      })) as any;
+      groups.map((group: any) => {
+        group.users = JSON.parse(group.users);
+      });
+      groups.find((group: any) => {
+        return (group.owner = owner.find(
+          (user: any) => user.id === group.owner
+        ));
+      });
+      data[0].groups = groups;
+    }
+
+    if (data[0].reservations) {
+      const reservations = await query({
+        query: `SELECT id, from_date, to_date, name FROM reservations WHERE id IN (${data[0].reservations.join(
+          ","
+        )})`,
+        values: [],
+      });
+
+      data[0].reservations = reservations;
+    }
 
     if (data.length) {
       return NextResponse.json({

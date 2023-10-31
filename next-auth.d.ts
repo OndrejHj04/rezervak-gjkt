@@ -45,6 +45,14 @@ declare module "next-auth" {
     children: number[];
     parent: number;
     full_name: string;
+    groups: {
+      id: number;
+      name: string;
+      owner: { id: number; first_name: string; last_name: string };
+    }[];
+    reservations: {
+      id: number;
+    }[];
   }
 }
 

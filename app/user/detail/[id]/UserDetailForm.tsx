@@ -4,8 +4,18 @@ import { Role } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Autocomplete,
+  Avatar,
   Button,
+  Checkbox,
   Chip,
+  Divider,
+  Icon,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Paper,
   TextField,
   Typography,
@@ -17,6 +27,9 @@ import { User } from "next-auth";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeUserDetailRefetch from "./refetch";
+import { useRouter } from "next/navigation";
+import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 export default function UserDetailForm({
   userDetail,
@@ -32,7 +45,7 @@ export default function UserDetailForm({
     reset,
     formState: { isDirty },
   } = useForm();
-
+  const { push } = useRouter();
   const onSubmit = (data: any) => {
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/edit/${userDetail.id}`,
@@ -52,7 +65,7 @@ export default function UserDetailForm({
         reset();
       });
   };
-
+  console.log(userDetail);
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
@@ -133,7 +146,110 @@ export default function UserDetailForm({
               />
             </div>
           </div>
-          <div>*//*</div>
+          <div className="flex gap-2">
+            <div className="flex flex-col">
+              <Typography variant="h5">
+                Skupiny uživatele{" "}
+                {!!userDetail.groups.length && (
+                  <span>({userDetail.groups.length})</span>
+                )}
+              </Typography>
+              <Divider />
+              <List sx={{ height: 400 }}>
+                {userDetail.groups.length ? (
+                  userDetail.groups.map((group: any) => (
+                    <ListItem disablePadding key={group.id}>
+                      <ListItemButton sx={{ padding: 1 }} onClick={() => {}}>
+                        <ListItemIcon>
+                          <Avatar />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={<Typography>{group.name}</Typography>}
+                          secondary={`Počet členů: ${group.users.length}`}
+                        />
+                        <Checkbox disableRipple />
+                        <IconButton
+                          onClick={(e) => push(`/group/detail/${group.id}`)}
+                        >
+                          <Icon>info_icon</Icon>
+                        </IconButton>
+                      </ListItemButton>
+                    </ListItem>
+                  ))
+                ) : (
+                  <>
+                    <Typography>Žádní skupiny uživatele</Typography>
+                  </>
+                )}
+              </List>
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="contained"
+                  color="error"
+                  endIcon={<DeleteForeverIcon />}
+                >
+                  Odebrat uživatele z vybraných skupin
+                </Button>
+                <Button variant="contained" endIcon={<AddToPhotosIcon />}>
+                  Přidat uživatele do skupiny
+                </Button>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <Typography variant="h5">
+                Rezervace uživatele{" "}
+                {!!userDetail.reservations.length && (
+                  <span>({userDetail.reservations.length})</span>
+                )}
+              </Typography>
+              <Divider />
+              <List sx={{ height: 400 }}>
+                {userDetail.reservations.length ? (
+                  userDetail.reservations.map((reservation: any) => (
+                    <ListItem disablePadding key={reservation.id}>
+                      <ListItemButton sx={{ padding: 1 }} onClick={() => {}}>
+                        <ListItemIcon>
+                          <Avatar />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={<Typography>{reservation.name}</Typography>}
+                          secondary={`${dayjs(reservation.from_date).format(
+                            "DD.MM.YYYY"
+                          )} - ${dayjs(reservation.to_date).format(
+                            "DD.MM.YYYY"
+                          )}`}
+                        />
+                        <Checkbox disableRipple />
+                        <IconButton
+                          onClick={(e) =>
+                            push(`/reservations/detail/${reservation.id}`)
+                          }
+                        >
+                          <Icon>info_icon</Icon>
+                        </IconButton>
+                      </ListItemButton>
+                    </ListItem>
+                  ))
+                ) : (
+                  <>
+                    <Typography>Žádní uživatelé ve skupině</Typography>
+                  </>
+                )}
+              </List>
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="contained"
+                  color="error"
+                  endIcon={<DeleteForeverIcon />}
+                >
+                  Odebrat vybrané uživatele ze skupiny
+                </Button>
+                <Button variant="contained" endIcon={<AddToPhotosIcon />}>
+                  Přidat uživatele do skupiny
+                </Button>
+              </div>
+            </div>
+          </div>
         </Paper>
       </form>
     </>

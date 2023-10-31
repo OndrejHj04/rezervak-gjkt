@@ -2,7 +2,8 @@ import UserDetailForm from "./UserDetailForm";
 
 const getUserDetail = async (id: string) => {
   const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${id}`
+    `${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${id}`,
+    { cache: "no-cache" }
   );
   const { data } = await req.json();
   return data;

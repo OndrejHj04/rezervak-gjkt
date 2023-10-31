@@ -31,7 +31,7 @@ export default async function DisplayReservations() {
       <MenuList>
         {reservations.length ? (
           reservations.map((reservation) => (
-            <SingleReservation key={reservation.id} resevation={reservation} />
+            <SingleReservation key={reservation.id} reservations={reservation} />
           ))
         ) : (
           <Typography>žádné rezervace</Typography>

@@ -6,22 +6,22 @@ import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 
 export default function SingleReservation({
-  resevation,
+  reservations,
 }: {
-  resevation: Reservation;
+  reservations: Reservation;
 }) {
   const { push } = useRouter();
   return (
     <MenuItem
       className="p-0"
-      onClick={() => push(`/reservations/detail/${resevation.id}`)}
+      onClick={() => push(`/reservations/detail/${reservations.id}`)}
     >
       <CardHeader
         avatar={<Avatar></Avatar>}
-        title={resevation.name}
-        subheader={`${dayjs(resevation.from_date).format(
+        title={reservations.name}
+        subheader={`${dayjs(reservations.from_date).format(
           "DD.MM.YYYY"
-        )} - ${dayjs(resevation.to_date).format("DD.MM.YYYY")}`}
+        )} - ${dayjs(reservations.to_date).format("DD.MM.YYYY")}`}
       />
     </MenuItem>
   );

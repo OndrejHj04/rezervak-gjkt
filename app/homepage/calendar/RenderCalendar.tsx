@@ -1,17 +1,54 @@
 "use client";
 import { Reservation } from "@/types";
-import { Paper } from "@mui/material";
-import { DateCalendar, LocalizationProvider, csCZ } from "@mui/x-date-pickers";
+import { Badge, Box, Paper, Tooltip } from "@mui/material";
+import {
+  DateCalendar,
+  LocalizationProvider,
+  PickersDay,
+  csCZ,
+} from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import CzechLocale from "dayjs/locale/cs";
+import SingleReservation from "../reservations/SingleReservation";
+
+const renderDay = (props: any) => {
+  const { day, outsideCurrentMonth, reservations, ...other } = props;
+
+  const isReservation = reservations.some((r: any) =>
+    dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
+  );
+
+  return (
+    <Tooltip
+      title={
+        <Box color="primary">
+          <SingleReservation reservations={reservations[0]} />
+        </Box>
+      }
+      disableHoverListener={!isReservation}
+    >
+      <Badge
+        variant="dot"
+        sx={{ "& .MuiBadge-badge": { transform: "translate(-5px, 5px)" } }}
+        color="error"
+        invisible={outsideCurrentMonth || !isReservation}
+      >
+        <PickersDay
+          {...other}
+          day={day}
+          outsideCurrentMonth={outsideCurrentMonth}
+        />
+      </Badge>
+    </Tooltip>
+  );
+};
 
 export default function RenderCalendar({
   reservations,
 }: {
   reservations: Reservation[];
 }) {
-  console.log(reservations);
   return (
     <Paper className="p-2">
       <LocalizationProvider
@@ -21,7 +58,14 @@ export default function RenderCalendar({
           csCZ.components.MuiLocalizationProvider.defaultProps.localeText
         }
       >
-        <DateCalendar />
+        <DateCalendar
+          slots={{
+            day: renderDay,
+          }}
+          slotProps={{
+            day: { reservations: reservations } as any,
+          }}
+        />
       </LocalizationProvider>
     </Paper>
   );

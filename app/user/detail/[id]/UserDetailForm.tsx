@@ -16,6 +16,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Modal,
   Paper,
   TextField,
   Typography,
@@ -32,6 +33,8 @@ import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { use, useState } from "react";
 import { group } from "console";
+import AddGroupsModal from "./AddGroupsModal";
+import AddReservationsModal from "./AddReservationsModal";
 
 export default function UserDetailForm({
   userDetail,
@@ -51,6 +54,8 @@ export default function UserDetailForm({
 
   const [selectGroups, setSelectGroups] = useState<number[]>([]);
   const [selectReservations, setSelectReservation] = useState<number[]>([]);
+  const [groupsModal, setGroupsModal] = useState(false);
+  const [reservationsModal, setReservationsModal] = useState(false);
 
   const onSubmit = (data: any) => {
     fetch(
@@ -88,7 +93,14 @@ export default function UserDetailForm({
         currentGroups: userDetail.groups.map((group) => group.id),
         removeGroups: selectGroups,
       }),
-    });
+    })
+      .then((req) => req.json())
+      .then((data) => toast.success("Skupiny úspěšně odebrány"))
+      .catch((err) => toast.error("Něco se nepovedlo"))
+      .finally(() => {
+        setSelectGroups([]);
+        MakeUserDetailRefetch(userDetail.id);
+      });
   };
 
   const handleCheckReservation = (id: number) => {
@@ -111,11 +123,45 @@ export default function UserDetailForm({
         ),
         removeReservations: selectReservations,
       }),
-    });
+    })
+      .then((req) => req.json())
+      .then((data) => toast.success("Rezervace úspěšně odebrány"))
+      .catch((err) => toast.error("Něco se nepovedlo"))
+      .finally(() => {
+        setSelectReservation([]);
+        MakeUserDetailRefetch(userDetail.id);
+      });
   };
 
   return (
     <>
+      {groupsModal && (
+        <Modal open={groupsModal} onClose={() => setGroupsModal(false)}>
+          {groupsModal && (
+            <AddGroupsModal
+              currentGroups={userDetail.groups.map((group) => group.id)}
+              userId={userDetail.id}
+              setModal={setGroupsModal}
+            />
+          )}
+        </Modal>
+      )}
+      {reservationsModal && (
+        <Modal
+          open={reservationsModal}
+          onClose={() => setReservationsModal(false)}
+        >
+          {reservationsModal && (
+            <AddReservationsModal
+              currentReservations={userDetail.reservations.map(
+                (group) => group.id
+              )}
+              userId={userDetail.id}
+              setModal={setReservationsModal}
+            />
+          )}
+        </Modal>
+      )}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
         <div className="flex gap-2 ml-auto">
           <Button variant="outlined" color="error">
@@ -223,7 +269,10 @@ export default function UserDetailForm({
                           checked={selectGroups.includes(group.id)}
                         />
                         <IconButton
-                          onClick={(e) => push(`/group/detail/${group.id}`)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            push(`/group/detail/${group.id}`);
+                          }}
                         >
                           <Icon>info_icon</Icon>
                         </IconButton>
@@ -246,7 +295,11 @@ export default function UserDetailForm({
                 >
                   Odebrat uživatele z vybraných skupin
                 </Button>
-                <Button variant="contained" endIcon={<AddToPhotosIcon />}>
+                <Button
+                  variant="contained"
+                  endIcon={<AddToPhotosIcon />}
+                  onClick={() => setGroupsModal(true)}
+                >
                   Přidat uživatele do skupiny
                 </Button>
               </div>
@@ -283,9 +336,10 @@ export default function UserDetailForm({
                           checked={selectReservations.includes(reservation.id)}
                         />
                         <IconButton
-                          onClick={(e) =>
-                            push(`/reservations/detail/${reservation.id}`)
-                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            push(`/reservations/detail/${reservation.id}`);
+                          }}
                         >
                           <Icon>info_icon</Icon>
                         </IconButton>
@@ -308,7 +362,11 @@ export default function UserDetailForm({
                 >
                   Odebrat vybrané uživatele ze skupiny
                 </Button>
-                <Button variant="contained" endIcon={<AddToPhotosIcon />}>
+                <Button
+                  variant="contained"
+                  endIcon={<AddToPhotosIcon />}
+                  onClick={() => setReservationsModal(true)}
+                >
                   Přidat uživatele do skupiny
                 </Button>
               </div>

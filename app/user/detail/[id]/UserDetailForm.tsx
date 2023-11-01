@@ -51,6 +51,8 @@ export default function UserDetailForm({
     control,
     reset,
     formState: { isDirty },
+    setValue,
+    watch,
   } = useForm();
   const { push } = useRouter();
 
@@ -68,16 +70,20 @@ export default function UserDetailForm({
         method: "POST",
         body: JSON.stringify({
           ...data,
+          birth_date: dayjs(data.birth_date).add(1, "day"),
           role: data.role.id,
         }),
       }
     )
       .then((res) => res.json())
-      .then((res) => toast.success("Uživatel byl upraven."))
-      .catch((err) => toast.error("Něco se pokazilo."))
-      .finally(() => {
+      .then((res) => {
+        toast.success("Uživatel byl upraven.");
         MakeUserDetailRefetch(userDetail.id);
         reset();
+      })
+      .catch((err) => toast.error("Něco se pokazilo."))
+      .finally(() => {
+        setValue("birth_date", data.birth_date);
       });
   };
 
@@ -393,7 +399,7 @@ export default function UserDetailForm({
   );
 
   if (sleeep) {
-    return <UserSleepAnnouncment data={userDetail} content={content}/>;
+    return <UserSleepAnnouncment data={userDetail} content={content} />;
   }
 
   return content;

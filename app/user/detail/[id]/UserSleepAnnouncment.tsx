@@ -1,7 +1,13 @@
 import { Box, Divider, Paper, Typography } from "@mui/material";
 import HotelIcon from "@mui/icons-material/Hotel";
 
-export default function UserSleepAnnouncment({ data }: { data: any }) {
+export default function UserSleepAnnouncment({
+  data,
+  content,
+}: {
+  data: any;
+  content: any;
+}) {
   return (
     <>
       <div className="absolute z-50">
@@ -21,7 +27,7 @@ export default function UserSleepAnnouncment({ data }: { data: any }) {
           </Typography>
         </Paper>
       </div>
-      <Box sx={{ filter: "blur(5px)", pointerEvents: "none" }}>{<></>}</Box>
+      <Box sx={{ filter: "blur(5px)", pointerEvents: "none" }}>{content   }</Box>
     </>
   );
 }

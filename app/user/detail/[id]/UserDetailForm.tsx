@@ -35,6 +35,8 @@ import { use, useState } from "react";
 import { group } from "console";
 import AddGroupsModal from "./AddGroupsModal";
 import AddReservationsModal from "./AddReservationsModal";
+import UserSleepModal from "./UserSleepModal";
+import UserSleepAnnouncment from "./UserSleepAnnouncment";
 
 export default function UserDetailForm({
   userDetail,
@@ -56,6 +58,8 @@ export default function UserDetailForm({
   const [selectReservations, setSelectReservation] = useState<number[]>([]);
   const [groupsModal, setGroupsModal] = useState(false);
   const [reservationsModal, setReservationsModal] = useState(false);
+  const [makeUserSleep, setMakeUserSleep] = useState(false);
+  const sleeep = !userDetail.active;
 
   const onSubmit = (data: any) => {
     fetch(
@@ -133,8 +137,15 @@ export default function UserDetailForm({
       });
   };
 
-  return (
+  const content = (
     <>
+      {makeUserSleep && (
+        <Modal open={makeUserSleep} onClose={() => setMakeUserSleep(false)}>
+          {makeUserSleep && (
+            <UserSleepModal setModal={setMakeUserSleep} data={userDetail} />
+          )}
+        </Modal>
+      )}
       {groupsModal && (
         <Modal open={groupsModal} onClose={() => setGroupsModal(false)}>
           {groupsModal && (
@@ -164,7 +175,11 @@ export default function UserDetailForm({
       )}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
         <div className="flex gap-2 ml-auto">
-          <Button variant="outlined" color="error">
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => setMakeUserSleep(true)}
+          >
             Uspat uživatele
           </Button>
           <Button variant="outlined" type="submit" disabled={!isDirty}>
@@ -376,4 +391,10 @@ export default function UserDetailForm({
       </form>
     </>
   );
+
+  if (sleeep) {
+    return <UserSleepAnnouncment data={userDetail} content={content}/>;
+  }
+
+  return content;
 }

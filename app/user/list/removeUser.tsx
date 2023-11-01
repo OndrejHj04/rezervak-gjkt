@@ -3,7 +3,7 @@ import { store } from "@/store/store";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Badge, IconButton } from "@mui/material";
 import { toast } from "react-toastify";
-import MakeRefetch from "./refetch";
+import MakeUserListRefetch from "./refetch";
 
 export default function RemoveUser() {
   const { selectedUsers, setSelectedUsers } = store();
@@ -26,7 +26,7 @@ export default function RemoveUser() {
       })
       .finally(() => {
         setSelectedUsers([]);
-        MakeRefetch();
+        MakeUserListRefetch();
       });
   };
 

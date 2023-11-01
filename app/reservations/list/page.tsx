@@ -1,11 +1,14 @@
 import {
   Chip,
+  InputAdornment,
   Paper,
+  Select,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 import CheckboxComponent from "./components/CheckboxComponent";
@@ -13,6 +16,8 @@ import UserListItem from "@/app/user/list/UserListItem";
 import { Reservation } from "@/types";
 import ReservationListItem from "./components/ReservationListItem";
 import TrashBin from "./components/TrashBin";
+import StatusSelect from "./components/StatusSelect";
+import SearchBar from "./components/SearchBar";
 
 const getReservations = async () => {
   const req = await fetch(
@@ -23,12 +28,25 @@ const getReservations = async () => {
   return data as Reservation[];
 };
 
+const getStatuses = async () => {
+  const req = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/status`
+  );
+  const { data } = await req.json();
+  return data;
+};
+
 export default async function ReservationsListPage() {
   const reservations = await getReservations();
+  const statuses = await getStatuses();
 
   return (
     <div className="flex flex-col w-full gap-2">
-      <TrashBin />
+      <div className="flex justify-between">
+        <TrashBin />
+        <SearchBar />
+        <StatusSelect statuses={statuses} />
+      </div>
       <Paper className="w-full p-2">
         <Table>
           <TableHead>

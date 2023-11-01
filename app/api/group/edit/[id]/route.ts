@@ -7,7 +7,7 @@ export async function POST(
 ) {
   try {
     const { name, description } = await req.json();
-    console.log(name, description, id);
+
     const data = (await query({
       query: `
         UPDATE groups SET name = ?, description = ? WHERE id = ?`,

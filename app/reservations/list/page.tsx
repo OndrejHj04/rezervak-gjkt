@@ -1,12 +1,14 @@
 import {
   Chip,
   InputAdornment,
+  Pagination,
   Paper,
   Select,
   Table,
   TableBody,
   TableCell,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Typography,
@@ -18,6 +20,7 @@ import ReservationListItem from "./components/ReservationListItem";
 import TrashBin from "./components/TrashBin";
 import StatusSelect from "./components/StatusSelect";
 import SearchBar from "./components/SearchBar";
+import ReservationsPagination from "./components/ReseravtionsPagination";
 
 const getReservations = async () => {
   const req = await fetch(
@@ -36,9 +39,16 @@ const getStatuses = async () => {
   return data;
 };
 
-export default async function ReservationsListPage() {
+export default async function ReservationsListPage({
+  searchParams,
+}: {
+  searchParams: any;
+}) {
   const reservations = await getReservations();
   const statuses = await getStatuses();
+
+  const page = searchParams["page"] || 1;
+  const perPage = searchParams["per_page"] || 10;
 
   return (
     <div className="flex flex-col w-full gap-2">
@@ -47,7 +57,7 @@ export default async function ReservationsListPage() {
         <SearchBar />
         <StatusSelect statuses={statuses} />
       </div>
-      <Paper className="w-full p-2">
+      <Paper>
         <Table>
           <TableHead>
             <TableRow>
@@ -80,14 +90,16 @@ export default async function ReservationsListPage() {
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody className="overflow-scroll">
             {reservations.length ? (
-              reservations.map((reservation) => (
-                <ReservationListItem
-                  key={reservation.id}
-                  reservation={reservation}
-                />
-              ))
+              reservations
+                .slice(page * 10 - 10, page * 10)
+                .map((reservation) => (
+                  <ReservationListItem
+                    key={reservation.id}
+                    reservation={reservation}
+                  />
+                ))
             ) : (
               <TableRow>
                 <TableCell colSpan={9}>
@@ -99,6 +111,7 @@ export default async function ReservationsListPage() {
             )}
           </TableBody>
         </Table>
+        <ReservationsPagination reservations={reservations} />
       </Paper>
     </div>
   );

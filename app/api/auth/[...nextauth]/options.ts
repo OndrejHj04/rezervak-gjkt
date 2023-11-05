@@ -54,14 +54,16 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
+        const userObject = {
+          email: credentials?.email,
+          password: credentials?.password,
+        } as any;
+        console.log("user-object", userObject, typeof userObject);
         const request = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
           {
             method: "POST",
-            body: {
-              email: credentials?.email,
-              password: credentials?.password,
-            } as any,
+            body: userObject,
           }
         );
         const { data } = await request.json();

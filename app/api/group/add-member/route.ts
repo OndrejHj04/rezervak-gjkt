@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { currentMembers, newMembers, group } = await req.json();
 
     const data = await query({
-      query: `UPDATE groups SET users = "${JSON.stringify([
+      query: `UPDATE ${"`groups`"} SET users = "${JSON.stringify([
         ...currentMembers,
         ...newMembers,
       ])}" WHERE id = ${group}`,
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     newMembers.forEach(async (member: any) => {
       const user = (await query({
-        query: `SELECT groups FROM users WHERE id = ${member}`,
+        query: `SELECT ${"`groups`"} FROM users WHERE id = ${member}`,
         values: [],
       })) as any;
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       groups.push(group);
 
       await query({
-        query: `UPDATE users SET groups = "${JSON.stringify(
+        query: `UPDATE users SET ${"`groups`"} = "${JSON.stringify(
           groups
         )}" WHERE id = ${member}`,
         values: [],

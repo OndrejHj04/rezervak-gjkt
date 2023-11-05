@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { currentReservations, newReservations, group } = await req.json();
 
     const data = await query({
-      query: `UPDATE groups SET reservations = "${JSON.stringify([
+      query: `UPDATE ${"`groups`"} SET reservations = "${JSON.stringify([
         ...currentReservations,
         ...newReservations,
       ])}" WHERE id = ${group}`,
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     newReservations.forEach(async (reserv: any) => {
       const user = (await query({
-        query: `SELECT groups FROM reservations WHERE id = ${reserv}`,
+        query: `SELECT ${"`groups`"} FROM reservations WHERE id = ${reserv}`,
         values: [],
       })) as any;
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       groups.push(group);
 
       await query({
-        query: `UPDATE reservations SET groups = "${JSON.stringify(
+        query: `UPDATE reservations SET ${"`groups`"} = "${JSON.stringify(
           groups
         )}" WHERE id = ${reserv}`,
         values: [],

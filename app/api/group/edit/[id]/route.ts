@@ -10,7 +10,7 @@ export async function POST(
 
     const data = (await query({
       query: `
-        UPDATE groups SET name = ?, description = ? WHERE id = ?`,
+        UPDATE ${"`groups`"} SET name = ?, description = ? WHERE id = ?`,
       values: [name, description, id],
     })) as any;
 

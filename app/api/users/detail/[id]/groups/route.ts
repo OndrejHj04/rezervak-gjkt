@@ -9,7 +9,7 @@ export async function GET(
   try {
     const data = (await query({
       query: `
-            SELECT groups FROM users WHERE id = "
+            SELECT ${"`groups`"} FROM users WHERE id = "
             ${id}"
           `,
       values: [id],
@@ -19,7 +19,7 @@ export async function GET(
     const groupsDetail = groupList.length
       ? await query({
           query: `
-        SELECT * FROM groups WHERE id IN (${groupList.join(",")})
+        SELECT * FROM ${"`groups`"} WHERE id IN (${groupList.join(",")})
       `,
           values: [],
         })

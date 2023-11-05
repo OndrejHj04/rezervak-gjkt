@@ -8,7 +8,7 @@ export async function GET(
 ) {
   const data = (await query({
     query: `
-        SELECT * FROM groups WHERE id = ?`,
+        SELECT * FROM ${"`groups`"} WHERE id = ?`,
     values: [id],
   })) as Group[];
 

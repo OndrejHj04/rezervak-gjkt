@@ -42,7 +42,7 @@ export async function GET(req: Request) {
     const groupIdsList = groupIds.length ? groupIds : [-1];
 
     const groups = (await query({
-      query: `SELECT id, name FROM groups WHERE id IN(${groupIdsList.join(
+      query: `SELECT id, name FROM ${"`groups`"} WHERE id IN(${groupIdsList.join(
         ","
       )})`,
       values: [],

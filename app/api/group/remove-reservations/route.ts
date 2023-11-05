@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { group, removeReservaitons, currentReservations } = await req.json();
 
     const getGroups = await query({
-      query: `UPDATE groups SET reservations = "${JSON.stringify(
+      query: `UPDATE ${"`groups`"} SET reservations = "${JSON.stringify(
         currentReservations.filter(
           (reservation: any) => !removeReservaitons.includes(reservation)
         )
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       ));
 
       await query({
-        query: `UPDATE reservations SET groups = "${JSON.stringify(
+        query: `UPDATE reservations SET ${"`groups`"} = "${JSON.stringify(
           newReservation
         )}" WHERE id = ${reservation.id}`,
         values: [],

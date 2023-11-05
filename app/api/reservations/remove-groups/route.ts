@@ -6,14 +6,14 @@ export async function POST(req: Request) {
     const { reservation, removeGroups, currentGroups } = await req.json();
 
     const getReservation = await query({
-      query: `UPDATE reservations SET groups = "${JSON.stringify(
+      query: `UPDATE reservations SET ${"`groups`"} = "${JSON.stringify(
         currentGroups.filter((group: any) => !removeGroups.includes(group))
       )}" WHERE id = ${reservation}`,
       values: [],
     });
 
     const groups = (await query({
-      query: `SELECT id, reservations FROM groups WHERE id IN (${removeGroups.join(
+      query: `SELECT id, reservations FROM ${"`groups`"} WHERE id IN (${removeGroups.join(
         ","
       )})`,
       values: [],
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       ));
 
       await query({
-        query: `UPDATE groups SET reservations = "${JSON.stringify(
+        query: `UPDATE ${"`groups`"} SET reservations = "${JSON.stringify(
           newReservation
         )}" WHERE id = ${group.id}`,
         values: [],

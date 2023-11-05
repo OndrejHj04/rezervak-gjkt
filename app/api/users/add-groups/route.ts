@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { user, newGroups, currentGroups } = await req.json();
 
     const getGroups = await query({
-      query: `UPDATE users SET groups = "[${[
+      query: `UPDATE users SET ${"`groups`"} = "[${[
         ...currentGroups,
         ...newGroups,
       ]}]" WHERE id = ${user}`,
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     });
 
     const groups = (await query({
-      query: `SELECT id, users FROM groups WHERE id IN (${newGroups.join(
+      query: `SELECT id, users FROM ${"`groups`"} WHERE id IN (${newGroups.join(
         ","
       )})`,
       values: [],
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
     groups.map(async (group: any) => {
       await query({
-        query: `UPDATE groups SET users = "${JSON.stringify([
+        query: `UPDATE ${"`groups`"} SET users = "${JSON.stringify([
           ...group.users,
           user,
         ])}" WHERE id = ${group.id}`,

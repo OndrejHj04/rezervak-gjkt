@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     });
 
     const groupReservations = (await query({
-      query: `SELECT id, reservations FROM groups WHERE id IN (${getReservations
+      query: `SELECT id, reservations FROM ${"`groups`"} WHERE id IN (${getReservations
         .map((reservation: any) => reservation.groups)
         .flat()
         .join(",")})`,
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
         (reservation: any) => !reservations.includes(reservation)
       );
       query({
-        query: `UPDATE groups SET reservations = "${JSON.stringify(
+        query: `UPDATE ${"`groups`"} SET reservations = "${JSON.stringify(
           reservations
         )}" WHERE id = ${group.id}`,
         values: [],

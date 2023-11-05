@@ -9,7 +9,7 @@ export async function GET(req: Request) {
 
     const data = (await query({
       query: `
-        SELECT id, groups from users WHERE id = "${userId}"
+        SELECT id, ${"`groups`"} from users WHERE id = "${userId}"
         `,
       values: [],
     })) as any;
@@ -18,7 +18,7 @@ export async function GET(req: Request) {
 
     const getUserGroups = userGroups
       ? ((await query({
-          query: `SELECT name, owner, id from groups WHERE id IN (${userGroups.join(
+          query: `SELECT name, owner, id from ${"`groups`"} WHERE id IN (${userGroups.join(
             ","
           )})`,
           values: [],

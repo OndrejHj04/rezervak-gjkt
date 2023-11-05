@@ -5,13 +5,13 @@ export async function POST(req: Request) {
   const { groups } = await req.json();
 
   const data = await query({
-    query: `DELETE FROM groups WHERE id IN (${groups.join(",")});`,
+    query: `DELETE FROM ${"`groups`"} WHERE id IN (${groups.join(",")});`,
     values: [],
   });
 
   groups.map(async (group: any) => {
     const userGroups = (await query({
-      query: `SELECT id, groups FROM users`,
+      query: `SELECT id, ${"`groups`"} FROM users`,
       values: [],
     })) as any;
 
@@ -22,14 +22,14 @@ export async function POST(req: Request) {
         groupsData = groupsData.filter((num: number) => num !== group);
         if (groupsData.length) {
           await query({
-            query: `UPDATE users SET groups = "${JSON.stringify(
+            query: `UPDATE users SET ${"`groups`"} = "${JSON.stringify(
               groupsData
             )}" WHERE id = "${user.id}"`,
             values: [],
           });
         } else {
           await query({
-            query: `UPDATE users SET groups = null WHERE id = "${user.id}"`,
+            query: `UPDATE users SET ${"`groups`"} = null WHERE id = "${user.id}"`,
             values: [],
           });
         }

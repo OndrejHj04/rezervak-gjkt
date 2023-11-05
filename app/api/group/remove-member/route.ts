@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     );
 
     const data = (await query({
-      query: `UPDATE groups SET users = "${JSON.stringify(
+      query: `UPDATE ${"`groups`"} SET users = "${JSON.stringify(
         remove
       )}" WHERE id = ${group}`,
       values: [],
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     membersForRemove.forEach(async (member: any) => {
       const user = (await query({
-        query: `SELECT groups FROM users WHERE id = ${member}`,
+        query: `SELECT ${"`groups`"} FROM users WHERE id = ${member}`,
         values: [],
       })) as any;
 
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       if (groups.length === 0) groups = null;
 
       await query({
-        query: `UPDATE users SET groups = ${
+        query: `UPDATE users SET ${"`groups`"} = ${
           groups ? `"${JSON.stringify(groups)}"` : null
         } WHERE id = ${member}`,
         values: [],

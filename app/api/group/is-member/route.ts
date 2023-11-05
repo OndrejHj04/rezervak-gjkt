@@ -9,7 +9,7 @@ export async function GET(req: Request) {
 
     const data = (await query({
       query: `
-        SELECT users FROM groups WHERE id = ?`,
+        SELECT users FROM ${"`groups`"} WHERE id = ?`,
       values: [group],
     })) as any;
 

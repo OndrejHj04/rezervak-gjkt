@@ -7,16 +7,9 @@ export async function POST(req: Request) {
     const { email, password } = await req.json();
 
     const data = (await query({
-      query: `SELECT * FROM users WHERE email = ? AND password = ?`,
-      values: [email, password],
+      query: `SELECT * FROM users WHERE email = "${email}" AND password = ${password}`,
+      values: [],
     })) as User[];
-
-    const roles = (await query({
-      query: `SELECT * FROM roles WHERE id = ?`,
-      values: [data[0].role],
-    })) as any;
-    console.log("USER DATA", data);
-    data.map((item) => (item.role = roles[0]));
 
     if (data.length === 0) {
       return NextResponse.json(
@@ -26,7 +19,15 @@ export async function POST(req: Request) {
         },
         { status: 401 }
       );
+    } else {
+      const roles = (await query({
+        query: `SELECT * FROM roles WHERE id = ?`,
+        values: [data[0].role],
+      })) as any;
+
+      data.map((item) => (item.role = roles[0]));
     }
+    
     return NextResponse.json({
       success: true,
       message: "Operation successful",

@@ -5,21 +5,13 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
-    console.log("USER-CREDENTIALS",email, password)
+    console.log("USER-CREDENTIALS", email, password);
     const data = (await query({
       query: `SELECT * FROM users WHERE email = "${email}" AND password = ${password}`,
       values: [],
     })) as User[];
 
-    if (data.length === 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid credentials",
-        },
-        { status: 401 }
-      );
-    } else {
+    if (data.length) {
       const roles = (await query({
         query: `SELECT * FROM roles WHERE id = ?`,
         values: [data[0].role],

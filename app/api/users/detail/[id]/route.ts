@@ -30,7 +30,7 @@ export async function GET(
 
     if (data[0].groups.length) {
       const groups = (await query({
-        query: `SELECT id, name, owner, users FROM groups WHERE id IN (${data[0].groups.join(
+        query: `SELECT id, name, owner, users FROM ${"`groups`"} WHERE id IN (${data[0].groups.join(
           ","
         )})`,
         values: [],

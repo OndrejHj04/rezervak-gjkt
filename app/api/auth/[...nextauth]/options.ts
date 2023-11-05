@@ -14,7 +14,7 @@ export const authOptions: NextAuthOptions = {
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/list?email=${profile.email}`
         );
         const { data } = await req.json();
-        console.log(data, profile);
+
         if (!data.picture && profile.picture) {
           await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`,
@@ -54,6 +54,7 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
+        console.log("TEST!", credentials);
         //tady budu dělat request na server s tím abych zjistil jestli je uživatel v databázi
         const request = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,

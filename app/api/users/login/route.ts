@@ -3,7 +3,7 @@ import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  console.log("WELCOME")
+  console.log("WELCOME");
   try {
     console.log("1");
     const email = "ondrej.hajek.profi@gmail.com";
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
       data.map((item) => (item.role = roles[0]));
     }
-    console.log("4");
+    console.log("4", data);
 
     return NextResponse.json({
       success: true,

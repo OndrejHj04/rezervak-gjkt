@@ -42,7 +42,7 @@ export default function SlidingMenu() {
         <MenuList>
           {navConfig.map((route, i) => {
             if (
-              route.roles.includes(user?.role.role_id!) ||
+              route.roles.includes(user?.role.id!) ||
               route.roles.length === 0
             ) {
               return (

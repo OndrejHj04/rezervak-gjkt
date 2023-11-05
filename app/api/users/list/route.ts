@@ -21,8 +21,8 @@ export async function GET(req: Request) {
       query: `SELECT * FROM users ${
         roles || email
           ? roles
-            ? `WHERE role = ${roles.join(",")}`
-            : `WHERE email = ${email}`
+            ? `WHERE role IN(${roles.join(",")})`
+            : `WHERE email = "${email}"`
           : ``
       }`,
       values: [],

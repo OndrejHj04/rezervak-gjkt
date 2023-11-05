@@ -26,7 +26,7 @@ export default function HomepageLoading({
     return <WelcomeComponent />;
   }
 
-  if (!user?.active && user?.role.role_id !== 1) {
+  if (!user?.active && user?.role.id !== 1) {
     return (
       <>
         <div className="absolute z-50">

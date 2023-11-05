@@ -4,7 +4,7 @@ import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 
 import { SessionProvider, signIn, useSession } from "next-auth/react";
 import { useEffect } from "react";
-import 'material-icons/iconfont/material-icons.css';
+import "material-icons/iconfont/material-icons.css";
 
 function WrapWrap() {
   const { setUser, setUserLoading } = store();
@@ -20,13 +20,13 @@ function WrapWrap() {
         .then((res) => res.json())
         .then((res) => {
           const {
-            role: { role_id },
+            role: { id },
             verified,
             active,
           } = data.user;
 
           if (
-            role_id !== res.data.role.role_id ||
+            id !== res.data.role.id ||
             verified !== res.data.verified ||
             active !== res.data.active
           ) {

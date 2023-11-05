@@ -31,7 +31,7 @@ const actions = [
 export default function SpeedComponent() {
   const { modal, setModal, user } = store();
   const { push } = useRouter();
-  if (user?.role.role_id !== 1) return null;
+  if (user?.role.id !== 1) return null;
   return (
     <>
       <SpeedDial

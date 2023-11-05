@@ -4,7 +4,7 @@ import { navConfig } from "./lib/navigationConfig";
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req });
-  const role = token?.role;
+  const role = token?.role
   const config = navConfig.find((item) => item.path === req.nextUrl.pathname);
   const verified = token?.verified;
   const active = token?.active;
@@ -21,7 +21,7 @@ export default async function middleware(req: NextRequest) {
     const id = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
 
-    if (id !== userId && role?.role_id !== 1) {
+    if (id !== userId && role?.id !== 1) {
       return NextResponse.redirect(new URL("/", req.url));
     }
   }
@@ -31,7 +31,7 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
-    if (role?.role_id === 4) {
+    if (role?.id === 4) {
       const group = req.nextUrl.pathname.split("/")[3];
       const userId = token?.id.toString();
 
@@ -49,7 +49,7 @@ export default async function middleware(req: NextRequest) {
   if (config) {
     if (
       config.roles.length &&
-      (!config.roles.includes(role?.role_id!) || !verified || !active)
+      (!config.roles.includes(role?.id!) || !verified || !active)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }

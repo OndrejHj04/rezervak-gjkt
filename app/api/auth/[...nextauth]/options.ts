@@ -54,20 +54,14 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
-        console.log("TEST!", credentials);
-        const request = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              email: credentials?.email,
-              password: credentials?.password,
-            }),
-          }
-        );
-        const { data } = await request.json();
+        console.log("CREDENTIALS", credentials);
+        const user = { id: 1, name: "J Smith", email: "jsmith@example.com" };
 
-        return data || null;
+        if (user) {
+          return user as any;
+        } else {
+          return null;
+        }
       },
     }),
   ],

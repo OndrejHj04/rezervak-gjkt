@@ -55,13 +55,10 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         console.log("CREDENTIALS", credentials);
-        console.log(
-          "stringify",
-          JSON.stringify({
-            email: credentials?.email,
-            password: credentials?.password,
-          })
-        );
+        console.log("stringify", {
+          email: credentials?.email,
+          password: credentials?.password,
+        });
         console.log("after stringify");
         const request = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,

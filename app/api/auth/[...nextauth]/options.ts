@@ -14,7 +14,6 @@ export const authOptions: NextAuthOptions = {
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/list?email=${profile.email}`
         );
         const { data } = await req.json();
-        console.log("DATA!", data);
         if (!data.picture && profile.picture) {
           await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`,
@@ -94,7 +93,6 @@ export const authOptions: NextAuthOptions = {
         session.user.verified = token.verified;
         session.user.active = token.active;
       }
-      console.log("SESSION", session);
       return session;
     },
     async signIn({ user, credentials }) {

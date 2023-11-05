@@ -14,9 +14,9 @@ const getGroups = async (id: number) => {
 };
 
 export default async function DisplayGroups() {
-  const { user } = (await getServerSession(authOptions)) as { user: User };
+  const data = (await getServerSession(authOptions)) as { user: User };
 
-  const groups = await getGroups(user.id);
+  const groups = data ? await getGroups(data.user.id) : [];
 
   return (
     <Paper className="p-2">

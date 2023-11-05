@@ -11,8 +11,8 @@ const getReservations = async (id: number) => {
 };
 
 export default async function HomepageCalendar() {
-  const { user } = (await getServerSession(authOptions)) as { user: User };
-  const reservations = await getReservations(user.id);
-  
+  const data = (await getServerSession(authOptions)) as { user: User };
+  const reservations = data ? await getReservations(data.user.id) : [];
+
   return <RenderCalendar reservations={reservations} />;
 }

@@ -18,8 +18,11 @@ const getReservations = async (id: number) => {
 };
 
 export default async function DisplayReservations() {
-  const { user } = (await getServerSession(authOptions)) as { user: User };
-  const reservations = (await getReservations(user.id)) as Reservation[];
+  const data = (await getServerSession(authOptions)) as { user: User };
+
+  const reservations = data
+    ? ((await getReservations(data.user.id)) as Reservation[])
+    : [];
 
   return (
     <Paper className="p-2">
@@ -31,7 +34,10 @@ export default async function DisplayReservations() {
       <MenuList>
         {reservations.length ? (
           reservations.map((reservation) => (
-            <SingleReservation key={reservation.id} reservations={reservation} />
+            <SingleReservation
+              key={reservation.id}
+              reservations={reservation}
+            />
           ))
         ) : (
           <Typography>žádné rezervace</Typography>

@@ -6,9 +6,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const data = (await query({
-      query: `
-      SELECT * FROM groups
-    `,
+      query: "SELECT * FROM `groups`",
       values: [],
     })) as Group[];
 
@@ -23,7 +21,7 @@ export async function GET() {
       item.owner = users.find(
         (user) => user.id === (item.owner as unknown as number)
       ) as unknown as GroupOwner;
-      item.users = []
+      item.users = item.users ? JSON.parse(item.users as any) : [];
       return item;
     });
 

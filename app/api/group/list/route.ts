@@ -10,11 +10,6 @@ export async function GET() {
       values: [],
     })) as Group[];
 
-    const users = (await query({
-      query: "SELECT id, image, first_name, last_name, email FROM users",
-      values: [],
-    })) as GroupOwner[];
-
     return NextResponse.json({
       success: true,
       message: "Operation successful",

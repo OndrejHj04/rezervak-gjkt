@@ -3,6 +3,7 @@ import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  console.log("WELCOME")
   try {
     console.log("1");
     const email = "ondrej.hajek.profi@gmail.com";

@@ -10,6 +10,21 @@ export async function GET() {
       values: [],
     })) as Group[];
 
+    const users = (await query({
+      query: `
+      SELECT id, image, first_name, last_name, email FROM users
+    `,
+      values: [],
+    })) as GroupOwner[];
+
+    data.map((item) => {
+      item.owner = users.find(
+        (user) => user.id === (item.owner as unknown as number)
+      ) as unknown as GroupOwner;
+      item.users = item.users ? JSON.parse(item.users as any) : [];
+      return item;
+    });
+    
     return NextResponse.json({
       success: true,
       message: "Operation successful",

@@ -36,7 +36,7 @@ export default async function DisplayReservations() {
         <EventIcon color="primary" />
       </div>
       <MenuList>
-        {reservations.length ? (
+        {reservations?.length ? (
           reservations.map((reservation) => (
             <SingleReservation
               key={reservation.id}

@@ -21,23 +21,14 @@ export async function POST(
     })) as User[] | any;
 
     const userDetail = (await query({
-      query: `SELECT
-      u.*,
-      JSON_OBJECT(
-          'role_id', r.id,
-          'role_name', r.role_name,
-          'role_color', r.role_color
-      ) AS role
-  FROM
-      users u
-  JOIN
-      roles r
-  ON
-      u.role = r.id
-  WHERE
-      u.id = ?`,
+      query: `SELECT * FROM users WHERE id = ?`,
       values: [id],
     })) as User[];
+
+    const roles = (await query({
+      query: `SELECT * FROM roles WHERE id = ?`,
+      values: [userDetail[0].role],
+    })) as any;
 
     userDetail.map((item) => (item.role = JSON.parse(item.role as any)));
 

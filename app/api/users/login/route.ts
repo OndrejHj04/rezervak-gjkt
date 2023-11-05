@@ -7,11 +7,16 @@ export async function POST(req: Request) {
     const { email, password } = await req.json();
 
     const data = (await query({
-      query: `SELECT u.*, JSON_OBJECT('role_id', r.id, 'role_name', r.role_name, 'role_color', r.role_color) AS role FROM users u JOIN roles r ON u.role = r.id WHERE u.email = ? AND u.password = ?`,
+      query: `SELECT * FROM users WHERE u.email = ? AND u.password = ?`,
       values: [email, password],
     })) as User[];
 
-    data.map((item) => (item.role = JSON.parse(item.role as any)));
+    const roles = (await query({
+      query: `SELECT * FROM roles WHERE id = ?`,
+      values: [data[0].role],
+    })) as any;
+
+    data.map((item) => (item.role = roles[0]));
 
     if (data.length === 0) {
       return NextResponse.json(

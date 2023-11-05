@@ -10,27 +10,20 @@ export async function GET(
   try {
     const data = (await query({
       query: `
-      SELECT
-      u.*,
-      JSON_OBJECT(
-          'role_id', r.id,
-          'role_name', r.role_name,
-          'role_color', r.role_color
-      ) AS role
-  FROM
-      users u
-  JOIN
-      roles r
-  ON
-      u.role = r.id
-  WHERE
-      u.id = ?
+      SELECT * FROM users WHERE id = ?
     `,
       values: [id],
     })) as any;
 
+    const role = (await query({
+      query: `
+      SELECT * FROM roles WHERE id = ?
+    `,
+      values: [data[0].role],
+    })) as any;
+
     data.map((item: any) => {
-      item.role = JSON.parse(item.role as any);
+      item.role = role[0];
       item.groups = JSON.parse(item.groups as any);
       item.reservations = JSON.parse(item.reservations as any);
     });

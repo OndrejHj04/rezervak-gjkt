@@ -12,17 +12,24 @@ export async function GET(req: Request) {
     const roles = url.searchParams.get("roles")?.split(",");
     const email = url.searchParams.get("email");
 
+    const rolesList = (await query({
+      query: `SELECT * FROM roles`,
+      values: [],
+    })) as any;
+
     const data = (await query({
-      query: `SELECT u.*, JSON_OBJECT('role_id', r.id, 'role_name', r.role_name, 'role_color', r.role_color, 'icon',  r.icon) AS role FROM users u JOIN roles r ON u.role = r.id ${
+      query: `SELECT * FROM users ${
         roles || email
-          ? `${roles ? `WHERE r.id IN (${roles.join(",")})` : `WHERE u.email = "${email}"`}`
-          : ""
+          ? roles
+            ? `WHERE role = ${roles.join(",")}`
+            : `WHERE email = ${email}`
+          : ``
       }`,
       values: [],
-    })) as User[];
+    })) as any;
 
-    data.map((item) => {
-      item.role = JSON.parse(item.role as any);
+    data.map((item: any) => {
+      item.role = rolesList.find((role: any) => role.id === Number(item.role));
       item.full_name = `${item.first_name} ${item.last_name}`;
       item.children = item.children ? JSON.parse(item.children as any) : [];
       return item;

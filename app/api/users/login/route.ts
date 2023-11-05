@@ -3,6 +3,7 @@ import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  console.log("LOGIN ROUTE");
   try {
     const { email, password } = await req.json();
     console.log("USER-CREDENTIALS", email, password);

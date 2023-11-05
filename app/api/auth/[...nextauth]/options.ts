@@ -55,7 +55,6 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         console.log("TEST!", credentials);
-        //tady budu dělat request na server s tím abych zjistil jestli je uživatel v databázi
         const request = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
           {
@@ -91,6 +90,7 @@ export const authOptions: NextAuthOptions = {
         session.user.verified = token.verified;
         session.user.active = token.active;
       }
+      console.log("SESSION", session);
       return session;
     },
     async signIn({ user, credentials }) {

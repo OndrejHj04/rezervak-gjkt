@@ -58,6 +58,8 @@ export const authOptions: NextAuthOptions = {
           email: credentials?.email,
           password: credentials?.password,
         } as any;
+        console.log("WELCOME");
+        console.log(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`);
         const request = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`
         );

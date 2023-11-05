@@ -3,8 +3,11 @@ import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  console.log("WELCOME!");
   try {
+    console.log(req, "request");
     const { email, password } = await req.json();
+    console.log(email, password, "credentials");
     console.log("USER-CREDENTIALS", email, password);
     const data = (await query({
       query: `SELECT * FROM users WHERE email = "${email}" AND password = ${password}`,

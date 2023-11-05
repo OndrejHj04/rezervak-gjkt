@@ -1,7 +1,6 @@
 import { query } from "@/lib/db";
 import { Group } from "@/types";
 import { NextResponse } from "next/server";
-import { use } from "react";
 
 export async function GET(req: Request) {
   try {

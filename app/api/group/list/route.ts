@@ -23,7 +23,7 @@ export async function GET() {
       item.owner = users.find(
         (user) => user.id === (item.owner as unknown as number)
       ) as unknown as GroupOwner;
-      item.users = item.users ? JSON.parse(item.users as any) : [];
+      item.users = []
       return item;
     });
 

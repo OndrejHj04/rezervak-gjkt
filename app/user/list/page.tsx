@@ -61,7 +61,7 @@ const getUsers = async () => {
 export default async function UserList() {
   const users = await getUsers();
 
-  if(users.length === 0) return <div>loading...</div>;
+  if(!users) return <div>loading...</div>;
   return (
     <div className="flex flex-col w-full gap-2">
       <RemoveUser />

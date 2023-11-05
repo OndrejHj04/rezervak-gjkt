@@ -129,7 +129,7 @@ export default function ReservationMembersRender({
         >
           <div style={{ height: 250 }}>
             <PerfectScrollbar>
-              {groupsFilter.map((group) => {
+              {groupsFilter?.map((group) => {
                 const isChecked = groupsIncluded.includes(group.id);
                 const handleClick = () => {
                   if (isChecked) {

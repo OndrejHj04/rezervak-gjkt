@@ -58,7 +58,7 @@ export default async function ReservationsListPage({
   const page = searchParams["page"] || 1;
   const perPage = searchParams["per_page"] || 10;
 
-  if (reservations.length === 0) return <div>loading...</div>;
+  if (!reservations) return <div>loading...</div>;
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">

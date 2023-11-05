@@ -3,9 +3,11 @@ import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  console.log("Before try");
   try {
-    const email = "ondrej.hajek.profi@gmail.com";
-    const password = "password";
+    console.log("After try");
+
+    const { email, password } = await req.json();
 
     const data = (await query({
       query: `SELECT * FROM users WHERE email = "${email}" AND password = "${password}"`,

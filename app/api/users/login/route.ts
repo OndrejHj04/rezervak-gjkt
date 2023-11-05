@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
-
+    console.log("USER-CREDENTIALS",email, password)
     const data = (await query({
       query: `SELECT * FROM users WHERE email = "${email}" AND password = ${password}`,
       values: [],
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
       data.map((item) => (item.role = roles[0]));
     }
-    
+
     return NextResponse.json({
       success: true,
       message: "Operation successful",

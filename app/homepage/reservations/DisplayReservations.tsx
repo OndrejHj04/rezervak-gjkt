@@ -9,12 +9,16 @@ import SingleReservation from "./SingleReservation";
 import EventIcon from "@mui/icons-material/Event";
 
 const getReservations = async (id: number) => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?user_id=${id}`
-  );
-  const { data } = await req.json();
+  try {
+    const req = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?user_id=${id}`
+    );
+    const { data } = await req.json();
 
-  return data;
+    return data;
+  } catch (e) {
+    return [];
+  }
 };
 
 export default async function DisplayReservations() {

@@ -5,12 +5,16 @@ import { User, getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 const getGroups = async (id: number) => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/group/user-list?user_id=${id}`
-  );
-  const { data } = await req.json();
+  try {
+    const req = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/group/user-list?user_id=${id}`
+    );
+    const { data } = await req.json();
 
-  return data;
+    return data;
+  } catch (e) {
+    return [];
+  }
 };
 
 export default async function DisplayGroups() {

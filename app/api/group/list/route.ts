@@ -11,9 +11,7 @@ export async function GET() {
     })) as Group[];
 
     const users = (await query({
-      query: `
-      SELECT id, image, first_name, last_name, email FROM users
-    `,
+      query: "SELECT id, image, first_name, last_name, email FROM `users`",
       values: [],
     })) as GroupOwner[];
 
@@ -24,7 +22,7 @@ export async function GET() {
       item.users = item.users ? JSON.parse(item.users as any) : [];
       return item;
     });
-    
+
     return NextResponse.json({
       success: true,
       message: "Operation successful",

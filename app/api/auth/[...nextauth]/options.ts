@@ -64,6 +64,9 @@ export const authOptions: NextAuthOptions = {
           {
             method: "POST",
             body: userObject,
+            headers: {
+              "Content-Type": "text/json",
+            },
           }
         );
         const { data } = await request.json();

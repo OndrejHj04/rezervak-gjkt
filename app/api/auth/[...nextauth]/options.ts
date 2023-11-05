@@ -59,16 +59,8 @@ export const authOptions: NextAuthOptions = {
           password: credentials?.password,
         } as any;
         const request = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
-          {
-            method: "POST",
-            body: userObject,
-            headers: {
-              "Content-Type": "text/json",
-            },
-          }
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`
         );
-        console.log("po requeste");
         const { data } = await request.json();
 
         return data || null;

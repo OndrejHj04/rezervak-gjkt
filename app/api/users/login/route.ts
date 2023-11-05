@@ -3,18 +3,14 @@ import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  console.log("WELCOME");
   try {
-    console.log("1");
     const email = "ondrej.hajek.profi@gmail.com";
     const password = "password";
-    console.log("2");
 
     const data = (await query({
       query: `SELECT * FROM users WHERE email = "${email}" AND password = "${password}"`,
       values: [],
     })) as User[];
-    console.log("3");
 
     if (data.length) {
       const roles = (await query({
@@ -24,7 +20,6 @@ export async function POST(req: Request) {
 
       data.map((item) => (item.role = roles[0]));
     }
-    console.log("4", data);
 
     return NextResponse.json({
       success: true,

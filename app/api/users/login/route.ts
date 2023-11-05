@@ -3,10 +3,7 @@ import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  console.log("Before try");
   try {
-    console.log("After try");
-
     const { email, password } = await req.json();
 
     const data = (await query({

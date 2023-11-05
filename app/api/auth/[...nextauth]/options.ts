@@ -14,7 +14,7 @@ export const authOptions: NextAuthOptions = {
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/list?email=${profile.email}`
         );
         const { data } = await req.json();
-
+        console.log("DATA!", data);
         if (!data.picture && profile.picture) {
           await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`,
@@ -58,11 +58,7 @@ export const authOptions: NextAuthOptions = {
           email: credentials?.email,
           password: credentials?.password,
         } as any;
-        console.log("WELCOME");
-        console.log(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
-          userObject
-        );
+
         const request = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
           {

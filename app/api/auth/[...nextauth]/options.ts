@@ -58,7 +58,6 @@ export const authOptions: NextAuthOptions = {
           email: credentials?.email,
           password: credentials?.password,
         } as any;
-        console.log("pred requestem")
         const request = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
           {
@@ -69,7 +68,7 @@ export const authOptions: NextAuthOptions = {
             },
           }
         );
-        console.log("po requeste")
+        console.log("po requeste");
         const { data } = await request.json();
 
         return data || null;

@@ -14,15 +14,18 @@ export const authOptions: NextAuthOptions = {
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/list?email=${profile.email}`
         );
         const { data } = await req.json();
-
+        console.log(data, profile);
         if (!data.picture && profile.picture) {
-          await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`, {
-            method: "POST",
-            body: JSON.stringify({
-              picture: profile.picture,
-              id: data[0].id,
-            }),
-          });
+          await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                picture: profile.picture,
+                id: data[0].id,
+              }),
+            }
+          );
         }
         if (data.length) {
           return {
@@ -52,13 +55,16 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         //tady budu dělat request na server s tím abych zjistil jestli je uživatel v databázi
-        const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
-          method: "POST",
-          body: JSON.stringify({
-            email: credentials?.email,
-            password: credentials?.password,
-          }),
-        });
+        const request = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              email: credentials?.email,
+              password: credentials?.password,
+            }),
+          }
+        );
         const { data } = await request.json();
 
         return data || null;

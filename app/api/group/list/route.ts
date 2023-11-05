@@ -6,13 +6,9 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const data = (await query({
-      query: `
-      SELECT * FROM groups
-    `,
+      query: "SELECT * FROM `groups`",
       values: [],
     })) as Group[];
-
-
 
     return NextResponse.json({
       success: true,

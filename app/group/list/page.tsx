@@ -19,9 +19,15 @@ import { store } from "@/store/store";
 import RemoveGroups from "./RemoveGroupButton";
 
 const getGroups = async () => {
-  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/list`);
-  const { data } = await req.json();
-  return data;
+  try {
+    const req = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/group/list`
+    );
+    const { data } = await req.json();
+    return data;
+  } catch (e) {
+    return [];
+  }
 };
 
 export default async function Page() {

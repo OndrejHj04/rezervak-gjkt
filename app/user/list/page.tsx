@@ -43,12 +43,19 @@ interface User extends NextAuthUser {
 }
 
 const getUsers = async () => {
-  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`, {
-    cache: "no-cache",
-  });
-  const { data } = await req.json();
+  try {
+    const req = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/list`,
+      {
+        cache: "no-cache",
+      }
+    );
+    const { data } = await req.json();
 
-  return data as User[];
+    return data as User[];
+  } catch (e) {
+    return [];
+  }
 };
 
 export default async function UserList() {
@@ -82,11 +89,7 @@ export default async function UserList() {
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {users.map((user) => (
-              <UserListItem key={user.id} user={user} />
-            ))}
-          </TableBody>
+          <TableBody></TableBody>
         </Table>
       </Paper>
     </div>

@@ -1,19 +1,33 @@
 import ReservationMembersRender from "./ReservationMembersRender";
 
 const getGroups = async () => {
-  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/list`, {
-    cache: "no-cache",
-  });
-  const { data } = await req.json();
-  return data;
+  try {
+    const req = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/group/list`,
+      {
+        cache: "no-cache",
+      }
+    );
+    const { data } = await req.json();
+    return data;
+  } catch (e) {
+    return [];
+  }
 };
 
 const getUsers = async () => {
-  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`, {
-    cache: "no-cache",
-  });
-  const { data } = await req.json();
-  return data;
+  try {
+    const req = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/list`,
+      {
+        cache: "no-cache",
+      }
+    );
+    const { data } = await req.json();
+    return data;
+  } catch (e) {
+    return [];
+  }
 };
 
 export default async function ReservationMembers() {

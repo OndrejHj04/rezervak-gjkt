@@ -23,20 +23,28 @@ import SearchBar from "./components/SearchBar";
 import ReservationsPagination from "./components/ReseravtionsPagination";
 
 const getReservations = async () => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list`,
-    { cache: "no-cache" }
-  );
-  const { data } = await req.json();
-  return data as Reservation[];
+  try {
+    const req = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list`,
+      { cache: "no-cache" }
+    );
+    const { data } = await req.json();
+    return data as Reservation[];
+  } catch (e) {
+    return [];
+  }
 };
 
 const getStatuses = async () => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/status`
-  );
-  const { data } = await req.json();
-  return data;
+  try {
+    const req = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/status`
+    );
+    const { data } = await req.json();
+    return data;
+  } catch (e) {
+    return [];
+  }
 };
 
 export default async function ReservationsListPage({

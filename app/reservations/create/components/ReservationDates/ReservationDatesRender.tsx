@@ -38,7 +38,7 @@ dayjs.extend(isSameOrBefore as any);
 const renderDay = (props: any) => {
   const { day, outsideCurrentMonth, reservations, ...other } = props;
 
-  const isReservation = reservations.some((r: any) =>
+  const isReservation = reservations?.some((r: any) =>
     dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
   );
 
@@ -116,7 +116,7 @@ export default function ReservationDatesRender({
   const toDateDisabled = (date: any) => {
     return (
       dayjs().isAfter(date) ||
-      reservations.some((r) =>
+      reservations?.some((r) =>
         dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
       ) ||
       dayjs(date).isSameOrBefore(watch("from_date"), "day") ||
@@ -129,7 +129,7 @@ export default function ReservationDatesRender({
   const afterDateDisabled = (date: any) => {
     return (
       dayjs().isAfter(date) ||
-      reservations.some((r) =>
+      reservations?.some((r) =>
         dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
       ) ||
       dayjs(date).isSameOrAfter(watch("to_date"), "day") ||

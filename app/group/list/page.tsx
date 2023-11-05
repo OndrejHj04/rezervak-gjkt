@@ -33,6 +33,7 @@ const getGroups = async () => {
 export default async function Page() {
   const groups = (await getGroups()) as Group[];
 
+  if (groups.length === 0) return <div>loading...</div>;
   return (
     <div className="flex flex-col w-full gap-2">
       <RemoveGroups />

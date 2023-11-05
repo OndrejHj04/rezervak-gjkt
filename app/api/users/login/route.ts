@@ -10,12 +10,12 @@ export async function POST(req: Request) {
       query: `SELECT * FROM users WHERE email = ? AND password = ?`,
       values: [email, password],
     })) as User[];
-    
+
     const roles = (await query({
       query: `SELECT * FROM roles WHERE id = ?`,
       values: [data[0].role],
     })) as any;
-
+    console.log("USER DATA", data);
     data.map((item) => (item.role = roles[0]));
 
     if (data.length === 0) {

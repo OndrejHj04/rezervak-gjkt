@@ -17,7 +17,12 @@ export async function POST(req: Request) {
       reservation.groups = JSON.parse(reservation.groups);
       reservation.users = JSON.parse(reservation.users);
     });
-    console.log("2");
+    console.log(
+      `SELECT id, reservations FROM ${"`groups`"} WHERE id IN (${getReservations
+        .map((reservation: any) => reservation.groups)
+        .flat()
+        .join(",")})`
+    );
 
     const groupReservations = (await query({
       query: `SELECT id, reservations FROM ${"`groups`"} WHERE id IN (${getReservations

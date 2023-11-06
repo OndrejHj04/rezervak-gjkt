@@ -19,49 +19,57 @@ export async function POST(req: Request) {
       reservation.groups = JSON.parse(reservation.groups);
       reservation.users = JSON.parse(reservation.users);
     });
-    console.log("after get reservations");
-    console.log(getReservations);
-    const groupReservations = (await query({
-      query: `SELECT id, reservations FROM ${"`groups`"} WHERE id IN (${getReservations
-        .map((reservation: any) => reservation.groups)
-        .flat()
-        .join(",")})`,
-      values: [],
-    })) as any;
-
-    groupReservations.map((group: any) => {
-      let reservations = JSON.parse(group.reservations);
-      reservations = reservations.filter(
-        (reservation: any) => !reservations.includes(reservation)
-      );
-      query({
-        query: `UPDATE ${"`groups`"} SET reservations = "${JSON.stringify(
-          reservations
-        )}" WHERE id = ${group.id}`,
+    if (
+      getReservations.some((reservation: any) => reservation.groups.length > 0)
+    ) {
+      const groupReservations = (await query({
+        query: `SELECT id, reservations FROM ${"`groups`"} WHERE id IN (${getReservations
+          .map((reservation: any) => reservation.groups)
+          .flat()
+          .join(",")})`,
         values: [],
+      })) as any;
+
+      groupReservations.map((group: any) => {
+        let reservations = JSON.parse(group.reservations);
+        reservations = reservations.filter(
+          (reservation: any) => !reservations.includes(reservation)
+        );
+        query({
+          query: `UPDATE ${"`groups`"} SET reservations = "${JSON.stringify(
+            reservations
+          )}" WHERE id = ${group.id}`,
+          values: [],
+        });
       });
-    });
+    }
 
-    const usersReservations = (await query({
-      query: `SELECT id, reservations FROM users WHERE id IN (${getReservations
-        .map((reservation: any) => reservation.users)
-        .flat()
-        .join(",")})`,
-      values: [],
-    })) as any;
-
-    usersReservations.map((user: any) => {
-      let reservations = JSON.parse(user.reservations);
-      reservations = reservations.filter(
-        (reservation: any) => !reservations.includes(reservation)
-      );
-      query({
-        query: `UPDATE users SET reservations = "${JSON.stringify(
-          reservations
-        )}" WHERE id = ${user.id}`,
+    if (
+      getReservations.some(
+        (reservation: any) => reservation.reservations.length > 0
+      )
+    ) {
+      const usersReservations = (await query({
+        query: `SELECT id, reservations FROM users WHERE id IN (${getReservations
+          .map((reservation: any) => reservation.users)
+          .flat()
+          .join(",")})`,
         values: [],
+      })) as any;
+
+      usersReservations.map((user: any) => {
+        let reservations = JSON.parse(user.reservations);
+        reservations = reservations.filter(
+          (reservation: any) => !reservations.includes(reservation)
+        );
+        query({
+          query: `UPDATE users SET reservations = "${JSON.stringify(
+            reservations
+          )}" WHERE id = ${user.id}`,
+          values: [],
+        });
       });
-    });
+    }
 
     const data = await query({
       query: `DELETE FROM reservations WHERE id IN (${reservations.join(",")})`,

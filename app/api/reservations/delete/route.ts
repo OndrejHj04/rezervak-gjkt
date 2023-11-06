@@ -6,9 +6,7 @@ export async function POST(req: Request) {
     console.log("WELCOME");
 
     const { reservations } = await req.json();
-    console.log(
-      `SELECT * FROM reservations WHERE id IN (${reservations.join(",")})`
-    );
+
     const getReservations = (await query({
       query: `SELECT * FROM reservations WHERE id IN (${reservations.join(
         ","
@@ -17,10 +15,12 @@ export async function POST(req: Request) {
     })) as any;
 
     getReservations.forEach((reservation: any) => {
+      console.log(reservation);
       reservation.groups = JSON.parse(reservation.groups);
       reservation.users = JSON.parse(reservation.users);
     });
-
+    console.log("after get reservations");
+    console.log(getReservations);
     const groupReservations = (await query({
       query: `SELECT id, reservations FROM ${"`groups`"} WHERE id IN (${getReservations
         .map((reservation: any) => reservation.groups)

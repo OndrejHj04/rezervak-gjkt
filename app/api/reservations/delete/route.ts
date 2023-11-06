@@ -3,8 +3,6 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    console.log("WELCOME");
-
     const { reservations } = await req.json();
 
     const getReservations = (await query({
@@ -15,10 +13,10 @@ export async function POST(req: Request) {
     })) as any;
 
     getReservations.forEach((reservation: any) => {
-      console.log(reservation);
       reservation.groups = JSON.parse(reservation.groups);
       reservation.users = JSON.parse(reservation.users);
     });
+
     if (
       getReservations.some((reservation: any) => reservation.groups.length > 0)
     ) {
@@ -45,9 +43,7 @@ export async function POST(req: Request) {
     }
 
     if (
-      getReservations.some(
-        (reservation: any) => reservation.reservations.length > 0
-      )
+      getReservations.some((reservation: any) => reservation.users.length > 0)
     ) {
       const usersReservations = (await query({
         query: `SELECT id, reservations FROM users WHERE id IN (${getReservations

@@ -15,7 +15,7 @@ import SingleReservation from "../reservations/SingleReservation";
 const renderDay = (props: any) => {
   const { day, outsideCurrentMonth, reservations, ...other } = props;
 
-  const isReservation = reservations.some((r: any) =>
+  const isReservation = reservations?.some((r: any) =>
     dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
   );
 

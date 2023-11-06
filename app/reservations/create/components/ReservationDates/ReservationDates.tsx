@@ -15,5 +15,6 @@ const getReservations = async () => {
 
 export default async function ReservationDates() {
   const reservations = await getReservations();
+  console.log("test");
   return <ReservationDatesRender reservations={reservations} />;
 }

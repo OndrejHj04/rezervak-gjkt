@@ -184,7 +184,7 @@ export default function ReservationMembersRender({
         >
           <div style={{ height: 250 }}>
             <PerfectScrollbar>
-              {usersFilter.map((user) => {
+              {usersFilter?.map((user) => {
                 const isChecked = members.includes(user.id);
                 const handleClick = () => {
                   if (isChecked) {

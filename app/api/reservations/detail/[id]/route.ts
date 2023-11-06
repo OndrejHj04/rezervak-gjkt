@@ -7,12 +7,13 @@ export async function GET(
   req: Request,
   { params: { id } }: { params: { id: string } }
 ) {
+  console.log("WELCOME")
   try {
     const data = (await query({
       query: `SELECT * FROM reservations WHERE id = ?`,
       values: [id],
     })) as any;
-
+    console.log("1")
     data.forEach((reservation: any) => {
       reservation.groups = reservation.groups
         ? JSON.parse(reservation.groups as any)
@@ -21,6 +22,7 @@ export async function GET(
         ? JSON.parse(reservation.users as any)
         : [];
     });
+    console.log("2")
 
     const leader = (await query({
       query: `SELECT id, email, first_name, last_name, image FROM users WHERE id IN(${data.map(
@@ -28,6 +30,7 @@ export async function GET(
       )})`,
       values: [],
     })) as any;
+    console.log("3")
 
     if (data[0].groups.length !== 0) {
       const groups = (await query({
@@ -36,6 +39,8 @@ export async function GET(
         )})`,
         values: [],
       })) as any;
+    console.log("4")
+
       groups.map(
         (group: any) => (group.users = JSON.parse(group.users as any))
       );
@@ -47,6 +52,7 @@ export async function GET(
       )})`,
       values: [],
     })) as any;
+    console.log("5")
 
     const users = data.some((item: any) => item.users.length)
       ? ((await query({
@@ -56,6 +62,7 @@ export async function GET(
           values: [],
         })) as any)
       : [];
+      console.log("6")
 
     data.forEach((reservation: Reservation) => {
       reservation.leader = leader.find(
@@ -66,6 +73,7 @@ export async function GET(
       );
       reservation.status = status[0];
     });
+    console.log("7")
 
     return NextResponse.json({
       success: true,

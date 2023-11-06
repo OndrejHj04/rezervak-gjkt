@@ -52,7 +52,7 @@ export async function GET(req: Request) {
       query: `SELECT * FROM status`,
       values: [],
     })) as any;
-    console.log("AVE SCHALKE");
+
     filtered.forEach((reservation: Reservation) => {
       reservation.leader = leader.find(
         (lead: any) => lead.id === reservation.leader

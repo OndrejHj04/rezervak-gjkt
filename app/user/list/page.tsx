@@ -61,7 +61,7 @@ const getUsers = async () => {
 export default async function UserList() {
   const users = await getUsers();
 
-  if(!users) return <div>loading...</div>;
+  if (!users) return <div>loading...</div>;
   return (
     <div className="flex flex-col w-full gap-2">
       <RemoveUser />
@@ -90,7 +90,11 @@ export default async function UserList() {
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody></TableBody>
+          <TableBody>
+            {users.map((user) => (
+              <UserListItem key={user.id} user={user} />
+            ))}
+          </TableBody>
         </Table>
       </Paper>
     </div>

@@ -4,17 +4,14 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   try {
-    console.log("WELCOME");
 
     const url = new URL(req.url);
     const userId = Number(url.searchParams.get("user_id"));
-    console.log("1");
     const data =
       ((await query({
         query: `SELECT * FROM reservations`,
         values: [],
       })) as any) || [];
-    console.log("2");
 
     const filtered = data
       .map((reservation: any) => {
@@ -29,7 +26,6 @@ export async function GET(req: Request) {
       .filter((reservation: any) => {
         return userId ? reservation.users.includes(userId) : true;
       });
-    console.log("3");
 
     const leader =
       filtered.length &&
@@ -39,13 +35,11 @@ export async function GET(req: Request) {
           .join(",")})`,
         values: [],
       })) as any);
-    console.log("4");
 
     const groupIds = [
       ...(new Set(filtered.map((item: any) => item.groups).flat()) as any),
     ] as any;
     const groupIdsList = groupIds.length ? groupIds : [-1];
-    console.log("5");
 
     const groups = (await query({
       query: `SELECT id, name FROM ${"`groups`"} WHERE id IN(${groupIdsList.join(
@@ -53,13 +47,11 @@ export async function GET(req: Request) {
       )})`,
       values: [],
     })) as any;
-    console.log("6");
 
     const status = (await query({
       query: `SELECT * FROM status`,
       values: [],
     })) as any;
-    console.log("7");
 
     filtered.forEach((reservation: Reservation) => {
       reservation.leader = leader.find(
@@ -72,7 +64,6 @@ export async function GET(req: Request) {
         (state: any) => state.id === reservation.status
       );
     });
-    console.log("8");
 
     return NextResponse.json({
       success: true,

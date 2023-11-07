@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     })) as any;
 
     const userGroups = JSON.parse(data[0].groups);
-    if (userGroups) {
+    if (userGroups && userGroups?.length) {
       const getUserGroups = userGroups
         ? ((await query({
             query: `SELECT name, owner, id from ${"`groups`"} WHERE id IN (${userGroups.join(

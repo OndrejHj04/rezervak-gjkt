@@ -15,7 +15,7 @@ import SingleReservation from "../reservations/SingleReservation";
 const renderDay = (props: any) => {
   const { day, outsideCurrentMonth, reservations, ...other } = props;
 
-  const isReservation = reservations?.some((r: any) =>
+  const isReservation = reservations?.filter((r: any) =>
     dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
   );
 
@@ -23,16 +23,16 @@ const renderDay = (props: any) => {
     <Tooltip
       title={
         <Box color="primary">
-          <SingleReservation reservations={reservations[0]} />
+          <SingleReservation reservations={isReservation[0]} />
         </Box>
       }
-      disableHoverListener={!isReservation}
+      disableHoverListener={!isReservation.length}
     >
       <Badge
         variant="dot"
         sx={{ "& .MuiBadge-badge": { transform: "translate(-5px, 5px)" } }}
         color="error"
-        invisible={outsideCurrentMonth || !isReservation}
+        invisible={outsideCurrentMonth || !isReservation.length}
       >
         <PickersDay
           {...other}
@@ -50,23 +50,21 @@ export default function RenderCalendar({
   reservations: Reservation[];
 }) {
   return (
-    <Paper className="p-2">
-      <LocalizationProvider
-        dateAdapter={AdapterDayjs}
-        adapterLocale={CzechLocale as any}
-        localeText={
-          csCZ.components.MuiLocalizationProvider.defaultProps.localeText
-        }
-      >
-        <DateCalendar
-          slots={{
-            day: renderDay,
-          }}
-          slotProps={{
-            day: { reservations: reservations } as any,
-          }}
-        />
-      </LocalizationProvider>
-    </Paper>
+    <LocalizationProvider
+      dateAdapter={AdapterDayjs}
+      adapterLocale={CzechLocale as any}
+      localeText={
+        csCZ.components.MuiLocalizationProvider.defaultProps.localeText
+      }
+    >
+      <DateCalendar
+        slots={{
+          day: renderDay,
+        }}
+        slotProps={{
+          day: { reservations: reservations } as any,
+        }}
+      />
+    </LocalizationProvider>
   );
 }

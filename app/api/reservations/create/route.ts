@@ -2,6 +2,7 @@ import { query } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  console.log("WELCOME");
   try {
     const {
       from_date,
@@ -13,6 +14,7 @@ export async function POST(req: Request) {
       members,
       instructions,
     } = await req.json();
+    console.log("1");
 
     const data = (await query({
       query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, groups, users, code, instructions) VALUES ("${from_date}", "${to_date}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
@@ -22,6 +24,7 @@ export async function POST(req: Request) {
       )}", "${instructions}")`,
       values: [],
     })) as any;
+    console.log("2");
 
     if (groups.length) {
       const groupReservations = (await query({
@@ -42,6 +45,7 @@ export async function POST(req: Request) {
         });
       });
     }
+    console.log("3");
 
     if (members.length) {
       const userReservations = (await query({
@@ -62,6 +66,7 @@ export async function POST(req: Request) {
         });
       });
     }
+    console.log("4");
 
     return NextResponse.json({
       success: true,

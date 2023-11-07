@@ -74,7 +74,7 @@ export const authOptions: NextAuthOptions = {
           }
         );
         const { data } = await request.json();
-
+        console.log(data);
         return data || null;
       },
     }),

@@ -28,11 +28,11 @@ export default function Page() {
       password: data.password,
       redirect: false,
     }).then((res) => {
-      if (res?.error) {
-        toast.error("Nepodařilo se přihlásit.");
-      } else {
+      if (res?.ok) {
         setUserLoading(true);
-        push("/login?invalid=true");
+        push("/");
+      } else {
+        toast.error("Nepodařilo se přihlásit.");
       }
     });
   };

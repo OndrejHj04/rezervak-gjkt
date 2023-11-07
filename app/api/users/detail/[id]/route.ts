@@ -27,8 +27,8 @@ export async function GET(
       item.groups = JSON.parse(item.groups as any);
       item.reservations = JSON.parse(item.reservations as any);
     });
-
-    if (data[0].groups.length) {
+    console.log("DATA!", data);
+    if (data[0].groups && data[0].groups.length) {
       const groups = (await query({
         query: `SELECT id, name, owner, users FROM ${"`groups`"} WHERE id IN (${data[0].groups.join(
           ","
@@ -53,7 +53,7 @@ export async function GET(
       data[0].groups = groups;
     }
 
-    if (data[0].reservations.length) {
+    if (data[0].reservations && data[0].reservations.length) {
       const reservations = await query({
         query: `SELECT id, from_date, to_date, name FROM reservations WHERE id IN (${data[0].reservations.join(
           ","

@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  console.log("WELCOME");
   try {
     const {
       from_date,
@@ -16,17 +15,7 @@ export async function POST(req: Request) {
       instructions,
       name,
     } = await req.json();
-    console.log(
-      `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, groups, users, code, instructions, name, status) VALUES ("${dayjs(
-        from_date
-      ).format("YYYY-MM-DD")}", "${dayjs(to_date).format(
-        "YYYY-MM-DD"
-      )}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
-        groups
-      )}", "${JSON.stringify(members)}", "${Math.round(
-        Math.random() * 1000000
-      )}", "${instructions}", "${name}", 2)`
-    );
+
     const data = (await query({
       query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, ${"`groups`"}, users, code, instructions, name, status) VALUES ("${dayjs(
         from_date
@@ -39,7 +28,6 @@ export async function POST(req: Request) {
       )}", "${instructions}", "${name}", 2)`,
       values: [],
     })) as any;
-    console.log("2");
 
     if (groups.length) {
       const groupReservations = (await query({
@@ -60,7 +48,6 @@ export async function POST(req: Request) {
         });
       });
     }
-    console.log("3");
 
     if (members.length) {
       const userReservations = (await query({
@@ -81,7 +68,6 @@ export async function POST(req: Request) {
         });
       });
     }
-    console.log("4");
 
     return NextResponse.json({
       success: true,

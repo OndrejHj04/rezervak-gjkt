@@ -27,7 +27,7 @@ export async function GET(
       item.groups = JSON.parse(item.groups as any);
       item.reservations = JSON.parse(item.reservations as any);
     });
-    console.log("DATA!", data);
+
     if (data[0].groups && data[0].groups.length) {
       const groups = (await query({
         query: `SELECT id, name, owner, users FROM ${"`groups`"} WHERE id IN (${data[0].groups.join(

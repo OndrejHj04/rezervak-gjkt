@@ -10,7 +10,7 @@ import { NewReservation } from "@/types";
 
 export default function CreateButton() {
   const { createReservation, setCreateReservation } = store();
-  console.log(createReservation);
+
   const setDefault = () => {
     setCreateReservation({
       from_date: "",

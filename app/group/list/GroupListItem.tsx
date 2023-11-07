@@ -34,7 +34,7 @@ export default function GroupListItem({ group }: { group: Group }) {
       <TableCell>{group.description}</TableCell>
       <TableCell>{group.users.length}</TableCell>
       <TableCell>
-        {/* <AvatarWrapper data={group.owner} /> */}
+        <AvatarWrapper data={group.owner} />
       </TableCell>
       <TableCell>
         <IconButton>

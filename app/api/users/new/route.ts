@@ -7,7 +7,7 @@ export async function POST(req: Request) {
 
   try {
     const data = await query({
-      query: `INSERT INTO users(first_name, last_name, email, role, password, parent) VALUES(?, ?, ?, ?, ?, ?)`,
+      query: `INSERT INTO users(first_name, last_name, email, role, password) VALUES(?, ?, ?, ?, ?)`,
       values: [first_name, last_name, email, role, password, parent],
     });
 

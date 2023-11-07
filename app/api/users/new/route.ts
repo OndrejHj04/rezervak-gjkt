@@ -5,11 +5,11 @@ export async function POST(req: Request) {
   const { first_name, last_name, email, role } = await req.json();
   const password = Math.random().toString(36).slice(-9);
   console.log(
-    `INSERT INTO users(first_name, last_name, email, role, password) VALUES("${first_name}", "${last_name}", "${email}", ${role}, "${password}")`
+    `INSERT INTO users(first_name, last_name, email, role, password, verified, active) VALUES("${first_name}", "${last_name}", "${email}", ${role}, "${password}", 0, 1)`
   );
   try {
     const data = await query({
-      query: `INSERT INTO users(first_name, last_name, email, role, password) VALUES("${first_name}", "${last_name}", "${email}", ${role}, "${password}")`,
+      query: `INSERT INTO users(first_name, last_name, email, role, password, verified, active) VALUES("${first_name}", "${last_name}", "${email}", ${role}, "${password}", 0, 1)`,
       values: [first_name, last_name, email, role, password],
     });
 

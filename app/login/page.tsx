@@ -1,13 +1,23 @@
 "use client";
 import { store } from "@/store/store";
-import { Button, Paper, TextField, Typography } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import {
+  Button,
+  IconButton,
+  InputAdornment,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function Page() {
+  const [showPassword, setShowPassword] = useState(false);
   const path = useSearchParams().get("invalid");
   const { register, handleSubmit } = useForm();
   const { setUserLoading } = store();
@@ -43,11 +53,25 @@ export default function Page() {
           variant="outlined"
           {...register("email")}
         />
+
         <TextField
-          type="password"
+          type={showPassword ? "text" : "password"}
           variant="outlined"
           label="Heslo"
           {...register("password")}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                >
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <Button type="submit" variant="contained">
           Přihlásit se

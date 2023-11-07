@@ -15,7 +15,13 @@ export async function POST(req: Request) {
       instructions,
     } = await req.json();
     console.log("1");
-
+    console.log(
+      `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, groups, users, code, instructions) VALUES ("${from_date}", "${to_date}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
+        groups
+      )}", "${JSON.stringify(members)}", "${Math.round(
+        Math.random() * 1000000
+      )}", "${instructions}")`
+    );
     const data = (await query({
       query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, groups, users, code, instructions) VALUES ("${from_date}", "${to_date}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
         groups

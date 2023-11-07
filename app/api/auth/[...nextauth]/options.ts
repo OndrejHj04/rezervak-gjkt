@@ -10,6 +10,7 @@ export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       async profile(profile: GoogleProfile) {
+        console.log("TEST!");
         const req = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/list?email=${profile.email}`
         );
@@ -31,6 +32,7 @@ export const authOptions: NextAuthOptions = {
             }
           );
         }
+        console.log("DATA!", data);
         if (data.length) {
           return {
             ...data[0],

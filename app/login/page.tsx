@@ -2,6 +2,7 @@
 import { store } from "@/store/store";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
   IconButton,
@@ -17,12 +18,18 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function Page() {
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const path = useSearchParams().get("invalid");
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { isValid },
+  } = useForm();
   const { setUserLoading } = store();
   const { push } = useRouter();
   const onSubmit = (data: any) => {
+    setLoading(true);
     signIn("credentials", {
       email: data.email,
       password: data.password,
@@ -31,8 +38,10 @@ export default function Page() {
       if (res?.ok) {
         setUserLoading(true);
         push("/");
+        setLoading(false);
       } else {
         toast.error("Nepodařilo se přihlásit.");
+        setLoading(false);
       }
     });
   };
@@ -51,14 +60,14 @@ export default function Page() {
           type="text"
           label="Email"
           variant="outlined"
-          {...register("email")}
+          {...register("email", { required: true })}
         />
 
         <TextField
           type={showPassword ? "text" : "password"}
           variant="outlined"
           label="Heslo"
-          {...register("password")}
+          {...register("password", { required: true })}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -73,9 +82,14 @@ export default function Page() {
             ),
           }}
         />
-        <Button type="submit" variant="contained">
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          loading={loading}
+          disabled={!isValid}
+        >
           Přihlásit se
-        </Button>
+        </LoadingButton>
       </form>
       <Button variant="contained" onClick={() => signIn("google")}>
         GOOGLE

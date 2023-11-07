@@ -32,6 +32,7 @@ export interface NewReservation {
   leader: number;
   purpouse: string;
   instructions: string;
+  name: string;
 }
 
 export interface ReservationStatus {

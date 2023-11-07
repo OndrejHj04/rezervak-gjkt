@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -13,21 +14,19 @@ export async function POST(req: Request) {
       purpouse,
       members,
       instructions,
+      name,
     } = await req.json();
-    console.log("1");
-    console.log(
-      `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, groups, users, code, instructions) VALUES ("${from_date}", "${to_date}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
-        groups
-      )}", "${JSON.stringify(members)}", "${Math.round(
-        Math.random() * 1000000
-      )}", "${instructions}")`
-    );
+
     const data = (await query({
-      query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, groups, users, code, instructions) VALUES ("${from_date}", "${to_date}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
+      query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, groups, users, code, instructions, name, status) VALUES ("${dayjs(
+        from_date
+      ).format("YYYY-MM-DD")}", "${dayjs(to_date).format(
+        "YYYY-MM-DD"
+      )}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
         groups
       )}", "${JSON.stringify(members)}", "${Math.round(
         Math.random() * 1000000
-      )}", "${instructions}")`,
+      )}", "${instructions}", "${name}", 2)`,
       values: [],
     })) as any;
     console.log("2");

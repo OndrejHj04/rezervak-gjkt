@@ -43,6 +43,7 @@ export default function ReservationDetailRender({ users }: { users: User[] }) {
       leader: data.leader.id,
       purpouse: data.purpouse,
       instructions: data.instructions,
+      name: data.name,
     });
     setExpanded(false);
   };
@@ -86,6 +87,11 @@ export default function ReservationDetailRender({ users }: { users: User[] }) {
         <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2">
           <div className="flex flex-col gap-2">
             <div className="flex gap-2">
+              <TextField
+                {...register("name", { required: true })}
+                label="Název rezervace"
+                variant="outlined"
+              />
               <TextField
                 {...register("purpouse", { required: true })}
                 variant="outlined"
@@ -149,11 +155,13 @@ export default function ReservationDetailRender({ users }: { users: User[] }) {
                   ...createReservation,
                   leader: 0,
                   purpouse: "",
+                  name: "",
                 });
                 reset({
                   purpouse: "",
                   instructions: "",
                   leader: users.find((user) => user.id === data?.user.id),
+                  name: "",
                 });
               }}
             >

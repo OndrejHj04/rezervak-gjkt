@@ -55,6 +55,7 @@ export const store = create<stateInterface>((set) => ({
     leader: 0,
     purpouse: "",
     instructions: "",
+    name: "",
   },
   setCreateReservation: (createReservation) => set({ createReservation }),
   selectedReservations: [],

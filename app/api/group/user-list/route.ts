@@ -15,33 +15,42 @@ export async function GET(req: Request) {
     })) as any;
 
     const userGroups = JSON.parse(data[0].groups);
+    if (userGroups) {
+      const getUserGroups = userGroups
+        ? ((await query({
+            query: `SELECT name, owner, id from ${"`groups`"} WHERE id IN (${userGroups.join(
+              ","
+            )})`,
+            values: [],
+          })) as any)
+        : [];
 
-    const getUserGroups = userGroups
-      ? ((await query({
-          query: `SELECT name, owner, id from ${"`groups`"} WHERE id IN (${userGroups.join(
-            ","
-          )})`,
-          values: [],
-        })) as any)
-      : [];
-
-    const ownerDetail = (await query({
-      query: `
+      const ownerDetail = (await query({
+        query: `
         SELECT id, first_name, last_name, image, email FROM users WHERE id IN (${getUserGroups.map(
           (group: any) => group.owner
         )})
         `,
-      values: [],
-    })) as any;
+        values: [],
+      })) as any;
 
-    getUserGroups.forEach((group: Group, index: number) => {
-      group.owner = ownerDetail.find((owner: any) => owner.id === group.owner);
-    });
+      getUserGroups.forEach((group: Group, index: number) => {
+        group.owner = ownerDetail.find(
+          (owner: any) => owner.id === group.owner
+        );
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: "Operation successful",
+        data: getUserGroups,
+      });
+    }
 
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: getUserGroups,
+      data: [],
     });
   } catch (e) {
     return NextResponse.json(

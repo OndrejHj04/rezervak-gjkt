@@ -14,7 +14,12 @@ export const authOptions: NextAuthOptions = {
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/list?email=${profile.email}`
         );
         const { data } = await req.json();
-        if (!data.picture && profile.picture) {
+
+        if (
+          data.length &&
+          profile.picture &&
+          data[0].image !== profile.picture
+        ) {
           await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`,
             {
@@ -93,6 +98,7 @@ export const authOptions: NextAuthOptions = {
         session.user.verified = token.verified;
         session.user.active = token.active;
       }
+
       return session;
     },
     async signIn({ user, credentials }) {
@@ -107,7 +113,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
-    error: "/auth/invalid",
+    error: "/login?invalid=true",
   },
   session: {
     maxAge: 60 * 60 * 24,

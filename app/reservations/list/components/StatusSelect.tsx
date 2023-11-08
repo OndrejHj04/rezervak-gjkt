@@ -4,11 +4,13 @@ import { store } from "@/store/store";
 import {
   FormControl,
   FormHelperText,
+  Icon,
   InputLabel,
   MenuItem,
   Select,
 } from "@mui/material";
-import { useRouter, useSearchParams } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
 
 export default function StatusSelect({ statuses }: { statuses: any }) {
   const { push } = useRouter();
@@ -31,12 +33,17 @@ export default function StatusSelect({ statuses }: { statuses: any }) {
         id="demo-simple-select"
         variant="standard"
         label="Status rezervace"
+        renderValue={(data) => {
+          const name = statuses.find((status: any) => status.id === data);
+          return <div>{name?.display_name || "Všechny"}</div>;
+        }}
         value={status}
         onChange={handleChange}
       >
         <MenuItem value={0}>Všechny</MenuItem>
         {statuses.map((status: any) => (
-          <MenuItem key={status.id} value={status.id}>
+          <MenuItem key={status.id} value={status.id} className="gap-2">
+            <Icon sx={{ "&&": { color: status.color } }}>{status.icon}</Icon>
             {status.display_name}
           </MenuItem>
         ))}

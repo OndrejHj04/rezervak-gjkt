@@ -16,11 +16,12 @@ import {
 import CheckboxComponent from "./components/CheckboxComponent";
 import UserListItem from "@/app/user/list/UserListItem";
 import { Reservation } from "@/types";
-import ReservationListItem from "./components/ReservationListItem";
 import TrashBin from "./components/TrashBin";
 import StatusSelect from "./components/StatusSelect";
 import SearchBar from "./components/SearchBar";
 import ReservationsPagination from "./components/ReseravtionsPagination";
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
 
 const getReservations = async (page: any, status: any) => {
   try {
@@ -47,6 +48,10 @@ const getStatuses = async () => {
   }
 };
 
+const ReservationListItem = dynamic(
+  () => import("./components/ReservationListItem")
+);
+
 export default async function ReservationsListPage({
   searchParams,
 }: {
@@ -58,11 +63,13 @@ export default async function ReservationsListPage({
   const data = (await getReservations(page, status)) as any;
   const reservations = (await data.data) as Reservation[];
   const statuses = await getStatuses();
-  
+
   const body = reservations.length ? (
-    reservations.map((reservation) => (
-      <ReservationListItem key={reservation.id} reservation={reservation} />
-    ))
+    <Suspense fallback={<div>Loading...</div>}>
+      {reservations.map((reservation) => (
+        <ReservationListItem key={reservation.id} reservation={reservation} />
+      ))}
+    </Suspense>
   ) : (
     <TableRow>
       <TableCell colSpan={9}>

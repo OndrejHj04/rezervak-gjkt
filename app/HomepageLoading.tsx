@@ -1,9 +1,9 @@
 "use client";
 import { store } from "@/store/store";
 import { Box, Skeleton } from "@mui/material";
-import WelcomeComponent from "./WelcomeComponent";
-import SleepingUserInfo from "./SleepingUserInfo";
-import VerifyUser from "./VerifyUser";
+import WelcomeComponent from "../sub-components/WelcomeComponent";
+import SleepingUserInfo from "../sub-components/SleepingUserInfo";
+import VerifyUser from "../sub-components/VerifyUser";
 
 export default function HomepageLoading({
   homepage,

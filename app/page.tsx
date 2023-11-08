@@ -13,10 +13,20 @@ import {
 import { useEffect, useState } from "react";
 import { Group } from "@/types";
 import { useRouter } from "next/navigation";
-import DisplayGroups from "@/app/homepage/reservations/DisplayReservations";
-import HomepageLoading from "@/sub-components/HomepageLoading";
-import DisplayReservations from "@/app/homepage/groups/DisplayGroups";
-import HomepageCalendar from "@/app/homepage/calendar/HomepageCalendar";
+import HomepageLoading from "@/app/HomepageLoading";
+import dynamic from "next/dynamic";
+
+const DisplayGroups = dynamic(
+  () => import("@/app/homepage/reservations/DisplayReservations")
+);
+
+const DisplayReservations = dynamic(
+  () => import("@/app/homepage/groups/DisplayGroups")
+);
+
+const HomepageCalendar = dynamic(
+  () => import("@/app/homepage/calendar/HomepageCalendar")
+);
 
 export default function Home() {
   const homepage = (

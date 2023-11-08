@@ -25,10 +25,10 @@ import ReservationsPagination from "./components/ReseravtionsPagination";
 const getReservations = async (page: any, status: any) => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?page=${page}&status=${status}`,
       { cache: "no-cache" }
     );
-    const { data } = await req.json();
+    const data = await req.json();
     return data as Reservation[];
   } catch (e) {
     return [];
@@ -53,11 +53,12 @@ export default async function ReservationsListPage({
   searchParams: any;
 }) {
   const page = searchParams["page"] || 1;
-  const status = searchParams["status"] || "all";
+  const status = searchParams["status"] || 0;
 
-  const reservations = await getReservations(page, status);
+  const data = (await getReservations(page, status)) as any;
+  const reservations = (await data.data) as Reservation[];
   const statuses = await getStatuses();
-
+  
   const body = reservations.length ? (
     reservations.map((reservation) => (
       <ReservationListItem key={reservation.id} reservation={reservation} />
@@ -111,7 +112,7 @@ export default async function ReservationsListPage({
           </TableHead>
           <TableBody className="overflow-scroll">{body}</TableBody>
         </Table>
-        <ReservationsPagination reservations={reservations} />
+        <ReservationsPagination count={data.count} />
       </Paper>
     </div>
   );

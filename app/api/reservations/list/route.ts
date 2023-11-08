@@ -4,12 +4,29 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   try {
-
     const url = new URL(req.url);
     const userId = Number(url.searchParams.get("user_id"));
+    const status = Number(url.searchParams.get("status"));
+    const page = Number(url.searchParams.get("page"));
+
+    const count = (await query({
+      query: `SELECT COUNT(*) FROM reservations ${
+        status ? `WHERE status = ${status}` : ""
+      }`,
+      values: [],
+    })) as any;
+
     const data =
       ((await query({
-        query: `SELECT * FROM reservations`,
+        query: `SELECT * FROM reservations ${
+          status && page
+            ? `WHERE status = ${status} LIMIT 10 OFFSET ${page * 10 - 10}`
+            : page
+            ? `LIMIT 10 OFFSET ${page * 10 - 10}`
+            : status
+            ? `WHERE status = ${status}`
+            : ""
+        }`,
         values: [],
       })) as any) || [];
 
@@ -48,7 +65,7 @@ export async function GET(req: Request) {
       values: [],
     })) as any;
 
-    const status = (await query({
+    const getStatus = (await query({
       query: `SELECT * FROM status`,
       values: [],
     })) as any;
@@ -60,12 +77,13 @@ export async function GET(req: Request) {
       reservation.groups = reservation.groups.map((group) =>
         groups.find((grp: any) => grp.id === group)
       );
-      reservation.status = status.find(
+      reservation.status = getStatus.find(
         (state: any) => state.id === reservation.status
       );
     });
 
     return NextResponse.json({
+      count: count[0]["COUNT(*)"],
       success: true,
       message: "Operation successful",
       data: filtered,

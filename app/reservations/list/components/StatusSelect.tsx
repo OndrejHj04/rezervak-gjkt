@@ -36,7 +36,7 @@ export default function StatusSelect({ statuses }: { statuses: any }) {
       >
         <MenuItem value={0}>Všechny</MenuItem>
         {statuses.map((status: any) => (
-          <MenuItem key={status.id + 1} value={status.id + 1}>
+          <MenuItem key={status.id} value={status.id}>
             {status.display_name}
           </MenuItem>
         ))}

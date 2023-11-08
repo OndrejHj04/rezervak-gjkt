@@ -5,11 +5,7 @@ import { TablePagination } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
-export default function ReservationsPagination({
-  reservations,
-}: {
-  reservations: Reservation[];
-}) {
+export default function ReservationsPagination({ count }: { count: number }) {
   const { push } = useRouter();
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
@@ -26,7 +22,7 @@ export default function ReservationsPagination({
   return (
     <TablePagination
       component="div"
-      count={reservations.length}
+      count={count}
       page={page - 1}
       onPageChange={pageChange}
       rowsPerPage={10}

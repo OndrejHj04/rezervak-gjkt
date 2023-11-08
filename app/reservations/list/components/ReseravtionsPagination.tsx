@@ -15,7 +15,12 @@ export default function ReservationsPagination({
   const page = Number(searchParams.get("page")) || 1;
 
   const pageChange = (_: any, newPage: any) => {
-    push(`/reservations/list/?page=${newPage + 1}`);
+    const status = searchParams.get("status");
+    if (status) {
+      push(`/reservations/list/?page=${newPage + 1}&status=${status}`);
+    } else {
+      push(`/reservations/list/?page=${newPage + 1}`);
+    }
   };
 
   return (

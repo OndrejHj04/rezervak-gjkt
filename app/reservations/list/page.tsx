@@ -22,7 +22,7 @@ import StatusSelect from "./components/StatusSelect";
 import SearchBar from "./components/SearchBar";
 import ReservationsPagination from "./components/ReseravtionsPagination";
 
-const getReservations = async () => {
+const getReservations = async (page: any, status: any) => {
   try {
     const req = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list`,
@@ -52,13 +52,23 @@ export default async function ReservationsListPage({
 }: {
   searchParams: any;
 }) {
-  const reservations = await getReservations();
+  const page = searchParams["page"] || 1;
+  const status = searchParams["status"] || "all";
+
+  const reservations = await getReservations(page, status);
   const statuses = await getStatuses();
 
-  const page = searchParams["page"] || 1;
-  const perPage = searchParams["per_page"] || 10;
-
-  if (!reservations) return <div>loading...</div>;
+  const body = reservations.length ? (
+    reservations.map((reservation) => (
+      <ReservationListItem key={reservation.id} reservation={reservation} />
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={9}>
+        <Typography variant="h6">Žádné rezervace k zobrazení</Typography>
+      </TableCell>
+    </TableRow>
+  );
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
@@ -99,26 +109,7 @@ export default async function ReservationsListPage({
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody className="overflow-scroll">
-            {reservations.length ? (
-              reservations
-                .slice(page * 10 - 10, page * 10)
-                .map((reservation) => (
-                  <ReservationListItem
-                    key={reservation.id}
-                    reservation={reservation}
-                  />
-                ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={9}>
-                  <Typography variant="h6">
-                    Žádné rezervace k zobrazení
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+          <TableBody className="overflow-scroll">{body}</TableBody>
         </Table>
         <ReservationsPagination reservations={reservations} />
       </Paper>

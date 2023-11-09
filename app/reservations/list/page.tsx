@@ -22,6 +22,7 @@ import SearchBar from "./components/SearchBar";
 import ReservationsPagination from "./components/ReseravtionsPagination";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
+import { store } from "@/store/store";
 
 const getReservations = async (page: any, status: any) => {
   try {
@@ -65,11 +66,9 @@ export default async function ReservationsListPage({
   const statuses = await getStatuses();
 
   const body = reservations.length ? (
-    <Suspense fallback={<div>Loading...</div>}>
-      {reservations.map((reservation) => (
-        <ReservationListItem key={reservation.id} reservation={reservation} />
-      ))}
-    </Suspense>
+    reservations.map((reservation) => (
+      <ReservationListItem key={reservation.id} reservation={reservation} />
+    ))
   ) : (
     <TableRow>
       <TableCell colSpan={9}>

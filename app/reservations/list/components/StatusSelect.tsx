@@ -14,19 +14,21 @@ import { redirect, useRouter, useSearchParams } from "next/navigation";
 import ReservationListMakeRefetch from "../refetch";
 
 export default function StatusSelect({ statuses }: { statuses: any }) {
+  const { setReservationsLoading } = store();
   const searchParams = useSearchParams();
   const status = Number(searchParams.get("status")) || 0;
 
   const handleChange = (e: any) => {
+    setReservationsLoading(true);
     const page = searchParams.get("page");
     if (page) {
       ReservationListMakeRefetch(
         `/reservations/list/?page=${page}&status=${e.target.value}`
-      );
+      ).then(() => setReservationsLoading(false));
     } else {
       ReservationListMakeRefetch(
         `/reservations/list/?status=${e.target.value}`
-      );
+      ).then((res) => setReservationsLoading(false));
     }
   };
 

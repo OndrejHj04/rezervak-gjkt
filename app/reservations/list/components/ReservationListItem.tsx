@@ -9,6 +9,7 @@ import {
   Checkbox,
   Chip,
   IconButton,
+  Skeleton,
   Table,
   TableCell,
   TableRow,
@@ -26,12 +27,8 @@ export default function ReservationListItem({
 }: {
   reservation: Reservation;
 }) {
-  const {
-    selectedReservations,
-    setSelectedReservations,
-    reservationsStatus,
-    reservationsSearch,
-  } = store();
+  const { selectedReservations, setSelectedReservations, reservationsLoading } =
+    store();
 
   const { push } = useRouter();
   const handleSelect = (e: any) => {
@@ -48,6 +45,7 @@ export default function ReservationListItem({
   return (
     <>
       <TableRow
+        sx={{ filter: reservationsLoading ? "blur(5px)" : "none" }}
         hover
         onClick={() => push(`/reservations/detail/${reservation.id}`)}
       >

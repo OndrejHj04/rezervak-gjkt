@@ -152,7 +152,7 @@ export default function ReservationDetailForm({
     })
       .then((res) => res.json())
       .then((data) => {
-        ReservationListMakeRefetch();
+        ReservationListMakeRefetch("/reservations/list");
         toast.success("Rezervace byla odstraněna");
       })
       .catch(() => {

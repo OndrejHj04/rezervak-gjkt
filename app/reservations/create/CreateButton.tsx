@@ -32,7 +32,7 @@ export default function CreateButton() {
       .then((res) => res.json())
       .then((data) => {
         toast.success("Rezervace úspěšně vytvořena");
-        ReservationListMakeRefetch();
+        ReservationListMakeRefetch("/reservations/list");
         setDefault();
       })
       .catch(() => {

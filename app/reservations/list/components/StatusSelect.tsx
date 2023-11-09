@@ -11,18 +11,22 @@ import {
 } from "@mui/material";
 import { revalidatePath } from "next/cache";
 import { redirect, useRouter, useSearchParams } from "next/navigation";
+import ReservationListMakeRefetch from "../refetch";
 
 export default function StatusSelect({ statuses }: { statuses: any }) {
-  const { push } = useRouter();
   const searchParams = useSearchParams();
   const status = Number(searchParams.get("status")) || 0;
 
   const handleChange = (e: any) => {
     const page = searchParams.get("page");
     if (page) {
-      push(`/reservations/list/?page=${page}&status=${e.target.value}`);
+      ReservationListMakeRefetch(
+        `/reservations/list/?page=${page}&status=${e.target.value}`
+      );
     } else {
-      push(`/reservations/list/?status=${e.target.value}`);
+      ReservationListMakeRefetch(
+        `/reservations/list/?status=${e.target.value}`
+      );
     }
   };
 

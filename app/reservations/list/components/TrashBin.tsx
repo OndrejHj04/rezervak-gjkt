@@ -18,7 +18,7 @@ export default function TrashBin() {
     })
     .catch((err) => toast.error("Něco se pokazilo"))
     .finally(() => {
-      ReservationListMakeRefetch();
+      ReservationListMakeRefetch("/reservations/list");
       setSelectedReservations([]);
     });
   };

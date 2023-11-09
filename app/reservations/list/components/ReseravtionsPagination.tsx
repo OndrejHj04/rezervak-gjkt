@@ -5,6 +5,7 @@ import { TablePagination } from "@mui/material";
 import { revalidatePath } from "next/cache";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import ReservationListMakeRefetch from "../refetch";
 
 export default function ReservationsPagination({ count }: { count: number }) {
   const { push } = useRouter();
@@ -14,9 +15,9 @@ export default function ReservationsPagination({ count }: { count: number }) {
   const pageChange = (_: any, newPage: any) => {
     const status = searchParams.get("status");
     if (status) {
-      push(`/reservations/list/?page=${newPage + 1}&status=${status}`);
+      ReservationListMakeRefetch(`/reservations/list/?page=${newPage + 1}&status=${status}`);
     } else {
-      push(`/reservations/list/?page=${newPage + 1}`);
+      ReservationListMakeRefetch(`/reservations/list/?page=${newPage + 1}`);
     }
   };
 

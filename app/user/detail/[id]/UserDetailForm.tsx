@@ -333,7 +333,7 @@ export default function UserDetailForm({
                 )}
               </Typography>
               <Divider />
-              <List sx={{ height: 400 }}>
+              <List sx={{ height: 400, overflowY: "scroll" }}>
                 {userDetail.reservations.length ? (
                   userDetail.reservations.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>

@@ -3,6 +3,7 @@
 import { store } from "@/store/store";
 import { Button, Input, Modal, Paper, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
+import Papa from "papaparse";
 
 const style = {
   position: "absolute" as "absolute",
@@ -17,13 +18,29 @@ export default function ImportUsers() {
   const close = () => setModal("");
   const {
     register,
-    formState: { isValid },
+    formState: { isValid, errors },
     handleSubmit,
     watch,
   } = useForm();
-
-  const onSubmit = (data: any) => {
-    console.log(data.file);
+  const onSubmit = async (data: any) => {
+    const parse = (await new Promise((resolve) => {
+      Papa.parse(data.file[0], {
+        encoding: "UTF-8",
+        complete: (results: any) => resolve(results.data),
+      });
+    })) as any;
+    const planObject = parse[0] as any;
+    const filteredRows = parse.filter(
+      (row: any) => row.length === planObject.length && row !== planObject
+    );
+    const newData = filteredRows.map((row: any) => {
+      let object = {} as any;
+      row.forEach((item: any, i: any) => {
+        object[planObject[i]] = item;
+      });
+      return object;
+    });
+    console.log(newData)
   };
 
   return (
@@ -45,6 +62,7 @@ export default function ImportUsers() {
               type="file"
               hidden
               {...register("file", { required: true })}
+              accept=".csv"
             />
           </Button>
           <Button variant="contained" type="submit" disabled={!isValid}>

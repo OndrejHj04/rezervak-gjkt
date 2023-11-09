@@ -4,6 +4,7 @@ import { store } from "@/store/store";
 import { Button, Input, Modal, Paper, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import Papa from "papaparse";
+import { toast } from "react-toastify";
 
 const style = {
   position: "absolute" as "absolute",
@@ -18,10 +19,26 @@ export default function ImportUsers() {
   const close = () => setModal("");
   const {
     register,
-    formState: { isValid, errors },
+    reset,
+    formState: { isValid },
     handleSubmit,
     watch,
   } = useForm();
+
+  const handleRequest = (newData: any) => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/import-new`, {
+      method: "POST",
+      body: JSON.stringify(newData),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        reset();
+        toast.success(res.message);
+        close();
+      })
+      .catch((e) => console.log(e));
+  };
+
   const onSubmit = async (data: any) => {
     const parse = (await new Promise((resolve) => {
       Papa.parse(data.file[0], {
@@ -40,12 +57,12 @@ export default function ImportUsers() {
       });
       return object;
     });
-    console.log(newData)
+    handleRequest(newData);
   };
 
   return (
     <Modal
-      open={true}
+      open={modal === "importUsers"}
       onClose={close}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"

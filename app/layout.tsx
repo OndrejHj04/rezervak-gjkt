@@ -6,7 +6,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TopBar from "@/ui-components/TopBar";
 import SlidingMenu from "@/ui-components/SlidingMenu";
-import SpeedComponent from "@/ui-components/SpeedComponent";
+import SpeedComponent from "@/app/navigation/SpeedComponent";
 const inter = Inter({ subsets: ["latin"] });
 import "react-perfect-scrollbar/dist/css/styles.css";
 

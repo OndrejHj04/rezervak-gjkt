@@ -5,10 +5,12 @@ import SpeedDialAction from "@mui/material/SpeedDialAction";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import EditCalendar from "@mui/icons-material/EditCalendar";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import AddUserModal from "@/sub-components/AddUserModal";
+import AddUserModal from "@/app/navigation/modals/AddUserModal";
 import { store } from "@/store/store";
-import AddGroupModal from "@/sub-components/AddGroupModal";
+import AddGroupModal from "@/app/navigation/modals/AddGroupModal";
 import { useRouter } from "next/navigation";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import ImportUsers from "./modals/ImportUsers";
 
 const actions = [
   {
@@ -25,6 +27,11 @@ const actions = [
     icon: <EditCalendar />,
     name: "Vytvořit rezervaci",
     path: "/reservations/create",
+  },
+  {
+    icon: <ReceiptLongIcon />,
+    name: "Importovat uživatele",
+    string: "importUsers",
   },
 ];
 
@@ -53,6 +60,7 @@ export default function SpeedComponent() {
       </SpeedDial>
       <AddUserModal />
       <AddGroupModal />
+      <ImportUsers />
     </>
   );
 }

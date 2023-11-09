@@ -32,9 +32,14 @@ export default function ImportUsers() {
     })
       .then((res) => res.json())
       .then((res) => {
-        reset();
-        toast.success(res.message);
-        close();
+        console.log(res);
+        if (res.success) {
+          toast.success(res.message);
+          reset();
+          close();
+        } else {
+          toast.error(res.message);
+        }
       })
       .catch((e) => console.log(e));
   };

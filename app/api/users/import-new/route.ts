@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         success: false,
-        message: "Something went wrong",
+        message: "Něco se nepovedlo",
       },
       { status: 500 }
     );

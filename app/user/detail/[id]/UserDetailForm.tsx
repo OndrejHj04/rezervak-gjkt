@@ -265,13 +265,13 @@ export default function UserDetailForm({
             <div className="flex flex-col">
               <Typography variant="h5">
                 Skupiny uživatele{" "}
-                {!!userDetail.groups.length && (
+                {!!userDetail.groups && (
                   <span>({userDetail.groups.length})</span>
                 )}
               </Typography>
               <Divider />
               <List sx={{ height: 400 }}>
-                {userDetail.groups.length ? (
+                {userDetail.groups ? (
                   userDetail.groups.map((group: any) => (
                     <ListItem disablePadding key={group.id}>
                       <ListItemButton
@@ -328,13 +328,13 @@ export default function UserDetailForm({
             <div className="flex flex-col">
               <Typography variant="h5">
                 Rezervace uživatele{" "}
-                {!!userDetail.reservations.length && (
+                {!!userDetail.reservations && (
                   <span>({userDetail.reservations.length})</span>
                 )}
               </Typography>
               <Divider />
               <List sx={{ height: 400, overflowY: "scroll" }}>
-                {userDetail.reservations.length ? (
+                {userDetail.reservations ? (
                   userDetail.reservations.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>
                       <ListItemButton

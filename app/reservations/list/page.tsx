@@ -1,28 +1,20 @@
 import {
   Chip,
-  InputAdornment,
-  Pagination,
   Paper,
-  Select,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow,
-  TextField,
   Typography,
 } from "@mui/material";
 import CheckboxComponent from "./components/CheckboxComponent";
-import UserListItem from "@/app/user/list/UserListItem";
 import { Reservation } from "@/types";
 import TrashBin from "./components/TrashBin";
 import StatusSelect from "./components/StatusSelect";
 import SearchBar from "./components/SearchBar";
 import ReservationsPagination from "./components/ReseravtionsPagination";
-import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { store } from "@/store/store";
 import ReservationsExport from "./components/ReservationsExport";
 
 const getReservations = async (page: any, status: any) => {
@@ -84,7 +76,7 @@ export default async function ReservationsListPage({
         <SearchBar />
         <div className="flex gap-2 items-center">
           <StatusSelect statuses={statuses} />
-          <ReservationsExport />
+          <ReservationsExport reservations={reservations.length} />
         </div>
       </div>
       <Paper>

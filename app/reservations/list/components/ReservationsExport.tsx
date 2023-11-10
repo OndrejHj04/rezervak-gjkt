@@ -1,12 +1,15 @@
 "use client";
 import { Button } from "@mui/material";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import Papa from "papaparse";
+
 import handleExport from "@/app/utils/export/handleExport";
 import { toast } from "react-toastify";
 
-export default function ReservationsExport() {
+export default function ReservationsExport({
+  reservations,
+}: {
+  reservations: number;
+}) {
   const searchParams = useSearchParams();
   const status = Number(searchParams.get("status")) || 0;
 
@@ -21,7 +24,7 @@ export default function ReservationsExport() {
   };
 
   return (
-    <Button variant="outlined" onClick={makeExport}>
+    <Button variant="outlined" onClick={makeExport} disabled={!reservations}>
       Export
     </Button>
   );

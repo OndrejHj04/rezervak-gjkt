@@ -23,6 +23,7 @@ import ReservationsPagination from "./components/ReseravtionsPagination";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { store } from "@/store/store";
+import ReservationsExport from "./components/ReservationsExport";
 
 const getReservations = async (page: any, status: any) => {
   try {
@@ -81,7 +82,10 @@ export default async function ReservationsListPage({
       <div className="flex justify-between">
         <TrashBin />
         <SearchBar />
-        <StatusSelect statuses={statuses} />
+        <div className="flex gap-2 items-center">
+          <StatusSelect statuses={statuses} />
+          <ReservationsExport />
+        </div>
       </div>
       <Paper>
         <Table>

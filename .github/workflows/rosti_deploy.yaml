@@ -3,13 +3,11 @@
 name: Deploy into Roští.cz
 
 on:
-  push:
-    branches: [master]
+    push:
+      branches: [mast]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    env:
+    deploy:
       runs-on: ubuntu-latest
       env:
         HOST: ssh.rosti.cz
@@ -21,38 +19,70 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "v20.5.1"
-    - uses: webfactory/ssh-agent@v0.8.0
+      - uses: webfactory/ssh-agent@v0.8.0
         with:
-        ssh-private-key: ${{ secrets.ROSTI_DEPLOY_SSH_KEY }}
-    - name: Setup hostkey
+          ssh-private-key: ${{ secrets.ROSTI_DEPLOY_SSH_KEY }}
+      - name: Setup hostkey
         run: |
-        echo "ssh.rosti.cz ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCkd1tgFBZfhIUN+KEoBbrcLr22H9BcHWx+C9gSXKA9MbgJmsDhQtSyuJYk5YDJ+GwMc3AR1xj9LXOu82h7vIPo/Y5Jsiap2uuS7Dm9VmB3FMfqIzK1tGV6rqn1D0qDCBknSgDLI1pOztwdR3ez5E0ucyZ81n6h7XAt8spFdsykRF+nr08Pfj3BzCiNKXejgAb21repFYDzzAASouUwSps4hKFHTHStEI75oDpSbdcZdC4Di6QkUAcvarpTxKxPQDRK2NCGv8OeVqW3wTKm+uENTcCboDzUrke3PAiNJe2jjToYHu051Q43mzTXFXpwD5Leal+IGhiBG2L+8tKESPAB" > ./known_hosts
+          echo "ssh.rosti.cz ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCkd1tgFBZfhIUN+KEoBbrcLr22H9BcHWx+C9gSXKA9MbgJmsDhQtSyuJYk5YDJ+GwMc3AR1xj9LXOu82h7vIPo/Y5Jsiap2uuS7Dm9VmB3FMfqIzK1tGV6rqn1D0qDCBknSgDLI1pOztwdR3ez5E0ucyZ81n6h7XAt8spFdsykRF+nr08Pfj3BzCiNKXejgAb21repFYDzzAASouUwSps4hKFHTHStEI75oDpSbdcZdC4Di6QkUAcvarpTxKxPQDRK2NCGv8OeVqW3wTKm+uENTcCboDzUrke3PAiNJe2jjToYHu051Q43mzTXFXpwD5Leal+IGhiBG2L+8tKESPAB" > ./known_hosts
+      - name: env
+        run: |
+          cat << EOF > .env
+          ${{ secrets.ENV }}
+          EOF
       - name: Dependencies
         run: |
           npm install
       - name: Build
         run: |
           npm run build
-          ./node_modules/.bin/next export
+      - name: Setup Node.js
+        run: |
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST /usr/local/bin/rosti node $NODE_VERSION
+      - name: Setup Supervisord
+        run: |
+          cat << EOF > rosti.app.conf
+          [program:app]
+          command=/srv/bin/primary_tech/npm start
+          environment=PATH="/srv/bin/primary_tech:/usr/local/bin:/usr/bin:/bin:/srv/.npm-packages/bin"
+          stopasgroup=true
+          directory=/srv/app
+          process_name=app
+          autostart=true
+          autorestart=true
+          stdout_logfile=/srv/log/node.log
+          stdout_logfile_maxbytes=2MB
+          stdout_logfile_backups=5
+          stdout_capture_maxbytes=2MB
+          stdout_events_enabled=false
+          redirect_stderr=true
+          EOF
+          scp -o UserKnownHostsFile=./known_hosts -P $PORT rosti.app.conf $USER@$HOST:/srv/conf/supervisor.d/app.conf
+          rm rosti.app.conf
       - name: Setup Nginx
         run: |
           cat << EOF > rosti.nginx.conf
           server {
-            listen 8000;
-
-            root /srv/app/;
-            index index.html;
-
-            location / {
-              try_files $uri $uri/ =404;
-            }
+              listen       0.0.0.0:8000;
+              listen       [::]:8000;
+              location / {
+                      proxy_pass         http://127.0.0.1:8080/;
+                      proxy_redirect     default;
+                      proxy_set_header   X-Real-IP  \$remote_addr;
+                      proxy_set_header   Host       \$host;
+              }
+              location /static/ {
+                      alias /srv/app/public/;
+              }
           }        
           EOF
           scp -o UserKnownHostsFile=./known_hosts -P $PORT rosti.nginx.conf $USER@$HOST:/srv/conf/nginx.d/app.conf
           rm rosti.nginx.conf
-      - name: Copy generated page
+      - name: Copy code
         run: |
-          rsync -ave "ssh -o UserKnownHostsFile=./known_hosts -p $PORT" --delete-after --exclude=.git ./out/ $USER@$HOST:/srv/app/
-      - name: Apply changes to Nginx
+          rsync -ae "ssh -o UserKnownHostsFile=./known_hosts -p $PORT" --delete-after --exclude=.git ./ $USER@$HOST:/srv/app/
+      - name: Apply changes
         run: |
-          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST nginx -s reload
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl reread
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl restart app
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl restart nginx

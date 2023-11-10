@@ -16,77 +16,55 @@ export async function GET(req: Request) {
       values: [],
     })) as any;
 
-    const data =
-      ((await query({
-        query: `SELECT * FROM reservations ${
-          status && page
-            ? `WHERE status = ${status} LIMIT 10 OFFSET ${page * 10 - 10}`
-            : page
-            ? `LIMIT 10 OFFSET ${page * 10 - 10}`
-            : status
-            ? `WHERE status = ${status}`
-            : ""
-        }`,
-        values: [],
-      })) as any) || [];
+    let sql = `SELECT * FROM reservations`;
 
-    const filtered = data
-      .map((reservation: any) => {
-        reservation.groups = reservation.groups
-          ? JSON.parse(reservation.groups as any)
-          : [];
-        reservation.users = reservation.users
-          ? JSON.parse(reservation.users as any)
-          : [];
-        return reservation;
-      })
-      .filter((reservation: any) => {
-        return userId ? reservation.users.includes(userId) : true;
-      });
+    if (status) sql += ` WHERE status = ${status}`;
+    if (page) sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
 
-    const leader =
-      filtered.length &&
-      ((await query({
-        query: `SELECT id, email, first_name, last_name, image FROM users WHERE id IN(${filtered
-          .map((reservation: any) => reservation.leader)
-          .join(",")})`,
-        values: [],
-      })) as any);
-
-    const groupIds = [
-      ...(new Set(filtered.map((item: any) => item.groups).flat()) as any),
-    ] as any;
-    const groupIdsList = groupIds.length ? groupIds : [-1];
-
-    const groups = (await query({
-      query: `SELECT id, name FROM ${"`groups`"} WHERE id IN(${groupIdsList.join(
-        ","
-      )})`,
+    const reservations = (await query({
+      query: sql,
       values: [],
     })) as any;
 
-    const getStatus = (await query({
+    const users = (await query({
+      query: `SELECT id, first_name, last_name, email, image FROM users`,
+      values: [],
+    })) as any;
+
+    const groups = (await query({
+      query: `SELECT id, name FROM groups`,
+      values: [],
+    })) as any;
+
+    const statusList = (await query({
       query: `SELECT * FROM status`,
       values: [],
     })) as any;
 
-    filtered.forEach((reservation: Reservation) => {
-      reservation.leader = leader.find(
-        (lead: any) => lead.id === reservation.leader
+    reservations.map((reservation: any) => {
+      reservation.status = statusList.find(
+        (s: any) => s.id === reservation.status
       );
-      reservation.groups = reservation.groups.map((group) =>
-        groups.find((grp: any) => grp.id === group)
+      reservation.users = JSON.parse(reservation.users);
+      reservation.groups = JSON.parse(reservation.groups).map((group: any) =>
+        groups.find((g: any) => g.id === group)
       );
-      reservation.status = getStatus.find(
-        (state: any) => state.id === reservation.status
-      );
+      reservation.leader = users.find((u: any) => u.id === reservation.leader);
     });
+
+    const data = userId
+      ? reservations.filter(
+          (reservation: any) =>
+            reservation.users.includes(userId) ||
+            reservation.leader.id === userId
+        )
+      : reservations;
 
     return NextResponse.json({
       count: count[0]["COUNT(*)"],
       success: true,
       message: "Operation successful",
-      data: filtered,
+      data: data,
     });
   } catch (e) {
     return NextResponse.json(

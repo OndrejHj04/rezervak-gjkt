@@ -14,7 +14,9 @@ export default function ReservationsExport({
   const status = Number(searchParams.get("status")) || 0;
 
   const makeExport = () => {
-    fetch(`http://localhost:3000/api/reservations/export?status=${status}`)
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/export?status=${status}`
+    )
       .then((response) => response.blob())
       .then((blob) => {
         handleExport(blob, "reservations");

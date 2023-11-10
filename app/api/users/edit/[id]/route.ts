@@ -9,10 +9,13 @@ export async function POST(
   try {
     const user = await req.json();
     let str = "";
+
     Object.keys(user).forEach((key, i) => {
-      str += `${key} = ${typeof user[key] === "string" ? "'" : ""}${user[key]}${
-        typeof user[key] === "string" ? "'" : ""
-      }${Object.keys(user).length - 1 !== i ? ", " : ""}`;
+      str += `${key} = ${user[key] ? "'" : ""}${
+        Number(user[key]) || user[key].length ? user[key] : null
+      }${user[key] ? "'" : ""}${
+        Object.keys(user).length - 1 !== i ? ", " : ""
+      }`;
     });
 
     const data = (await query({

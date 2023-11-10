@@ -70,7 +70,7 @@ export default function UserDetailForm({
         method: "POST",
         body: JSON.stringify({
           ...data,
-          birth_date: dayjs(data.birth_date).add(1, "day"),
+          birth_date: dayjs(data.birth_date).format("YYYY-MM-DD"),
           role: data.role.id,
         }),
       }
@@ -79,7 +79,6 @@ export default function UserDetailForm({
       .then((res) => {
         toast.success("Uživatel byl upraven.");
         MakeUserDetailRefetch(userDetail.id);
-        reset();
       })
       .catch((err) => toast.error("Něco se pokazilo."))
       .finally(() => {
@@ -234,6 +233,9 @@ export default function UserDetailForm({
                   render={({ field: { value, onChange } }) => (
                     <Autocomplete
                       value={value}
+                      isOptionEqualToValue={(option, value) =>
+                        option.id === value.id
+                      }
                       options={roles}
                       onChange={(e, value) => {
                         onChange(value);

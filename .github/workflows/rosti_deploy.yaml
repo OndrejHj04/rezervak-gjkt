@@ -80,7 +80,6 @@ jobs:
           rm rosti.nginx.conf
       - name: Copy code
         run: |
-          echo "rsync -ae "ssh -o UserKnownHostsFile=/known_hosts -p $PORT" --delete-after --exclude=.git ./ $USER@$HOST:/srv/app/"
           rsync -ae "ssh -o UserKnownHostsFile=/known_hosts -p $PORT" --delete-after --exclude=.git ./ $USER@$HOST:/srv/app/
       - name: Apply changes
         run: |

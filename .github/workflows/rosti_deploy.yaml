@@ -82,6 +82,7 @@ jobs:
         run: |
           echo "Running rsync command..."
           echo "$PORT"
+          echo "$USER@$HOST"
           rsync -ae "ssh -o UserKnownHostsFile=$(pwd)/known_hosts -p $PORT" --delete-after --exclude=.git ./ $USER@$HOST:/srv/app/
       - name: Apply changes
         run: |

@@ -3,11 +3,13 @@
 name: Deploy into Roští.cz
 
 on:
-    push:
-      branches: [master]
+  push:
+    branches: [master]
 
 jobs:
-    deploy:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
       runs-on: ubuntu-latest
       env:
         HOST: ssh.rosti.cz

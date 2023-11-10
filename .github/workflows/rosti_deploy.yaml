@@ -3,18 +3,18 @@
 name: Deploy into Roští.cz
 
 on:
-    push:
-      branches: [master]
+  push:
+    branches: [master]
 
 jobs:
-    deploy:
-      runs-on: ubuntu-latest
-      env:
-        HOST: ssh.rosti.cz
-        USER: app
-        PORT: 26957
-        NODE_VERSION: 20.5.1
-      steps:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      HOST: ssh.rosti.cz
+      USER: app
+      PORT: 26957
+      NODE_VERSION: 20.5.1
+    steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -78,6 +78,9 @@ jobs:
           EOF
           scp -o UserKnownHostsFile=./known_hosts -P $PORT rosti.nginx.conf $USER@$HOST:/srv/conf/nginx.d/app.conf
           rm rosti.nginx.conf
+      - name: Copy code
+        run: |
+          rsync -ae "ssh -o UserKnownHostsFile=$(pwd)/known_hosts -p $PORT" --delete-after --exclude=.git ./ $USER@$HOST:/srv/app/
       - name: Apply changes
         run: |
           ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl reread

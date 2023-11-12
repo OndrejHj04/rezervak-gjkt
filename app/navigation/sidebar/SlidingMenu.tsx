@@ -17,6 +17,7 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import GroupIcon from "@mui/icons-material/Group";
 import DateRangeIcon from "@mui/icons-material/DateRange";
+import Link from "next/link";
 
 const icons = [
   DashboardIcon,
@@ -29,12 +30,6 @@ const icons = [
 
 export default function SlidingMenu() {
   const { panel, setPanel, user, userLoading } = store();
-  const { push } = useRouter();
-
-  const redirect = (string: string) => {
-    push(string);
-    setPanel(false);
-  };
 
   return (
     <Drawer anchor="left" open={panel} onClose={() => setPanel(false)}>
@@ -46,21 +41,26 @@ export default function SlidingMenu() {
               route.roles.length === 0
             ) {
               return (
-                <MenuItem
-                  onClick={() => redirect(route.path)}
+                <Link
+                  href={route.path}
+                  onClick={() => setPanel(false)}
                   key={i}
-                  disabled={Boolean(!user?.verified && route.roles.length)}
+                  className="no-underline text-inherit"
                 >
-                  <ListItemIcon sx={{ marginRight: 1 }}>
-                    {React.createElement(icons[i], {
-                      fontSize: "large",
-                      color: "primary",
-                    })}
-                  </ListItemIcon>
-                  <ListItemText>
-                    <Typography variant="h6">{route.name}</Typography>
-                  </ListItemText>
-                </MenuItem>
+                  <MenuItem
+                    disabled={Boolean(!user?.verified && route.roles.length)}
+                  >
+                    <ListItemIcon sx={{ marginRight: 1 }}>
+                      {React.createElement(icons[i], {
+                        fontSize: "large",
+                        color: "primary",
+                      })}
+                    </ListItemIcon>
+                    <ListItemText>
+                      <Typography variant="h6">{route.name}</Typography>
+                    </ListItemText>
+                  </MenuItem>
+                </Link>
               );
             }
           })}

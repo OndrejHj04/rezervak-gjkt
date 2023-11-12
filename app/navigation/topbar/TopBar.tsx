@@ -9,7 +9,7 @@ import { store } from "@/store/store";
 import { Icon, Skeleton } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import AvatarWrapper from "./AvatarWrapper";
+import AvatarWrapper from "../../../ui-components/AvatarWrapper";
 import ErrorIcon from "@mui/icons-material/Error";
 import HotelIcon from "@mui/icons-material/Hotel";
 import DarkModeIcon from "@mui/icons-material/DarkMode";

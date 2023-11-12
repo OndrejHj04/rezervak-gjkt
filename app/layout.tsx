@@ -4,9 +4,9 @@ import { Inter } from "next/font/google";
 import ClientProvider from "./clientProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import TopBar from "@/ui-components/TopBar";
-import SlidingMenu from "@/ui-components/SlidingMenu";
-import SpeedComponent from "@/app/navigation/SpeedComponent";
+import TopBar from "@/app/navigation/topbar/TopBar";
+import SlidingMenu from "@/app/navigation/sidebar/SlidingMenu";
+import SpeedComponent from "@/app/navigation/speed/SpeedComponent";
 const inter = Inter({ subsets: ["latin"] });
 import "react-perfect-scrollbar/dist/css/styles.css";
 

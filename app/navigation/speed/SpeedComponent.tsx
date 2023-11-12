@@ -19,12 +19,12 @@ const actions = [
   {
     icon: <PersonAddIcon />,
     name: "Přidat uživatele",
-    string: "addUser",
+    path: "/admin/users/new",
   },
   {
     icon: <GroupAddIcon />,
     name: "Přidat skupinu",
-    string: "addGroup",
+    path: "/admin/groups/new",
   },
   {
     icon: <EditCalendar />,
@@ -34,7 +34,7 @@ const actions = [
   {
     icon: <ReceiptLongIcon />,
     name: "Importovat uživatele",
-    string: "importUsers",
+    path: "/admin/users/import",
   },
 ];
 
@@ -55,7 +55,7 @@ export default async function SpeedComponent() {
             key={action.name}
             icon={
               <Link
-                href="/navigation/speed/modal"
+                href={action.path}
                 className="flex justify-center items-center w-full h-full"
               >
                 <Icon color="action">{action.icon}</Icon>

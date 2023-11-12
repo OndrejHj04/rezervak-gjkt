@@ -1,4 +1,3 @@
-"use client";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
@@ -11,6 +10,10 @@ import AddGroupModal from "@/app/navigation/speed/modals/AddGroupModal";
 import { useRouter } from "next/navigation";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import ImportUsers from "./modals/ImportUsers";
+import Link from "next/link";
+import { Icon } from "@mui/material";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 const actions = [
   {
@@ -35,10 +38,11 @@ const actions = [
   },
 ];
 
-export default function SpeedComponent() {
-  const { modal, setModal, user } = store();
-  const { push } = useRouter();
-  if (user?.role.id !== 1) return null;
+export default async function SpeedComponent() {
+  const { user } = (await getServerSession(authOptions)) as any;
+  console.log(user.role.id);
+
+  if (user.role.id !== 1) return null;
   return (
     <>
       <SpeedDial
@@ -49,18 +53,18 @@ export default function SpeedComponent() {
         {actions.map((action) => (
           <SpeedDialAction
             key={action.name}
-            icon={action.icon}
+            icon={
+              <Link
+                href="/navigation/speed/modal"
+                className="flex justify-center items-center w-full h-full"
+              >
+                <Icon color="action">{action.icon}</Icon>
+              </Link>
+            }
             tooltipTitle={action.name}
-            onClick={() => {
-              if (action.string) setModal(action.string);
-              else if (action.path) push(action.path);
-            }}
           />
         ))}
       </SpeedDial>
-      <AddUserModal />
-      <AddGroupModal />
-      <ImportUsers />
     </>
   );
 }

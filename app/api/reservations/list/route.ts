@@ -3,9 +3,7 @@ import { Reservation } from "@/types";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-  console.log("sex is good, but have you ever tried nextjs");
   try {
-    console.log("1");
     const url = new URL(req.url);
     const userId = Number(url.searchParams.get("user_id"));
     const status = Number(url.searchParams.get("status"));
@@ -14,7 +12,6 @@ export async function GET(req: Request) {
 
     let countSql = `SELECT COUNT(*) FROM reservations WHERE 1=1`;
     let countValues = [];
-    console.log("2");
 
     if (status) {
       countSql += ` AND status = ?`;
@@ -24,7 +21,6 @@ export async function GET(req: Request) {
       countSql += ` AND name LIKE ?`;
       countValues.push(`%${search}%`);
     }
-    console.log("3");
 
     const count = (await query({
       query: countSql,
@@ -45,7 +41,6 @@ export async function GET(req: Request) {
       sql += ` LIMIT 10 OFFSET ?`;
       values.push(page * 10 - 10);
     }
-    console.log("4");
 
     const reservations = (await query({
       query: sql,
@@ -56,7 +51,6 @@ export async function GET(req: Request) {
       query: `SELECT id, first_name, last_name, email, image FROM users`,
       values: [],
     })) as any;
-    console.log("5");
 
     const groups = (await query({
       query: `SELECT id, name FROM ${"`groups`"}`,
@@ -67,7 +61,6 @@ export async function GET(req: Request) {
       query: `SELECT * FROM status`,
       values: [],
     })) as any;
-    console.log("6");
 
     reservations.map((reservation: any) => {
       reservation.status = statusList.find(
@@ -79,7 +72,6 @@ export async function GET(req: Request) {
       );
       reservation.leader = users.find((u: any) => u.id === reservation.leader);
     });
-    console.log("7");
 
     const data = userId
       ? reservations.filter(
@@ -88,8 +80,7 @@ export async function GET(req: Request) {
             reservation.leader.id === userId
         )
       : reservations;
-    console.log("8");
-    console.log("KURWA");
+
     return NextResponse.json({
       count: count[0]["COUNT(*)"],
       success: true,

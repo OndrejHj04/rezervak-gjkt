@@ -3,6 +3,7 @@ import { Reservation } from "@/types";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
+  console.log("sex is good, but have you ever tried nextjs");
   try {
     console.log("1");
     const url = new URL(req.url);
@@ -58,7 +59,7 @@ export async function GET(req: Request) {
     console.log("5");
 
     const groups = (await query({
-      query: `SELECT id, name FROM 'groups'`,
+      query: `SELECT id, name FROM ${"`groups`"}`,
       values: [],
     })) as any;
 

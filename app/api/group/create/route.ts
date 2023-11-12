@@ -4,9 +4,13 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { name, description, owner, users } = await req.json();
-
+    console.log("1");
     const members = users ? [...users, owner] : [owner];
-
+    console.log(
+      `INSERT INTO ${"`groups`"}(name, description, owner, users) VALUES ("${name}", ${
+        description ? `"${description}"` : null
+      }, "${owner}", "${JSON.stringify(members)}")`
+    );
     const data = (await query({
       query: `INSERT INTO ${"`groups`"}(name, description, owner, users) VALUES ("${name}", ${
         description ? `"${description}"` : null
@@ -14,11 +18,14 @@ export async function POST(req: Request) {
       values: [],
     })) as any;
     const newGroupId = data.insertId;
+    console.log("2");
+
     const groups = (await query({
       query: `SELECT ${"`groups`"} FROM users WHERE id = "${owner}"`,
       values: [],
     })) as any;
     const userGroups = JSON.parse(groups[0].groups);
+    console.log("3");
 
     const editGroups = await query({
       query: `UPDATE users SET ${"`groups`"} = "${
@@ -28,6 +35,7 @@ export async function POST(req: Request) {
       }" WHERE id = "${owner}"`,
       values: [],
     });
+    console.log("4");
 
     return NextResponse.json({
       success: true,
@@ -35,9 +43,12 @@ export async function POST(req: Request) {
       data: { name, newGroupId },
     });
   } catch (e: any) {
-    return NextResponse.json({
-      success: false,
-      message: "Something went wrong",
-    });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Something went wrong",
+      },
+      { status: 500 }
+    );
   }
 }

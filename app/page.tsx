@@ -4,6 +4,7 @@ import VerifyUser from "@/sub-components/VerifyUser";
 import WelcomeComponent from "@/sub-components/WelcomeComponent";
 import {
   Box,
+  Button,
   MenuItem,
   MenuList,
   Paper,
@@ -15,6 +16,7 @@ import { Group } from "@/types";
 import { useRouter } from "next/navigation";
 import HomepageLoading from "@/app/HomepageLoading";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 const DisplayGroups = dynamic(
   () => import("@/app/homepage/reservations/DisplayReservations")
@@ -34,6 +36,11 @@ export default function Home() {
       <DisplayGroups />
       <DisplayReservations />
       <HomepageCalendar />
+      <div>
+        <Button variant="outlined">
+          <Link href={"/group/list"}>SKUPINY</Link>
+        </Button>
+      </div>
     </div>
   );
 

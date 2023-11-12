@@ -40,7 +40,6 @@ const actions = [
 
 export default async function SpeedComponent() {
   const { user } = (await getServerSession(authOptions)) as any;
-  console.log(user.role.id);
 
   if (user.role.id !== 1) return null;
   return (

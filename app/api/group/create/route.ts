@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: { name },
+      data: { name, newGroupId },
     });
   } catch (e: any) {
     return NextResponse.json({

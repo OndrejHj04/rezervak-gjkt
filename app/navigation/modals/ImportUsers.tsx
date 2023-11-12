@@ -113,7 +113,7 @@ export default function ImportUsers() {
 
   return (
     <Modal
-      open={modal === "import"}
+      open={modal === "importUsers"}
       onClose={close}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"

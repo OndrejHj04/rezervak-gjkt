@@ -8,22 +8,43 @@ export async function GET(req: Request) {
     const userId = Number(url.searchParams.get("user_id"));
     const status = Number(url.searchParams.get("status"));
     const page = Number(url.searchParams.get("page"));
+    const search = url.searchParams.get("search");
+
+    let countSql = `SELECT COUNT(*) FROM reservations WHERE 1=1`;
+    let countValues = [];
+
+    if (status) {
+      countSql += ` AND status = ?`;
+      countValues.push(status);
+    }
+    if (search) {
+      countSql += ` AND name LIKE ?`;
+      countValues.push(`%${search}%`);
+    }
 
     const count = (await query({
-      query: `SELECT COUNT(*) FROM reservations ${
-        status ? `WHERE status = ${status}` : ""
-      }`,
-      values: [],
+      query: countSql,
+      values: countValues,
     })) as any;
 
-    let sql = `SELECT * FROM reservations`;
-
-    if (status) sql += ` WHERE status = ${status}`;
-    if (page) sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
+    let sql = `SELECT * FROM reservations WHERE 1=1`;
+    let values = [];
+    if (status) {
+      sql += ` AND status = ?`;
+      values.push(status);
+    }
+    if (search) {
+      sql += ` AND name LIKE ?`;
+      values.push(`%${search}%`);
+    }
+    if (page) {
+      sql += ` LIMIT 10 OFFSET ?`;
+      values.push(page * 10 - 10);
+    }
 
     const reservations = (await query({
       query: sql,
-      values: [],
+      values: values,
     })) as any;
 
     const users = (await query({

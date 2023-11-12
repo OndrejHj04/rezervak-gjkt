@@ -17,10 +17,14 @@ import ReservationsPagination from "./components/ReseravtionsPagination";
 import dynamic from "next/dynamic";
 import ReservationsExport from "./components/ReservationsExport";
 
-const getReservations = async (page: any, status: any) => {
+const getReservations = async (page: any, status: any, search: any) => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?page=${page}&status=${status}`,
+      `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/api/reservations/list?page=${page}&status=${status}${
+        search ? `&search=${search}` : ""
+      }`,
       { cache: "no-cache" }
     );
     const data = await req.json();
@@ -53,8 +57,9 @@ export default async function ReservationsListPage({
 }) {
   const page = searchParams["page"] || 1;
   const status = searchParams["status"] || 0;
+  const search = "";
 
-  const data = (await getReservations(page, status)) as any;
+  const data = (await getReservations(page, status, search)) as any;
   const reservations = (await data.data) as Reservation[];
   const statuses = await getStatuses();
 

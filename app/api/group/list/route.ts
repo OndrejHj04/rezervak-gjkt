@@ -22,6 +22,7 @@ export async function GET() {
         (user) => user.id === (item.owner as unknown as number)
       ) as unknown as GroupOwner;
       item.users = item.users ? JSON.parse(item.users as any) : [];
+      item.reservations = JSON.parse(item.reservations as any);
       return item;
     });
 

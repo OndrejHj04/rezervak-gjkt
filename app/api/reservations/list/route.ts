@@ -53,7 +53,7 @@ export async function GET(req: Request) {
     })) as any;
 
     const groups = (await query({
-      query: `SELECT id, name FROM groups`,
+      query: `SELECT id, name FROM 'groups'`,
       values: [],
     })) as any;
 

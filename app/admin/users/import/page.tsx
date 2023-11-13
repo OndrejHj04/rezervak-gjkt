@@ -1,6 +1,5 @@
-export default function ImportUsersForm(){
+import UsersImportForm from "./UsersImportForm";
 
-    return(
-        <div>import users form</div>
-    )
+export default function ImportUsersForm() {
+  return <UsersImportForm />;
 }

@@ -36,11 +36,6 @@ export default function Home() {
       <DisplayGroups />
       <DisplayReservations />
       <HomepageCalendar />
-      <div>
-        <Button variant="outlined">
-          <Link href={"/group/list"}>SKUPINY</Link>
-        </Button>
-      </div>
     </div>
   );
 

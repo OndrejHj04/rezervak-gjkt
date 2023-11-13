@@ -39,9 +39,9 @@ const actions = [
 ];
 
 export default async function SpeedComponent() {
-  const { user } = (await getServerSession(authOptions)) as any;
-
-  if (user.role.id !== 1) return null;
+  const data = (await getServerSession(authOptions)) as any;
+  
+  if (data?.user.role.id !== 1) return null;
   return (
     <>
       <SpeedDial

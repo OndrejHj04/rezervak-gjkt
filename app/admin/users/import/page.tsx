@@ -1,5 +1,13 @@
 import UsersImportForm from "./UsersImportForm";
 
-export default function ImportUsersForm() {
-  return <UsersImportForm />;
+const getRoles = async () => {
+  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/list`);
+  const { data } = await req.json();
+  return data;
+};
+
+export default async function ImportUsersForm() {
+  const roles = await getRoles();
+
+  return <UsersImportForm roles={roles} />;
 }

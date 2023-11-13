@@ -23,13 +23,16 @@ const importUsersValidFormat = [
 ];
 
 export default function UsersImportForm({ roles }: { roles: any }) {
+  const inputRef = useRef(null);
   const [data, setData] = useState([]);
   const [file, setFile] = useState<any>(null);
   const [message, setMessage] = useState("");
   const clearFile = () => {
     setFile(null);
+    if (inputRef.current) (inputRef.current as any).value = null;
+    setMessage("");
   };
-  console.log(data, file);
+
   useEffect(() => {
     if (file) parseFile(file);
     if (!file) setData([]);
@@ -41,6 +44,7 @@ export default function UsersImportForm({ roles }: { roles: any }) {
       JSON.stringify(importUsersValidFormat.map((item) => item.value))
     ) {
       setData(data.slice(1));
+      setMessage("");
     } else {
       setMessage("Špatný formát souboru");
     }
@@ -57,7 +61,11 @@ export default function UsersImportForm({ roles }: { roles: any }) {
     <form className="flex flex-col">
       <div className="mb-2 flex justify-between gap-2">
         <Typography variant="h5">Importovat uživatele</Typography>
-        <LoadingButton type="submit" variant="contained" disabled={!file}>
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          disabled={Boolean(!file || message.length)}
+        >
           Importovat uživatele
         </LoadingButton>
       </div>
@@ -112,9 +120,10 @@ export default function UsersImportForm({ roles }: { roles: any }) {
             Vybrat soubor
             <input
               type="file"
+              ref={inputRef}
               hidden
               accept=".csv"
-              onChange={(e:any) => setFile(e.target.files[0])}
+              onChange={(e: any) => setFile(e.target.files[0])}
             />
           </Button>
           <Button variant="contained">Stáhnout vzorový soubor</Button>

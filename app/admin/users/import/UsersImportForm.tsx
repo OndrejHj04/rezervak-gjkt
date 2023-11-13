@@ -14,6 +14,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import Papa from "papaparse";
 import { set } from "lodash";
+import handleExport from "@/app/utils/export/handleExport";
 
 const importUsersValidFormat = [
   { value: "first_name", name: "Jméno" },
@@ -27,6 +28,17 @@ export default function UsersImportForm({ roles }: { roles: any }) {
   const [data, setData] = useState([]);
   const [file, setFile] = useState<any>(null);
   const [message, setMessage] = useState("");
+
+  const downloadSample = () => {
+    const csv = Papa.unparse({
+      fields: importUsersValidFormat.map((item) => item.value),
+      data: ["Jan", "Pavel", "email@email.cz", "1"],
+    });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    console.log(csv, blob);
+    handleExport(blob, "vzorovy_soubor.csv");
+  };
+
   const clearFile = () => {
     setFile(null);
     if (inputRef.current) (inputRef.current as any).value = null;
@@ -126,7 +138,9 @@ export default function UsersImportForm({ roles }: { roles: any }) {
               onChange={(e: any) => setFile(e.target.files[0])}
             />
           </Button>
-          <Button variant="contained">Stáhnout vzorový soubor</Button>
+          <Button variant="contained" onClick={downloadSample}>
+            Stáhnout vzorový soubor
+          </Button>
           <Button
             variant="contained"
             color="error"

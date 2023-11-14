@@ -13,9 +13,9 @@ const getUserTheme = async (id: string) => {
 
 export default async function TopBar() {
   const data = (await getServerSession(authOptions)) as any;
-  const { theme } = data?.user?.id
+  const theme = data?.user?.id
     ? await getUserTheme(data?.user?.id)
     : { theme: 1 };
 
-  return <TopBarComponent theme={theme} id={data?.user.id} />;
+  return <TopBarComponent theme={theme?.theme} id={data?.user.id} />;
 }

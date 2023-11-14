@@ -31,7 +31,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const data = (await getServerSession(authOptions)) as any;
-  const { theme } = data?.user?.id
+  const theme = data?.user?.id
     ? await getUserTheme(data?.user?.id)
     : { theme: 1 };
 
@@ -39,7 +39,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="flex h-screen flex-col">
-          <ClientProvider theme={theme}>
+          <ClientProvider theme={theme?.theme}>
             <TopBar />
             <SlidingMenu />
             <SpeedComponent />

@@ -48,10 +48,13 @@ function WrapWrap() {
 
 export default function ClientProvider({
   children,
+  theme,
 }: {
   children: React.ReactNode;
+  theme: any;
 }): React.ReactNode {
-  const { setRoles, user, darkMode } = store();
+  const { setRoles } = store();
+
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/list`)
       .then((res) => res.json())
@@ -60,7 +63,7 @@ export default function ClientProvider({
 
   const mode = createTheme({
     palette: {
-      mode: darkMode ? "dark" : "light",
+      mode: theme ? "light" : "dark",
     },
   });
 

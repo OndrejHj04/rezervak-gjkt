@@ -1,9 +1,13 @@
 "use server";
 
-export const createGroup = async (_: any, formData: any) => {
-  const name = formData.get("name");
-  const description = formData.get("description");
-  const leader = formData.get("leader");
-
-  console.log(name, description, leader);
+export const setTheme = async (theme: any, id: any) => {
+  const req = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/users/theme`,
+    {
+      method: "POST",
+      body: JSON.stringify({ theme, id }),
+    }
+  );
+  const data = await req.json();
+  return data;
 };

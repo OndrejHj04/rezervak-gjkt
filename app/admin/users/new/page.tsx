@@ -1,6 +1,12 @@
-export default function CreateUserForm(){
+import NewUserForm from "./NewUserForm";
 
-    return(
-        <div>new user form</div>
-    )
+const getRoles = async () => {
+  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/list`);
+  const { data } = await req.json();
+  return data;
+};
+
+export default async function CreateUserForm() {
+  const roles = await getRoles();
+  return <NewUserForm roles={roles} />;
 }

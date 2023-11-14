@@ -30,7 +30,7 @@ import { Controller, set, useForm } from "react-hook-form";
 import { store } from "@/store/store";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import dayjs from "dayjs";
-import MakeRefetch from "../../list/refetch";
+import MakeGroupRefetch from "../../list/refetch";
 import { useRouter } from "next/navigation";
 import MakeGroupDetailRefetch from "./refetch";
 import AddUsersToGroupModal from "./AddUsersToGroupModal";
@@ -86,7 +86,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
       .then((res) => {
         if (res.success) toast.success("Skupina úspěšně odstraněna");
         else toast.error("Něco se nepovedlo");
-        MakeRefetch();
+        MakeGroupRefetch("/group/list");
       });
   };
 

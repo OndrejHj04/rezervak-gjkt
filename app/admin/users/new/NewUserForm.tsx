@@ -2,48 +2,86 @@
 import MakeUserListRefetch from "@/app/user/list/refetch";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Autocomplete, Paper, TextField, Typography } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function NewUserForm({ roles }: { roles: any }) {
-  const { register, setValue, handleSubmit } = useForm();
+  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    watch,
+    formState: { isValid, errors },
+    control,
+  } = useForm();
 
   const onSubmit = async (data: any) => {
+    setLoading(true);
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/new`, {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data, role: data.role.value }),
     })
       .then((res) => res.json())
       .then((res) => {
         toast.success("Uživatel úspěšně vytvořen");
         MakeUserListRefetch();
       })
-      .catch((e) => toast.error("Něco se nepovedlo"));
+      .catch((e) => {
+        setLoading(false);
+      });
   };
 
   return (
     <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2 flex justify-between gap-2">
         <Typography variant="h5">Vytvořit uživatele</Typography>
-        <LoadingButton type="submit" variant="contained">
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          loading={loading}
+          disabled={!isValid}
+        >
           Přidat uživatele
         </LoadingButton>
       </div>
       <Paper className="p-4 flex gap-2">
-        <TextField label="Jméno" {...register("first_name")} />
-        <TextField label="Příjmení" {...register("last_name")} />
-        <TextField label="Email" {...register("email")} />
-        <Autocomplete
-          sx={{ width: 223 }}
-          disablePortal
-          {...register("role")}
-          onChange={(e, value: any) => setValue("role", value?.value)}
-          id="combo-box-demo"
-          options={roles.map((role: any) => ({
-            label: role.role_name,
-            value: role.id,
-          }))}
-          renderInput={(params) => <TextField {...params} label="Role" />}
+        <TextField
+          label="Jméno"
+          {...register("first_name", { required: true })}
+        />
+        <TextField
+          label="Příjmení"
+          {...register("last_name", { required: true })}
+        />
+        <TextField
+          label="Email"
+          {...register("email", {
+            required: true,
+            pattern: {
+              value: /@/,
+              message: "Neplatný email",
+            },
+          })}
+        />
+        <Controller
+          control={control}
+          {...register("role", { required: true })}
+          render={({ field: { value, onChange } }) => (
+            <Autocomplete
+              sx={{ width: 223 }}
+              disablePortal
+              value={value}
+              onChange={(_, value) => onChange(value)}
+              id="combo-box-demo"
+              options={roles.map((role: any) => ({
+                label: role.role_name,
+                value: role.id,
+              }))}
+              renderInput={(params) => <TextField {...params} label="Role" />}
+            />
+          )}
         />
       </Paper>
     </form>

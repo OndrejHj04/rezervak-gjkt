@@ -71,7 +71,6 @@ export default function UsersImportForm({ roles }: { roles: any }) {
           toast.error(res.message);
         }
       })
-      .catch((e) => toast.error(e.message))
       .finally(() => {
         MakeUserListRefetch();
       });

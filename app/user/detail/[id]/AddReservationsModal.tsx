@@ -56,9 +56,10 @@ export default function AddReservationsModal({
       }),
     })
       .then((req) => req.json())
-      .then((data) => toast.success("Rezervace úspěšně přidány"))
-      .catch((err) => toast.error("Něco se nepovedlo"))
-      .finally(() => {
+      .then((res) => {
+        if (res.success) toast.success("Rezervace úspěšně přidány");
+        else toast.error("Něco se nepovedlo");
+
         MakeUserDetailRefetch(userId);
         setModal(false);
       });

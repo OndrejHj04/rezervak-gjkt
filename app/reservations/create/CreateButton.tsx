@@ -30,13 +30,12 @@ export default function CreateButton() {
       body: JSON.stringify(createReservation),
     })
       .then((res) => res.json())
-      .then((data) => {
-        toast.success("Rezervace úspěšně vytvořena");
-        ReservationListMakeRefetch("/reservations/list");
-        setDefault();
-      })
-      .catch(() => {
-        toast.error("Něco se nepovedlo");
+      .then((res) => {
+        if (res.success) {
+          toast.success("Rezervace úspěšně vytvořena");
+          ReservationListMakeRefetch("/reservations/list");
+          setDefault();
+        } else toast.error("Něco se nepovedlo");
       });
   };
 

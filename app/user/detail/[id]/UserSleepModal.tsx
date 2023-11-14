@@ -27,17 +27,15 @@ export default function UserSleepModal({
       method: "POST",
     })
       .then((res) => res.json())
-      .then(({ data }) => {
-        toast.success(
-          `Uživatel ${data?.first_name} ${data?.last_name} byl uspán`
-        );
-      })
-      .catch((e) => {
-        toast.error(`Něco se nepovedlo`);
-      })
-      .finally(() => {
+      .then((res) => {
+        if (res.success) {
+          toast.success(
+            `Uživatel ${res.data?.first_name} ${res.data?.last_name} byl uspán`
+          );
+        } else toast.error(`Něco se nepovedlo`);
+
         setModal(false);
-        MakeUserListRefetch()
+        MakeUserListRefetch();
       });
   };
   return (

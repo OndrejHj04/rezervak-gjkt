@@ -12,15 +12,15 @@ export default function TrashBin() {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/delete`, {
       method: "POST",
       body: JSON.stringify({ reservations: selectedReservations }),
-    })      .then((res) => res.json())
-    .then((data) => {
-      toast.success("Skupiny byly úspěšně odstraněny");
     })
-    .catch((err) => toast.error("Něco se pokazilo"))
-    .finally(() => {
-      ReservationListMakeRefetch("/reservations/list");
-      setSelectedReservations([]);
-    });
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) toast.success("Skupiny byly úspěšně odstraněny");
+        else toast.error("Něco se pokazilo");
+
+        ReservationListMakeRefetch("/reservations/list");
+        setSelectedReservations([]);
+      });
   };
 
   return (

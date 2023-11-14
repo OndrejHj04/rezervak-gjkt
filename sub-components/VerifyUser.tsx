@@ -66,10 +66,6 @@ export default function VerifyUser({ id }: { id?: number }) {
           methods.setError("password", { message: "Nesprávné heslo" });
         }
         setLoading(false);
-      })
-      .catch((err) => {
-        toast.error("Něco se nepovedlo");
-        setLoading(false);
       });
   };
 

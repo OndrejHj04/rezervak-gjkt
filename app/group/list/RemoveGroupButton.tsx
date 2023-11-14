@@ -14,11 +14,9 @@ export default function RemoveGroups() {
       body: JSON.stringify({ groups: selectedGroups }),
     })
       .then((res) => res.json())
-      .then((data) => {
-        toast.success("Skupiny byly úspěšně odstraněny");
-      })
-      .catch((err) => toast.error("Něco se pokazilo"))
-      .finally(() => {
+      .then((res) => {
+        if (res.success) toast.success("Skupiny byly úspěšně odstraněny");
+        else toast.error("Něco se pokazilo");
         MakeRefetch();
         setSelectedGroups([]);
       });

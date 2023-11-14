@@ -66,10 +66,13 @@ export default function GroupDetailForm({ group }: { group: Group }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        toast.success("Skupina upravena");
-        reset();
-      })
-      .catch((e) => toast.error("Něco se nepovedlo"));
+        if (res.success) {
+          toast.success("Skupina upravena");
+          reset();
+        } else {
+          toast.error("Něco se nepovedlo");
+        }
+      });
   };
 
   const handleRemoveGroup = () => {
@@ -81,10 +84,8 @@ export default function GroupDetailForm({ group }: { group: Group }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        toast.success("Skupina úspěšně odstraněna");
-      })
-      .catch((e) => toast.error("Něco se nepovedlo"))
-      .finally(() => {
+        if (res.success) toast.success("Skupina úspěšně odstraněna");
+        else toast.error("Něco se nepovedlo");
         MakeRefetch();
       });
   };
@@ -100,10 +101,8 @@ export default function GroupDetailForm({ group }: { group: Group }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        toast.success("Uživatelé odebráni");
-      })
-      .catch((e) => toast.error("Něco se nepovedlo"))
-      .finally(() => {
+        if (res.success) toast.success("Uživatelé odebráni");
+        else toast.error("Něco se nepovedlo");
         MakeGroupDetailRefetch(group.id);
         setChecked([]);
       });
@@ -138,10 +137,8 @@ export default function GroupDetailForm({ group }: { group: Group }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        toast.success("Rezervace odstraněny");
-      })
-      .catch((e) => toast.error("Něco se nepovedlo"))
-      .finally(() => {
+        if (res.success) toast.success("Rezervace odstraněny");
+        else toast.error("Něco se nepovedlo");
         MakeGroupDetailRefetch(group.id);
         setSelectReservation([]);
       });

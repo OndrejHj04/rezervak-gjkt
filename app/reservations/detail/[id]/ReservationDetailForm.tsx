@@ -76,9 +76,9 @@ export default function ReservationDetailForm({
       }
     )
       .then((res) => res.json())
-      .then((data) => toast.success("Rezervace byla upravena"))
-      .catch((e) => toast.error("Něco se nepovedlo"))
-      .finally(() => {
+      .then((res) => {
+        if (res.success) toast.success("Rezervace byla upravena");
+        else toast.error("Něco se nepovedlo");
         MakeReservationDetailRefetch(reservation.id);
         reset();
       });
@@ -119,9 +119,10 @@ export default function ReservationDetailForm({
       }),
     })
       .then((res) => res.json())
-      .then((data) => toast.success("Uživatelé byli odebráni z rezervace"))
-      .catch((e) => toast.error("Něco se nepovedlo"))
-      .finally(() => {
+      .then((res) => {
+        if (res.success) toast.success("Uživatelé byli odebráni z rezervace");
+        else toast.error("Něco se nepovedlo");
+
         MakeReservationDetailRefetch(reservation.id);
         setSelecetedUsers([]);
       });
@@ -137,9 +138,9 @@ export default function ReservationDetailForm({
       }),
     })
       .then((res) => res.json())
-      .then((data) => toast.success("Skupiny byly odebrány z rezervace"))
-      .catch((e) => toast.error("Něco se nepovedlo"))
-      .finally(() => {
+      .then((res) => {
+        if (res.success) toast.success("Skupiny byly odebrány z rezervace");
+        else toast.error("Něco se nepovedlo");
         MakeReservationDetailRefetch(reservation.id);
         setSelectedGroups([]);
       });
@@ -151,12 +152,11 @@ export default function ReservationDetailForm({
       body: JSON.stringify({ reservations: [reservation.id] }),
     })
       .then((res) => res.json())
-      .then((data) => {
-        ReservationListMakeRefetch("/reservations/list");
-        toast.success("Rezervace byla odstraněna");
-      })
-      .catch(() => {
-        toast.error("Něco se nepovedlo");
+      .then((res) => {
+        if (res.success) {
+          ReservationListMakeRefetch("/reservations/list");
+          toast.success("Rezervace byla odstraněna");
+        } else toast.error("Něco se nepovedlo");
       });
   };
 
@@ -171,9 +171,9 @@ export default function ReservationDetailForm({
       }
     )
       .then((res) => res.json())
-      .then((data) => toast.success("Statusr rezervace byl změněn"))
-      .catch((e) => toast.error("Něco se nepovedlo"))
-      .finally(() => {
+      .then((res) => {
+        if (res.success) toast.success("Status rezervace byl změněn");
+        else toast.error("Něco se nepovedlo");
         MakeReservationDetailRefetch(reservation.id);
         reset();
       });

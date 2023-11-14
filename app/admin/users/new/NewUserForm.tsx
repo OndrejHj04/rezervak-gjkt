@@ -25,11 +25,10 @@ export default function NewUserForm({ roles }: { roles: any }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        toast.success("Uživatel úspěšně vytvořen");
-        MakeUserListRefetch();
-      })
-      .catch((e) => {
-        setLoading(false);
+        if (res.success) {
+          toast.success("Uživatel úspěšně vytvořen");
+          MakeUserListRefetch();
+        } else setLoading(false);
       });
   };
 

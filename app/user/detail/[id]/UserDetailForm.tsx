@@ -77,11 +77,10 @@ export default function UserDetailForm({
     )
       .then((res) => res.json())
       .then((res) => {
-        toast.success("Uživatel byl upraven.");
-        MakeUserDetailRefetch(userDetail.id);
-      })
-      .catch((err) => toast.error("Něco se pokazilo."))
-      .finally(() => {
+        if (res.success) {
+          toast.success("Uživatel byl upraven.");
+          MakeUserDetailRefetch(userDetail.id);
+        } else toast.error("Něco se pokazilo.");
         setValue("birth_date", data.birth_date);
       });
   };
@@ -104,9 +103,10 @@ export default function UserDetailForm({
       }),
     })
       .then((req) => req.json())
-      .then((data) => toast.success("Skupiny úspěšně odebrány"))
-      .catch((err) => toast.error("Něco se nepovedlo"))
-      .finally(() => {
+      .then((res) => {
+        if (res.success) toast.success("Skupiny úspěšně odebrány");
+        else toast.error("Něco se nepovedlo");
+
         setSelectGroups([]);
         MakeUserDetailRefetch(userDetail.id);
       });
@@ -134,9 +134,10 @@ export default function UserDetailForm({
       }),
     })
       .then((req) => req.json())
-      .then((data) => toast.success("Rezervace úspěšně odebrány"))
-      .catch((err) => toast.error("Něco se nepovedlo"))
-      .finally(() => {
+      .then((res) => {
+        if (res.success) toast.success("Rezervace úspěšně odebrány");
+        else toast.error("Něco se nepovedlo");
+
         setSelectReservation([]);
         MakeUserDetailRefetch(userDetail.id);
       });

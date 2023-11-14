@@ -21,8 +21,7 @@ export default function ReservationsExport({
       .then((blob) => {
         handleExport(blob, "reservations");
         toast.success("Rezervace byly exportovány");
-      })
-      .catch((e) => toast.error("Něco se nepovedlo"));
+      });
   };
 
   return (

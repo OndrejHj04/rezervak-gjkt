@@ -35,14 +35,15 @@ export default function GroupNewForm({
       body: JSON.stringify({ ...formData, owner: formData.owner.id }),
     })
       .then((res) => res.json())
-      .then(({ data }) => {
-        toast.success(`Skupina ${data.name} byla vytvořena`);
-        MakeGroupDetailRefetch(data.newGroupId);
+      .then((res) => {
+        if(res.success) {
+          toast.success(`Skupina ${res.data.name} byla vytvořena`);
+          MakeGroupDetailRefetch(res.data.newGroupId);
+        }else{
+          toast.error("Něco se pokazilo");
+          setLoading(false);
+        }
       })
-      .catch((e) => {
-        toast.error("Něco se pokazilo");
-        setLoading(false);
-      });
   };
 
   useEffect(() => {

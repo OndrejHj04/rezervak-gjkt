@@ -18,6 +18,7 @@ import HomepageLoading from "@/app/HomepageLoading";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
+
 const DisplayGroups = dynamic(
   () => import("@/app/homepage/reservations/DisplayReservations")
 );

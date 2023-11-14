@@ -20,11 +20,6 @@ export default function RemoveUser() {
         } else {
           toast.error("Něco se pokazilo");
         }
-      })
-      .catch((e) => {
-        toast.error("Něco se pokazilo");
-      })
-      .finally(() => {
         setSelectedUsers([]);
         MakeUserListRefetch();
       });

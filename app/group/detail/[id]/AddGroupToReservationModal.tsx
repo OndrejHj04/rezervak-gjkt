@@ -57,8 +57,10 @@ export default function AddGroupToReservationModal({
       }),
     })
       .then((req) => req.json())
-      .then((data) => toast.success("Skupiny úspěšně přidány"))
-      .catch((err) => toast.error("Něco se nepovedlo"))
+      .then((res) => {
+        if (res.success) toast.success("Skupiny úspěšně přidány");
+        else toast.error("Něco se nepovedlo");
+      })
       .finally(() => {
         MakeGroupDetailRefetch(groupId);
         setModal(false);

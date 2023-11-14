@@ -20,6 +20,7 @@ import { store } from "@/store/store";
 import RemoveGroups from "./RemoveGroupButton";
 import { GroupTablePagination } from "./GroupTablePagination";
 import SearchBar from "./SearchBar";
+import ExportGroups from "./ExportGroups";
 
 const getGroups = async (page: any) => {
   try {
@@ -46,7 +47,7 @@ export default async function Page({ searchParams }: { searchParams: any }) {
       <div className="flex justify-between">
         <RemoveGroups />
         <SearchBar />
-        <div></div>
+        <ExportGroups />
       </div>
       <Paper className="w-full p-2">
         <Table>

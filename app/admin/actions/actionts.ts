@@ -1,4 +1,6 @@
 "use server";
+import Papa from "papaparse";
+import { query } from "@/lib/db";
 
 export const setTheme = async (theme: any, id: any) => {
   const req = await fetch(
@@ -10,4 +12,22 @@ export const setTheme = async (theme: any, id: any) => {
   );
   const data = await req.json();
   return data;
+};
+
+export const reservationsExport = async (status: any) => {
+  const reservations = (await query({
+    query: `SELECT * FROM reservations ${status ? "WHERE status = ?" : ""}`,
+    values: [status],
+  })) as any;
+
+  return reservations;
+};
+
+export const groupsExport = async (status: any) => {
+  const groups = (await query({
+    query: `SELECT * FROM ${"`groups`"} ${status ? "WHERE status = ?" : ""}`,
+    values: [status],
+  })) as any;
+
+  return groups;
 };

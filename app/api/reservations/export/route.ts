@@ -12,7 +12,7 @@ export async function GET(req: Request) {
       values: [status],
     })) as any;
     const blob = new Blob([Papa.unparse(reservations)], { type: "text/csv" });
-    return new Response(blob);
+    return NextResponse.json({ blob });
   } catch (e) {
     return NextResponse.json(
       {

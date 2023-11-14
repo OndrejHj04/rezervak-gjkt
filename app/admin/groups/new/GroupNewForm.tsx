@@ -7,7 +7,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { createGroup } from "../../actions/actionts";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { store } from "@/store/store";
 import { Controller, useForm } from "react-hook-form";
@@ -36,14 +35,14 @@ export default function GroupNewForm({
     })
       .then((res) => res.json())
       .then((res) => {
-        if(res.success) {
+        if (res.success) {
           toast.success(`Skupina ${res.data.name} byla vytvořena`);
           MakeGroupDetailRefetch(res.data.newGroupId);
-        }else{
+        } else {
           toast.error("Něco se pokazilo");
           setLoading(false);
         }
-      })
+      });
   };
 
   useEffect(() => {

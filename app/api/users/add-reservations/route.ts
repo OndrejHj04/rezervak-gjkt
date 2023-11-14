@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       values: [],
     })) as any;
     reservations.forEach((reservation: any) => {
-        reservation.users = JSON.parse(reservation.users);
+      reservation.users = JSON.parse(reservation.users);
     });
 
     reservations.map(async (reservation: any) => {
@@ -39,9 +39,12 @@ export async function POST(req: Request) {
       data: [],
     });
   } catch (e) {
-    return NextResponse.json({
-      success: false,
-      message: "Something went wrong",
-    });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Something went wrong",
+      },
+      { status: 500 }
+    );
   }
 }

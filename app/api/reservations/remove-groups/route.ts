@@ -42,9 +42,12 @@ export async function POST(req: Request) {
       data: groups,
     });
   } catch (e) {
-    return NextResponse.json({
-      success: false,
-      message: "Something went wrong",
-    });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Something went wrong",
+      },
+      { status: 500 }
+    );
   }
 }

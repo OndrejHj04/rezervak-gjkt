@@ -21,9 +21,12 @@ export async function GET(req: Request) {
       isMember: groupMembers,
     });
   } catch (e) {
-    return NextResponse.json({
-      success: false,
-      message: "Something went wrong",
-    });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Something went wrong",
+      },
+      { status: 500 }
+    );
   }
 }

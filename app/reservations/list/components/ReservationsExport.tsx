@@ -2,7 +2,7 @@
 import { Button } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 
-import handleExport from "@/app/utils/export/handleExport";
+import handleExport from "@/lib/handleExport";
 import { toast } from "react-toastify";
 
 export default function ReservationsExport({

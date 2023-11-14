@@ -1,6 +1,4 @@
 import { query } from "@/lib/db";
-import { verifyForm } from "@/sub-components/VerifyUser";
-import { verifyAccount } from "@/templates/store/verifyAccount";
 import { User } from "next-auth";
 import { NextResponse } from "next/server";
 

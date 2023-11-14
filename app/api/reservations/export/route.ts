@@ -14,9 +14,12 @@ export async function GET(req: Request) {
     const blob = new Blob([Papa.unparse(reservations)], { type: "text/csv" });
     return new Response(blob);
   } catch (e) {
-    return NextResponse.json({
-      success: false,
-      message: "Something went wrong",
-    });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Something went wrong",
+      },
+      { status: 500 }
+    );
   }
 }

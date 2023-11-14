@@ -31,9 +31,12 @@ export async function GET(
       data: groupsDetail,
     });
   } catch (e) {
-    return NextResponse.json({
-      success: false,
-      message: "Something went wrong",
-    });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Something went wrong",
+      },
+      { status: 500 }
+    );
   }
 }

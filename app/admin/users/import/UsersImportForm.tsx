@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import Papa from "papaparse";
-import handleExport from "@/app/utils/export/handleExport";
+import handleExport from "@/lib/handleExport";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { object } from "yup";

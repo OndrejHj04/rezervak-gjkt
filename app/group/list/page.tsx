@@ -19,6 +19,7 @@ import { group } from "console";
 import { store } from "@/store/store";
 import RemoveGroups from "./RemoveGroupButton";
 import { GroupTablePagination } from "./GroupTablePagination";
+import SearchBar from "./SearchBar";
 
 const getGroups = async (page: any) => {
   try {
@@ -35,12 +36,18 @@ const getGroups = async (page: any) => {
 
 export default async function Page({ searchParams }: { searchParams: any }) {
   const page = searchParams["page"] || 1;
+  const search = searchParams["search"] || 1;
+
   const groups = (await getGroups(page)) as any;
-  console.log(groups);
+
   if (!groups) return <div>loading...</div>;
   return (
     <div className="flex flex-col w-full gap-2">
-      <RemoveGroups />
+      <div className="flex justify-between">
+        <RemoveGroups />
+        <SearchBar />
+        <div></div>
+      </div>
       <Paper className="w-full p-2">
         <Table>
           <TableHead>

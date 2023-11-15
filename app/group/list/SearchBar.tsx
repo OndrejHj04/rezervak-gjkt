@@ -1,31 +1,34 @@
 "use client";
-import { InputAdornment, TextField } from "@mui/material";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import MakeGroupRefetch from "./refetch";
+import { useState } from "react";
 
 export default function SearchBar() {
+  const [text, setText] = useState("");
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { replace } = useRouter();
-  const search = searchParams.get("search") || "";
 
   const makeSearch = (e: any) => {
     const params = new URLSearchParams(searchParams);
-    params.set("search", e.target.value);
+    params.set("search", text);
     replace(`${pathname}?${params.toString()}`);
   };
 
   return (
     <TextField
-      variant="outlined"    
+      variant="outlined"
       label="Hledat skupiny"
-      value={search}
-      onChange={makeSearch}
+      value={text}
+      onChange={(e) => setText(e.target.value)}
       InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon />
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton disabled={!text.length} onClick={makeSearch}>
+              <SearchIcon />
+            </IconButton>
           </InputAdornment>
         ),
       }}

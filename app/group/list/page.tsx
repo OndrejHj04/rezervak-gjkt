@@ -22,10 +22,10 @@ import { GroupTablePagination } from "./GroupTablePagination";
 import SearchBar from "./SearchBar";
 import ExportGroups from "./ExportGroups";
 
-const getGroups = async (page: any) => {
+const getGroups = async (page: any, search: any) => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/group/list?page=${page}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/group/list?page=${page}&search=${search}`,
       { cache: "no-cache" }
     );
     const data = await req.json();
@@ -37,9 +37,9 @@ const getGroups = async (page: any) => {
 
 export default async function Page({ searchParams }: { searchParams: any }) {
   const page = searchParams["page"] || 1;
-  const search = searchParams["search"] || 1;
+  const search = searchParams["search"] || "";
 
-  const groups = (await getGroups(page)) as any;
+  const groups = (await getGroups(page, search)) as any;
 
   if (!groups) return <div>loading...</div>;
   return (

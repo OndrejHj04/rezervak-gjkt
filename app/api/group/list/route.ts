@@ -18,17 +18,15 @@ export async function GET(req: Request) {
     console.log("2");
 
     let sql = `SELECT * FROM ${"`groups`"}`;
-    let values = [];
+    const values: any = [];
 
     if (search) {
-      sql += ` WHERE name LIKE ?`;
-      values.push(`%${search}%`);
+      sql += ` WHERE name LIKE ${`%${search}%`}`;
     }
     console.log("3");
 
     if (page) {
-      sql += ` LIMIT 10 OFFSET ?`;
-      values.push(page * 10 - 10);
+      sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
     }
     console.log("4", sql, values);
 

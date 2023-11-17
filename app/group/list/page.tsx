@@ -25,7 +25,9 @@ import ExportGroups from "./ExportGroups";
 const getGroups = async (page: any, search: any) => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/group/list?page=${page}&search=${search}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/group/list?page=${page}${
+        search ? `&search=${search}` : ""
+      }`,
       { cache: "no-cache" }
     );
     const data = await req.json();
@@ -40,7 +42,7 @@ export default async function Page({ searchParams }: { searchParams: any }) {
   const search = searchParams["search"] || "";
 
   const groups = (await getGroups(page, search)) as any;
-  console.log(groups)
+
   if (!groups) return <div>loading...</div>;
   return (
     <div className="flex flex-col w-full gap-2">

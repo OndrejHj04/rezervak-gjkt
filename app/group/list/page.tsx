@@ -70,7 +70,7 @@ export default async function Page({ searchParams }: { searchParams: any }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {groups.data.map((group: any) => (
+            {groups?.data?.map((group: any) => (
               <GroupListItem group={group} key={group.id} />
             ))}
           </TableBody>

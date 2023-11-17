@@ -8,14 +8,13 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const page = Number(url.searchParams.get("page"));
     const search = url.searchParams.get("search");
-    console.log("1");
+
     const count = (await query({
       query: `SELECT COUNT(*) FROM ${"`groups`"} ${
         search ? `WHERE name LIKE "%${search}%"` : ""
       }`,
       values: [],
     })) as any;
-    console.log("2");
 
     let sql = `SELECT * FROM ${"`groups`"}`;
     const values: any = [];
@@ -23,18 +22,15 @@ export async function GET(req: Request) {
     if (search) {
       sql += ` WHERE name LIKE ${`%${search}%`}`;
     }
-    console.log("3");
 
     if (page) {
       sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
     }
-    console.log("4", sql, values);
 
     const data = (await query({
       query: sql,
       values: values,
     })) as Group[];
-    console.log("5");
 
     const users = (await query({
       query: `
@@ -42,7 +38,6 @@ export async function GET(req: Request) {
     `,
       values: [],
     })) as GroupOwner[];
-    console.log("6", data);
 
     data.map((item) => {
       item.owner = users.find(

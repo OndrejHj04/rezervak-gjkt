@@ -33,7 +33,7 @@ export async function GET(req: Request) {
       query: sql,
       values: values,
     })) as Group[];
-
+    console.log(sql, values);
     const users = (await query({
       query: `
       SELECT id, image, first_name, last_name, email FROM users
@@ -42,7 +42,6 @@ export async function GET(req: Request) {
     })) as GroupOwner[];
 
     data.map((item) => {
-      console.log(item)
       item.owner = users.find(
         (user) => user.id === (item.owner as unknown as number)
       ) as unknown as GroupOwner;

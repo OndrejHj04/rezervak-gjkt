@@ -8,7 +8,11 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const page = Number(url.searchParams.get("page"));
     const search = url.searchParams.get("search");
-
+    console.log(
+      `SELECT COUNT(*) FROM ${"`groups`"} ${
+        search ? `WHERE name LIKE "%${search}%"` : ""
+      }`
+    );
     const count = (await query({
       query: `SELECT COUNT(*) FROM ${"`groups`"} ${
         search ? `WHERE name LIKE "%${search}%"` : ""
@@ -28,7 +32,7 @@ export async function GET(req: Request) {
       sql += ` LIMIT 10 OFFSET ?`;
       values.push(page * 10 - 10);
     }
-
+    console.log(sql)
     const data = (await query({
       query: sql,
       values: values,

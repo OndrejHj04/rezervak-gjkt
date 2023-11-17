@@ -28,12 +28,12 @@ export async function GET(req: Request) {
       sql += ` LIMIT 10 OFFSET ?`;
       values.push(page * 10 - 10);
     }
-
+    console.log(sql, values);
     const data = (await query({
       query: sql,
       values: values,
     })) as Group[];
-    console.log(sql, values);
+
     const users = (await query({
       query: `
       SELECT id, image, first_name, last_name, email FROM users

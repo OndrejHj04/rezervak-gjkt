@@ -30,7 +30,7 @@ export async function GET(req: Request) {
       sql += ` LIMIT 10 OFFSET ?`;
       values.push(page * 10 - 10);
     }
-    console.log("4");
+    console.log("4", sql, values);
 
     const data = (await query({
       query: sql,

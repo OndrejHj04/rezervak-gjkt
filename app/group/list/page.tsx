@@ -40,7 +40,7 @@ export default async function Page({ searchParams }: { searchParams: any }) {
   const search = searchParams["search"] || "";
 
   const groups = (await getGroups(page, search)) as any;
-
+  console.log(groups)
   if (!groups) return <div>loading...</div>;
   return (
     <div className="flex flex-col w-full gap-2">

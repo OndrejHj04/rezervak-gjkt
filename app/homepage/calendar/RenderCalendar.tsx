@@ -1,6 +1,6 @@
 "use client";
 import { Reservation } from "@/types";
-import { Badge, Box, Paper, Tooltip } from "@mui/material";
+import { Badge, Box, Tooltip } from "@mui/material";
 import {
   DateCalendar,
   LocalizationProvider,

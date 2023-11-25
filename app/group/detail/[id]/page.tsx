@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import GroupDetailDisplay from "./GroupDetailDisplay";
 import GroupDetailForm from "./GroupDetailForm";
 import GroupDetailNavigation from "./GroupDetailNavigation";

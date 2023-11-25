@@ -2,15 +2,12 @@
 import {
   Autocomplete,
   Box,
-  Button,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
-import { store } from "@/store/store";
 import { Controller, useForm } from "react-hook-form";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { toast } from "react-toastify";

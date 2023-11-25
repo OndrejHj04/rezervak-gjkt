@@ -1,4 +1,3 @@
-import { Typography } from "@mui/material";
 import ReservationDetailForm from "./ReservationDetailForm";
 import { Reservation, ReservationStatus } from "@/types";
 

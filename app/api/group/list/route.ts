@@ -1,6 +1,5 @@
 import { query } from "@/lib/db";
-import { Group, GroupOwner } from "@/types";
-import { User } from "next-auth";
+import { GroupOwner } from "@/types";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {

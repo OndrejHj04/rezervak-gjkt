@@ -18,7 +18,6 @@ import { User } from "next-auth";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { useSession } from "next-auth/react";
 import { store } from "@/store/store";
-import ScrollBar from "react-perfect-scrollbar";
 
 export default function ReservationDetailRender({ users }: { users: User[] }) {
   const { data } = useSession();

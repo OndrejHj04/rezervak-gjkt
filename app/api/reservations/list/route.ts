@@ -1,5 +1,4 @@
 import { query } from "@/lib/db";
-import { Reservation } from "@/types";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {

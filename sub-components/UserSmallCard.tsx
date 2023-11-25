@@ -3,7 +3,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Avatar,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   Chip,

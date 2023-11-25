@@ -2,10 +2,6 @@ import { query } from "@/lib/db";
 import { User as NextAuthUser } from "next-auth";
 import { NextResponse } from "next/server";
 
-interface User extends NextAuthUser {
-  full_name: string;
-}
-
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);

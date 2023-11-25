@@ -1,5 +1,4 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { store } from "@/store/store";
 import { getServerSession } from "next-auth";
 import TopBarComponent from "./TopBarComponent";
 

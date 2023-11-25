@@ -1,23 +1,5 @@
-import { store } from "@/store/store";
-import SleepingUserInfo from "@/sub-components/SleepingUserInfo";
-import VerifyUser from "@/sub-components/VerifyUser";
-import WelcomeComponent from "@/sub-components/WelcomeComponent";
-import {
-  Box,
-  Button,
-  MenuItem,
-  MenuList,
-  Paper,
-  Skeleton,
-  Typography,
-} from "@mui/material";
-import { useEffect, useState } from "react";
-import { Group } from "@/types";
-import { useRouter } from "next/navigation";
 import HomepageLoading from "@/app/HomepageLoading";
 import dynamic from "next/dynamic";
-import Link from "next/link";
-
 
 const DisplayGroups = dynamic(
   () => import("@/app/homepage/reservations/DisplayReservations")

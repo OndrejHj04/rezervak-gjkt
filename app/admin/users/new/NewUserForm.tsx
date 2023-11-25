@@ -10,10 +10,8 @@ export default function NewUserForm({ roles }: { roles: any }) {
   const [loading, setLoading] = useState(false);
   const {
     register,
-    setValue,
     handleSubmit,
-    watch,
-    formState: { isValid, errors },
+    formState: { isValid },
     control,
   } = useForm();
 

@@ -2,7 +2,6 @@
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Box,
-  Button,
   Checkbox,
   Chip,
   TableCell,

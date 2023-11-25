@@ -1,5 +1,4 @@
 import { query } from "@/lib/db";
-import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function DELETE(req: Request) {
@@ -9,7 +8,7 @@ export async function DELETE(req: Request) {
     const data = (await query({
       query: `DELETE FROM users WHERE id IN (${users.join(",")})`,
       values: [],
-    })) as User[] | any;
+    })) as any
 
     if (data.affectedRows === 0) throw new Error("No user found");
 

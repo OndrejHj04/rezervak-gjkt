@@ -1,8 +1,5 @@
-import { MenuItem, MenuList, Paper, Typography } from "@mui/material";
-import { Group, Reservation } from "@/types";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { store } from "@/store/store";
+import { MenuList, Paper, Typography } from "@mui/material";
+import { Reservation } from "@/types";
 import { User, getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import SingleReservation from "./SingleReservation";

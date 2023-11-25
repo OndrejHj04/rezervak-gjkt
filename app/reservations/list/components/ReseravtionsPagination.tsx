@@ -1,12 +1,8 @@
 "use client";
 
-import { Reservation } from "@/types";
 import { TablePagination } from "@mui/material";
-import { revalidatePath } from "next/cache";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
 import ReservationListMakeRefetch from "../refetch";
-import { useState } from "react";
 import { store } from "@/store/store";
 
 export default function ReservationsPagination({ count }: { count: number }) {

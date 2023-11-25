@@ -1,22 +1,13 @@
-import { Group } from "@/types";
 import {
-  Button,
   Chip,
-  CircularProgress,
   Paper,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow,
-  Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import GroupListItem from "./GroupListItem";
-import { toast } from "react-toastify";
-import { group } from "console";
-import { store } from "@/store/store";
 import RemoveGroups from "./RemoveGroupButton";
 import { GroupTablePagination } from "./GroupTablePagination";
 import SearchBar from "./SearchBar";

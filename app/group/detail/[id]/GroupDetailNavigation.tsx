@@ -1,6 +1,5 @@
-import { Button, Tab, Tabs } from "@mui/material";
+import { Tab, Tabs } from "@mui/material";
 import Link from "next/link";
-import { useState } from "react";
 
 export default function GroupDetailNavigation({
   id,

@@ -1,14 +1,10 @@
 "use client";
-import { Group, GroupOwner } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
-  Autocomplete,
   Avatar,
-  Box,
   Button,
   Checkbox,
   Chip,
-  CircularProgress,
   Divider,
   Icon,
   IconButton,
@@ -19,17 +15,13 @@ import {
   ListItemText,
   Modal,
   Paper,
-  Tab,
-  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { User } from "next-auth";
+import { useState } from "react";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { toast } from "react-toastify";
-import { Controller, set, useForm } from "react-hook-form";
-import { store } from "@/store/store";
+import { useForm } from "react-hook-form";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import dayjs from "dayjs";
 import MakeGroupRefetch from "../../list/refetch";

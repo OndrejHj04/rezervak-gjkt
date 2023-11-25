@@ -1,6 +1,5 @@
 "use client";
-import { Icon, Skeleton } from "@mui/material";
-import { useSession } from "next-auth/react";
+import { Skeleton } from "@mui/material";
 import Link from "next/link";
 import AvatarWrapper from "../../../ui-components/AvatarWrapper";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -15,7 +14,6 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { store } from "@/store/store";
 import { setTheme } from "@/app/admin/actions/actionts";
-import { revalidatePath } from "next/cache";
 
 const handleSetTheme = (theme: any, id: any) => {
   setTheme(theme, id).then(() => window.location.reload());

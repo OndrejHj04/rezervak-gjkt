@@ -1,7 +1,6 @@
 "use client";
 import { Group } from "@/types";
-import AvatarWrapper from "@/ui-components/AvatarWrapper";
-import { Avatar, Card, CardHeader, MenuItem, Typography } from "@mui/material";
+import { Avatar, CardHeader, MenuItem } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 export default function SingleGroup({ group }: { group: Group }) {

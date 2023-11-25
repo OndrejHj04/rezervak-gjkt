@@ -1,21 +1,15 @@
 "use client";
 import { store } from "@/store/store";
-import { Reservation, ReservationStatus } from "@/types";
+import { Reservation } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
-  Avatar,
-  Card,
-  CardHeader,
   Checkbox,
   Chip,
   IconButton,
-  Skeleton,
-  Table,
   TableCell,
   TableRow,
   Tooltip,
   Typography,
-  createTheme,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";

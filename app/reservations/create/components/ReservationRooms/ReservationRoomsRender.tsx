@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { store } from "@/store/store";
 
 export default function ReservationRoomsRender() {

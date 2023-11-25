@@ -2,9 +2,6 @@ import { Group } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Button,
-  Checkbox,
-  IconButton,
-  Table,
   TableCell,
   TableRow,
 } from "@mui/material";

@@ -1,20 +1,5 @@
 import { Group } from "@/types";
-import AvatarWrapper from "@/ui-components/AvatarWrapper";
-import {
-  Autocomplete,
-  Box,
-  Checkbox,
-  Divider,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Modal,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Divider, Modal, Paper, Typography } from "@mui/material";
 import { User as NextAuthUser } from "next-auth";
 import { useEffect, useState } from "react";
 

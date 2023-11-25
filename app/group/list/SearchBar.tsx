@@ -3,7 +3,6 @@ import { IconButton, InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import MakeGroupRefetch from "./refetch";
 import { useState } from "react";
 
 export default function SearchBar() {

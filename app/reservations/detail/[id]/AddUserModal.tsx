@@ -2,7 +2,6 @@ import {
   Autocomplete,
   Box,
   Button,
-  Modal,
   Paper,
   TextField,
   Typography,

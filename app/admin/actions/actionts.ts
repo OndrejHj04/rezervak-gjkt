@@ -1,5 +1,4 @@
 "use server";
-import Papa from "papaparse";
 import { query } from "@/lib/db";
 
 export const setTheme = async (theme: any, id: any) => {

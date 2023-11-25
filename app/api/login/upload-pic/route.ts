@@ -1,5 +1,4 @@
 import { query } from "@/lib/db";
-import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

@@ -1,15 +1,12 @@
 import {
   Autocomplete,
-  Box,
   Button,
-  Modal,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { toast } from "react-toastify";
 import { Controller, useForm } from "react-hook-form";
 import MakeRefetch from "./refetch";

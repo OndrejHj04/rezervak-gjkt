@@ -7,7 +7,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 const getGroups = async (id: number) => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/group/user-list?user_id=${id}`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/group/list?user_id=${id}`
     );
     const { data } = await req.json();
 

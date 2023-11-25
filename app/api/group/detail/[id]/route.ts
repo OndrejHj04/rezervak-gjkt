@@ -33,9 +33,9 @@ export async function GET(
       values: [],
     }),
   ])) as any;
-  data[0].owner = owner;
-  data[0].users = users;
-  data[0].reservations = reservations;
+  data[0].owner = owner[0];
+  data[0].users = users[0];
+  data[0].reservations = reservations[0];
 
   try {
     return NextResponse.json({

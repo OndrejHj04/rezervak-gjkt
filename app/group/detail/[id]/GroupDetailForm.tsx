@@ -46,16 +46,7 @@ interface selecteUser {
   last_name: string;
 }
 
-export default function GroupDetailForm({ id }: { id: any }) {
-  const [group, setGroup] = useState<null | Group>();
-
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`, {
-      cache: "no-cache",
-    })
-      .then((res) => res.json())
-      .then((res) => setGroup(res.data));
-  }, []);
+export default function GroupDetailForm({ group }: { group: any }) {
   const { push } = useRouter();
   const [checked, setChecked] = useState<number[]>([]);
   const [usersModal, setUsersModal] = useState(false);
@@ -69,7 +60,7 @@ export default function GroupDetailForm({ id }: { id: any }) {
   } = useForm();
 
   const onSubmit = (data: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/edit/${id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/edit/${group.id}`, {
       method: "POST",
       body: JSON.stringify({
         ...data,
@@ -80,6 +71,7 @@ export default function GroupDetailForm({ id }: { id: any }) {
         if (res.success) {
           toast.success("Skupina upravena");
           reset();
+          MakeGroupDetailRefetch(group.id);
         } else {
           toast.error("Něco se nepovedlo");
         }
@@ -90,7 +82,7 @@ export default function GroupDetailForm({ id }: { id: any }) {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove`, {
       method: "POST",
       body: JSON.stringify({
-        groups: [id],
+        groups: [group.id],
       }),
     })
       .then((res) => res.json())
@@ -114,7 +106,7 @@ export default function GroupDetailForm({ id }: { id: any }) {
       .then((res) => {
         if (res.success) toast.success("Uživatelé odebráni");
         else toast.error("Něco se nepovedlo");
-        MakeGroupDetailRefetch(id);
+        MakeGroupDetailRefetch(group.id);
         setChecked([]);
       });
   };
@@ -139,10 +131,10 @@ export default function GroupDetailForm({ id }: { id: any }) {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove-reservations`, {
       method: "POST",
       body: JSON.stringify({
-        group: id,
+        group: group.id,
         removeReservaitons: selectReservation,
         currentReservations: group?.reservations.map(
-          (reservation) => reservation.id
+          (reservation: any) => reservation.id
         ),
       }),
     })
@@ -150,7 +142,7 @@ export default function GroupDetailForm({ id }: { id: any }) {
       .then((res) => {
         if (res.success) toast.success("Rezervace odstraněny");
         else toast.error("Něco se nepovedlo");
-        MakeGroupDetailRefetch(id);
+        MakeGroupDetailRefetch(group.id);
         setSelectReservation([]);
       });
   };

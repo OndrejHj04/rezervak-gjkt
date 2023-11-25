@@ -2,7 +2,15 @@ import { Suspense } from "react";
 import GroupDetailDisplay from "./GroupDetailDisplay";
 import GroupDetailForm from "./GroupDetailForm";
 import GroupDetailNavigation from "./GroupDetailNavigation";
-import { Skeleton } from "@mui/material";
+
+const getGroupDetail = async (id: string) => {
+  const req = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`,
+    { cache: "no-cache" }
+  );
+  const { data } = await req.json();
+  return data;
+};
 
 export default async function Page({
   params: { id },
@@ -11,13 +19,14 @@ export default async function Page({
   params: { id: string };
   searchParams: { mode: string };
 }) {
+  const group = await getGroupDetail(id);
   return (
     <>
       <GroupDetailNavigation id={id} mode={mode} />
       {mode === "view" ? (
-        <GroupDetailDisplay id={id} />
+        <GroupDetailDisplay group={group} />
       ) : (
-        <GroupDetailForm id={id} />
+        <GroupDetailForm group={group} />
       )}
     </>
   );

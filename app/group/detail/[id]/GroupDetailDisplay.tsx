@@ -15,18 +15,7 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 
-const getGroupDetail = async (id: string) => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`,
-    { cache: "no-cache" }
-  );
-  const { data } = await req.json();
-  return data;
-};
-
-export default async function GroupDetailDisplay({ id }: { id: any }) {
-  const group = await getGroupDetail(id);
-
+export default async function GroupDetailDisplay({ group }: { group: any }) {
   return (
     <Paper className="flex p-4 gap-4">
       <div>

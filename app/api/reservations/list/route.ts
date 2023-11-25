@@ -47,20 +47,20 @@ export async function GET(req: Request) {
       values: values,
     })) as any;
 
-    const users = (await query({
-      query: `SELECT id, first_name, last_name, email, image FROM users`,
-      values: [],
-    })) as any;
-
-    const groups = (await query({
-      query: `SELECT id, name FROM ${"`groups`"}`,
-      values: [],
-    })) as any;
-
-    const statusList = (await query({
-      query: `SELECT * FROM status`,
-      values: [],
-    })) as any;
+    const [users, groups, statusList] = (await Promise.all([
+      query({
+        query: `SELECT id, first_name, last_name, email, image FROM users`,
+        values: [],
+      }),
+      query({
+        query: `SELECT id, name FROM ${"`groups`"}`,
+        values: [],
+      }),
+      query({
+        query: `SELECT * FROM status`,
+        values: [],
+      }),
+    ])) as any[];
 
     reservations.map((reservation: any) => {
       reservation.status = statusList.find(

@@ -47,45 +47,11 @@ export async function GET(req: Request) {
       values: values,
     })) as any;
 
-    const users = (await query({
-      query: `SELECT id, first_name, last_name, email, image FROM users`,
-      values: [],
-    })) as any;
-
-    const groups = (await query({
-      query: `SELECT id, name FROM ${"`groups`"}`,
-      values: [],
-    })) as any;
-
-    const statusList = (await query({
-      query: `SELECT * FROM status`,
-      values: [],
-    })) as any;
-
-    reservations.map((reservation: any) => {
-      reservation.status = statusList.find(
-        (s: any) => s.id === reservation.status
-      );
-      reservation.users = JSON.parse(reservation.users);
-      reservation.groups = JSON.parse(reservation.groups).map((group: any) =>
-        groups.find((g: any) => g.id === group)
-      );
-      reservation.leader = users.find((u: any) => u.id === reservation.leader);
-    });
-
-    const data = userId
-      ? reservations.filter(
-          (reservation: any) =>
-            reservation.users.includes(userId) ||
-            reservation.leader.id === userId
-        )
-      : reservations;
-
     return NextResponse.json({
       count: count[0]["COUNT(*)"],
       success: true,
       message: "Operation successful",
-      data: data,
+      data: reservations,
     });
   } catch (e) {
     return NextResponse.json(

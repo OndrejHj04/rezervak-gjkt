@@ -24,7 +24,7 @@ export async function GET(
       }),
       query({
         query: `
-        SELECT * FROM groups WHERE id IN (?)
+        SELECT * FROM ${"`groups`"} WHERE id IN (?)
       `,
         values: [JSON.parse(data[0].groups).join(",")],
       }),

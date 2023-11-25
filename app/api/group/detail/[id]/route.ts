@@ -10,49 +10,32 @@ export async function GET(
     query: `
         SELECT * FROM ${"`groups`"} WHERE id = ?`,
     values: [id],
-  })) as Group[];
+  })) as any;
 
-  const owner = (await query({
-    query: `
-    SELECT id, image, first_name, last_name, email FROM users WHERE id = ?`,
-    values: [data[0].owner],
-  })) as GroupOwner[];
-
-  data.map((item) => {
-    item.owner = owner[0];
-    item.users = item.users ? JSON.parse(item.users as any) : [];
-    item.reservations = item.reservations
-      ? JSON.parse(item.reservations as any)
-      : [];
-    return item;
-  });
-
-  if (data[0].users.length !== 0) {
-    const members = (await query({
+  const [owner, users, reservations] = (await Promise.all([
+    query({
       query: `
-      SELECT id, image, first_name, last_name, email FROM users WHERE id IN (${data[0].users.join(
-        ","
-      )})`,
+      SELECT id, image, first_name, last_name, email FROM users WHERE id = ${data[0].owner}`,
       values: [],
-    })) as GroupOwner[];
-
-    data[0].users = members;
-  }
-
-  if (data[0].reservations.length !== 0) {
-    const reservations = (await query({
+    }),
+    query({
       query: `
-      SELECT id, name, from_date, to_date, users FROM reservations WHERE id IN (${data[0].reservations.join(
-        ","
-      )})`,
+      SELECT id, image, first_name, last_name, email FROM users WHERE id IN (${JSON.parse(
+        data[0].users
+      ).join(",")})`,
       values: [],
-    })) as any;
-    reservations.map(
-      (item: any) => (item.users = JSON.parse(item.users as any))
-    );
-
-    data[0].reservations = reservations;
-  }
+    }),
+    query({
+      query: `
+      SELECT id, name, from_date, to_date, users FROM reservations WHERE id IN (${JSON.parse(
+        data[0].reservations
+      ).join(",")})`,
+      values: [],
+    }),
+  ])) as any;
+  data[0].owner = owner;
+  data[0].users = users;
+  data[0].reservations = reservations;
 
   try {
     return NextResponse.json({

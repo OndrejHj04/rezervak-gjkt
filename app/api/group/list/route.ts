@@ -8,13 +8,7 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const page = Number(url.searchParams.get("page"));
     const search = url.searchParams.get("search");
-
-    const count = (await query({
-      query: `SELECT COUNT(*) FROM ${"`groups`"} ${
-        search ? `WHERE name LIKE "%${search}%"` : ""
-      }`,
-      values: [],
-    })) as any;
+    const userId = Number(url.searchParams.get("user_id"));
 
     let sql = `SELECT * FROM ${"`groups`"}`;
     const values: any = [];
@@ -27,27 +21,41 @@ export async function GET(req: Request) {
       sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
     }
 
-    const data = (await query({
-      query: sql,
-      values: values,
-    })) as Group[];
+    const [count, groups, users] = (await Promise.all([
+      query({
+        query: `SELECT COUNT(*) FROM ${"`groups`"} ${
+          search ? `WHERE name LIKE "%${search}%"` : ""
+        }`,
+        values: [],
+      }),
+      query({
+        query: sql,
+        values: values,
+      }),
+      query({
+        query: `
+        SELECT id, image, first_name, last_name, email FROM users
+      `,
+        values: [],
+      }),
+    ])) as any;
 
-    const users = (await query({
-      query: `
-      SELECT id, image, first_name, last_name, email FROM users
-    `,
-      values: [],
-    })) as GroupOwner[];
-
-    data.map((item) => {
+    groups.map((item: any) => {
       item.owner = users.find(
-        (user) => user.id === (item.owner as unknown as number)
+        (user: any) => user.id === (item.owner as unknown as number)
       ) as unknown as GroupOwner;
       item.users = item.users ? JSON.parse(item.users as any) : [];
       item.reservations = item.reservations
         ? JSON.parse(item.reservations as any)
         : [];
     });
+
+    const data = userId
+      ? groups.filter(
+          (group: any) =>
+            group.users.includes(userId) || group.owner.id === userId
+        )
+      : groups;
 
     return NextResponse.json({
       success: true,

@@ -22,11 +22,6 @@ export async function GET(req: Request) {
       countValues.push(`%${search}%`);
     }
 
-    const count = (await query({
-      query: countSql,
-      values: countValues,
-    })) as any;
-
     let sql = `SELECT * FROM reservations WHERE 1=1`;
     let values = [];
     if (status) {
@@ -42,25 +37,30 @@ export async function GET(req: Request) {
       values.push(page * 10 - 10);
     }
 
-    const reservations = (await query({
-      query: sql,
-      values: values,
-    })) as any;
-
-    const [users, groups, statusList] = (await Promise.all([
-      query({
-        query: `SELECT id, first_name, last_name, email, image FROM users`,
-        values: [],
-      }),
-      query({
-        query: `SELECT id, name FROM ${"`groups`"}`,
-        values: [],
-      }),
-      query({
-        query: `SELECT * FROM status`,
-        values: [],
-      }),
-    ])) as any[];
+    const [count, reservations, users, groups, statusList] = (await Promise.all(
+      [
+        query({
+          query: countSql,
+          values: countValues,
+        }),
+        query({
+          query: sql,
+          values: values,
+        }),
+        query({
+          query: `SELECT id, first_name, last_name, email, image FROM users`,
+          values: [],
+        }),
+        query({
+          query: `SELECT id, name FROM ${"`groups`"}`,
+          values: [],
+        }),
+        query({
+          query: `SELECT * FROM status`,
+          values: [],
+        }),
+      ]
+    )) as any[];
 
     reservations.map((reservation: any) => {
       reservation.status = statusList.find(

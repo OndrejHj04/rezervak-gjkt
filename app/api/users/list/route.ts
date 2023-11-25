@@ -12,21 +12,22 @@ export async function GET(req: Request) {
     const roles = url.searchParams.get("roles")?.split(",");
     const email = url.searchParams.get("email");
 
-    const rolesList = (await query({
-      query: `SELECT * FROM roles`,
-      values: [],
-    })) as any;
-
-    const data = (await query({
-      query: `SELECT * FROM users ${
-        roles || email
-          ? roles
-            ? `WHERE role IN(${roles.join(",")})`
-            : `WHERE email = "${email}"`
-          : ``
-      }`,
-      values: [],
-    })) as any;
+    const [rolesList, data] = (await Promise.all([
+      query({
+        query: `SELECT * FROM roles`,
+        values: [],
+      }),
+      query({
+        query: `SELECT * FROM users ${
+          roles || email
+            ? roles
+              ? `WHERE role IN(${roles.join(",")})`
+              : `WHERE email = "${email}"`
+            : ``
+        }`,
+        values: [],
+      }),
+    ])) as any;
 
     data.map((item: any) => {
       item.role = rolesList.find((role: any) => role.id === Number(item.role));

@@ -14,13 +14,13 @@ export async function GET(req: Request) {
     const values: any = [];
 
     if (search) {
-      sql += ` WHERE name LIKE ${`%${search}%`}`;
+      sql += ` WHERE name LIKE ${`"%${search}%"`}`;
     }
 
     if (page) {
       sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
     }
-
+    console.log(sql)
     const [count, groups, users] = (await Promise.all([
       query({
         query: `SELECT COUNT(*) FROM ${"`groups`"} ${

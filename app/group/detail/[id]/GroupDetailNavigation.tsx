@@ -25,14 +25,6 @@ export default function GroupDetailNavigation({
           />
         </Tabs>
       </div>
-      <div>
-        <Button variant="outlined" color="error" className="mr-2">
-          Odstranit
-        </Button>
-        <Button variant="outlined" type="submit">
-          Uložit
-        </Button>
-      </div>
     </div>
   );
 }

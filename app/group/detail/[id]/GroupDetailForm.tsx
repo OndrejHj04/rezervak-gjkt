@@ -46,7 +46,16 @@ interface selecteUser {
   last_name: string;
 }
 
-export default function GroupDetailForm({ group }: { group: Group }) {
+export default function GroupDetailForm({ id }: { id: any }) {
+  const [group, setGroup] = useState<null | Group>();
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`, {
+      cache: "no-cache",
+    })
+      .then((res) => res.json())
+      .then((res) => setGroup(res.data));
+  }, []);
   const { push } = useRouter();
   const [checked, setChecked] = useState<number[]>([]);
   const [usersModal, setUsersModal] = useState(false);
@@ -60,7 +69,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
   } = useForm();
 
   const onSubmit = (data: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/edit/${group.id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/edit/${id}`, {
       method: "POST",
       body: JSON.stringify({
         ...data,
@@ -81,7 +90,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove`, {
       method: "POST",
       body: JSON.stringify({
-        groups: [group.id],
+        groups: [id],
       }),
     })
       .then((res) => res.json())
@@ -105,7 +114,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
       .then((res) => {
         if (res.success) toast.success("Uživatelé odebráni");
         else toast.error("Něco se nepovedlo");
-        MakeGroupDetailRefetch(group.id);
+        MakeGroupDetailRefetch(id);
         setChecked([]);
       });
   };
@@ -130,9 +139,9 @@ export default function GroupDetailForm({ group }: { group: Group }) {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove-reservations`, {
       method: "POST",
       body: JSON.stringify({
-        group: group.id,
+        group: id,
         removeReservaitons: selectReservation,
-        currentReservations: group.reservations.map(
+        currentReservations: group?.reservations.map(
           (reservation) => reservation.id
         ),
       }),
@@ -141,7 +150,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
       .then((res) => {
         if (res.success) toast.success("Rezervace odstraněny");
         else toast.error("Něco se nepovedlo");
-        MakeGroupDetailRefetch(group.id);
+        MakeGroupDetailRefetch(id);
         setSelectReservation([]);
       });
   };
@@ -179,7 +188,7 @@ export default function GroupDetailForm({ group }: { group: Group }) {
       )}
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
         <Paper className="flex gap-4 p-4 flex-col">
-          <div className="flex gap-2">
+          <div className="flex gap-2 justify-between">
             <div className="flex flex-col gap-1">
               <Typography variant="h5">Vedoucí skupiny</Typography>
               <div className="flex gap-2">
@@ -216,6 +225,18 @@ export default function GroupDetailForm({ group }: { group: Group }) {
                 minRows={4}
                 maxRows={4}
               />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={handleRemoveGroup}
+              >
+                Odstranit
+              </Button>
+              <Button variant="outlined" type="submit" disabled={!isDirty}>
+                Uložit
+              </Button>
             </div>
           </div>
 

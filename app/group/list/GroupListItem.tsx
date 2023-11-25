@@ -23,7 +23,7 @@ export default function GroupListItem({ group }: { group: Group }) {
         <AvatarWrapper data={group.owner} />
       </TableCell>
       <TableCell>
-        <Link href={`/group/detail/${group.id}`}>
+        <Link href={`/group/detail/${group.id}?mode=view`}>
           <Button>Detail</Button>
         </Link>
       </TableCell>

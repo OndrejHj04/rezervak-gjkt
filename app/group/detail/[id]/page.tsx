@@ -1,4 +1,6 @@
+import GroupDetailDisplay from "./GroupDetailDisplay";
 import GroupDetailForm from "./GroupDetailForm";
+import GroupDetailNavigation from "./GroupDetailNavigation";
 
 const getGroupDetail = async (id: string) => {
   const req = await fetch(
@@ -11,9 +13,20 @@ const getGroupDetail = async (id: string) => {
 
 export default async function Page({
   params: { id },
+  searchParams: { mode },
 }: {
   params: { id: string };
+  searchParams: { mode: string };
 }) {
   const group = await getGroupDetail(id);
-  return <GroupDetailForm group={group} />;
+  return (
+    <>
+      <GroupDetailNavigation id={id} mode={mode} />
+      {mode === "view" ? (
+        <GroupDetailDisplay />
+      ) : (
+        <GroupDetailForm group={group} />
+      )}
+    </>
+  );
 }

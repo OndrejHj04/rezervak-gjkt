@@ -19,6 +19,8 @@ import {
   ListItemText,
   Modal,
   Paper,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
@@ -176,14 +178,6 @@ export default function GroupDetailForm({ group }: { group: Group }) {
         </Modal>
       )}
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-2 ml-auto flex gap-2">
-          <Button variant="outlined" color="error" onClick={handleRemoveGroup}>
-            Odstranit
-          </Button>
-          <Button variant="outlined" type="submit" disabled={!isDirty}>
-            Uložit
-          </Button>
-        </div>
         <Paper className="flex gap-4 p-4 flex-col">
           <div className="flex gap-2">
             <div className="flex flex-col gap-1">

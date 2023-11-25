@@ -5,10 +5,6 @@ import { create } from "zustand";
 interface stateInterface {
   panel: boolean;
   setPanel: (panel: boolean) => void;
-  roles: Role[];
-  setRoles: (panel: Role[]) => void;
-  modal: string;
-  setModal: (value: string) => void;
   user: User | null;
   setUser: (user: User) => void;
   userLoading: boolean;
@@ -17,8 +13,6 @@ interface stateInterface {
   setSelectedUsers: (users: number[]) => void;
   selectedGroups: number[];
   setSelectedGroups: (groups: number[]) => void;
-  darkMode: boolean;
-  setDarkMode: (value: boolean) => void;
   createReservation: NewReservation;
   setCreateReservation: (value: NewReservation) => void;
   selectedReservations: number[];
@@ -34,10 +28,6 @@ interface stateInterface {
 export const store = create<stateInterface>((set) => ({
   panel: false,
   setPanel: (panel) => set({ panel }),
-  roles: [],
-  setRoles: (roles) => set({ roles }),
-  modal: "",
-  setModal: (modal) => set({ modal }),
   user: null,
   setUser: (user) => set({ user }),
   userLoading: true,
@@ -46,8 +36,6 @@ export const store = create<stateInterface>((set) => ({
   setSelectedUsers: (selectedUsers) => set({ selectedUsers }),
   selectedGroups: [],
   setSelectedGroups: (selectedGroups) => set({ selectedGroups }),
-  darkMode: true,
-  setDarkMode: (darkMode) => set({ darkMode }),
   createReservation: {
     from_date: "",
     to_date: "",

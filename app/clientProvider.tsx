@@ -53,14 +53,6 @@ export default function ClientProvider({
   children: React.ReactNode;
   theme: any;
 }): React.ReactNode {
-  const { setRoles } = store();
-
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/list`)
-      .then((res) => res.json())
-      .then(({ data }) => setRoles(data));
-  }, []);
-
   const mode = createTheme({
     palette: {
       mode: theme ? "light" : "dark",

@@ -61,21 +61,27 @@ export default function ReservationDetailDisplay({
         <Typography variant="h5">Uživatelé v rezervaci</Typography>
         <Divider />
         <List sx={{ height: 300 }}>
-          {reservation.users.data.map((user: any) => (
-            <ListItem disablePadding key={user.id}>
-              <ListItemIcon>
-                <AvatarWrapper data={user} />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Typography>
-                    {user.first_name} {user.last_name}
-                  </Typography>
-                }
-                secondary={user.email}
-              />
-            </ListItem>
-          ))}
+          {reservation.users.data.length ? (
+            reservation.users.data.map((user: any) => (
+              <ListItem disablePadding key={user.id}>
+                <ListItemIcon>
+                  <AvatarWrapper data={user} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography>
+                      {user.first_name} {user.last_name}
+                    </Typography>
+                  }
+                  secondary={user.email}
+                />
+              </ListItem>
+            ))
+          ) : (
+            <>
+              <Typography>Žádní uživatelé v rezervaci</Typography>
+            </>
+          )}
         </List>
         <UsersPagination count={reservation.users.count} />
       </div>
@@ -83,17 +89,23 @@ export default function ReservationDetailDisplay({
         <Typography variant="h5">Skupiny v rezervaci</Typography>
         <Divider />
         <List sx={{ height: 300 }}>
-          {reservation.groups.data.map((group: any) => (
-            <ListItem disablePadding key={group.id}>
-              <ListItemIcon>
-                <Avatar />
-              </ListItemIcon>
-              <ListItemText
-                primary={group.name}
-                secondary={"Počet členů: " + group.users.length}
-              />
-            </ListItem>
-          ))}
+          {reservation.groups.data.length ? (
+            reservation.groups.data.map((group: any) => (
+              <ListItem disablePadding key={group.id}>
+                <ListItemIcon>
+                  <Avatar />
+                </ListItemIcon>
+                <ListItemText
+                  primary={group.name}
+                  secondary={"Počet členů: " + group.users.length}
+                />
+              </ListItem>
+            ))
+          ) : (
+            <>
+              <Typography>Žádné skupiny v rezervaci</Typography>
+            </>
+          )}
         </List>
         <GroupsPagination count={reservation.groups.count} />
       </div>

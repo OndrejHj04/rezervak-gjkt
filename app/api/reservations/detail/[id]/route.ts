@@ -49,7 +49,7 @@ export async function GET(
       count: groups.length,
       data: groups.slice((gpage - 1) * 5, gpage * 5),
     };
-    console.log(users);
+
     data[0].leader = users.find((user: any) => user.id === data[0].leader);
     data[0].status = status[0];
 

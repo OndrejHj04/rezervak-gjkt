@@ -12,65 +12,25 @@ export async function GET(
       values: [id],
     })) as any;
 
-    data.forEach((reservation: any) => {
-      reservation.groups = reservation.groups
-        ? JSON.parse(reservation.groups as any)
-        : [];
-      reservation.users = reservation.users
-        ? JSON.parse(reservation.users as any)
-        : [];
-    });
+    const [users, groups] = (await Promise.all([
+      query({
+        query: `SELECT id, first_name, last_name, image FROM users WHERE id IN (?)`,
+        values: [JSON.parse(data[0].users).join(",")],
+      }),
+      query({
+        query: `SELECT * FROM ${"`groups`"} WHERE id IN (?)`,
+        values: [JSON.parse(data[0].groups).join(",")],
+      }),
+    ])) as any;
 
-    const leader = (await query({
-      query: `SELECT id, email, first_name, last_name, image FROM users WHERE id IN(${data.map(
-        (reservation: any) => reservation.leader
-      )})`,
-      values: [],
-    })) as any;
-
-    if (data[0].groups.length !== 0) {
-      const groups = (await query({
-        query: `SELECT * FROM ${"`groups`"} WHERE id IN(${data.map(
-          (reservation: any) => reservation.groups.join(",")
-        )})`,
-        values: [],
-      })) as any;
-
-      groups.map(
-        (group: any) => (group.users = JSON.parse(group.users as any))
-      );
-      data[0].groups = groups;
-    }
-    const status = (await query({
-      query: `SELECT * FROM status WHERE id IN(${data.map(
-        (reservation: any) => reservation.status
-      )})`,
-      values: [],
-    })) as any;
-
-    const users = data.some((item: any) => item.users.length)
-      ? ((await query({
-          query: `SELECT id, first_name, last_name, email, image FROM users WHERE id IN(${data.map(
-            (reservation: any) => reservation.users.join(",")
-          )})`,
-          values: [],
-        })) as any)
-      : [];
-
-    data.forEach((reservation: Reservation) => {
-      reservation.leader = leader.find(
-        (lead: any) => lead.id === reservation.leader
-      );
-      reservation.users = reservation.users.map((user) =>
-        users.find((grp: any) => grp.id === user)
-      );
-      reservation.status = status[0];
-    });
+    data[0].users = users;
+    data[0].groups = groups;
+    data[0].leader = users.find((user: any) => user.id === data[0].leader);
 
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: data,
+      data: data[0],
     });
   } catch (e) {
     return NextResponse.json(

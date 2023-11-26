@@ -12,7 +12,7 @@ export async function GET(
       values: [id],
     })) as any;
 
-    const [users, groups] = (await Promise.all([
+    const [users, groups, status] = (await Promise.all([
       query({
         query: `SELECT id, first_name, last_name, image FROM users WHERE id IN (?)`,
         values: [JSON.parse(data[0].users).join(",")],
@@ -21,11 +21,16 @@ export async function GET(
         query: `SELECT * FROM ${"`groups`"} WHERE id IN (?)`,
         values: [JSON.parse(data[0].groups).join(",")],
       }),
+      query({
+        query: `SELECT * FROM status WHERE id = ?`,
+        values: [data[0].status],
+      }),
     ])) as any;
 
     data[0].users = users;
     data[0].groups = groups;
     data[0].leader = users.find((user: any) => user.id === data[0].leader);
+    data[0].status = status[0];
 
     return NextResponse.json({
       success: true,

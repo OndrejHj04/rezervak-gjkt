@@ -10,7 +10,7 @@ const getReservation = async (id: string) => {
   );
   const { data } = await req.json();
 
-  return data[0];
+  return data;
 };
 
 const getReservationStatus = async () => {

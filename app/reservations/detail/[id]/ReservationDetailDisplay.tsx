@@ -16,7 +16,6 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import PerfectScrollbar from "react-perfect-scrollbar";
 import Pagination from "./Pagination";
 
 export default function ReservationDetailDisplay({
@@ -24,6 +23,7 @@ export default function ReservationDetailDisplay({
 }: {
   reservation: any;
 }) {
+  
   return (
     <Paper className="p-4 flex gap-4">
       <div>

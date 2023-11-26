@@ -60,7 +60,7 @@ export default function ReservationDetailDisplay({
       <div>
         <Typography variant="h5">Uživatelé v rezervaci</Typography>
         <Divider />
-        <List>
+        <List sx={{ height: 300 }}>
           {reservation.users.data.map((user: any) => (
             <ListItem disablePadding key={user.id}>
               <ListItemIcon>
@@ -82,7 +82,7 @@ export default function ReservationDetailDisplay({
       <div>
         <Typography variant="h5">Skupiny v rezervaci</Typography>
         <Divider />
-        <List>
+        <List sx={{ height: 300 }}>
           {reservation.groups.data.map((group: any) => (
             <ListItem disablePadding key={group.id}>
               <ListItemIcon>

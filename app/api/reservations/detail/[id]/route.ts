@@ -18,12 +18,20 @@ export async function GET(
 
     const [users, groups, status] = (await Promise.all([
       query({
-        query: `SELECT id, first_name, last_name, image, email FROM users WHERE id IN (?)`,
-        values: [JSON.parse(data[0].users).join(",")],
+        query: `SELECT id, first_name, last_name, image, email FROM users ${
+          JSON.parse(data[0].users).length
+            ? `WHERE id IN (${JSON.parse(data[0].users).join(",")})`
+            : `WHERE id = ${data[0].leader}`
+        }`,
+        values: [],
       }),
       query({
-        query: `SELECT * FROM ${"`groups`"} WHERE id IN (?)`,
-        values: [JSON.parse(data[0].groups).join(",")],
+        query: `SELECT * FROM ${"`groups`"} ${
+          JSON.parse(data[0].groups).length
+            ? `WHERE id IN (${JSON.parse(data[0].groups).join(",")})`
+            : `WHERE 1=2`
+        }`,
+        values: [],
       }),
       query({
         query: `SELECT * FROM status WHERE id = ?`,
@@ -32,12 +40,14 @@ export async function GET(
     ])) as any;
 
     data[0].users = {
-      count: users.length,
-      data: users.slice((upage - 1) * 10, upage * 10),
+      count: JSON.parse(data[0].users).length ? users.length : 0,
+      data: JSON.parse(data[0].users).length
+        ? users.slice((upage - 1) * 5, upage * 5)
+        : [],
     };
     data[0].groups = {
       count: groups.length,
-      data: groups.slice((gpage - 1) * 10, gpage * 10),
+      data: groups.slice((gpage - 1) * 5, gpage * 5),
     };
     data[0].leader = users.find((user: any) => user.id === data[0].leader);
     data[0].status = status[0];

@@ -1,8 +1,7 @@
-"use client";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Box,
-  Checkbox,
+  Button,
   Chip,
   TableCell,
   TableRow,
@@ -13,27 +12,11 @@ import { User } from "next-auth";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import dayjs from "dayjs";
-import SecurityIcon from "@mui/icons-material/Security";
-import BuildIcon from "@mui/icons-material/Build";
-import PersonIcon from "@mui/icons-material/Person";
-import PublicIcon from "@mui/icons-material/Public";
-import { useRouter } from "next/navigation";
-import { store } from "@/store/store";
 import HotelIcon from "@mui/icons-material/Hotel";
+import UserCheckbox from "./UserCheckbox";
+import Link from "next/link";
 
 export default function UserListItem({ user }: { user: User }) {
-  const { push } = useRouter();
-  const { selectedUsers, setSelectedUsers } = store();
-
-  const handleSelect = (e: any) => {
-    e.stopPropagation();
-    if (selectedUsers.includes(user.id)) {
-      setSelectedUsers(selectedUsers.filter((id) => id !== user.id));
-    } else {
-      setSelectedUsers([...selectedUsers, user.id]);
-    }
-  };
-
   const sleepingUser = (
     <Box className="flex items-center gap-2">
       <HotelIcon sx={{ color: "#4579ac", fontSize: 36 }} />
@@ -45,20 +28,13 @@ export default function UserListItem({ user }: { user: User }) {
   return (
     <Tooltip
       title={sleepingUser}
+      sx={{ cursor: "pointer", opacity: user.active ? 1 : 0.5 }}
       disableHoverListener={user.active}
       followCursor
     >
-      <TableRow
-        hover
-        key={user.id}
-        sx={{ cursor: "pointer", opacity: user.active ? 1 : 0.5 }}
-        onClick={() => push(`/user/detail/${user.id}`)}
-      >
+      <TableRow key={user.id}>
         <TableCell>
-          <Checkbox
-            checked={selectedUsers.includes(user.id)}
-            onClick={handleSelect}
-          />
+          <UserCheckbox id={user.id} />
         </TableCell>
         <TableCell>
           <AvatarWrapper data={user} />
@@ -83,6 +59,11 @@ export default function UserListItem({ user }: { user: User }) {
           ) : (
             <CancelIcon color="error" sx={{ width: 32, height: 32 }} />
           )}
+        </TableCell>
+        <TableCell>
+          <Link href={`/user/detail/${user.id}`}>
+            <Button>Detail</Button>
+          </Link>
         </TableCell>
       </TableRow>
     </Tooltip>

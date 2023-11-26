@@ -77,6 +77,7 @@ export default async function UserList({
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Ověřený účet" />
               </TableCell>
+              <TableCell />
             </TableRow>
           </TableHead>
           <TableBody>

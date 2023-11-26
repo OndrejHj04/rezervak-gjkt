@@ -22,10 +22,10 @@ export default async function Page({
   return (
     <>
       <GroupDetailNavigation id={id} mode={mode} />
-      {mode === "view" ? (
-        <GroupDetailDisplay group={group} />
-      ) : (
+      {mode === "edit" ? (
         <GroupDetailForm group={group} />
+      ) : (
+        <GroupDetailDisplay group={group} />
       )}
     </>
   );

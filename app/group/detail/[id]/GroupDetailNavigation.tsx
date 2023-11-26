@@ -11,7 +11,7 @@ export default function GroupDetailNavigation({
   return (
     <div className="flex justify-between">
       <div>
-        <Tabs aria-label="basic tabs example" value={mode === "view" ? 0 : 1}>
+        <Tabs aria-label="basic tabs example" value={mode === "edit" ? 1 : 0}>
           <Tab
             component={Link}
             href={`/group/detail/${id}?mode=view`}

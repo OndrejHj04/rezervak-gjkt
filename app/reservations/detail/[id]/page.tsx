@@ -1,5 +1,7 @@
 import ReservationDetailForm from "./ReservationDetailForm";
 import { Reservation, ReservationStatus } from "@/types";
+import ReservationDetailNavigation from "./ReservationDetailNavigation";
+import ReservationDetailDisplay from "./ReservationDetailDisplay";
 
 const getReservation = async (id: string) => {
   const req = await fetch(
@@ -22,17 +24,26 @@ const getReservationStatus = async () => {
 
 export default async function ReservationDetailPage({
   params: { id },
+  searchParams: { mode },
 }: {
   params: { id: string };
+  searchParams: { mode: any };
 }) {
   const reservation = (await getReservation(id)) as Reservation;
   const reservationStatus =
     (await getReservationStatus()) as ReservationStatus[];
 
   return (
-    <ReservationDetailForm
-      reservation={reservation}
-      reservationStatus={reservationStatus}
-    />
+    <>
+      <ReservationDetailNavigation id={id} mode={mode} />
+      {mode === "edit" ? (
+        <ReservationDetailForm
+          reservation={reservation}
+          reservationStatus={reservationStatus}
+        />
+      ) : (
+        <ReservationDetailDisplay reservation={reservation} />
+      )}
+    </>
   );
 }

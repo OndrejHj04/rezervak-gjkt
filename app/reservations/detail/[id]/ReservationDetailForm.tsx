@@ -203,18 +203,6 @@ export default function ReservationDetailForm({
       )}
 
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-2 ml-auto flex gap-2">
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={handleDeleteReservation}
-          >
-            Odstranit
-          </Button>
-          <Button variant="outlined" type="submit" disabled={!isDirty}>
-            Uložit
-          </Button>
-        </div>
         <Paper className="p-4 flex flex-col gap-4">
           <div className="flex">
             <div className="flex flex-col gap-1">
@@ -302,6 +290,18 @@ export default function ReservationDetailForm({
               maxRows={4}
               {...register("instructions")}
             />
+            <div className="flex flex-col ml-3 gap-2">
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={handleDeleteReservation}
+              >
+                Odstranit
+              </Button>
+              <Button variant="outlined" type="submit" disabled={!isDirty}>
+                Uložit
+              </Button>
+            </div>
           </div>
           <div className="flex gap-2">
             <div className="flex flex-col">

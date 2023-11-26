@@ -34,7 +34,7 @@ export async function GET(req: Request) {
       sql += ` LIMIT 10 OFFSET ?`;
       values.push(page * 10 - 10);
     }
-    console.log(countSql, countValues);
+    console.log(countSql, countValues, sql, values);
     const [count, reservations, users, groups, statusList] = (await Promise.all(
       [
         query({

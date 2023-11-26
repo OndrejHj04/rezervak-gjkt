@@ -12,10 +12,12 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
+  TablePagination,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
 import PerfectScrollbar from "react-perfect-scrollbar";
+import Pagination from "./Pagination";
 
 export default function ReservationDetailDisplay({
   reservation,
@@ -53,7 +55,7 @@ export default function ReservationDetailDisplay({
       <div>
         <Typography variant="h5">Uživatelé v rezervaci</Typography>
         <Divider />
-        <List sx={{ height: 400 }}>
+        <List>
           {reservation.users.length ? (
             reservation.users.map((user: any) => (
               <ListItem disablePadding key={user.id}>
@@ -76,11 +78,12 @@ export default function ReservationDetailDisplay({
             </>
           )}
         </List>
+        <Pagination />
       </div>
       <div>
         <Typography variant="h5">Skupiny v rezervaci</Typography>
         <Divider />
-        <List sx={{ height: 400 }}>
+        <List>
           {reservation.groups.length ? (
             reservation.groups.map((group: any) => (
               <ListItem disablePadding key={group.id}>

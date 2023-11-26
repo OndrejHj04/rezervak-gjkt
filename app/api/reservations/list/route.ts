@@ -34,7 +34,7 @@ export async function GET(req: Request) {
       sql += ` LIMIT 10 OFFSET ?`;
       values.push(page * 10 - 10);
     }
-    console.log(sql, page);
+
     const [count, reservations, users, groups, statusList] = (await Promise.all(
       [
         query({
@@ -59,7 +59,7 @@ export async function GET(req: Request) {
         }),
       ]
     )) as any[];
-
+    console.log(reservations);
     reservations.map((reservation: any) => {
       reservation.status = statusList.find(
         (s: any) => s.id === reservation.status
@@ -70,7 +70,7 @@ export async function GET(req: Request) {
       );
       reservation.leader = users.find((u: any) => u.id === reservation.leader);
     });
-
+    console.log("vole!");
     return NextResponse.json({
       count: count[0]["COUNT(*)"],
       success: true,

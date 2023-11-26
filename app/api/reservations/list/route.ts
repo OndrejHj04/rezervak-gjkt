@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const userId = Number(url.searchParams.get("user_id"));
     const status = Number(url.searchParams.get("status"));
     const page = Number(url.searchParams.get("page"));
     const search = url.searchParams.get("search");
@@ -35,7 +34,7 @@ export async function GET(req: Request) {
       sql += ` LIMIT 10 OFFSET ?`;
       values.push(page * 10 - 10);
     }
-
+    console.log(sql, page);
     const [count, reservations, users, groups, statusList] = (await Promise.all(
       [
         query({

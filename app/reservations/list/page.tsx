@@ -59,21 +59,9 @@ export default async function ReservationsListPage({
   const status = searchParams["status"] || 0;
   const search = "";
 
-  const data = (await getReservations(page, status, search)) as any;
-  const reservations = (await data.data) as Reservation[];
-  const statuses = await getStatuses();
+  const reservations = (await getReservations(page, status, search)) as any;
 
-  const body = reservations.length ? (
-    reservations.map((reservation) => (
-      <ReservationListItem key={reservation.id} reservation={reservation} />
-    ))
-  ) : (
-    <TableRow>
-      <TableCell colSpan={9}>
-        <Typography variant="h6">Žádné rezervace k zobrazení</Typography>
-      </TableCell>
-    </TableRow>
-  );
+  const statuses = await getStatuses();
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
@@ -114,9 +102,16 @@ export default async function ReservationsListPage({
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody className="overflow-scroll">{body}</TableBody>
+          <TableBody className="overflow-scroll">
+            {reservations.data.map((reservation: any) => (
+              <ReservationListItem
+                key={reservation.id}
+                reservation={reservation}
+              />
+            ))}
+          </TableBody>
         </Table>
-        <ReservationsPagination count={data.count} />
+        <ReservationsPagination count={reservations.count} />
       </Paper>
     </div>
   );

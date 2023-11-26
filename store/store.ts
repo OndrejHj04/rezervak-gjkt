@@ -19,8 +19,6 @@ interface stateInterface {
   setSelectedReservations: (value: number[]) => void;
   reservationsStatus: number;
   setReservationStatus: (value: number) => void;
-  reservationsSearch: string;
-  setReservationsSearch: (value: string) => void;
 }
 
 export const store = create<stateInterface>((set) => ({
@@ -51,6 +49,4 @@ export const store = create<stateInterface>((set) => ({
     set({ selectedReservations }),
   reservationsStatus: 0,
   setReservationStatus: (reservationsStatus) => set({ reservationsStatus }),
-  reservationsSearch: "",
-  setReservationsSearch: (reservationsSearch) => set({ reservationsSearch }),
 }));

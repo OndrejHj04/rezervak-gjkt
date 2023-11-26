@@ -57,7 +57,7 @@ export default async function ReservationsListPage({
 }) {
   const page = searchParams["page"] || 1;
   const status = searchParams["status"] || 0;
-  const search = "";
+  const search = searchParams["search"] || 0;
 
   const reservations = (await getReservations(page, status, search)) as any;
 

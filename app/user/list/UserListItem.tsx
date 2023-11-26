@@ -24,12 +24,6 @@ import HotelIcon from "@mui/icons-material/Hotel";
 export default function UserListItem({ user }: { user: User }) {
   const { push } = useRouter();
   const { selectedUsers, setSelectedUsers } = store();
-  const iconMap: { [key: string]: JSX.Element } = {
-    SecurityIcon: <SecurityIcon />,
-    BuildIcon: <BuildIcon />,
-    PersonIcon: <PersonIcon />,
-    PublicIcon: <PublicIcon />,
-  };
 
   const handleSelect = (e: any) => {
     e.stopPropagation();
@@ -78,12 +72,10 @@ export default function UserListItem({ user }: { user: User }) {
             label={
               <Typography variant="subtitle2">{user.role.role_name}</Typography>
             }
-            deleteIcon={iconMap[user.role.icon]}
           />
         </TableCell>
         <TableCell>
-          {(user.birth_date && dayjs(user.birth_date).format("DD.MM.YYYY")) ||
-            "N/A"}
+          {user.birth_date && dayjs(user.birth_date).format("DD.MM.YYYY")}
         </TableCell>
         <TableCell>
           {user.verified ? (

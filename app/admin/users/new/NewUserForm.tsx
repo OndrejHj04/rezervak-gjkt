@@ -25,7 +25,7 @@ export default function NewUserForm({ roles }: { roles: any }) {
       .then((res) => {
         if (res.success) {
           toast.success("Uživatel úspěšně vytvořen");
-          MakeUserListRefetch();
+          MakeUserListRefetch("/user/list");
         } else setLoading(false);
       });
   };

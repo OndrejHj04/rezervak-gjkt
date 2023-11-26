@@ -35,7 +35,7 @@ export default function UserSleepModal({
         } else toast.error(`Něco se nepovedlo`);
 
         setModal(false);
-        MakeUserListRefetch();
+        MakeUserListRefetch("/user/list");
       });
   };
   return (

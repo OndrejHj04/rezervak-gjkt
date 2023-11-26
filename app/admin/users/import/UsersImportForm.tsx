@@ -69,7 +69,7 @@ export default function UsersImportForm({ roles }: { roles: any }) {
         }
       })
       .finally(() => {
-        MakeUserListRefetch();
+        MakeUserListRefetch("/user/list");
       });
   };
 

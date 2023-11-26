@@ -12,34 +12,48 @@ import { User as NextAuthUser } from "next-auth";
 
 import RemoveUser from "./removeUser";
 import CheckboxComponent from "./checkboxComponent";
+import UserRolesSelect from "./RolesSelect";
 
 interface User extends NextAuthUser {
   full_name: string;
 }
 
-const getUsers = async () => {
-  try {
-    const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/list`,
-      {
-        cache: "no-cache",
-      }
-    );
-    const { data } = await req.json();
+const getUsers = async (page: any, search: any, role: any) => {
+  const req = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/users/list?page=${page}&role=${role}&search=${search}`,
+    {
+      cache: "no-cache",
+    }
+  );
+  const { data } = await req.json();
 
-    return data as User[];
-  } catch (e) {
-    return [];
-  }
+  return data as User[];
 };
 
-export default async function UserList() {
-  const users = await getUsers();
+const getRoles = async () => {
+  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/list`);
+  const { data } = await req.json();
 
-  if (!users) return <div>loading...</div>;
+  return data as any;
+};
+export default async function UserList({
+  searchParams,
+}: {
+  searchParams: any;
+}) {
+  const role = searchParams["role"] || 0;
+  const page = searchParams["page"] || 1;
+  const search = searchParams["search"] || "";
+
+  const users = await getUsers(page, search, role);
+  const roles = await getRoles();
+
   return (
     <div className="flex flex-col w-full gap-2">
-      <RemoveUser />
+      <div className="flex justify-between">
+        <RemoveUser />
+        <UserRolesSelect roles={roles} />
+      </div>
       <Paper className="w-full p-2">
         <Table>
           <TableHead>

@@ -7,29 +7,27 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const page = Number(url.searchParams.get("page"));
     const search = url.searchParams.get("search");
-    const userId = Number(url.searchParams.get("user_id"));
 
-    let sql = `SELECT * FROM ${"`groups`"}`;
-    const values: any = [];
+    let sql = `SELECT * FROM ${"`groups`"} WHERE 1=1`;
+    let countSql = `SELECT COUNT(*) FROM ${"`groups`"} WHERE 1=1`;
 
     if (search) {
-      sql += ` WHERE name LIKE ${`"%${search}%"`}`;
+      sql += ` AND name LIKE ${`"%${search}%"`}`;
+      countSql += ` AND name LIKE ${`"%${search}%"`}`;
     }
 
     if (page) {
       sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
     }
-    console.log(sql)
+
     const [count, groups, users] = (await Promise.all([
       query({
-        query: `SELECT COUNT(*) FROM ${"`groups`"} ${
-          search ? `WHERE name LIKE "%${search}%"` : ""
-        }`,
+        query: countSql,
         values: [],
       }),
       query({
         query: sql,
-        values: values,
+        values: [],
       }),
       query({
         query: `
@@ -49,17 +47,10 @@ export async function GET(req: Request) {
         : [];
     });
 
-    const data = userId
-      ? groups.filter(
-          (group: any) =>
-            group.users.includes(userId) || group.owner.id === userId
-        )
-      : groups;
-
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: data,
+      data: groups,
       count: count[0]["COUNT(*)"],
     });
   } catch (e) {

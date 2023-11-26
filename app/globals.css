@@ -7,22 +7,3 @@
   padding: 0;
   box-sizing: border-box;
 }
-
-/* For Webkit (Chrome, Safari) */
-::-webkit-scrollbar {
-  width: 10px; /* Width of the scrollbar */
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Track background color */
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888; /* Thumb color */
-}
-
-/* For Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f1f1f1;
-}

@@ -101,9 +101,6 @@ export default async function ReservationsListPage({
                 <Chip label="Konec" />
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Důvod" />
-              </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Počet účastníků" />
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>

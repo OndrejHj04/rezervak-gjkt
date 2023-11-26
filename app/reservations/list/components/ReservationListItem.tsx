@@ -3,6 +3,7 @@ import { store } from "@/store/store";
 import { Reservation } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
+  Badge,
   Checkbox,
   Chip,
   IconButton,
@@ -13,7 +14,7 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-
+import GroupIcon from "@mui/icons-material/Group";
 import { Icon } from "@mui/material";
 
 export default function ReservationListItem({
@@ -63,9 +64,6 @@ export default function ReservationListItem({
           </Typography>
         </TableCell>
         <TableCell>
-          <Typography>{reservation.purpouse}</Typography>
-        </TableCell>
-        <TableCell>
           <Typography>{reservation.users.length}</Typography>
         </TableCell>
         <TableCell>
@@ -77,11 +75,17 @@ export default function ReservationListItem({
           </div>
         </TableCell>
         <TableCell>
-          <div className="flex items-center gap-2">
-            {reservation.groups.map((group: any) => (
-              <Chip key={group.id} label={group.name} />
-            ))}
-          </div>
+          {!!reservation.groups.length && (
+            <Tooltip
+              title={reservation.groups.map((group: any) => (
+                <Chip key={group.id} label={group.name} />
+              ))}
+            >
+              <Badge badgeContent={reservation.groups.length} color="primary">
+                <GroupIcon color="primary" />
+              </Badge>
+            </Tooltip>
+          )}
         </TableCell>
         <TableCell>
           <Tooltip

@@ -72,19 +72,11 @@ export async function GET(req: Request) {
       reservation.leader = users.find((u: any) => u.id === reservation.leader);
     });
 
-    const data = userId
-      ? reservations.filter(
-          (reservation: any) =>
-            reservation.users.includes(userId) ||
-            reservation.leader.id === userId
-        )
-      : reservations;
-
     return NextResponse.json({
       count: count[0]["COUNT(*)"],
       success: true,
       message: "Operation successful",
-      data: data,
+      data: reservations,
     });
   } catch (e) {
     return NextResponse.json(

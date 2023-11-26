@@ -16,14 +16,19 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import Pagination from "./Pagination";
+import Pagination from "./UsersPagination";
+import UsersPagination from "./UsersPagination";
+import GroupsPagination from "./GroupsPagination";
 
 export default function ReservationDetailDisplay({
   reservation,
+  users,
+  groups,
 }: {
   reservation: any;
+  users: any;
+  groups: any;
 }) {
-  
   return (
     <Paper className="p-4 flex gap-4">
       <div>
@@ -56,52 +61,41 @@ export default function ReservationDetailDisplay({
         <Typography variant="h5">Uživatelé v rezervaci</Typography>
         <Divider />
         <List>
-          {reservation.users.length ? (
-            reservation.users.map((user: any) => (
-              <ListItem disablePadding key={user.id}>
-                <ListItemIcon>
-                  <AvatarWrapper data={user} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Typography>
-                      {user.first_name} {user.last_name}
-                    </Typography>
-                  }
-                  secondary={user.email}
-                />
-              </ListItem>
-            ))
-          ) : (
-            <>
-              <Typography>Žádní uživatelé ve rezervaci</Typography>
-            </>
-          )}
+          {reservation.users.data.map((user: any) => (
+            <ListItem disablePadding key={user.id}>
+              <ListItemIcon>
+                <AvatarWrapper data={user} />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <Typography>
+                    {user.first_name} {user.last_name}
+                  </Typography>
+                }
+                secondary={user.email}
+              />
+            </ListItem>
+          ))}
         </List>
-        <Pagination />
+        <UsersPagination count={reservation.users.count} />
       </div>
       <div>
         <Typography variant="h5">Skupiny v rezervaci</Typography>
         <Divider />
         <List>
-          {reservation.groups.length ? (
-            reservation.groups.map((group: any) => (
-              <ListItem disablePadding key={group.id}>
-                <ListItemIcon>
-                  <Avatar />
-                </ListItemIcon>
-                <ListItemText
-                  primary={group.name}
-                  secondary={"Počet členů: " + group.users.length}
-                />
-              </ListItem>
-            ))
-          ) : (
-            <>
-              <Typography>Žádné skuiny v rezervaci</Typography>
-            </>
-          )}
+          {reservation.groups.data.map((group: any) => (
+            <ListItem disablePadding key={group.id}>
+              <ListItemIcon>
+                <Avatar />
+              </ListItemIcon>
+              <ListItemText
+                primary={group.name}
+                secondary={"Počet členů: " + group.users.length}
+              />
+            </ListItem>
+          ))}
         </List>
+        <GroupsPagination count={reservation.groups.count} />
       </div>
     </Paper>
   );

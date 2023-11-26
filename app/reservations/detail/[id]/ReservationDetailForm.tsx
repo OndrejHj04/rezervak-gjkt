@@ -30,9 +30,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import ReservationCalendar from "./ReservationCalendar";
-import { use, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -51,8 +50,8 @@ export default function ReservationDetailForm({
   reservation,
   reservationStatus,
 }: {
-  reservation: Reservation;
-  reservationStatus: ReservationStatus[];
+  reservation: any;
+  reservationStatus: any;
 }) {
   const {
     register,
@@ -115,7 +114,7 @@ export default function ReservationDetailForm({
       body: JSON.stringify({
         reservation: reservation.id,
         removeUsers: selectedUsers,
-        currentUsers: reservation.users.map((user: any) => user.id),
+        currentUsers: reservation.users.data.map((user: any) => user.id),
       }),
     })
       .then((res) => res.json())
@@ -134,7 +133,7 @@ export default function ReservationDetailForm({
       body: JSON.stringify({
         reservation: reservation.id,
         removeGroups: selectedGroups,
-        currentGroups: reservation.groups.map((group: any) => group.id),
+        currentGroups: reservation.groups.data.map((group: any) => group.id),
       }),
     })
       .then((res) => res.json())
@@ -186,7 +185,7 @@ export default function ReservationDetailForm({
           {usersModal && (
             <AddUserModal
               reservationId={reservation.id}
-              currentUsers={reservation.users.map((user) => user.id)}
+              currentUsers={reservation.users.data.map((user: any) => user.id)}
               setModal={setUsersModal}
             />
           )}
@@ -196,7 +195,9 @@ export default function ReservationDetailForm({
         <Modal open={groupsModal} onClose={() => setGroupsModal(false)}>
           <AddGroupsModal
             reservationId={reservation.id}
-            currentGroups={reservation.groups.map((group: any) => group.id)}
+            currentGroups={reservation.groups.data.map(
+              (group: any) => group.id
+            )}
             setModal={setGroupsModal}
           />
         </Modal>
@@ -309,8 +310,8 @@ export default function ReservationDetailForm({
               <Divider />
               <List sx={{ height: 400 }}>
                 <PerfectScrollbar>
-                  {reservation.users.length ? (
-                    reservation.users.map((user: any) => (
+                  {reservation.users.data.length ? (
+                    reservation.users.data.map((user: any) => (
                       <ListItem disablePadding key={user.id}>
                         <ListItemButton
                           sx={{ padding: 1 }}
@@ -373,8 +374,8 @@ export default function ReservationDetailForm({
               <Divider />
               <List sx={{ height: 400 }}>
                 <PerfectScrollbar>
-                  {reservation.groups.length ? (
-                    reservation.groups.map((group: any) => (
+                  {reservation.groups.data.length ? (
+                    reservation.groups.data.map((group: any) => (
                       <ListItem disablePadding key={group.id}>
                         <ListItemButton
                           sx={{ padding: 1 }}
@@ -429,7 +430,7 @@ export default function ReservationDetailForm({
               <Typography variant="h5">Status rezervace</Typography>
               <Divider />
               <List sx={{ height: 400 }}>
-                {reservationStatus.map((status) => (
+                {reservationStatus.map((status: any) => (
                   <ListItem disablePadding key={status.id} value={status.id}>
                     <ListItemButton
                       sx={{ padding: 1 }}

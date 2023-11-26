@@ -6,6 +6,10 @@ export async function GET(
   req: Request,
   { params: { id } }: { params: { id: string } }
 ) {
+  const url = new URL(req.url);
+  const upage = Number(url.searchParams.get("users")) || 1;
+  const gpage = Number(url.searchParams.get("groups")) || 1;
+
   try {
     const data = (await query({
       query: `SELECT * FROM reservations WHERE id = ?`,
@@ -14,7 +18,7 @@ export async function GET(
 
     const [users, groups, status] = (await Promise.all([
       query({
-        query: `SELECT id, first_name, last_name, image FROM users WHERE id IN (?)`,
+        query: `SELECT id, first_name, last_name, image, email FROM users WHERE id IN (?)`,
         values: [JSON.parse(data[0].users).join(",")],
       }),
       query({
@@ -27,8 +31,14 @@ export async function GET(
       }),
     ])) as any;
 
-    data[0].users = users;
-    data[0].groups = groups;
+    data[0].users = {
+      count: users.length,
+      data: users.slice((upage - 1) * 10, upage * 10),
+    };
+    data[0].groups = {
+      count: groups.length,
+      data: groups.slice((gpage - 1) * 10, gpage * 10),
+    };
     data[0].leader = users.find((user: any) => user.id === data[0].leader);
     data[0].status = status[0];
 

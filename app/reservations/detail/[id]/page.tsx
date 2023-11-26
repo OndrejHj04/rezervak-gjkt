@@ -3,9 +3,9 @@ import { Reservation, ReservationStatus } from "@/types";
 import ReservationDetailNavigation from "./ReservationDetailNavigation";
 import ReservationDetailDisplay from "./ReservationDetailDisplay";
 
-const getReservation = async (id: string) => {
+const getReservation = async (id: string, users: any, groups: any) => {
   const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/detail/${id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/detail/${id}?users=${users}&groups=${groups}`,
     { cache: "no-cache" }
   );
   const { data } = await req.json();
@@ -24,12 +24,16 @@ const getReservationStatus = async () => {
 
 export default async function ReservationDetailPage({
   params: { id },
-  searchParams: { mode },
+  searchParams: { mode, users, groups },
 }: {
   params: { id: string };
-  searchParams: { mode: any };
+  searchParams: { mode: any; users: any; groups: any };
 }) {
-  const reservation = (await getReservation(id)) as Reservation;
+  const reservation = (await getReservation(
+    id,
+    users || 1,
+    groups || 1
+  )) as Reservation;
   const reservationStatus =
     (await getReservationStatus()) as ReservationStatus[];
 
@@ -42,7 +46,11 @@ export default async function ReservationDetailPage({
           reservationStatus={reservationStatus}
         />
       ) : (
-        <ReservationDetailDisplay reservation={reservation} />
+        <ReservationDetailDisplay
+          reservation={reservation}
+          users={users}
+          groups={groups}
+        />
       )}
     </>
   );

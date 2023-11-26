@@ -1,16 +1,17 @@
-import { MenuList, Paper, Typography } from "@mui/material";
+import { MenuList, Paper, TablePagination, Typography } from "@mui/material";
 import { Reservation } from "@/types";
 import { User, getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import SingleReservation from "./SingleReservation";
 import EventIcon from "@mui/icons-material/Event";
+import ReservationPagination from "./ReservationsPagination";
 
-const getReservations = async (id: number) => {
+const getReservations = async (id: number, page: string) => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?user_id=${id}`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/user-list?id=${id}&page=${page}`
     );
-    const { data } = await req.json();
+    const data = await req.json();
 
     return data;
   } catch (e) {
@@ -18,11 +19,18 @@ const getReservations = async (id: number) => {
   }
 };
 
-export default async function DisplayReservations() {
+export default async function DisplayReservations({
+  searchParams,
+}: {
+  searchParams: any;
+}) {
   const data = (await getServerSession(authOptions)) as { user: User };
 
   const reservations = data
-    ? ((await getReservations(data.user.id)) as Reservation[])
+    ? ((await getReservations(
+        data.user.id,
+        searchParams.reservations || "1"
+      )) as any)
     : [];
 
   return (
@@ -33,17 +41,11 @@ export default async function DisplayReservations() {
         <EventIcon color="primary" />
       </div>
       <MenuList>
-        {reservations?.length ? (
-          reservations.map((reservation) => (
-            <SingleReservation
-              key={reservation.id}
-              reservations={reservation}
-            />
-          ))
-        ) : (
-          <Typography>žádné rezervace</Typography>
-        )}
+        {reservations.data.map((reservation: any) => (
+          <SingleReservation key={reservation.id} reservations={reservation} />
+        ))}
       </MenuList>
+      <ReservationPagination count={reservations.count} />
     </Paper>
   );
 }

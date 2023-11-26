@@ -1,11 +1,11 @@
 import HomepageLoading from "@/app/HomepageLoading";
 import dynamic from "next/dynamic";
 
-const DisplayGroups = dynamic(
+const DisplayReservations = dynamic(
   () => import("@/app/homepage/reservations/DisplayReservations")
 );
 
-const DisplayReservations = dynamic(
+const DisplayGroups = dynamic(
   () => import("@/app/homepage/groups/DisplayGroups")
 );
 
@@ -13,11 +13,11 @@ const HomepageCalendar = dynamic(
   () => import("@/app/homepage/calendar/HomepageCalendar")
 );
 
-export default function Home() {
+export default function Home({ searchParams }: { searchParams: any }) {
   const homepage = (
     <div className="flex gap-2 h-min">
       <DisplayGroups />
-      <DisplayReservations />
+      <DisplayReservations searchParams={searchParams} />
       <HomepageCalendar />
     </div>
   );

@@ -21,8 +21,6 @@ interface stateInterface {
   setReservationStatus: (value: number) => void;
   reservationsSearch: string;
   setReservationsSearch: (value: string) => void;
-  reservationsLoading: boolean;
-  setReservationsLoading: (value: boolean) => void;
 }
 
 export const store = create<stateInterface>((set) => ({
@@ -55,6 +53,4 @@ export const store = create<stateInterface>((set) => ({
   setReservationStatus: (reservationsStatus) => set({ reservationsStatus }),
   reservationsSearch: "",
   setReservationsSearch: (reservationsSearch) => set({ reservationsSearch }),
-  reservationsLoading: false,
-  setReservationsLoading: (reservationsLoading) => set({ reservationsLoading }),
 }));

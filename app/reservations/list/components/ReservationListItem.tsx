@@ -1,9 +1,8 @@
-"use client";
-import { store } from "@/store/store";
 import { Reservation } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Badge,
+  Button,
   Checkbox,
   Chip,
   IconButton,
@@ -13,42 +12,21 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import { useRouter } from "next/navigation";
 import GroupIcon from "@mui/icons-material/Group";
 import { Icon } from "@mui/material";
+import ReservationCheckbox from "./ReservationCheckbox";
+import Link from "next/link";
 
 export default function ReservationListItem({
   reservation,
 }: {
   reservation: Reservation;
 }) {
-  const { selectedReservations, setSelectedReservations, reservationsLoading } =
-    store();
-
-  const { push } = useRouter();
-  const handleSelect = (e: any) => {
-    e.stopPropagation();
-    if (selectedReservations.includes(reservation.id)) {
-      setSelectedReservations(
-        selectedReservations.filter((id) => id !== reservation.id)
-      );
-    } else {
-      setSelectedReservations([...selectedReservations, reservation.id]);
-    }
-  };
-
   return (
     <>
-      <TableRow
-        sx={{ filter: reservationsLoading ? "blur(5px)" : "none" }}
-        hover
-        onClick={() => push(`/reservations/detail/${reservation.id}`)}
-      >
+      <TableRow>
         <TableCell>
-          <Checkbox
-            checked={selectedReservations.includes(reservation.id)}
-            onClick={handleSelect}
-          />
+          <ReservationCheckbox id={reservation.id} />
         </TableCell>
         <TableCell>
           <Typography>{reservation.name}</Typography>
@@ -108,12 +86,17 @@ export default function ReservationListItem({
               />
             }
           >
-            <IconButton onClick={(e) => e.stopPropagation()}>
+            <IconButton>
               <Icon sx={{ color: reservation.status.color }}>
                 {reservation.status.icon}
               </Icon>
             </IconButton>
           </Tooltip>
+        </TableCell>
+        <TableCell>
+          <Link href={`/reservations/detail/${reservation.id}`}>
+            <Button>detail</Button>
+          </Link>
         </TableCell>
       </TableRow>
     </>

@@ -77,7 +77,7 @@ export default async function ReservationsListPage({
           <TableHead>
             <TableRow>
               <TableCell>
-                <CheckboxComponent reservations={reservations} />
+                <CheckboxComponent reservations={reservations.data} />
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Název" />
@@ -100,6 +100,7 @@ export default async function ReservationsListPage({
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Stav" />
               </TableCell>
+              <TableCell />
             </TableRow>
           </TableHead>
           <TableBody className="overflow-scroll">

@@ -1,28 +1,27 @@
-"use client";
-
 import { Reservation } from "@/types";
 import { Avatar, CardHeader, MenuItem } from "@mui/material";
 import dayjs from "dayjs";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SingleReservation({
   reservations,
 }: {
   reservations: Reservation;
 }) {
-  const { push } = useRouter();
   return (
-    <MenuItem
-      className="p-0"
-      onClick={() => push(`/reservations/detail/${reservations.id}`)}
+    <Link
+      href={`/reservations/detail/${reservations.id}`}
+      className="no-underline text-inherit"
     >
-      <CardHeader
-        avatar={<Avatar></Avatar>}
-        title={reservations.name}
-        subheader={`${dayjs(reservations.from_date).format(
-          "DD.MM.YYYY"
-        )} - ${dayjs(reservations.to_date).format("DD.MM.YYYY")}`}
-      />
-    </MenuItem>
+      <MenuItem className="p-0">
+        <CardHeader
+          avatar={<Avatar></Avatar>}
+          title={reservations.name}
+          subheader={`${dayjs(reservations.from_date).format(
+            "DD.MM.YYYY"
+          )} - ${dayjs(reservations.to_date).format("DD.MM.YYYY")}`}
+        />
+      </MenuItem>
+    </Link>
   );
 }

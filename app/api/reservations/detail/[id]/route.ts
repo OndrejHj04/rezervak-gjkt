@@ -21,7 +21,7 @@ export async function GET(
         query: `SELECT id, first_name, last_name, image, email FROM users ${
           JSON.parse(data[0].users).length
             ? `WHERE id IN (${JSON.parse(data[0].users).join(",")})`
-            : `WHERE id = ${data[0].leader}`
+            : `WHERE 1=2`
         }`,
         values: [],
       }),
@@ -49,6 +49,7 @@ export async function GET(
       count: groups.length,
       data: groups.slice((gpage - 1) * 5, gpage * 5),
     };
+    console.log(users);
     data[0].leader = users.find((user: any) => user.id === data[0].leader);
     data[0].status = status[0];
 

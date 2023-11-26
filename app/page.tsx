@@ -16,7 +16,7 @@ const HomepageCalendar = dynamic(
 export default function Home({ searchParams }: { searchParams: any }) {
   const homepage = (
     <div className="flex gap-2 h-min">
-      <DisplayGroups />
+      <DisplayGroups searchParams={searchParams} />
       <DisplayReservations searchParams={searchParams} />
       <HomepageCalendar />
     </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function SingleGroup({ group }: { group: Group }) {
   const { push } = useRouter();
+  console.log(group);
   return (
     <MenuItem className="p-0" onClick={() => push(`/group/detail/${group.id}`)}>
       <CardHeader

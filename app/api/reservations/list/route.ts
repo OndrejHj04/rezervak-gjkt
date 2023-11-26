@@ -9,41 +9,35 @@ export async function GET(req: Request) {
     const search = url.searchParams.get("search");
 
     let countSql = `SELECT COUNT(*) FROM reservations WHERE 1=1`;
-    let countValues = [];
 
     if (status) {
-      countSql += ` AND status = ?`;
-      countValues.push(status);
+      countSql += ` AND status = ${status}`;
     }
     if (search) {
-      countSql += ` AND name LIKE ?`;
-      countValues.push(`%${search}%`);
+      countSql += ` AND name LIKE ${`"%${search}%"`}`;
     }
 
     let sql = `SELECT * FROM reservations WHERE 1=1`;
-    let values = [];
+
     if (status) {
-      sql += ` AND status = ?`;
-      values.push(status);
+      sql += ` AND status = ${status}`;
     }
     if (search) {
-      sql += ` AND name LIKE ?`;
-      values.push(`%${search}%`);
+      sql += ` AND name LIKE ${`"%${search}%"`}`;
     }
     if (page) {
-      sql += ` LIMIT 10 OFFSET ?`;
-      values.push(page * 10 - 10);
+      sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
     }
 
     const [count, reservations, users, groups, statusList] = (await Promise.all(
       [
         query({
           query: countSql,
-          values: countValues,
+          values: [],
         }),
         query({
           query: sql,
-          values: values,
+          values: [],
         }),
         query({
           query: `SELECT id, first_name, last_name, email, image FROM users`,
@@ -59,7 +53,7 @@ export async function GET(req: Request) {
         }),
       ]
     )) as any[];
-      console.log('TEEEST!')
+
     reservations.map((reservation: any) => {
       reservation.status = statusList.find(
         (s: any) => s.id === reservation.status

@@ -16,6 +16,7 @@ import ReservationsPagination from "./components/ReseravtionsPagination";
 import dynamic from "next/dynamic";
 import ReservationsExport from "./components/ReservationsExport";
 import SearchBar from "@/ui-components/SearchBar";
+import TableListPagination from "@/ui-components/TableListPagination";
 
 const getReservations = async (page: any, status: any, search: any) => {
   try {
@@ -112,7 +113,7 @@ export default async function ReservationsListPage({
             ))}
           </TableBody>
         </Table>
-        <ReservationsPagination count={reservations.count} />
+        <TableListPagination count={reservations.count} />
       </Paper>
     </div>
   );

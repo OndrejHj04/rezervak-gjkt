@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import GroupListItem from "./GroupListItem";
 import RemoveGroups from "./RemoveGroupButton";
-import { GroupTablePagination } from "./GroupTablePagination";
 import ExportGroups from "./ExportGroups";
 import SearchBar from "@/ui-components/SearchBar";
+import TableListPagination from "@/ui-components/TableListPagination";
 
 const getGroups = async (page: any, search: any) => {
   try {
@@ -68,7 +68,7 @@ export default async function Page({ searchParams }: { searchParams: any }) {
             ))}
           </TableBody>
         </Table>
-        <GroupTablePagination count={groups.count} />
+        <TableListPagination count={groups.count} />
       </Paper>
     </div>
   );

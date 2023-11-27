@@ -10,26 +10,9 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       async profile(profile: GoogleProfile) {
         const req = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/list?email=${profile.email}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users/email/${profile.email}`
         );
         const { data } = await req.json();
-
-        if (
-          data.length &&
-          profile.picture &&
-          data[0].image !== profile.picture
-        ) {
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`,
-            {
-              method: "POST",
-              body: JSON.stringify({
-                picture: profile.picture,
-                id: data[0].id,
-              }),
-            }
-          );
-        }
 
         if (data.length) {
           return {
@@ -62,7 +45,6 @@ export const authOptions: NextAuthOptions = {
           email: credentials?.email,
           password: credentials?.password,
         } as any;
-
         const request = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
           {
@@ -88,6 +70,7 @@ export const authOptions: NextAuthOptions = {
         token.verified = user.verified;
         token.active = user.active;
       }
+
       return token;
     },
     async session({ session, token }) {

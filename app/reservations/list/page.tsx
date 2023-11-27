@@ -12,7 +12,6 @@ import CheckboxComponent from "./components/CheckboxComponent";
 import { Reservation } from "@/types";
 import TrashBin from "./components/TrashBin";
 import StatusSelect from "./components/StatusSelect";
-import ReservationsPagination from "./components/ReseravtionsPagination";
 import dynamic from "next/dynamic";
 import ReservationsExport from "./components/ReservationsExport";
 import SearchBar from "@/ui-components/SearchBar";

@@ -8,7 +8,7 @@ export async function GET(req: Request) {
     const role = Number(url.searchParams.get("role"));
     const search = url.searchParams.get("search");
 
-    let sql = `SELECT * FROM users WHERE 1=1`;
+    let sql = `SELECT first_name, last_name, email, role, birth_date, verified, active FROM users WHERE 1=1`;
     let countSql = `SELECT COUNT(*) FROM users WHERE 1=1
     `;
     if (role) {
@@ -25,7 +25,10 @@ export async function GET(req: Request) {
       sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
     }
 
-    const [users, count] = (await Promise.all([
+    const [roles, users, count] = (await Promise.all([
+      query({
+        query: "SELECT * FROM roles",
+      }),
       query({
         query: sql,
         values: [],
@@ -35,6 +38,10 @@ export async function GET(req: Request) {
         values: [],
       }),
     ])) as any;
+
+    users.map((item: any) => {
+      item.role = roles.find((r: any) => r.id === Number(item.role));
+    });
 
     return NextResponse.json({
       success: true,

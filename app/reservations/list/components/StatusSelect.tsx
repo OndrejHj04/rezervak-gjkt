@@ -1,6 +1,5 @@
 "use client";
 
-import { store } from "@/store/store";
 import {
   FormControl,
   FormHelperText,
@@ -8,24 +7,19 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import { useSearchParams } from "next/navigation";
-import ReservationListMakeRefetch from "../refetch";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function StatusSelect({ statuses }: { statuses: any }) {
   const searchParams = useSearchParams();
   const status = Number(searchParams.get("status")) || 0;
+  const { replace } = useRouter();
+  const pathname = usePathname();
 
   const handleChange = (e: any) => {
-    const page = searchParams.get("page");
-    if (page) {
-      ReservationListMakeRefetch(
-        `/reservations/list/?page=${page}&status=${e.target.value}`
-      );
-    } else {
-      ReservationListMakeRefetch(
-        `/reservations/list/?status=${e.target.value}`
-      );
-    }
+    const params = new URLSearchParams(searchParams);
+    params.set("status", e.target.value);
+    replace(`${pathname}?${params.toString()}`);
   };
 
   return (

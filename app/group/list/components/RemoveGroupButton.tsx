@@ -3,7 +3,7 @@ import { Badge, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { store } from "@/store/store";
 import { toast } from "react-toastify";
-import MakeGroupRefetch from "./refetch";
+import MakeGroupRefetch from "../refetch";
 
 export default function RemoveGroups() {
   const { selectedGroups, setSelectedGroups } = store();

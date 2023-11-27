@@ -7,8 +7,8 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import GroupListItem from "./GroupListItem";
-import RemoveGroups from "./RemoveGroupButton";
+import GroupListItem from "./components/GroupListItem";
+import RemoveGroups from "./components/RemoveGroupButton";
 import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
 import ExportButton from "@/ui-components/ExportButton";

@@ -1,10 +1,6 @@
 import { Group } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
-import {
-  Button,
-  TableCell,
-  TableRow,
-} from "@mui/material";
+import { Button, TableCell, TableRow } from "@mui/material";
 
 import GroupCheckbox from "./GroupCheckbox";
 import Link from "next/link";

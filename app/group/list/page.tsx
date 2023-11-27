@@ -46,7 +46,8 @@ export default async function Page({ searchParams }: { searchParams: any }) {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ padding: 1.5 }} />
+              <TableCell sx={{ padding: 1.5 }}>
+                </TableCell>
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Název" />
               </TableCell>

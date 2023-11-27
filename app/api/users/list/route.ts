@@ -5,7 +5,7 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const page = Number(url.searchParams.get("page"));
-    const role = url.searchParams.get("role");
+    const role = Number(url.searchParams.get("role"));
     const search = url.searchParams.get("search");
 
     let sql = `SELECT * FROM users WHERE 1=1`;
@@ -24,6 +24,7 @@ export async function GET(req: Request) {
     if (page) {
       sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
     }
+
     const [users, count] = (await Promise.all([
       query({
         query: sql,

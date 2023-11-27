@@ -14,21 +14,33 @@ import RemoveUser from "./removeUser";
 import CheckboxComponent from "./checkboxComponent";
 import UserRolesSelect from "./RolesSelect";
 import SearchBar from "@/ui-components/SearchBar";
+import TableListPagination from "@/ui-components/TableListPagination";
 
 interface User extends NextAuthUser {
   full_name: string;
 }
 
 const getUsers = async (page: any, search: any, role: any) => {
+  console.log(
+    `${
+      process.env.NEXT_PUBLIC_API_URL
+    }/api/users/list?page=${page}&role=${role}${
+      search.length ? `&search=${search}` : ""
+    }`
+  );
   const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/users/list?page=${page}&role=${role}&search=${search}`,
+    `${
+      process.env.NEXT_PUBLIC_API_URL
+    }/api/users/list?page=${page}&role=${role}${
+      search.length ? `&search=${search}` : ""
+    }`,
     {
       cache: "no-cache",
     }
   );
-  const { data } = await req.json();
+  const data = await req.json();
 
-  return data as User[];
+  return data;
 };
 
 const getRoles = async () => {
@@ -83,11 +95,12 @@ export default async function UserList({
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
+            {users.data.map((user: any) => (
               <UserListItem key={user.id} user={user} />
             ))}
           </TableBody>
         </Table>
+        <TableListPagination count={users.count} />
       </Paper>
     </div>
   );

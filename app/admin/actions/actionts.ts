@@ -13,20 +13,11 @@ export const setTheme = async (theme: any, id: any) => {
   return data;
 };
 
-export const reservationsExport = async (status: any) => {
-  const reservations = (await query({
-    query: `SELECT * FROM reservations ${status ? "WHERE status = ?" : ""}`,
-    values: [status],
+export const getExportData = async (type: any) => {
+  const data = (await query({
+    query: "SELECT * FROM " + "`" + type + "`",
+    values: [],
   })) as any;
 
-  return reservations;
-};
-
-export const groupsExport = async (status: any) => {
-  const groups = (await query({
-    query: `SELECT * FROM ${"`groups`"} ${status ? "WHERE status = ?" : ""}`,
-    values: [status],
-  })) as any;
-
-  return groups;
+  return data;
 };

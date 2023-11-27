@@ -15,6 +15,7 @@ import CheckboxComponent from "./checkboxComponent";
 import UserRolesSelect from "./RolesSelect";
 import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
+import ExportButton from "@/ui-components/ExportButton";
 
 interface User extends NextAuthUser {
   full_name: string;
@@ -66,7 +67,10 @@ export default async function UserList({
       <div className="flex justify-between">
         <RemoveUser />
         <SearchBar label="uživatele" />
-        <UserRolesSelect roles={roles} />
+        <div>
+          <UserRolesSelect roles={roles} />
+          <ExportButton prop="users" />
+        </div>
       </div>
       <Paper className="w-full p-2">
         <Table>

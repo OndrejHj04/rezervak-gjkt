@@ -13,9 +13,9 @@ import { Reservation } from "@/types";
 import TrashBin from "./components/TrashBin";
 import StatusSelect from "./components/StatusSelect";
 import dynamic from "next/dynamic";
-import ReservationsExport from "./components/ReservationsExport";
 import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
+import ExportButton from "@/ui-components/ExportButton";
 
 const getReservations = async (page: any, status: any, search: any) => {
   try {
@@ -69,7 +69,7 @@ export default async function ReservationsListPage({
         <SearchBar label={"rezervace"} />
         <div className="flex gap-2 items-center">
           <StatusSelect statuses={statuses} />
-          <ReservationsExport reservations={reservations.length} />
+          <ExportButton prop={"reservations"} />
         </div>
       </div>
       <Paper>

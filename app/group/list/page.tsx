@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import GroupListItem from "./GroupListItem";
 import RemoveGroups from "./RemoveGroupButton";
-import ExportGroups from "./ExportGroups";
 import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
+import ExportButton from "@/ui-components/ExportButton";
 
 const getGroups = async (page: any, search: any) => {
   try {
@@ -40,7 +40,7 @@ export default async function Page({ searchParams }: { searchParams: any }) {
       <div className="flex justify-between">
         <RemoveGroups />
         <SearchBar label={"skupiny"} />
-        <ExportGroups />
+        <ExportButton prop={"groups"} />
       </div>
       <Paper className="w-full p-2">
         <Table>

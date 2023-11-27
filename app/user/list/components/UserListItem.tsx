@@ -13,8 +13,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import dayjs from "dayjs";
 import HotelIcon from "@mui/icons-material/Hotel";
-import UserCheckbox from "./UserCheckbox";
 import Link from "next/link";
+import TableListCheckbox from "@/ui-components/TableListCheckbox";
 
 export default function UserListItem({ user }: { user: User }) {
   const sleepingUser = (
@@ -24,7 +24,7 @@ export default function UserListItem({ user }: { user: User }) {
       <HotelIcon sx={{ color: "#4579ac", fontSize: 36 }} />
     </Box>
   );
-
+    console.log(user)
   return (
     <Tooltip
       title={sleepingUser}
@@ -33,9 +33,7 @@ export default function UserListItem({ user }: { user: User }) {
       followCursor
     >
       <TableRow key={user.id}>
-        <TableCell>
-          <UserCheckbox id={user.id} />
-        </TableCell>
+        <TableListCheckbox prop="users" id={user.id} />
         <TableCell>
           <AvatarWrapper data={user} />
         </TableCell>

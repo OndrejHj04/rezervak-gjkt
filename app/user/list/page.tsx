@@ -77,7 +77,7 @@ export default async function UserList({
           <TableHead>
             <TableRow>
               <TableCell>
-                <CheckboxComponent users={users} />
+                <CheckboxComponent users={users.data} />
               </TableCell>
               <TableCell></TableCell>
               <TableCell sx={{ padding: 1.5 }}>

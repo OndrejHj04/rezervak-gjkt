@@ -8,7 +8,7 @@ export async function GET(req: Request) {
     const role = Number(url.searchParams.get("role"));
     const search = url.searchParams.get("search");
 
-    let sql = `SELECT first_name, last_name, email, role, birth_date, verified, active FROM users WHERE 1=1`;
+    let sql = `SELECT id, first_name, last_name, email, role, birth_date, verified, active FROM users WHERE 1=1`;
     let countSql = `SELECT COUNT(*) FROM users WHERE 1=1
     `;
     if (role) {

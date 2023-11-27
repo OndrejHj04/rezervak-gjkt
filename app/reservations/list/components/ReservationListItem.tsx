@@ -14,8 +14,8 @@ import {
 import dayjs from "dayjs";
 import GroupIcon from "@mui/icons-material/Group";
 import { Icon } from "@mui/material";
-import ReservationCheckbox from "./ReservationCheckbox";
 import Link from "next/link";
+import TableListCheckbox from "@/ui-components/TableListCheckbox";
 
 export default function ReservationListItem({
   reservation,
@@ -25,9 +25,7 @@ export default function ReservationListItem({
   return (
     <>
       <TableRow>
-        <TableCell>
-          <ReservationCheckbox id={reservation.id} />
-        </TableCell>
+        <TableListCheckbox prop="reservations" id={reservation.id} />
         <TableCell>
           <Typography>{reservation.name}</Typography>
         </TableCell>

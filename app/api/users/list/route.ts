@@ -4,36 +4,42 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const roles = url.searchParams.get("roles")?.split(",");
-    const email = url.searchParams.get("email");
+    const page = Number(url.searchParams.get("page"));
+    const role = url.searchParams.get("role");
+    const search = url.searchParams.get("search");
 
-    const [rolesList, data] = (await Promise.all([
+    let sql = `SELECT * FROM users WHERE 1=1`;
+    let countSql = `SELECT COUNT(*) FROM users WHERE 1=1
+    `;
+    if (role) {
+      sql += ` AND role = ${role}`;
+      countSql += ` AND role = ${role}`;
+    }
+
+    if (search) {
+      sql += ` AND first_name LIKE ${`"%${search}%"`} OR last_name LIKE ${`"%${search}%"`}`;
+      countSql += ` AND first_name LIKE ${`"%${search}%"`} OR last_name LIKE ${`"%${search}%"`}`;
+    }
+
+    if (page) {
+      sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
+    }
+    const [users, count] = (await Promise.all([
       query({
-        query: `SELECT * FROM roles`,
+        query: sql,
         values: [],
       }),
       query({
-        query: `SELECT * FROM users ${
-          roles || email
-            ? roles
-              ? `WHERE role IN(${roles.join(",")})`
-              : `WHERE email = "${email}"`
-            : ``
-        }`,
+        query: countSql,
         values: [],
       }),
     ])) as any;
 
-    data.map((item: any) => {
-      item.role = rolesList.find((role: any) => role.id === Number(item.role));
-      item.full_name = `${item.first_name} ${item.last_name}`;
-      item.children = item.children ? JSON.parse(item.children as any) : [];
-      return item;
-    });
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: data,
+      data: users,
+      count: count[0]["COUNT(*)"],
     });
   } catch (e) {
     return NextResponse.json(

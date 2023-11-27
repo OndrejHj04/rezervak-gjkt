@@ -36,7 +36,7 @@ export default function RolesSelect({ roles }: { roles: any }) {
           </MenuItem>
         ))}
       </Select>
-      <FormHelperText>Status rezervace</FormHelperText>
+      <FormHelperText>Role uživatele</FormHelperText>
     </FormControl>
   );
 }

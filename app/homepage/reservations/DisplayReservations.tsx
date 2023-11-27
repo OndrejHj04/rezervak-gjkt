@@ -25,7 +25,7 @@ export default async function DisplayReservations({
   searchParams: any;
 }) {
   const data = (await getServerSession(authOptions)) as { user: User };
-  console.log(data, 'TEST!!!!')
+
   const reservations = data
     ? ((await getReservations(
         data.user.id,

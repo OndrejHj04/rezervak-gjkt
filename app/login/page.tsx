@@ -4,6 +4,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
+  Alert,
   Button,
   IconButton,
   InputAdornment,
@@ -17,7 +18,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-export default function Page() {
+export default function Page({ searchParams }: { searchParams: any }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const path = useSearchParams().get("invalid");
@@ -26,23 +27,11 @@ export default function Page() {
     handleSubmit,
     formState: { isValid },
   } = useForm();
-  const { setUserLoading } = store();
-  const { push } = useRouter();
   const onSubmit = (data: any) => {
     setLoading(true);
     signIn("credentials", {
       email: data.email,
       password: data.password,
-      redirect: false,
-    }).then((res) => {
-      if (res?.ok) {
-        setUserLoading(true);
-        push("/");
-        setLoading(false);
-      } else {
-        toast.error("Nepodařilo se přihlásit.");
-        setLoading(false);
-      }
     });
   };
 
@@ -94,6 +83,9 @@ export default function Page() {
       <Button variant="contained" onClick={() => signIn("google")}>
         GOOGLE
       </Button>
+      {searchParams.error && (
+        <Alert severity="error">Nepodařilo se přihlásit</Alert>
+      )}
     </Paper>
   );
 }

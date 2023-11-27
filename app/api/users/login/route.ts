@@ -20,10 +20,16 @@ export async function POST(req: Request) {
       data.map((item) => (item.role = roles[0]));
     }
 
+    if (data.length) {
+      return NextResponse.json({
+        success: true,
+        message: "Operation successful",
+        data: data[0],
+      });
+    }
     return NextResponse.json({
-      success: true,
-      message: "Operation successful",
-      data: data[0],
+      success: false,
+      message: "Something went wrong",
     });
   } catch (e) {
     return NextResponse.json(

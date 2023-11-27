@@ -13,6 +13,7 @@ import { User as NextAuthUser } from "next-auth";
 import RemoveUser from "./removeUser";
 import CheckboxComponent from "./checkboxComponent";
 import UserRolesSelect from "./RolesSelect";
+import SearchBar from "@/ui-components/SearchBar";
 
 interface User extends NextAuthUser {
   full_name: string;
@@ -52,6 +53,7 @@ export default async function UserList({
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
         <RemoveUser />
+        <SearchBar label="uživatele" />
         <UserRolesSelect roles={roles} />
       </div>
       <Paper className="w-full p-2">

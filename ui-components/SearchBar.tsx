@@ -1,11 +1,12 @@
 "use client";
 import { IconButton, InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import CancelIcon from "@mui/icons-material/Cancel";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import CancelIcon from "@mui/icons-material/Cancel";
 
-export default function SearchBar() {
+export default function SearchBar({ label }: { label: any }) {
   const [text, setText] = useState("");
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -27,7 +28,7 @@ export default function SearchBar() {
     <div className="flex items-center gap-2">
       <TextField
         variant="outlined"
-        label="Hledat skupiny"
+        label={`Hledat ${label}...`}
         value={text}
         onChange={(e) => setText(e.target.value)}
         InputProps={{

@@ -12,10 +12,10 @@ import CheckboxComponent from "./components/CheckboxComponent";
 import { Reservation } from "@/types";
 import TrashBin from "./components/TrashBin";
 import StatusSelect from "./components/StatusSelect";
-import SearchBar from "./components/SearchBar";
 import ReservationsPagination from "./components/ReseravtionsPagination";
 import dynamic from "next/dynamic";
 import ReservationsExport from "./components/ReservationsExport";
+import SearchBar from "@/ui-components/SearchBar";
 
 const getReservations = async (page: any, status: any, search: any) => {
   try {
@@ -66,7 +66,7 @@ export default async function ReservationsListPage({
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
         <TrashBin />
-        <SearchBar />
+        <SearchBar label={"rezervace"} />
         <div className="flex gap-2 items-center">
           <StatusSelect statuses={statuses} />
           <ReservationsExport reservations={reservations.length} />

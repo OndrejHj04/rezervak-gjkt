@@ -10,8 +10,8 @@ import {
 import GroupListItem from "./GroupListItem";
 import RemoveGroups from "./RemoveGroupButton";
 import { GroupTablePagination } from "./GroupTablePagination";
-import SearchBar from "./SearchBar";
 import ExportGroups from "./ExportGroups";
+import SearchBar from "@/ui-components/SearchBar";
 
 const getGroups = async (page: any, search: any) => {
   try {
@@ -39,7 +39,7 @@ export default async function Page({ searchParams }: { searchParams: any }) {
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
         <RemoveGroups />
-        <SearchBar />
+        <SearchBar label={"skupiny"} />
         <ExportGroups />
       </div>
       <Paper className="w-full p-2">

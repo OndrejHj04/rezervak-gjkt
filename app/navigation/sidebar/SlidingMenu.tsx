@@ -8,7 +8,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
 import { Typography } from "@mui/material";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { navConfig } from "@/lib/navigationConfig";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import CollectionsIcon from "@mui/icons-material/Collections";
@@ -28,7 +28,8 @@ const icons = [
 ];
 
 export default function SlidingMenu() {
-  const { panel, setPanel, user, userLoading } = store();
+  const { panel, setPanel } = store();
+  const { data, status } = useSession();
 
   return (
     <Drawer anchor="left" open={panel} onClose={() => setPanel(false)}>
@@ -36,7 +37,7 @@ export default function SlidingMenu() {
         <MenuList>
           {navConfig.map((route, i) => {
             if (
-              route.roles.includes(user?.role.id!) ||
+              route.roles.includes(data?.user.role.id) ||
               route.roles.length === 0
             ) {
               return (
@@ -47,7 +48,9 @@ export default function SlidingMenu() {
                   className="no-underline text-inherit"
                 >
                   <MenuItem
-                    disabled={Boolean(!user?.verified && route.roles.length)}
+                    disabled={Boolean(
+                      !data?.user.verified && route.roles.length
+                    )}
                   >
                     <ListItemIcon sx={{ marginRight: 1 }}>
                       {React.createElement(icons[i], {
@@ -66,7 +69,10 @@ export default function SlidingMenu() {
         </MenuList>
 
         <MenuList>
-          <MenuItem onClick={() => signOut()} disabled={!user && !userLoading}>
+          <MenuItem
+            onClick={() => signOut()}
+            disabled={status !== "authenticated"}
+          >
             <ListItemIcon sx={{ marginRight: 1 }}>
               <LogoutIcon fontSize="large" color="error" />
             </ListItemIcon>

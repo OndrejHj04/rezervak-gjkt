@@ -70,17 +70,21 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id as number;
         token.verified = user.verified;
         token.active = user.active;
+        token.first_name = user.first_name;
+        token.last_name = user.last_name;
       }
 
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       //provider
       if (session?.user) {
         session.user.role = token.role;
         session.user.id = token.id;
         session.user.verified = token.verified;
         session.user.active = token.active;
+        session.user.first_name = token.first_name;
+        session.user.last_name = token.last_name;
       }
 
       return session;

@@ -14,13 +14,15 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { store } from "@/store/store";
 import { setTheme } from "@/app/admin/actions/actionts";
+import { useSession } from "next-auth/react";
+import LoginButton from "./LoginButton";
 
 const handleSetTheme = (theme: any, id: any) => {
   setTheme(theme, id).then(() => window.location.reload());
 };
 
 export default function TopBarComponent({ theme, id }: any) {
-  const { user, userLoading, setPanel } = store();
+  const { setPanel } = store();
 
   return (
     <AppBar position="static">
@@ -38,46 +40,7 @@ export default function TopBarComponent({ theme, id }: any) {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Rezervak GJKT
         </Typography>
-        {userLoading ? (
-          <Skeleton variant="rounded" width={180} height={50} />
-        ) : (
-          <>
-            <IconButton
-              disabled={!id}
-              onClick={() => handleSetTheme(theme, id)}
-            >
-              {theme ? <LightModeIcon /> : <DarkModeIcon />}
-            </IconButton>
-            {user ? (
-              <Link href={`/user/detail/${user.id}`}>
-                <Button>
-                  <div className="flex flex-col mx-4 items-end normal-case text-white">
-                    <Typography
-                      className="font-semibold capitalize"
-                      variant="body1"
-                    >
-                      {user.first_name} {user.last_name}
-                    </Typography>
-                    <div className="flex gap-1 items-center">
-                      {!user.active && <HotelIcon sx={{ color: "#ED9191" }} />}
-                      {!user.verified && (
-                        <ErrorIcon sx={{ color: "#ED9191" }} />
-                      )}
-                      <Typography variant="body2">
-                        {user.role.role_name}
-                      </Typography>
-                    </div>
-                  </div>
-                  <AvatarWrapper />
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/login">
-                <Button style={{ color: "white" }}>Přihlásit se</Button>
-              </Link>
-            )}
-          </>
-        )}
+        <LoginButton />
       </Toolbar>
     </AppBar>
   );

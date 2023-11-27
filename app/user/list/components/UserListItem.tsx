@@ -24,7 +24,7 @@ export default function UserListItem({ user }: { user: User }) {
       <HotelIcon sx={{ color: "#4579ac", fontSize: 36 }} />
     </Box>
   );
-    console.log(user)
+
   return (
     <Tooltip
       title={sleepingUser}

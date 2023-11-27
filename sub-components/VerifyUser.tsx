@@ -28,7 +28,6 @@ export interface verifyForm {
 
 export default function VerifyUser({ id }: { id?: number }) {
   const methods = useForm<verifyForm>();
-  const { setUser, setUserLoading } = store();
   const [hidePassword, setHidePassword] = useState(true);
   const errors = methods.formState.errors;
   const [loading, setLoading] = useState(false);

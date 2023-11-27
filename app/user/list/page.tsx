@@ -22,13 +22,7 @@ interface User extends NextAuthUser {
 }
 
 const getUsers = async (page: any, search: any, role: any) => {
-  console.log(
-    `${
-      process.env.NEXT_PUBLIC_API_URL
-    }/api/users/list?page=${page}&role=${role}${
-      search.length ? `&search=${search}` : ""
-    }`
-  );
+
   const req = await fetch(
     `${
       process.env.NEXT_PUBLIC_API_URL

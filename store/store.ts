@@ -5,10 +5,6 @@ import { create } from "zustand";
 interface stateInterface {
   panel: boolean;
   setPanel: (panel: boolean) => void;
-  user: User | null;
-  setUser: (user: User) => void;
-  userLoading: boolean;
-  setUserLoading: (value: boolean) => void;
   selectedUsers: number[];
   setSelectedUsers: (users: number[]) => void;
   selectedGroups: number[];
@@ -22,10 +18,6 @@ interface stateInterface {
 export const store = create<stateInterface>((set) => ({
   panel: false,
   setPanel: (panel) => set({ panel }),
-  user: null,
-  setUser: (user) => set({ user }),
-  userLoading: true,
-  setUserLoading: (userLoading) => set({ userLoading }),
   selectedUsers: [],
   setSelectedUsers: (selectedUsers) => set({ selectedUsers }),
   selectedGroups: [],

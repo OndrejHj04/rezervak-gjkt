@@ -24,7 +24,7 @@ export default async function UserDetail({
   params: { id: string };
   searchParams: { mode: any; reservations: any; groups: any };
 }) {
-  const userDetail = await getUserDetail(id, reservations, groups);
+  const userDetail = await getUserDetail(id, reservations || 1, groups || 1);
   const roles = await getRoles();
 
   return (

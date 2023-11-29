@@ -154,7 +154,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
           <AddUsersToGroupModal
             groupId={group.id}
             setModal={setUsersModal}
-            currentUsers={group.users.map((user: any) => user.id)}
+            currentUsers={group.users.data.map((user: any) => user.id)}
           />
         </Modal>
       )}
@@ -166,7 +166,9 @@ export default function GroupDetailForm({ group }: { group: any }) {
           <AddGroupToReservationModal
             groupId={group.id}
             setModal={setReservationModal}
-            currentReservations={group.reservations.map((user: any) => user.id)}
+            currentReservations={group.reservations.data.map(
+              (user: any) => user.id
+            )}
           />
         </Modal>
       )}
@@ -226,14 +228,11 @@ export default function GroupDetailForm({ group }: { group: any }) {
 
           <div className="flex gap-2">
             <div className="flex flex-col">
-              <Typography variant="h5">
-                Uživatelé ve skupině{" "}
-                {!!group.users.length && <span>({group.users.length})</span>}
-              </Typography>
+              <Typography variant="h5">Uživatelé ve skupině </Typography>
               <Divider />
               <List sx={{ height: 400 }}>
-                {group.users.length ? (
-                  group.users.map((user: any) => (
+                {group.users ? (
+                  group.users.data.map((user: any) => (
                     <ListItem disablePadding key={user.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}
@@ -288,16 +287,11 @@ export default function GroupDetailForm({ group }: { group: any }) {
               </div>
             </div>
             <div className="flex flex-col">
-              <Typography variant="h5">
-                Rezervace skupiny{" "}
-                {!!group.reservations.length && (
-                  <span>({group.reservations.length})</span>
-                )}
-              </Typography>
+              <Typography variant="h5">Rezervace skupiny </Typography>
               <Divider />
               <List sx={{ height: 400 }}>
-                {group.reservations.length ? (
-                  group.reservations.map((reservation: any) => (
+                {group.reservations ? (
+                  group.reservations.data.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}

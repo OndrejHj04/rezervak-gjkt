@@ -2,9 +2,9 @@ import GroupDetailDisplay from "./GroupDetailDisplay";
 import GroupDetailForm from "./GroupDetailForm";
 import GroupDetailNavigation from "./GroupDetailNavigation";
 
-const getGroupDetail = async (id: string) => {
+const getGroupDetail = async (id: string, reservations: any, users: any) => {
   const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}?reservations=${reservations}&users=${users}`,
     { cache: "no-cache" }
   );
   const { data } = await req.json();
@@ -13,12 +13,12 @@ const getGroupDetail = async (id: string) => {
 
 export default async function Page({
   params: { id },
-  searchParams: { mode },
+  searchParams: { mode, reservations, users },
 }: {
   params: { id: string };
-  searchParams: { mode: string };
+  searchParams: { mode: string; reservations: string; users: string };
 }) {
-  const group = await getGroupDetail(id);
+  const group = await getGroupDetail(id, reservations || 1, users || 1);
   return (
     <>
       <GroupDetailNavigation id={id} mode={mode} />

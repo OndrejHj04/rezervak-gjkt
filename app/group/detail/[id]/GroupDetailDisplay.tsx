@@ -1,3 +1,4 @@
+import UsersPagination from "@/app/reservations/detail/[id]/UsersPagination";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Avatar,
@@ -10,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
+import GroupsPagination from "./GroupsPagination";
 
 export default async function GroupDetailDisplay({ group }: { group: any }) {
   return (
@@ -32,14 +34,11 @@ export default async function GroupDetailDisplay({ group }: { group: any }) {
       </div>
       <div className="flex gap-4">
         <div className="flex flex-col">
-          <Typography variant="h5">
-            Uživatelé ve skupině{" "}
-            {!!group.users.length && <span>({group.users.length})</span>}
-          </Typography>
+          <Typography variant="h5">Uživatelé ve skupině </Typography>
           <Divider />
           <List>
-            {group.users.length ? (
-              group.users.map((user: any) => (
+            {group.users ? (
+              group.users.data.map((user: any) => (
                 <ListItem disablePadding key={user.id}>
                   <ListItemIcon>
                     <AvatarWrapper data={user} />
@@ -60,18 +59,14 @@ export default async function GroupDetailDisplay({ group }: { group: any }) {
               </>
             )}
           </List>
+          <UsersPagination count={group.users.count} />
         </div>
         <div className="flex flex-col">
-          <Typography variant="h5">
-            Rezervace skupiny{" "}
-            {!!group.reservations.length && (
-              <span>({group.reservations.length})</span>
-            )}
-          </Typography>
+          <Typography variant="h5">Rezervace skupiny </Typography>
           <Divider />
           <List>
-            {group.reservations.length ? (
-              group.reservations.map((reservation: any) => (
+            {group.reservations.data ? (
+              group.reservations.data.map((reservation: any) => (
                 <ListItem disablePadding key={reservation.id}>
                   <ListItemText
                     primary={<Typography>{reservation.name}</Typography>}
@@ -87,6 +82,7 @@ export default async function GroupDetailDisplay({ group }: { group: any }) {
               </>
             )}
           </List>
+          <GroupsPagination count={group.reservations.count} />
         </div>
       </div>
     </Paper>

@@ -9,6 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
+import GroupsPagination from "./GroupsPagination";
+import ReservationsPagination from "./ReservationsPagination";
 
 export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
   return (
@@ -33,14 +35,11 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
         <Typography>Adresa: {userDetail.adress}</Typography>
       </div>
       <div>
-        <Typography variant="h5">
-          Skupiny uživatele{" "}
-          {!!userDetail.groups && <span>({userDetail.groups.length})</span>}
-        </Typography>
+        <Typography variant="h5">Skupiny uživatele </Typography>
         <Divider />
         <List sx={{ height: 400 }}>
-          {userDetail.groups ? (
-            userDetail.groups.map((group: any) => (
+          {userDetail.groups.data ? (
+            userDetail.groups.data.map((group: any) => (
               <ListItem disablePadding key={group.id}>
                 <ListItemText
                   primary={<Typography>{group.name}</Typography>}
@@ -54,18 +53,14 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
             </>
           )}
         </List>
+        <GroupsPagination count={userDetail.groups.count} />
       </div>
       <div>
-        <Typography variant="h5">
-          Rezervace uživatele{" "}
-          {!!userDetail.reservations && (
-            <span>({userDetail.reservations.length})</span>
-          )}
-        </Typography>
+        <Typography variant="h5">Rezervace uživatele </Typography>
         <Divider />
         <List sx={{ height: 400 }}>
-          {userDetail.reservations ? (
-            userDetail.reservations.map((reservation: any) => (
+          {userDetail.reservations.data ? (
+            userDetail.reservations.data.map((reservation: any) => (
               <ListItem disablePadding key={reservation.id}>
                 <ListItemText
                   primary={<Typography>{reservation.name}</Typography>}
@@ -81,6 +76,7 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
             </>
           )}
         </List>
+        <ReservationsPagination count={userDetail.reservations.count} />
       </div>
     </Paper>
   );

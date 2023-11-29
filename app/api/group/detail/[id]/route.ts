@@ -9,6 +9,7 @@ export async function GET(
   const url = new URL(req.url);
   const rpage = Number(url.searchParams.get("reservations")) || 1;
   const upage = Number(url.searchParams.get("users")) || 1;
+
   try {
     const data = (await query({
       query: `
@@ -41,10 +42,9 @@ export async function GET(
       count: users.length,
       data: users.slice((upage - 1) * 5, upage * 5),
     };
-
     data[0].reservations = {
       count: reservations.length,
-      data: reservations.slice((upage - 1) * 5, upage * 5),
+      data: reservations.slice((rpage - 1) * 5, rpage * 5),
     };
 
     data[0].owner = users.find((user: any) => user.id === data[0].owner);

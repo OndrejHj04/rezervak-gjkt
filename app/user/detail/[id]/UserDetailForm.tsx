@@ -41,7 +41,7 @@ export default function UserDetailForm({
   userDetail,
   roles,
 }: {
-  userDetail: User;
+  userDetail: any;
   roles: Role[];
 }) {
   const {
@@ -97,7 +97,7 @@ export default function UserDetailForm({
       method: "POST",
       body: JSON.stringify({
         user: userDetail.id,
-        currentGroups: userDetail.groups.map((group) => group.id),
+        currentGroups: userDetail.groups.data.map((group: any) => group.id),
         removeGroups: selectGroups,
       }),
     })
@@ -126,8 +126,8 @@ export default function UserDetailForm({
       method: "POST",
       body: JSON.stringify({
         user: userDetail.id,
-        currentReservations: userDetail.reservations.map(
-          (reservation) => reservation.id
+        currentReservations: userDetail.reservations.data.map(
+          (reservation: any) => reservation.id
         ),
         removeReservations: selectReservations,
       }),
@@ -148,7 +148,9 @@ export default function UserDetailForm({
         <Modal open={groupsModal} onClose={() => setGroupsModal(false)}>
           {groupsModal && (
             <AddGroupsModal
-              currentGroups={userDetail.groups.map((group) => group.id)}
+              currentGroups={userDetail.groups.data.map(
+                (group: any) => group.id
+              )}
               userId={userDetail.id}
               setModal={setGroupsModal}
             />
@@ -162,8 +164,8 @@ export default function UserDetailForm({
         >
           {reservationsModal && (
             <AddReservationsModal
-              currentReservations={userDetail.reservations.map(
-                (group) => group.id
+              currentReservations={userDetail.reservations.data.map(
+                (group: any) => group.id
               )}
               userId={userDetail.id}
               setModal={setReservationsModal}
@@ -258,16 +260,11 @@ export default function UserDetailForm({
           </div>
           <div className="flex gap-2">
             <div className="flex flex-col">
-              <Typography variant="h5">
-                Skupiny uživatele{" "}
-                {!!userDetail.groups && (
-                  <span>({userDetail.groups.length})</span>
-                )}
-              </Typography>
+              <Typography variant="h5">Skupiny uživatele </Typography>
               <Divider />
               <List sx={{ height: 400 }}>
-                {userDetail.groups ? (
-                  userDetail.groups.map((group: any) => (
+                {userDetail.groups.data ? (
+                  userDetail.groups.data.map((group: any) => (
                     <ListItem disablePadding key={group.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}
@@ -318,16 +315,11 @@ export default function UserDetailForm({
               </div>
             </div>
             <div className="flex flex-col">
-              <Typography variant="h5">
-                Rezervace uživatele{" "}
-                {!!userDetail.reservations && (
-                  <span>({userDetail.reservations.length})</span>
-                )}
-              </Typography>
+              <Typography variant="h5">Rezervace uživatele </Typography>
               <Divider />
               <List sx={{ height: 400 }}>
-                {userDetail.reservations ? (
-                  userDetail.reservations.map((reservation: any) => (
+                {userDetail.reservations.data ? (
+                  userDetail.reservations.data.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}

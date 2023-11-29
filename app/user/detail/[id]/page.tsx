@@ -2,9 +2,9 @@ import UserDetailDisplay from "./UserDetailDisplay";
 import UserDetailForm from "./UserDetailForm";
 import UserDetailNavigation from "./UserDetailNavigation";
 
-const getUserDetail = async (id: string) => {
+const getUserDetail = async (id: string, reservations: any, groups: any) => {
   const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${id}?reservations=${reservations}&groups=${groups}`,
     { cache: "no-cache" }
   );
   const { data } = await req.json();
@@ -19,12 +19,12 @@ const getRoles = async () => {
 
 export default async function UserDetail({
   params: { id },
-  searchParams: { mode },
+  searchParams: { mode, reservations, groups },
 }: {
   params: { id: string };
-  searchParams: { mode: any; users: any; groups: any };
+  searchParams: { mode: any; reservations: any; groups: any };
 }) {
-  const userDetail = await getUserDetail(id);
+  const userDetail = await getUserDetail(id, reservations, groups);
   const roles = await getRoles();
 
   return (

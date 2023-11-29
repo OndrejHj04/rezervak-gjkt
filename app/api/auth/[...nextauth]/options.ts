@@ -14,6 +14,23 @@ export const authOptions: NextAuthOptions = {
         );
         const { data } = await req.json();
 
+        if (
+          data.length &&
+          profile.picture &&
+          data[0].image !== profile.picture
+        ) {
+          await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                picture: profile.picture,
+                id: data[0].id,
+              }),
+            }
+          );
+        }
+        console.log(data);
         if (data.length) {
           return {
             ...data[0],
@@ -72,6 +89,7 @@ export const authOptions: NextAuthOptions = {
         token.active = user.active;
         token.first_name = user.first_name;
         token.last_name = user.last_name;
+        token.image = user.image;
       }
 
       return token;
@@ -85,6 +103,7 @@ export const authOptions: NextAuthOptions = {
         session.user.active = token.active;
         session.user.first_name = token.first_name;
         session.user.last_name = token.last_name;
+        session.user.image = token.image;
       }
 
       return session;

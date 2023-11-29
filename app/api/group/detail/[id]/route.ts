@@ -6,6 +6,9 @@ export async function GET(
   req: Request,
   { params: { id } }: { params: { id: string } }
 ) {
+  const url = new URL(req.url);
+  const rpage = Number(url.searchParams.get("reservations")) || 1;
+  const upage = Number(url.searchParams.get("users")) || 1;
   try {
     const data = (await query({
       query: `
@@ -13,12 +16,7 @@ export async function GET(
       values: [id],
     })) as any;
 
-    const [owner, users, reservations] = (await Promise.all([
-      query({
-        query: `
-      SELECT id, image, first_name, last_name, email FROM users WHERE id = ${data[0].owner}`,
-        values: [],
-      }),
+    const [users, reservations] = (await Promise.all([
       query({
         query: `
       SELECT id, image, first_name, last_name, email FROM users ${
@@ -38,10 +36,18 @@ export async function GET(
         values: [],
       }),
     ])) as any;
-    data[0].owner = owner[0];
-    data[0].users = users || [];
-    data[0].reservations = reservations || [];
 
+    data[0].users = {
+      count: users.length,
+      data: users.slice((upage - 1) * 5, upage * 5),
+    };
+
+    data[0].reservations = {
+      count: reservations.length,
+      data: reservations.slice((upage - 1) * 5, upage * 5),
+    };
+
+    data[0].owner = users.find((user: any) => user.id === data[0].owner);
     return NextResponse.json({
       success: true,
       message: "Operation successful",

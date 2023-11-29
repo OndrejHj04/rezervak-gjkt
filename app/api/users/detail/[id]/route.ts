@@ -7,6 +7,10 @@ export async function GET(
   req: Request,
   { params: { id } }: { params: { id: string } }
 ) {
+  const url = new URL(req.url);
+  const rpage = Number(url.searchParams.get("reservations")) || 1;
+  const gpage = Number(url.searchParams.get("groups")) || 1;
+
   try {
     const data = (await query({
       query: `
@@ -24,21 +28,35 @@ export async function GET(
       }),
       query({
         query: `
-        SELECT * FROM ${"`groups`"} WHERE id IN (?)
+        SELECT * FROM ${"`groups`"} ${
+          JSON.parse(data[0].groups).length
+            ? `WHERE id IN (${JSON.parse(data[0].groups).join(",")})`
+            : `WHERE 1=2`
+        }
       `,
-        values: [JSON.parse(data[0].groups).join(",")],
+        values: [],
       }),
       query({
         query: `
-        SELECT * FROM reservations WHERE id IN (?)
+        SELECT * FROM reservations ${
+          JSON.parse(data[0].reservations).length
+            ? `WHERE id IN (${JSON.parse(data[0].reservations).join(",")})`
+            : `WHERE 1=2`
+        }
       `,
         values: [JSON.parse(data[0].reservations).join(",")],
       }),
     ])) as any;
 
     data[0].role = role[0];
-    data[0].groups = groups;
-    data[0].reservations = reservations;
+    data[0].groups = {
+      count: groups.length,
+      data: groups.slice((gpage - 1) * 5, gpage * 5),
+    };
+    data[0].reservations = {
+      count: reservations.length,
+      data: reservations.slice((rpage - 1) * 5, rpage * 5),
+    };
 
     return NextResponse.json({
       success: true,

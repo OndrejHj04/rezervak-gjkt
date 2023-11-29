@@ -1,5 +1,5 @@
 import { Group } from "@/types";
-import { Avatar, CardHeader, MenuItem } from "@mui/material";
+import { Avatar, CardHeader, MenuItem, Typography } from "@mui/material";
 import Link from "next/link";
 
 export default function SingleGroup({ group }: { group: Group }) {
@@ -8,12 +8,12 @@ export default function SingleGroup({ group }: { group: Group }) {
       href={`/group/detail/${group.id}`}
       className="no-underline text-inherit"
     >
-      <MenuItem className="p-0">
-        <CardHeader
-          avatar={<Avatar>{group.name[0]}</Avatar>}
-          title={group.name}
-          subheader={`Majitel: ${group.owner.first_name} ${group.owner.last_name}`}
-        />
+      <MenuItem className="flex justify-between gap-2">
+        <Typography>{group.name}</Typography>
+        <Typography
+          color="text.secondary"
+          sx={{ fontSize: 14 }}
+        >{`Majitel: ${group.owner.first_name} ${group.owner.last_name}`}</Typography>
       </MenuItem>
     </Link>
   );

@@ -384,9 +384,6 @@ export default function ReservationDetailForm({
                           sx={{ padding: 1 }}
                           onClick={() => handleCheckGroup(group.id)}
                         >
-                          <ListItemIcon>
-                            <Avatar />
-                          </ListItemIcon>
                           <ListItemText
                             primary={group.name}
                             secondary={"Počet členů: " + group.users.length}

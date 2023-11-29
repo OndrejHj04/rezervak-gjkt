@@ -73,9 +73,6 @@ export default async function GroupDetailDisplay({ group }: { group: any }) {
             {group.reservations.length ? (
               group.reservations.map((reservation: any) => (
                 <ListItem disablePadding key={reservation.id}>
-                  <ListItemIcon>
-                    <Avatar />
-                  </ListItemIcon>
                   <ListItemText
                     primary={<Typography>{reservation.name}</Typography>}
                     secondary={`${dayjs(reservation.from_date).format(

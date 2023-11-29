@@ -39,8 +39,8 @@ export async function GET(
       }),
     ])) as any;
     data[0].owner = owner[0];
-    data[0].users = users[0] || [];
-    data[0].reservations = reservations[0] || [];
+    data[0].users = users || [];
+    data[0].reservations = reservations || [];
 
     return NextResponse.json({
       success: true,

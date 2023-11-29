@@ -280,9 +280,6 @@ export default function UserDetailForm({
                         sx={{ padding: 1 }}
                         onClick={() => handleCheckGroup(group.id)}
                       >
-                        <ListItemIcon>
-                          <Avatar />
-                        </ListItemIcon>
                         <ListItemText
                           primary={<Typography>{group.name}</Typography>}
                           secondary={`Počet členů: ${group.users.length}`}
@@ -343,9 +340,6 @@ export default function UserDetailForm({
                         sx={{ padding: 1 }}
                         onClick={() => handleCheckReservation(reservation.id)}
                       >
-                        <ListItemIcon>
-                          <Avatar />
-                        </ListItemIcon>
                         <ListItemText
                           primary={<Typography>{reservation.name}</Typography>}
                           secondary={`${dayjs(reservation.from_date).format(

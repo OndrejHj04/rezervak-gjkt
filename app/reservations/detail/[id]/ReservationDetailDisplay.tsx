@@ -92,9 +92,6 @@ export default function ReservationDetailDisplay({
           {reservation.groups.data.length ? (
             reservation.groups.data.map((group: any) => (
               <ListItem disablePadding key={group.id}>
-                <ListItemIcon>
-                  <Avatar />
-                </ListItemIcon>
                 <ListItemText
                   primary={group.name}
                   secondary={"Počet členů: " + group.users.length}

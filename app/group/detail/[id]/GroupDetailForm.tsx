@@ -303,9 +303,6 @@ export default function GroupDetailForm({ group }: { group: any }) {
                         sx={{ padding: 1 }}
                         onClick={() => handleSelectReservation(reservation.id)}
                       >
-                        <ListItemIcon>
-                          <Avatar />
-                        </ListItemIcon>
                         <ListItemText
                           primary={<Typography>{reservation.name}</Typography>}
                           secondary={`${dayjs(reservation.from_date).format(

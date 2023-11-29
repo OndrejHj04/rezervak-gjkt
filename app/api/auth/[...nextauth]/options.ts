@@ -30,7 +30,6 @@ export const authOptions: NextAuthOptions = {
             }
           );
         }
-        console.log(data);
         if (data.length) {
           return {
             ...data[0],

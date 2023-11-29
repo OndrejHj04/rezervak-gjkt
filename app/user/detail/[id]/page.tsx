@@ -1,4 +1,6 @@
+import UserDetailDisplay from "./UserDetailDisplay";
 import UserDetailForm from "./UserDetailForm";
+import UserDetailNavigation from "./UserDetailNavigation";
 
 const getUserDetail = async (id: string) => {
   const req = await fetch(
@@ -17,11 +19,22 @@ const getRoles = async () => {
 
 export default async function UserDetail({
   params: { id },
+  searchParams: { mode },
 }: {
   params: { id: string };
+  searchParams: { mode: any; users: any; groups: any };
 }) {
   const userDetail = await getUserDetail(id);
   const roles = await getRoles();
 
-  return <UserDetailForm userDetail={userDetail} roles={roles} />;
+  return (
+    <>
+      <UserDetailNavigation id={id} mode={mode} />
+      {mode === "edit" ? (
+        <UserDetailForm userDetail={userDetail} roles={roles} />
+      ) : (
+        <UserDetailDisplay userDetail={userDetail} />
+      )}
+    </>
+  );
 }

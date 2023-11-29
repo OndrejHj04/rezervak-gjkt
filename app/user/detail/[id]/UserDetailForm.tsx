@@ -142,15 +142,8 @@ export default function UserDetailForm({
       });
   };
 
-  const content = (
+  return (
     <>
-      {makeUserSleep && (
-        <Modal open={makeUserSleep} onClose={() => setMakeUserSleep(false)}>
-          {makeUserSleep && (
-            <UserSleepModal setModal={setMakeUserSleep} data={userDetail} />
-          )}
-        </Modal>
-      )}
       {groupsModal && (
         <Modal open={groupsModal} onClose={() => setGroupsModal(false)}>
           {groupsModal && (
@@ -179,18 +172,6 @@ export default function UserDetailForm({
         </Modal>
       )}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
-        <div className="flex gap-2 ml-auto">
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={() => setMakeUserSleep(true)}
-          >
-            Uspat uživatele
-          </Button>
-          <Button variant="outlined" type="submit" disabled={!isDirty}>
-            Uložit
-          </Button>
-        </div>
         <Paper className="p-4 flex flex-col gap-4">
           <div className="flex gap-2">
             <div className="flex flex-col">
@@ -262,6 +243,18 @@ export default function UserDetailForm({
                 defaultValue={userDetail.adress}
               />
             </div>
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => setMakeUserSleep(true)}
+              >
+                Uspat uživatele
+              </Button>
+              <Button variant="outlined" type="submit" disabled={!isDirty}>
+                Uložit
+              </Button>
+            </div>
           </div>
           <div className="flex gap-2">
             <div className="flex flex-col">
@@ -332,7 +325,7 @@ export default function UserDetailForm({
                 )}
               </Typography>
               <Divider />
-              <List sx={{ height: 400, overflowY: "scroll" }}>
+              <List sx={{ height: 400 }}>
                 {userDetail.reservations ? (
                   userDetail.reservations.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>
@@ -393,10 +386,4 @@ export default function UserDetailForm({
       </form>
     </>
   );
-
-  if (sleeep) {
-    return <UserSleepAnnouncment data={userDetail} content={content} />;
-  }
-
-  return content;
 }

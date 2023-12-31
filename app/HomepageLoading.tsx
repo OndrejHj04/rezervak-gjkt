@@ -12,7 +12,7 @@ export default function HomepageLoading({
 }: {
   homepage: JSX.Element;
 }) {
-  const { status } = useSession();
+  const { status, data } = useSession();
 
   if (status === "loading") {
     return <Typography>loading</Typography>;
@@ -21,41 +21,28 @@ export default function HomepageLoading({
   if (status === "unauthenticated") {
     return <WelcomeComponent />;
   }
-  // if (userLoading)
-  //   return (
-  //     <>
-  //       <Skeleton variant="rectangular" width={300} height={170} />
-  //       <Skeleton variant="rectangular" width={200} height={250} />
-  //       <Skeleton variant="rectangular" width={300} height={170} />
-  //       <Skeleton variant="circular" width={30} height={30} />
-  //     </>
-  //   );
 
-  // if (!user && !userLoading) {
-  //   return <WelcomeComponent />;
-  // }
+  if (status === "authenticated" && !data?.user.verified) {
+    return (
+      <>
+        <div className="absolute z-50">
+          <VerifyUser id={data?.user.id} />
+        </div>
+        <Box sx={{ filter: "blur(5px)" }}>{homepage}</Box>
+      </>
+    );
+  }
 
-  // if (!user?.active && user?.role.id !== 1) {
-  //   return (
-  //     <>
-  //       <div className="absolute z-50">
-  //         <SleepingUserInfo />
-  //       </div>
-  //       <Box sx={{ filter: "blur(5px)" }}>{homepage}</Box>
-  //     </>
-  //   );
-  // }
-
-  // if (!user?.verified) {
-  //   return (
-  //     <>
-  //       <div className="absolute z-50">
-  //         <VerifyUser id={user?.id} />
-  //       </div>
-  //       <Box sx={{ filter: "blur(5px)" }}>{homepage}</Box>
-  //     </>
-  //   );
-  // }
+  if (status === "authenticated" && data?.user.sleeping) {
+    return (
+      <>
+        <div className="absolute z-50">
+          <SleepingUserInfo />
+        </div>
+        <Box sx={{ filter: "blur(5px)" }}>{homepage}</Box>
+      </>
+    );
+  }
 
   return homepage;
 }

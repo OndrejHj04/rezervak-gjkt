@@ -9,9 +9,9 @@ export async function GET(
     const [data, roles] = (await Promise.all([
       query({
         query: `
-        SELECT * FROM users WHERE email = ?
+      SELECT * FROM users WHERE email = "${email}"
       `,
-        values: [email],
+        values: [],
       }),
       query({
         query: `
@@ -21,7 +21,16 @@ export async function GET(
       }),
     ])) as any;
 
+    if (!data.length) {
+      return NextResponse.json({
+        success: true,
+        message: "No user found",
+        data: [],
+      });
+    }
+
     data[0].role = roles.find((r: any) => r.id === Number(data[0].role));
+
     return NextResponse.json({
       success: true,
       message: "Operation successful",

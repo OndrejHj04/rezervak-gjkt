@@ -23,8 +23,8 @@ const getUserDetail = async (email: any) => {
 };
 
 export default async function Home({ searchParams }: { searchParams: any }) {
-  const { user } = (await getServerSession()) as any;
-  const data = await getUserDetail(user.email);
+  const user = (await getServerSession()) as any;
+  const data = await getUserDetail(user?.user.email);
 
   const homepage = (
     <div className="flex gap-2 h-min">

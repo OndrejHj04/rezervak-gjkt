@@ -19,16 +19,16 @@ export default function HomepageLoading({
 
   useEffect(() => {
     if (
+      status === "authenticated" &&
       (data?.user.active !== user.active ||
-        data?.user.verified !== user.verified) &&
-      status === "authenticated"
+        data?.user.verified !== user.verified)
     ) {
       update({ active: user.active, verified: user.verified });
     }
   }, [status]);
 
   if (status === "loading") {
-  return <Typography>loading</Typography>;
+    return <Typography>loading</Typography>;
   }
 
   if (status === "unauthenticated") {

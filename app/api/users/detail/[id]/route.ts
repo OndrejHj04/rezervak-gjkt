@@ -29,7 +29,7 @@ export async function GET(
       query({
         query: `
         SELECT * FROM ${"`groups`"} ${
-          JSON.parse(data[0].groups).length
+          data[0].groups
             ? `WHERE id IN (${JSON.parse(data[0].groups).join(",")})`
             : `WHERE 1=2`
         }
@@ -39,12 +39,12 @@ export async function GET(
       query({
         query: `
         SELECT * FROM reservations ${
-          JSON.parse(data[0].reservations).length
+          data[0].reservations
             ? `WHERE id IN (${JSON.parse(data[0].reservations).join(",")})`
             : `WHERE 1=2`
         }
       `,
-        values: [JSON.parse(data[0].reservations).join(",")],
+        values: [],
       }),
     ])) as any;
 

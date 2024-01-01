@@ -17,7 +17,7 @@ export const navConfig = [
   {
     path: "/user/list",
     name: "Všichni uživatelé",
-    roles: [1, 2],
+    roles: [1, 2, 3],
   },
   {
     path: "/group/list",

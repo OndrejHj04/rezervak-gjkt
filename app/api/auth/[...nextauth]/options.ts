@@ -71,7 +71,6 @@ export const authOptions: NextAuthOptions = {
           }
         );
         const { data } = await request.json();
-
         return data || null;
       },
     }),
@@ -102,7 +101,6 @@ export const authOptions: NextAuthOptions = {
         session.user.last_name = token.last_name;
         session.user.image = token.image;
       }
-
       return session;
     },
     async signIn({ user, credentials }) {

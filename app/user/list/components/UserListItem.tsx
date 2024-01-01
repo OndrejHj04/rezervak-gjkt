@@ -15,8 +15,15 @@ import dayjs from "dayjs";
 import HotelIcon from "@mui/icons-material/Hotel";
 import Link from "next/link";
 import TableListCheckbox from "@/ui-components/TableListCheckbox";
+import { rolesConfig } from "@/rolesConfig";
 
-export default function UserListItem({ user }: { user: User }) {
+export default function UserListItem({
+  user,
+  userRole,
+}: {
+  user: User;
+  userRole: any;
+}) {
   const sleepingUser = (
     <Box className="flex items-center gap-2">
       <HotelIcon sx={{ color: "#4579ac", fontSize: 36 }} />
@@ -27,12 +34,14 @@ export default function UserListItem({ user }: { user: User }) {
   return (
     <Tooltip
       title={sleepingUser}
-      sx={{ cursor: "pointer", opacity: user.active ? 1 : 0.5 }}
+      sx={{ opacity: user.active ? 1 : 0.5 }}
       disableHoverListener={user.active}
       followCursor
     >
       <TableRow key={user.id}>
-        <TableListCheckbox prop="users" id={user.id} />
+        {rolesConfig.users.table.delete.includes(userRole) && (
+          <TableListCheckbox prop="users" id={user.id} />
+        )}
         <TableCell>
           <AvatarWrapper data={user} />
         </TableCell>
@@ -57,11 +66,13 @@ export default function UserListItem({ user }: { user: User }) {
             <CancelIcon color="error" sx={{ width: 32, height: 32 }} />
           )}
         </TableCell>
-        <TableCell>
-          <Link href={`/user/detail/${user.id}`}>
-            <Button>Detail</Button>
-          </Link>
-        </TableCell>
+        {rolesConfig.users.table.detail.includes(userRole) && (
+          <TableCell>
+            <Link href={`/user/detail/${user.id}`}>
+              <Button>Detail</Button>
+            </Link>
+          </TableCell>
+        )}
       </TableRow>
     </Tooltip>
   );

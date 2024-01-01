@@ -43,7 +43,7 @@ export default function UserListItem({ user }: { user: User }) {
         <TableCell>
           <Chip
             label={
-              <Typography variant="subtitle2">{user.role.role_name}</Typography>
+              <Typography variant="subtitle2">{user.role.name}</Typography>
             }
           />
         </TableCell>

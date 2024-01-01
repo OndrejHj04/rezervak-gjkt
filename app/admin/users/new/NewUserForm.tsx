@@ -73,7 +73,7 @@ export default function NewUserForm({ roles }: { roles: any }) {
               onChange={(_, value) => onChange(value)}
               id="combo-box-demo"
               options={roles.map((role: any) => ({
-                label: role.role_name,
+                label: role.name,
                 value: role.id,
               }))}
               renderInput={(params) => <TextField {...params} label="Role" />}

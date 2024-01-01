@@ -155,7 +155,7 @@ export default function UsersImportForm({ roles }: { roles: any }) {
                           {
                             roles.find(
                               (role: any) => role.id === Number(item[3])
-                            )?.role_name
+                            )?.name
                           }
                         </TableCell>
                         <TableCell>

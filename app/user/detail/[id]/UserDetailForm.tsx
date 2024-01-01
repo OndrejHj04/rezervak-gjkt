@@ -234,9 +234,9 @@ export default function UserDetailForm({
                         onChange(value);
                       }}
                       renderOption={(props: any, option: any) => (
-                        <div {...props}>{option.role_name}</div>
+                        <div {...props}>{option.name}</div>
                       )}
-                      getOptionLabel={(option: any) => option.role_name}
+                      getOptionLabel={(option: any) => option.name}
                       renderInput={(params) => (
                         <TextField
                           {...params}

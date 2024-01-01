@@ -24,7 +24,7 @@ export default function RolesSelect({ roles }: { roles: any }) {
         label="Role uživatele"
         renderValue={(data) => {
           const name = roles.find((status: any) => status.id === data);
-          return <div>{name?.role_name || "Všechny"}</div>;
+          return <div>{name?.name || "Všechny"}</div>;
         }}
         value={status}
         onChange={handleChange}
@@ -32,7 +32,7 @@ export default function RolesSelect({ roles }: { roles: any }) {
         <MenuItem value={0}>Všechny</MenuItem>
         {roles.map((status: any) => (
           <MenuItem key={status.id} value={status.id} className="gap-2">
-            {status.role_name}
+            {status.name}
           </MenuItem>
         ))}
       </Select>

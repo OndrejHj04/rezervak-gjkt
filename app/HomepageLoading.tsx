@@ -21,9 +21,10 @@ export default function HomepageLoading({
     if (
       status === "authenticated" &&
       (data?.user.active !== user.active ||
-        data?.user.verified !== user.verified)
+        data?.user.verified !== user.verified ||
+        data?.user.role.id !== user.role.id)
     ) {
-      update({ active: user.active, verified: user.verified });
+      update({ active: user.active, verified: user.verified, role: user.role });
     }
   }, [status]);
 

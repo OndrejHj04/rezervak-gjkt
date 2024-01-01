@@ -2,8 +2,7 @@ import { User } from "next-auth";
 
 export interface Role {
   id: number;
-  role_name: string;
-  role_color: string;
+  name: string;
 }
 
 export interface GroupOwner {

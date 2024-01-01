@@ -29,7 +29,7 @@ export default function LoginButton() {
             </Typography>
             <div className="flex gap-1 items-center">
               <Typography variant="body2">
-                {data.user.role.role_name}
+                {data.user.role.name}
               </Typography>
             </div>
           </div>

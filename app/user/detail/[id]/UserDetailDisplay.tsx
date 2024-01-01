@@ -13,6 +13,7 @@ import GroupsPagination from "./GroupsPagination";
 import ReservationsPagination from "./ReservationsPagination";
 
 export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
+  console.log(userDetail);
   return (
     <Paper className="p-4 flex gap-4">
       <div className="flex flex-col">
@@ -38,7 +39,7 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
         <Typography variant="h5">Skupiny uživatele </Typography>
         <Divider />
         <List sx={{ height: 400 }}>
-          {userDetail.groups.data ? (
+          {userDetail.groups.count ? (
             userDetail.groups.data.map((group: any) => (
               <ListItem disablePadding key={group.id}>
                 <ListItemText
@@ -49,17 +50,17 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
             ))
           ) : (
             <>
-              <Typography>Žádní skupiny uživatele</Typography>
+              <Typography>Žádné skupiny uživatele</Typography>
             </>
           )}
         </List>
         <GroupsPagination count={userDetail.groups.count} />
       </div>
       <div>
-        <Typography variant="h5">Rezervace uživatele </Typography>
+        <Typography variant="h5">Rezervace uživatele</Typography>
         <Divider />
         <List sx={{ height: 400 }}>
-          {userDetail.reservations.data ? (
+          {userDetail.reservations.count ? (
             userDetail.reservations.data.map((reservation: any) => (
               <ListItem disablePadding key={reservation.id}>
                 <ListItemText
@@ -72,7 +73,7 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
             ))
           ) : (
             <>
-              <Typography>Žádní uživatelé ve skupině</Typography>
+              <Typography>Žádné rezervace uživatele</Typography>
             </>
           )}
         </List>

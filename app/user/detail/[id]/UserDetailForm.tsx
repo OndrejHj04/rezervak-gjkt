@@ -260,10 +260,10 @@ export default function UserDetailForm({
           </div>
           <div className="flex gap-2">
             <div className="flex flex-col">
-              <Typography variant="h5">Skupiny uživatele </Typography>
+              <Typography variant="h5">Skupiny uživatele</Typography>
               <Divider />
               <List sx={{ height: 400 }}>
-                {userDetail.groups.data ? (
+                {userDetail.groups.count ? (
                   userDetail.groups.data.map((group: any) => (
                     <ListItem disablePadding key={group.id}>
                       <ListItemButton
@@ -291,7 +291,7 @@ export default function UserDetailForm({
                   ))
                 ) : (
                   <>
-                    <Typography>Žádní skupiny uživatele</Typography>
+                    <Typography>Žádné skupiny uživatele</Typography>
                   </>
                 )}
               </List>
@@ -315,10 +315,10 @@ export default function UserDetailForm({
               </div>
             </div>
             <div className="flex flex-col">
-              <Typography variant="h5">Rezervace uživatele </Typography>
+              <Typography variant="h5">Rezervace uživatele</Typography>
               <Divider />
               <List sx={{ height: 400 }}>
-                {userDetail.reservations.data ? (
+                {userDetail.reservations.count ? (
                   userDetail.reservations.data.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>
                       <ListItemButton
@@ -350,7 +350,7 @@ export default function UserDetailForm({
                   ))
                 ) : (
                   <>
-                    <Typography>Žádní uživatelé ve skupině</Typography>
+                    <Typography>Žádné rezervace uživatele</Typography>
                   </>
                 )}
               </List>

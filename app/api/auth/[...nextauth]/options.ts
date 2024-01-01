@@ -13,7 +13,6 @@ export const authOptions: NextAuthOptions = {
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/email/${profile.email}`
         );
         const { data } = await req.json();
-console.log(data)
         if (
           data.length &&
           profile.picture &&
@@ -61,7 +60,6 @@ console.log(data)
           email: credentials?.email,
           password: credentials?.password,
         } as any;
-
         const request = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
           {
@@ -79,8 +77,7 @@ console.log(data)
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      //credentials
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.role = user.role;
         token.id = user.id as number;
@@ -90,11 +87,12 @@ console.log(data)
         token.last_name = user.last_name;
         token.image = user.image;
       }
-
+      if (trigger === "update") {
+        token = { ...token, ...session };
+      }
       return token;
     },
-    async session({ session, token }: { session: any; token: any }) {
-      //provider
+    async session({ session, token, trigger }) {
       if (session?.user) {
         session.user.role = token.role;
         session.user.id = token.id;

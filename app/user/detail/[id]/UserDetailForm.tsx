@@ -59,8 +59,18 @@ export default function UserDetailForm({
   const [selectReservations, setSelectReservation] = useState<number[]>([]);
   const [groupsModal, setGroupsModal] = useState(false);
   const [reservationsModal, setReservationsModal] = useState(false);
-  const [makeUserSleep, setMakeUserSleep] = useState(false);
-  const sleeep = !userDetail.active;
+
+  const makeUserSleep = (id: any, active: any) => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/sleep`, {
+      method: "POST",
+      body: JSON.stringify({ id, active }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        MakeUserDetailRefetch(userDetail.id);
+        toast.success("Uživatel byl upraven");
+      });
+  };
 
   const onSubmit = (data: any) => {
     fetch(
@@ -249,9 +259,9 @@ export default function UserDetailForm({
               <Button
                 variant="outlined"
                 color="error"
-                onClick={() => setMakeUserSleep(true)}
+                onClick={() => makeUserSleep(userDetail.id, userDetail.active)}
               >
-                Uspat uživatele
+                {userDetail.active ? "Uspat uživatele" : "Probudit uživatele"}
               </Button>
               <Button variant="outlined" type="submit" disabled={!isDirty}>
                 Uložit

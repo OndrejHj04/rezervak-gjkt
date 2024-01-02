@@ -34,6 +34,17 @@ export default function ReservationDetailDisplay({
       <div>
         <Typography variant="h5">Název: {reservation.name}</Typography>
         <Divider />
+        <Typography variant="h6">Vedoucí rezervace: </Typography>
+
+        <div className="flex gap-2">
+          <AvatarWrapper size={56} data={reservation.leader as any} />
+          <div className="flex flex-col">
+            <Typography variant="h6" className="font-semibold">
+              {reservation.leader.first_name} {reservation.leader.last_name}
+            </Typography>
+            <Typography>{reservation.leader.email}</Typography>
+          </div>
+        </div>
         <Typography variant="h6">
           Začátek rezervace: {dayjs(reservation.from_date).format("DD.MM.YYYY")}
         </Typography>

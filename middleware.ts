@@ -15,9 +15,6 @@ export default async function middleware(req: NextRequest) {
   }
 
   if (req.nextUrl.pathname.startsWith("/user/detail") && role) {
-    if (!verified || !active) {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
     const id = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
     const selfAccount = id === userId;
@@ -47,10 +44,6 @@ export default async function middleware(req: NextRequest) {
   }
 
   if (req.nextUrl.pathname.startsWith("/group/detail") && role) {
-    if (!verified || !active) {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-
     const group = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
 
@@ -78,7 +71,7 @@ export default async function middleware(req: NextRequest) {
     }
 
     if (
-      req.nextUrl.search.includes("mode=edit") && 
+      req.nextUrl.search.includes("mode=edit") &&
       !isOwner &&
       !rolesConfig.groups.detail.edit.includes(role.id)
     ) {

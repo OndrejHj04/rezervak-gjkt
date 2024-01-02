@@ -21,10 +21,13 @@ import { rolesConfig } from "@/rolesConfig";
 export default function ReservationListItem({
   reservation,
   userRole,
+  userId,
 }: {
   reservation: Reservation;
   userRole: any;
+  userId: any;
 }) {
+  const isMember = reservation.users.includes(userId);
   return (
     <>
       <TableRow>
@@ -97,12 +100,16 @@ export default function ReservationListItem({
             </IconButton>
           </Tooltip>
         </TableCell>
-        {rolesConfig.reservations.table.detail.includes(userRole) && (
+        {rolesConfig.reservations.detail.visit.includes(userRole) ||
+        (isMember &&
+          rolesConfig.reservations.detail.visitSelf.includes(userRole)) ? (
           <TableCell>
             <Link href={`/reservations/detail/${reservation.id}`}>
               <Button>detail</Button>
             </Link>
           </TableCell>
+        ) : (
+          <TableCell />
         )}
       </TableRow>
     </>

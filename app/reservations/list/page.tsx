@@ -9,9 +9,10 @@ export default async function ReservationListConfig({
 }) {
   const {
     user: {
+      id: userId,
       role: { id },
     },
   } = (await getServerSession(authOptions)) as any;
 
-  return <ResevationList searchParams={searchParams} userRole={id} />;
+  return <ResevationList searchParams={searchParams} userRole={id} userId={userId} />;
 }

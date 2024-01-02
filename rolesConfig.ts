@@ -26,7 +26,11 @@ export const rolesConfig = {
     table: {
       delete: [1, 2],
       topbar: { search: [1, 2], export: [1, 2], filter: [1, 2] },
-      detail: [1, 2],
+    },
+    detail: {
+      visit: [1, 2],
+      visitSelf: [1, 2, 3, 4],
+      edit: [1],
     },
   },
 };

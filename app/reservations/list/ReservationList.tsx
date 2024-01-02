@@ -54,17 +54,18 @@ const ReservationListItem = dynamic(
 export default async function ReservationList({
   searchParams,
   userRole,
+  userId,
 }: {
   searchParams: any;
   userRole: any;
+  userId: any;
 }) {
   const page = searchParams["page"] || 1;
   const status = searchParams["status"] || 0;
   const search = searchParams["search"] || 0;
-
   const reservations = (await getReservations(page, status, search)) as any;
-
   const statuses = await getStatuses();
+
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
@@ -109,14 +110,13 @@ export default async function ReservationList({
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Stav" />
               </TableCell>
-              {rolesConfig.reservations.table.detail.includes(userRole) && (
-                <TableCell />
-              )}
+              <TableCell />
             </TableRow>
           </TableHead>
           <TableBody className="overflow-scroll">
             {reservations.data.map((reservation: any) => (
               <ReservationListItem
+                userId={userId}
                 userRole={userRole}
                 key={reservation.id}
                 reservation={reservation}

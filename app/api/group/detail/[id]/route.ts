@@ -21,7 +21,7 @@ export async function GET(
       query({
         query: `
       SELECT id, image, first_name, last_name, email FROM users ${
-        JSON.parse(data[0].users).length
+        data[0].users
           ? `WHERE id IN (${JSON.parse(data[0].users).join(",")})`
           : `WHERE 1=2`
       }`,
@@ -30,7 +30,7 @@ export async function GET(
       query({
         query: `
       SELECT id, name, from_date, to_date, users FROM reservations ${
-        JSON.parse(data[0].reservations).length
+        data[0].reservations
           ? `WHERE id IN (${JSON.parse(data[0].reservations).join(",")})`
           : `WHERE 1=2`
       }`,

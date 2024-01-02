@@ -12,6 +12,6 @@ export default async function UserListConfig({
       role: { id },
     },
   } = (await getServerSession(authOptions)) as any;
-  console.log(id);
+
   return <UserList searchParams={searchParams} userRole={id} />;
 }

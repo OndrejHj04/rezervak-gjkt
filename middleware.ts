@@ -1,6 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { navConfig } from "./lib/navigationConfig";
+import { rolesConfig } from "./rolesConfig";
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req });
@@ -13,18 +14,36 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  if (req.nextUrl.pathname.startsWith("/user/detail")) {
+  if (req.nextUrl.pathname.startsWith("/user/detail") && role) {
     if (!verified || !active) {
       return NextResponse.redirect(new URL("/", req.url));
     }
-    /*
     const id = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
+    const selfAccount = id === userId;
 
-    if (id !== userId && role?.id !== 1) {
+    if (selfAccount && !rolesConfig.users.detail.visitSelf.includes(role.id)) {
       return NextResponse.redirect(new URL("/", req.url));
     }
-    */
+
+    if (!selfAccount && !rolesConfig.users.detail.visit.includes(role.id)) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+    if (
+      req.nextUrl.search.includes("mode=edit") &&
+      selfAccount &&
+      !rolesConfig.users.detail.selfEdit.includes(role.id)
+    ) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    if (
+      req.nextUrl.search.includes("mode=edit") &&
+      !selfAccount &&
+      !rolesConfig.users.detail.edit.includes(role.id)
+    ) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
   }
 
   if (req.nextUrl.pathname.startsWith("/group/detail")) {

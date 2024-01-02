@@ -6,6 +6,7 @@ export const rolesConfig = {
     },
     detail: {
       visit: [1, 2, 3],
+      visitSelf: [1, 2, 3, 4],
       edit: [1],
       selfEdit: [1, 2, 3, 4],
     },

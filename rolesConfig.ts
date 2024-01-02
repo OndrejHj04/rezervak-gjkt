@@ -17,8 +17,10 @@ export const rolesConfig = {
       topbar: { search: [1, 2], export: [1, 2] },
     },
     detail: {
-      visit: [1, 2, 3],
+      visit: [1, 2],
       visitSelf: [1, 2, 3, 4],
+      edit: [1],
+      ownerEdit: [1, 2, 3, 4],
     },
   },
   reservations: {

@@ -9,9 +9,12 @@ export default async function GroupListConfig({
 }) {
   const {
     user: {
+      id: userId,
       role: { id },
     },
   } = (await getServerSession(authOptions)) as any;
 
-  return <GroupList searchParams={searchParams} userRole={id} />;
+  return (
+    <GroupList searchParams={searchParams} userRole={id} userId={userId} />
+  );
 }

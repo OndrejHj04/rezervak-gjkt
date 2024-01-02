@@ -9,10 +9,14 @@ import { rolesConfig } from "@/rolesConfig";
 export default function GroupListItem({
   group,
   userRole,
+  userId,
 }: {
   group: Group;
   userRole: any;
+  userId: any;
 }) {
+  const isMember = group.users.includes(userId);
+
   return (
     <TableRow className="cursor-pointer">
       {rolesConfig.groups.table.delete.includes(userRole) && (
@@ -24,12 +28,15 @@ export default function GroupListItem({
       <TableCell>
         <AvatarWrapper data={group.owner} />
       </TableCell>
-      {rolesConfig.groups.table.detail.includes(userRole) && (
+      {rolesConfig.groups.detail.visit.includes(userRole) ||
+      (isMember && rolesConfig.groups.detail.visitSelf.includes(userRole)) ? (
         <TableCell>
           <Link href={`/group/detail/${group.id}?mode=view`}>
             <Button>Detail</Button>
           </Link>
         </TableCell>
+      ) : (
+        <TableCell />
       )}
     </TableRow>
   );

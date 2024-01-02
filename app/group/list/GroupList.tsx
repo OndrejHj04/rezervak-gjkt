@@ -32,9 +32,11 @@ const getGroups = async (page: any, search: any) => {
 export default async function GroupList({
   searchParams,
   userRole,
+  userId,
 }: {
   searchParams: any;
   userRole: any;
+  userId: any;
 }) {
   const page = searchParams["page"] || 1;
   const search = searchParams["search"] || "";
@@ -73,14 +75,17 @@ export default async function GroupList({
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Vlastník" />
               </TableCell>
-              {rolesConfig.groups.table.detail.includes(userRole) && (
-                <TableCell sx={{ padding: 1.5 }} />
-              )}
+              <TableCell sx={{ padding: 1.5 }} />
             </TableRow>
           </TableHead>
           <TableBody>
             {groups?.data?.map((group: any) => (
-              <GroupListItem group={group} key={group.id} userRole={userRole} />
+              <GroupListItem
+                group={group}
+                key={group.id}
+                userRole={userRole}
+                userId={userId}
+              />
             ))}
           </TableBody>
         </Table>

@@ -58,13 +58,13 @@ export default async function UserList({
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
-        {rolesConfig.users.modules.table.topbar.filter.includes(userRole) && (
-          <UserRolesSelect roles={roles} />
-        )}
-        {rolesConfig.users.modules.table.topbar.search.includes(userRole) && (
+        {rolesConfig.users.modules.userTable.config.topbar.filter.includes(
+          userRole
+        ) && <UserRolesSelect roles={roles} />}
+        {rolesConfig.users.modules.userTable.config.topbar.search.includes(userRole) && (
           <SearchBar label="uživatele" />
         )}
-        {rolesConfig.users.modules.table.topbar.export.includes(userRole) && (
+        {rolesConfig.users.modules.userTable.config.topbar.export.includes(userRole) && (
           <ExportButton prop="users" />
         )}
       </div>
@@ -72,7 +72,7 @@ export default async function UserList({
         <Table>
           <TableHead>
             <TableRow>
-              {rolesConfig.users.modules.table.delete.includes(userRole) ? (
+              {rolesConfig.users.modules.userTable.config.delete.includes(userRole) ? (
                 <>
                   <TableCell>
                     <CheckboxComponent users={users.data} />

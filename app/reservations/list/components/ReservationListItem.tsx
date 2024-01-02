@@ -31,9 +31,9 @@ export default function ReservationListItem({
   return (
     <>
       <TableRow>
-        {rolesConfig.reservations.modules.table.delete.includes(userRole) && (
-          <TableListCheckbox prop="reservations" id={reservation.id} />
-        )}
+        {rolesConfig.reservations.modules.reservationsTable.config.delete.includes(
+          userRole
+        ) && <TableListCheckbox prop="reservations" id={reservation.id} />}
 
         <TableCell>
           <Typography>{reservation.name}</Typography>
@@ -100,9 +100,13 @@ export default function ReservationListItem({
             </IconButton>
           </Tooltip>
         </TableCell>
-        {rolesConfig.reservations.modules.detail.visit.includes(userRole) ||
+        {rolesConfig.reservations.modules.reservationsDetail.visit.includes(
+          userRole
+        ) ||
         (isMember &&
-          rolesConfig.reservations.modules.detail.visitSelf.includes(userRole)) ? (
+          rolesConfig.reservations.modules.reservationsDetail.visitSelf.includes(
+            userRole
+          )) ? (
           <TableCell>
             <Link href={`/reservations/detail/${reservation.id}`}>
               <Button>detail</Button>

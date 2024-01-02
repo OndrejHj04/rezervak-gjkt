@@ -54,7 +54,9 @@ export default async function ReservationDetail({
               href={`/reservations/detail/${params}?mode=view`}
               label="Zobrazit"
             />
-            {(rolesConfig.reservations.modules.detail.edit.includes(userRole) ||
+            {(rolesConfig.reservations.modules.reservationsDetail.edit.includes(
+              userRole
+            ) ||
               isLeader) && (
               <Tab
                 component={Link}

@@ -5,12 +5,12 @@ import ClientProvider from "./clientProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TopBar from "@/app/navigation/topbar/TopBar";
-import SlidingMenu from "@/app/navigation/sidebar/SlidingMenu";
 import SpeedComponent from "@/app/navigation/speed/SpeedComponent";
 const inter = Inter({ subsets: ["latin"] });
 import "react-perfect-scrollbar/dist/css/styles.css";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/options";
+import SlidingMenuConfig from "./navigation/sidebar/SlidingMenuConfig";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -41,7 +41,7 @@ export default async function RootLayout({
         <div className="flex h-screen flex-col">
           <ClientProvider theme={theme?.theme}>
             <TopBar />
-            <SlidingMenu />
+            <SlidingMenuConfig />
             <SpeedComponent />
             <div className="p-5">{children}</div>
           </ClientProvider>

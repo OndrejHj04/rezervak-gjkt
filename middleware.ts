@@ -7,17 +7,9 @@ export default async function middleware(req: NextRequest) {
   const role = token?.role;
   const verified = token?.verified;
   const active = token?.active;
+  
 
-  const config = Object.values(rolesConfig).find(
-    (item) => item.path === req.nextUrl.pathname
-  );
-
-  if (
-    (!verified || !active) &&
-    !req.nextUrl.pathname.startsWith("/api") &&
-    !req.nextUrl.pathname.startsWith("/_") &&
-    req.nextUrl.pathname !== "/"
-  ) {
+  if ((!verified || !active) && req.nextUrl.pathname !== "/" && role) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
@@ -25,11 +17,6 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  if (role && config) {
-    if (config.roles.length && !config.roles.includes(role.id as never)) {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-  }
   if (req.nextUrl.pathname.startsWith("/user/detail") && role) {
     const id = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
@@ -37,21 +24,21 @@ export default async function middleware(req: NextRequest) {
 
     if (
       selfAccount &&
-      !rolesConfig.users.modules.detail.visitSelf.includes(role.id)
+      !rolesConfig.users.modules.userDetail.visitSelf.includes(role.id)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
     if (
       !selfAccount &&
-      !rolesConfig.users.modules.detail.visit.includes(role.id)
+      !rolesConfig.users.modules.userDetail.visit.includes(role.id)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
     if (
       req.nextUrl.search.includes("mode=edit") &&
       selfAccount &&
-      !rolesConfig.users.modules.detail.selfEdit.includes(role.id)
+      !rolesConfig.users.modules.userDetail.selfEdit.includes(role.id)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
@@ -59,7 +46,7 @@ export default async function middleware(req: NextRequest) {
     if (
       req.nextUrl.search.includes("mode=edit") &&
       !selfAccount &&
-      !rolesConfig.users.modules.detail.edit.includes(role.id)
+      !rolesConfig.users.modules.userDetail.edit.includes(role.id)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
@@ -86,14 +73,14 @@ export default async function middleware(req: NextRequest) {
 
     if (
       isMember &&
-      !rolesConfig.groups.modules.detail.visitSelf.includes(role.id)
+      !rolesConfig.groups.modules.groupsDetail.visitSelf.includes(role.id)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
     if (
       !isMember &&
-      !rolesConfig.groups.modules.detail.visit.includes(role.id)
+      !rolesConfig.groups.modules.groupsDetail.visit.includes(role.id)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
@@ -101,7 +88,7 @@ export default async function middleware(req: NextRequest) {
     if (
       req.nextUrl.search.includes("mode=edit") &&
       !isOwner &&
-      !rolesConfig.groups.modules.detail.edit.includes(role.id)
+      !rolesConfig.groups.modules.groupsDetail.edit.includes(role.id)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
@@ -128,14 +115,18 @@ export default async function middleware(req: NextRequest) {
 
     if (
       isMember &&
-      !rolesConfig.reservations.modules.detail.visitSelf.includes(role.id)
+      !rolesConfig.reservations.modules.reservationsDetail.visitSelf.includes(
+        role.id
+      )
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
     if (
       !isMember &&
-      !rolesConfig.reservations.modules.detail.visit.includes(role.id)
+      !rolesConfig.reservations.modules.reservationsDetail.visit.includes(
+        role.id
+      )
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
@@ -143,9 +134,13 @@ export default async function middleware(req: NextRequest) {
     if (
       req.nextUrl.search.includes("mode=edit") &&
       !isLeader &&
-      !rolesConfig.reservations.modules.detail.edit.includes(role.id)
+      !rolesConfig.reservations.modules.reservationsDetail.edit.includes(role.id)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
   }
 }
+
+export const config = {
+  matcher: "/((?!api|_next).*)",
+};

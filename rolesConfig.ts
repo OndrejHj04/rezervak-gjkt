@@ -1,40 +1,80 @@
 export const rolesConfig = {
-  homepage: { name: "Přehled", path: "/", modules: [], roles: [] },
+  homepage: {
+    name: "Přehled",
+    path: "/",
+    modules: [],
+    roles: [],
+    menu: [true, false],
+  },
   photogallery: {
     name: "Galerie",
     path: "/photogallery",
-    modules: [],
+    modules: {},
     roles: [],
+    menu: [true, false],
   },
-  admin: { name: "Administrace", path: "/admin", modules: [], roles: [1] },
+  admin: {
+    name: "Administrace",
+    path: "/admin",
+    modules: {},
+    roles: [1],
+    menu: [true, false],
+  },
   users: {
     name: "Uživatelé",
-    path: "/user/list",
-    route: "/users",
+    path: "/user",
     modules: {
-      table: {
-        delete: [1, 2],
-        topbar: { filter: [1, 2], search: [1, 2], export: [1, 2] },
+      userCreate: {
+        name: "Vytvořit uživatele",
+        path: "/user/create",
+        roles: [1, 2, 3],
+        menu: [false, true],
       },
-      detail: {
+      usersImport: {
+        name: "Importovat uživatele",
+        path: "/user/import",
+        roles: [1, 2],
+        menu: [false, true],
+      },
+      userTable: {
+        name: "Všichni uživatelé",
+        path: "/user/list",
+        roles: [1, 2, 3],
+        config: {
+          delete: [1, 2],
+          topbar: { filter: [1, 2], search: [1, 2], export: [1, 2] },
+        },
+        menu: [true, false],
+      },
+      userDetail: {
         visit: [1, 2],
         visitSelf: [1, 2, 3, 4],
         edit: [1],
         selfEdit: [1, 2, 3, 4],
       },
     },
-    roles: [1, 2, 3],
   },
   groups: {
     name: "Skupiny",
-    path: "/group/list",
-    route: "/groups",
+    path: "/group",
     modules: {
-      table: {
-        delete: [1, 2],
-        topbar: { search: [1, 2], export: [1, 2] },
+      groupsCreate: {
+        name: "Vytvořit skupinu",
+        path: "/group/create",
+        roles: [1, 2, 3],
+        menu: [false, true],
       },
-      detail: {
+      groupsTable: {
+        name: "Všechny skupiny",
+        path: "/group/list",
+        roles: [1, 2, 3],
+        config: {
+          delete: [1, 2],
+          topbar: { search: [1, 2], export: [1, 2] },
+        },
+        menu: [true, false],
+      },
+      groupsDetail: {
         visit: [1, 2],
         visitSelf: [1, 2, 3, 4],
         edit: [1],
@@ -44,19 +84,29 @@ export const rolesConfig = {
   },
   reservations: {
     name: "Rezervace",
-    path: "/reservations/list",
-    route: "/reservations",
+    path: "/reservation",
     modules: {
-      table: {
-        delete: [1, 2],
-        topbar: { search: [1, 2], export: [1, 2], filter: [1, 2] },
+      reservationsCreate: {
+        name: "Vytvořit rezervaci",
+        path: "/reservations/create",
+        roles: [1],
+        menu: [false, true],
       },
-      detail: {
+      reservationsTable: {
+        name: "Všechny rezervace",
+        path: "/reservations/list",
+        roles: [1, 2, 3],
+        config: {
+          delete: [1, 2],
+          topbar: { search: [1, 2], export: [1, 2], filter: [1, 2] },
+        },
+        menu: [true, false],
+      },
+      reservationsDetail: {
         visit: [1, 2],
         visitSelf: [1, 2, 3, 4],
         edit: [1],
       },
     },
-    roles: [1, 2, 3],
   },
 };

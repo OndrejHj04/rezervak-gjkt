@@ -69,13 +69,13 @@ export default async function ReservationList({
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
-        {rolesConfig.reservations.modules.table.topbar.search.includes(
+        {rolesConfig.reservations.modules.reservationsTable.config.topbar.search.includes(
           userRole
         ) && <SearchBar label={"rezervace"} />}
-        {rolesConfig.reservations.modules.table.topbar.export.includes(
+        {rolesConfig.reservations.modules.reservationsTable.config.topbar.export.includes(
           userRole
         ) && <StatusSelect statuses={statuses} />}
-        {rolesConfig.reservations.modules.table.topbar.export.includes(
+        {rolesConfig.reservations.modules.reservationsTable.config.topbar.export.includes(
           userRole
         ) && <ExportButton prop={"reservations"} />}
       </div>
@@ -83,7 +83,7 @@ export default async function ReservationList({
         <Table>
           <TableHead>
             <TableRow>
-              {rolesConfig.reservations.modules.table.delete.includes(
+              {rolesConfig.reservations.modules.reservationsTable.config.delete.includes(
                 userRole
               ) && (
                 <TableCell>

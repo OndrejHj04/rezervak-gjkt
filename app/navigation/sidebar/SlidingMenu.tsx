@@ -18,60 +18,28 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import Link from "next/link";
 import { rolesConfig } from "@/rolesConfig";
 
-const icons = [
-  DashboardIcon,
-  CollectionsIcon,
-  AdminPanelSettingsIcon,
-  FormatListBulletedIcon,
-  GroupIcon,
-  DateRangeIcon,
-];
-
-export default function SlidingMenu() {
+export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
   const { panel, setPanel } = store();
-  const { data, status } = useSession() as any;
   return (
     <Drawer anchor="left" open={panel} onClose={() => setPanel(false)}>
       <div className="h-full flex flex-col justify-between">
         <MenuList>
-          {Object.values(rolesConfig).map((route, i) => {
-            if (
-              route.roles.includes(data?.user.role.id as never) ||
-              route.roles.length === 0
-            ) {
-              return (
-                <Link
-                  href={route.path}
-                  onClick={() => setPanel(false)}
-                  key={i}
-                  className="no-underline text-inherit"
-                >
-                  <MenuItem
-                    disabled={Boolean(
-                      !data?.user.verified && route.roles.length
-                    )}
-                  >
-                    <ListItemIcon sx={{ marginRight: 1 }}>
-                      {React.createElement(icons[i], {
-                        fontSize: "large",
-                        color: "primary",
-                      })}
-                    </ListItemIcon>
-                    <ListItemText>
-                      <Typography variant="h6">{route.name}</Typography>
-                    </ListItemText>
-                  </MenuItem>
-                </Link>
-              );
-            }
-          })}
+          {menuConfig.map((item: any) => (
+            <Link
+              href={item.path}
+              onClick={() => setPanel(false)}
+              key={item.name}
+              className="no-underline text-inherit"
+            >
+              <MenuItem key={item.name}>
+                <Typography>{item.name}</Typography>
+              </MenuItem>
+            </Link>
+          ))}
         </MenuList>
 
         <MenuList>
-          <MenuItem
-            onClick={() => signOut()}
-            disabled={status !== "authenticated"}
-          >
+          <MenuItem onClick={() => signOut()}>
             <ListItemIcon sx={{ marginRight: 1 }}>
               <LogoutIcon fontSize="large" color="error" />
             </ListItemIcon>

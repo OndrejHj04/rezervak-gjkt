@@ -47,18 +47,20 @@ export default async function GroupList({
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
-        {rolesConfig.groups.modules.table.topbar.search.includes(userRole) && (
-          <SearchBar label={"skupiny"} />
-        )}
-        {rolesConfig.groups.modules.table.topbar.export.includes(userRole) && (
-          <ExportButton prop={"groups"} />
-        )}
+        {rolesConfig.groups.modules.groupsTable.config.topbar.search.includes(
+          userRole
+        ) && <SearchBar label={"skupiny"} />}
+        {rolesConfig.groups.modules.groupsTable.config.topbar.export.includes(
+          userRole
+        ) && <ExportButton prop={"groups"} />}
       </div>
       <Paper className="w-full p-2">
         <Table>
           <TableHead>
             <TableRow>
-              {rolesConfig.groups.modules.table.delete.includes(userRole) && (
+              {rolesConfig.groups.modules.groupsTable.config.delete.includes(
+                userRole
+              ) && (
                 <TableCell sx={{ padding: 1.5 }}>
                   <RemoveGroups />
                 </TableCell>

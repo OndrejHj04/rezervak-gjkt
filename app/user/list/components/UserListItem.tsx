@@ -41,9 +41,9 @@ export default function UserListItem({
       followCursor
     >
       <TableRow key={user.id}>
-        {rolesConfig.users.modules.table.delete.includes(userRole) && (
-          <TableListCheckbox prop="users" id={user.id} />
-        )}
+        {rolesConfig.users.modules.userTable.config.delete.includes(
+          userRole
+        ) && <TableListCheckbox prop="users" id={user.id} />}
         <TableCell>
           <AvatarWrapper data={user} />
         </TableCell>
@@ -68,9 +68,9 @@ export default function UserListItem({
             <CancelIcon color="error" sx={{ width: 32, height: 32 }} />
           )}
         </TableCell>
-        {rolesConfig.users.modules.detail.visit.includes(userRole) ||
+        {rolesConfig.users.modules.userDetail.visit.includes(userRole) ||
         (userId === user.id &&
-          rolesConfig.users.modules.detail.visitSelf.includes(userRole)) ? (
+          rolesConfig.users.modules.userDetail.visitSelf.includes(userRole)) ? (
           <TableCell>
             <Link href={`/user/detail/${user.id}`}>
               <Button>Detail</Button>

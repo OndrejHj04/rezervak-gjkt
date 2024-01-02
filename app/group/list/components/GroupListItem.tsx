@@ -19,18 +19,20 @@ export default function GroupListItem({
 
   return (
     <TableRow className="cursor-pointer">
-      {rolesConfig.groups.modules.table.delete.includes(userRole) && (
-        <TableListCheckbox id={group.id} prop="groups" />
-      )}
+      {rolesConfig.groups.modules.groupsTable.config.delete.includes(
+        userRole
+      ) && <TableListCheckbox id={group.id} prop="groups" />}
       <TableCell>{group.name}</TableCell>
       <TableCell>{group.description}</TableCell>
       <TableCell>{group.users.length}</TableCell>
       <TableCell>
         <AvatarWrapper data={group.owner} />
       </TableCell>
-      {rolesConfig.groups.modules.detail.visit.includes(userRole) ||
+      {rolesConfig.groups.modules.groupsDetail.visit.includes(userRole) ||
       (isMember &&
-        rolesConfig.groups.modules.detail.visitSelf.includes(userRole)) ? (
+        rolesConfig.groups.modules.groupsDetail.visitSelf.includes(
+          userRole
+        )) ? (
         <TableCell>
           <Link href={`/group/detail/${group.id}?mode=view`}>
             <Button>Detail</Button>

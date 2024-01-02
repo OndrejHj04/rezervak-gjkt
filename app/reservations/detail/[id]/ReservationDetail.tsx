@@ -3,6 +3,7 @@ import { Reservation, ReservationStatus } from "@/types";
 import ReservationDetailDisplay from "./ReservationDetailDisplay";
 import { Tab, Tabs } from "@mui/material";
 import Link from "next/link";
+import { rolesConfig } from "@/rolesConfig";
 
 const getReservation = async (id: string, users: any, groups: any) => {
   const req = await fetch(
@@ -42,6 +43,7 @@ export default async function ReservationDetail({
   const reservationStatus =
     (await getReservationStatus()) as ReservationStatus[];
 
+  const isLeader = reservation.leader.id === userId;
   return (
     <>
       <div className="flex justify-between">
@@ -52,11 +54,14 @@ export default async function ReservationDetail({
               href={`/reservations/detail/${params}?mode=view`}
               label="Zobrazit"
             />
-            <Tab
-              component={Link}
-              href={`/reservations/detail/${params}?mode=edit`}
-              label="Editovat"
-            />
+            {(rolesConfig.reservations.detail.edit.includes(userRole) ||
+              isLeader) && (
+              <Tab
+                component={Link}
+                href={`/reservations/detail/${params}?mode=edit`}
+                label="Editovat"
+              />
+            )}
           </Tabs>
         </div>
       </div>

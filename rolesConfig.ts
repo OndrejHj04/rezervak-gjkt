@@ -5,7 +5,7 @@ export const rolesConfig = {
       topbar: { filter: [1, 2], search: [1, 2], export: [1, 2] },
     },
     detail: {
-      visit: [1, 2, 3],
+      visit: [1, 2],
       visitSelf: [1, 2, 3, 4],
       edit: [1],
       selfEdit: [1, 2, 3, 4],

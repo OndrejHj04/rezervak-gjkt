@@ -43,9 +43,11 @@ const getRoles = async () => {
 export default async function UserList({
   searchParams,
   userRole,
+  userId,
 }: {
   searchParams: any;
   userRole: any;
+  userId: any;
 }) {
   const role = searchParams["role"] || 0;
   const page = searchParams["page"] || 1;
@@ -97,14 +99,17 @@ export default async function UserList({
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Ověřený účet" />
               </TableCell>
-              {rolesConfig.users.detail.visit.includes(userRole) && (
-                <TableCell />
-              )}
+              <TableCell />
             </TableRow>
           </TableHead>
           <TableBody>
             {users.data.map((user: any) => (
-              <UserListItem key={user.id} user={user} userRole={userRole} />
+              <UserListItem
+                key={user.id}
+                user={user}
+                userRole={userRole}
+                userId={userId}
+              />
             ))}
           </TableBody>
         </Table>

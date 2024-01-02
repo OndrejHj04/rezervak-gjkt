@@ -9,9 +9,10 @@ export default async function UserListConfig({
 }) {
   const {
     user: {
+      id: userId,
       role: { id },
     },
   } = (await getServerSession(authOptions)) as any;
 
-  return <UserList searchParams={searchParams} userRole={id} />;
+  return <UserList searchParams={searchParams} userRole={id} userId={userId} />;
 }

@@ -20,9 +20,11 @@ import { rolesConfig } from "@/rolesConfig";
 export default function UserListItem({
   user,
   userRole,
+  userId,
 }: {
   user: User;
   userRole: any;
+  userId: any;
 }) {
   const sleepingUser = (
     <Box className="flex items-center gap-2">
@@ -66,12 +68,16 @@ export default function UserListItem({
             <CancelIcon color="error" sx={{ width: 32, height: 32 }} />
           )}
         </TableCell>
-        {rolesConfig.users.detail.visit.includes(userRole) && (
+        {rolesConfig.users.detail.visit.includes(userRole) ||
+        (userId === user.id &&
+          rolesConfig.users.detail.visitSelf.includes(userRole)) ? (
           <TableCell>
             <Link href={`/user/detail/${user.id}`}>
               <Button>Detail</Button>
             </Link>
           </TableCell>
+        ) : (
+          <TableCell />
         )}
       </TableRow>
     </Tooltip>

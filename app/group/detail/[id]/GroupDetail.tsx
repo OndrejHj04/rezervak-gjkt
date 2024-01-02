@@ -37,9 +37,7 @@ export default async function GroupDetail({
               href={`/group/detail/${params}?mode=view`}
               label="Zobrazit"
             />
-            {(rolesConfig.groups.detail.edit.includes(userRole) ||
-              (isOwner &&
-                rolesConfig.groups.detail.ownerEdit.includes(userRole))) && (
+            {(rolesConfig.groups.detail.edit.includes(userRole) || isOwner) && (
               <Tab
                 component={Link}
                 href={`/group/detail/${params}?mode=edit`}

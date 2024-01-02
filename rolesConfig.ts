@@ -20,7 +20,6 @@ export const rolesConfig = {
       visit: [1, 2],
       visitSelf: [1, 2, 3, 4],
       edit: [1],
-      ownerEdit: [1, 2, 3, 4],
     },
   },
   reservations: {

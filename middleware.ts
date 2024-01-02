@@ -46,23 +46,43 @@ export default async function middleware(req: NextRequest) {
     }
   }
 
-  if (req.nextUrl.pathname.startsWith("/group/detail")) {
+  if (req.nextUrl.pathname.startsWith("/group/detail") && role) {
     if (!verified || !active) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
-    if (role?.id === 4) {
-      const group = req.nextUrl.pathname.split("/")[3];
-      const userId = token?.id.toString();
+    const group = req.nextUrl.pathname.split("/")[3];
+    const userId = token?.id.toString();
 
-      const request = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/group/is-member?id=${userId}&group=${group}`
-      );
-      const { isMember } = await request.json();
-
-      if (!isMember) {
-        return NextResponse.redirect(new URL("/", req.url));
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/group/check-user`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          groupId: Number(group),
+          userId: Number(userId),
+        }),
       }
+    );
+
+    const {
+      data: { isMember, isOwner },
+    } = await request.json();
+
+    if (isMember && !rolesConfig.groups.detail.visitSelf.includes(role.id)) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    if (!isMember && !rolesConfig.groups.detail.visit.includes(role.id)) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    if (
+      req.nextUrl.search.includes("mode=edit") && 
+      !isOwner &&
+      !rolesConfig.groups.detail.edit.includes(role.id)
+    ) {
+      return NextResponse.redirect(new URL("/", req.url));
     }
   }
 

@@ -13,7 +13,6 @@ import GroupsPagination from "./GroupsPagination";
 import ReservationsPagination from "./ReservationsPagination";
 
 export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
-  console.log(userDetail);
   return (
     <Paper className="p-4 flex gap-4">
       <div className="flex flex-col">

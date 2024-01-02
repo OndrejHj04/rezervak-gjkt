@@ -53,7 +53,6 @@ export default async function UserList({
 
   const users = await getUsers(page, search, role);
   const roles = await getRoles();
-  console.log(userRole);
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
@@ -98,7 +97,7 @@ export default async function UserList({
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Ověřený účet" />
               </TableCell>
-              {rolesConfig.users.table.detail.includes(userRole) && (
+              {rolesConfig.users.detail.visit.includes(userRole) && (
                 <TableCell />
               )}
             </TableRow>

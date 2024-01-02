@@ -1,40 +1,27 @@
-import UserDetailDisplay from "./UserDetailDisplay";
-import UserDetailForm from "./UserDetailForm";
-import UserDetailNavigation from "./UserDetailNavigation";
+import { getServerSession } from "next-auth";
+import UserDetail from "./UserDetail";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-const getUserDetail = async (id: string, reservations: any, groups: any) => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${id}?reservations=${reservations}&groups=${groups}`,
-    { cache: "no-cache" }
-  );
-  const { data } = await req.json();
-  return data;
-};
-
-const getRoles = async () => {
-  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/list`);
-  const { data } = await req.json();
-  return data;
-};
-
-export default async function UserDetail({
-  params: { id },
-  searchParams: { mode, reservations, groups },
+export default async function UserListConfig({
+  searchParams,
+  params,
 }: {
-  params: { id: string };
-  searchParams: { mode: any; reservations: any; groups: any };
+  searchParams: any;
+  params: any;
 }) {
-  const userDetail = await getUserDetail(id, reservations || 1, groups || 1);
-  const roles = await getRoles();
+  const {
+    user: {
+      id: userId,
+      role: { id },
+    },
+  } = (await getServerSession(authOptions)) as any;
 
   return (
-    <>
-      <UserDetailNavigation id={id} mode={mode} />
-      {mode === "edit" ? (
-        <UserDetailForm userDetail={userDetail} roles={roles} />
-      ) : (
-        <UserDetailDisplay userDetail={userDetail} />
-      )}
-    </>
+    <UserDetail
+      params={params.id}
+      searchParams={searchParams}
+      userRole={id}
+      userId={userId}
+    />
   );
 }

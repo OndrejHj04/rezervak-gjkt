@@ -4,7 +4,7 @@ import { navConfig } from "./lib/navigationConfig";
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req });
-  const role = token?.role
+  const role = token?.role;
   const config = navConfig.find((item) => item.path === req.nextUrl.pathname);
   const verified = token?.verified;
   const active = token?.active;
@@ -17,13 +17,14 @@ export default async function middleware(req: NextRequest) {
     if (!verified || !active) {
       return NextResponse.redirect(new URL("/", req.url));
     }
-
+    /*
     const id = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
 
     if (id !== userId && role?.id !== 1) {
       return NextResponse.redirect(new URL("/", req.url));
     }
+    */
   }
 
   if (req.nextUrl.pathname.startsWith("/group/detail")) {

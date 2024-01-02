@@ -66,7 +66,7 @@ export default function UserListItem({
             <CancelIcon color="error" sx={{ width: 32, height: 32 }} />
           )}
         </TableCell>
-        {rolesConfig.users.table.detail.includes(userRole) && (
+        {rolesConfig.users.detail.visit.includes(userRole) && (
           <TableCell>
             <Link href={`/user/detail/${user.id}`}>
               <Button>Detail</Button>

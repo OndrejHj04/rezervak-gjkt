@@ -10,6 +10,12 @@ export const rolesConfig = {
     table: {
       delete: [1, 2],
       topbar: { search: [1, 2], export: [1, 2] },
+    },
+  },
+  reservations: {
+    table: {
+      delete: [1, 2],
+      topbar: { search: [1, 2], export: [1, 2], filter: [1, 2] },
       detail: [1, 2],
     },
   },

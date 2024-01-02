@@ -16,16 +16,22 @@ import GroupIcon from "@mui/icons-material/Group";
 import { Icon } from "@mui/material";
 import Link from "next/link";
 import TableListCheckbox from "@/ui-components/TableListCheckbox";
+import { rolesConfig } from "@/rolesConfig";
 
 export default function ReservationListItem({
   reservation,
+  userRole,
 }: {
   reservation: Reservation;
+  userRole: any;
 }) {
   return (
     <>
       <TableRow>
-        <TableListCheckbox prop="reservations" id={reservation.id} />
+        {rolesConfig.reservations.table.delete.includes(userRole) && (
+          <TableListCheckbox prop="reservations" id={reservation.id} />
+        )}
+
         <TableCell>
           <Typography>{reservation.name}</Typography>
         </TableCell>
@@ -91,11 +97,13 @@ export default function ReservationListItem({
             </IconButton>
           </Tooltip>
         </TableCell>
-        <TableCell>
-          <Link href={`/reservations/detail/${reservation.id}`}>
-            <Button>detail</Button>
-          </Link>
-        </TableCell>
+        {rolesConfig.reservations.table.detail.includes(userRole) && (
+          <TableCell>
+            <Link href={`/reservations/detail/${reservation.id}`}>
+              <Button>detail</Button>
+            </Link>
+          </TableCell>
+        )}
       </TableRow>
     </>
   );

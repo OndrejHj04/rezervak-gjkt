@@ -9,7 +9,6 @@ import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
 import { Typography } from "@mui/material";
 import { signOut, useSession } from "next-auth/react";
-import { navConfig } from "@/lib/navigationConfig";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
@@ -17,6 +16,7 @@ import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import GroupIcon from "@mui/icons-material/Group";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import Link from "next/link";
+import { rolesConfig } from "@/rolesConfig";
 
 const icons = [
   DashboardIcon,
@@ -29,15 +29,14 @@ const icons = [
 
 export default function SlidingMenu() {
   const { panel, setPanel } = store();
-  const { data, status } = useSession();
-
+  const { data, status } = useSession() as any;
   return (
     <Drawer anchor="left" open={panel} onClose={() => setPanel(false)}>
       <div className="h-full flex flex-col justify-between">
         <MenuList>
-          {navConfig.map((route, i) => {
+          {Object.values(rolesConfig).map((route, i) => {
             if (
-              route.roles.includes(data?.user.role.id) ||
+              route.roles.includes(data?.user.role.id as never) ||
               route.roles.length === 0
             ) {
               return (

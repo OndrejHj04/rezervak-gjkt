@@ -69,21 +69,23 @@ export default async function ReservationList({
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
-        {rolesConfig.reservations.table.topbar.search.includes(userRole) && (
-          <SearchBar label={"rezervace"} />
-        )}
-        {rolesConfig.reservations.table.topbar.export.includes(userRole) && (
-          <StatusSelect statuses={statuses} />
-        )}
-        {rolesConfig.reservations.table.topbar.export.includes(userRole) && (
-          <ExportButton prop={"reservations"} />
-        )}
+        {rolesConfig.reservations.modules.table.topbar.search.includes(
+          userRole
+        ) && <SearchBar label={"rezervace"} />}
+        {rolesConfig.reservations.modules.table.topbar.export.includes(
+          userRole
+        ) && <StatusSelect statuses={statuses} />}
+        {rolesConfig.reservations.modules.table.topbar.export.includes(
+          userRole
+        ) && <ExportButton prop={"reservations"} />}
       </div>
       <Paper>
         <Table>
           <TableHead>
             <TableRow>
-              {rolesConfig.reservations.table.delete.includes(userRole) && (
+              {rolesConfig.reservations.modules.table.delete.includes(
+                userRole
+              ) && (
                 <TableCell>
                   <TrashBin />
                 </TableCell>

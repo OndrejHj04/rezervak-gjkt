@@ -43,7 +43,7 @@ export default async function UserDetail({
       <div className="flex justify-between">
         <div>
           <Tabs aria-label="basic tabs example" value={mode === "edit" ? 1 : 0}>
-            {rolesConfig.users.detail.visit.includes(userRole) && (
+            {rolesConfig.users.modules.detail.visit.includes(userRole) && (
               <Tab
                 component={Link}
                 href={`/user/detail/${params}?mode=view`}
@@ -51,7 +51,7 @@ export default async function UserDetail({
               />
             )}
             {(selfAccount ||
-              rolesConfig.users.detail.edit.includes(userRole)) && (
+              rolesConfig.users.modules.detail.edit.includes(userRole)) && (
               <Tab
                 component={Link}
                 href={`/user/detail/${params}?mode=edit`}

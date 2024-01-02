@@ -35,7 +35,6 @@ export default function HomepageLoading({
   if (status === "unauthenticated") {
     return <WelcomeComponent />;
   }
-
   if (status === "authenticated" && !data?.user.verified) {
     return (
       <>

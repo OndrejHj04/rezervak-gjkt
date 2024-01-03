@@ -15,7 +15,8 @@ import ReservationPagination from "./ReservationsPagination";
 const getReservations = async (id: number, page: string) => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/user-list?id=${id}&page=${page}`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/user-list?id=${id}&page=${page}`,
+      { cache: "no-cache" }
     );
     const data = await req.json();
 

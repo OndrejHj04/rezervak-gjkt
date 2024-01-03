@@ -8,7 +8,8 @@ import GroupsPagination from "./GroupsPagination";
 const getGroups = async (id: number, page: any) => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/group/user-list?id=${id}&page=${page}`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/group/user-list?id=${id}&page=${page}`,
+      { cache: "no-cache" }
     );
     const data = await req.json();
 

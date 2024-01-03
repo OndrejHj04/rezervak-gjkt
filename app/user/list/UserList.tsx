@@ -61,29 +61,27 @@ export default async function UserList({
         {rolesConfig.users.modules.userTable.config.topbar.filter.includes(
           userRole
         ) && <UserRolesSelect roles={roles} />}
-        {rolesConfig.users.modules.userTable.config.topbar.search.includes(userRole) && (
-          <SearchBar label="uživatele" />
-        )}
-        {rolesConfig.users.modules.userTable.config.topbar.export.includes(userRole) && (
-          <ExportButton prop="users" />
-        )}
+        {rolesConfig.users.modules.userTable.config.topbar.search.includes(
+          userRole
+        ) && <SearchBar label="uživatele" />}
+        {rolesConfig.users.modules.userTable.config.topbar.export.includes(
+          userRole
+        ) && <ExportButton prop="users" />}
       </div>
       <Paper className="w-full p-2">
         <Table>
           <TableHead>
             <TableRow>
-              {rolesConfig.users.modules.userTable.config.delete.includes(userRole) ? (
+              {rolesConfig.users.modules.userTable.config.delete.includes(
+                userRole
+              ) && (
                 <>
-                  <TableCell>
-                    <CheckboxComponent users={users.data} />
-                  </TableCell>
                   <TableCell>
                     <RemoveUser />
                   </TableCell>
                 </>
-              ) : (
-                <TableCell></TableCell>
               )}
+              <TableCell></TableCell>
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Jméno" />
               </TableCell>

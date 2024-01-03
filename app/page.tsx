@@ -1,6 +1,8 @@
 import HomepageLoading from "@/app/HomepageLoading";
+import { rolesConfig } from "@/rolesConfig";
 import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
+import { authOptions } from "./api/auth/[...nextauth]/options";
 
 const DisplayReservations = dynamic(
   () => import("@/app/homepage/reservations/DisplayReservations")
@@ -23,14 +25,20 @@ const getUserDetail = async (email: any) => {
 };
 
 export default async function Home({ searchParams }: { searchParams: any }) {
-  const user = (await getServerSession()) as any;
-  const data = await getUserDetail(user?.user.email);
+  const { user } = (await getServerSession(authOptions)) as any;
+  const data = await getUserDetail(user.email);
 
   const homepage = (
     <div className="flex gap-2 h-min">
-      <DisplayGroups searchParams={searchParams} />
-      <DisplayReservations searchParams={searchParams} />
-      <HomepageCalendar />
+      {rolesConfig.homepage.modules.personalGroups.display.includes(
+        user.role.id
+      ) && <DisplayGroups searchParams={searchParams} />}
+      {rolesConfig.homepage.modules.personalReservations.display.includes(
+        user.role.id
+      ) && <DisplayReservations searchParams={searchParams} />}
+      {rolesConfig.homepage.modules.allReservations.display.includes(
+        user.role.id
+      ) && <HomepageCalendar />}
     </div>
   );
 

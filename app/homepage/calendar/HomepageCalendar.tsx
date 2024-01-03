@@ -6,7 +6,7 @@ import CottageIcon from "@mui/icons-material/Cottage";
 const getReservations = async (id: number) => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?user_id=${id}`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list`
     );
     const { data } = await req.json();
     return data;

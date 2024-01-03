@@ -1,4 +1,10 @@
-import { MenuList, Paper, TablePagination, Typography } from "@mui/material";
+import {
+  MenuItem,
+  MenuList,
+  Paper,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import { Reservation } from "@/types";
 import { User, getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
@@ -37,13 +43,20 @@ export default async function DisplayReservations({
     <Paper className="p-2">
       <div className="flex justify-between items-center gap-3">
         <EventIcon color="primary" />
-        <Typography variant="h5">Nadcházející rezervace</Typography>
+        <Typography variant="h5">Moje rezervace</Typography>
         <EventIcon color="primary" />
       </div>
       <MenuList>
-        {reservations.data.map((reservation: any) => (
-          <SingleReservation key={reservation.id} reservations={reservation} />
-        ))}
+        {reservations.data.length ? (
+          reservations.data.map((reservation: any) => (
+            <SingleReservation
+              key={reservation.id}
+              reservations={reservation}
+            />
+          ))
+        ) : (
+          <Typography className="text-center">žádné rezervace</Typography>
+        )}
       </MenuList>
       <ReservationPagination count={reservations.count} />
     </Paper>

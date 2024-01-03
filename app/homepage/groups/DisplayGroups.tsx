@@ -37,9 +37,15 @@ export default async function DisplayGroups({
         <GroupIcon color="primary" />
       </div>
       <MenuList>
-        {groups.data?.map((group: any) => (
-          <SingleGroup key={group.id} group={group} />
-        ))}
+        {groups.data.length ? (
+          groups.data?.map((group: any) => (
+            <SingleGroup key={group.id} group={group} />
+          ))
+        ) : (
+          <Typography className="text-center">
+            nejste členem žádné skupiny
+          </Typography>
+        )}
       </MenuList>
       <GroupsPagination count={groups.count} />
     </Paper>

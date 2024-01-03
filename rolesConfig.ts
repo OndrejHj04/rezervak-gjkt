@@ -2,7 +2,17 @@ export const rolesConfig = {
   homepage: {
     name: "Přehled",
     path: "/",
-    modules: [],
+    modules: {
+      personalGroups: {
+        display: [1, 2, 3, 4],
+      },
+      personalReservations: {
+        display: [1, 2, 3, 4],
+      },
+      allReservations: {
+        display: [1, 2],
+      },
+    },
     roles: [],
     menu: [true, false],
     icon: "home",

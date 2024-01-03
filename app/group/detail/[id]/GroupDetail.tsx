@@ -25,6 +25,7 @@ export default async function GroupDetail({
   userId: any;
 }) {
   const group = await getGroupDetail(params, reservations || 1, users || 1);
+  console.log(group);
   const isOwner = group.owner.id === userId;
 
   return (

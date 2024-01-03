@@ -75,9 +75,12 @@ export default async function middleware(req: NextRequest) {
     );
 
     const {
-      data: { isMember, isOwner },
+      data: { isMember, isOwner, exist },
     } = await request.json();
 
+    if (!exist) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
     if (
       isMember &&
       !rolesConfig.groups.modules.groupsDetail.visitSelf.includes(role.id)
@@ -101,7 +104,7 @@ export default async function middleware(req: NextRequest) {
     }
   }
 
-  if (role && req.nextUrl.pathname.startsWith("/reservations/detail")) {
+  if (role && req.nextUrl.pathname.startsWith("/reservation/detail")) {
     const reservation = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
 
@@ -117,9 +120,12 @@ export default async function middleware(req: NextRequest) {
     );
 
     const {
-      data: { isMember, isLeader },
+      data: { isMember, isLeader, exist },
     } = await request.json();
 
+    if (!exist) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
     if (
       isMember &&
       !rolesConfig.reservations.modules.reservationsDetail.visitSelf.includes(

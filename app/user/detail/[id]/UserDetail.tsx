@@ -40,31 +40,45 @@ export default async function UserDetail({
 
   return (
     <>
-      <div className="flex justify-between">
-        <div>
-          <Tabs aria-label="basic tabs example" value={mode === "edit" ? 1 : 0}>
-            {rolesConfig.users.modules.userDetail.visit.includes(userRole) && (
-              <Tab
-                component={Link}
-                href={`/user/detail/${params}?mode=view`}
-                label="Zobrazit"
-              />
-            )}
-            {(selfAccount ||
-              rolesConfig.users.modules.userDetail.edit.includes(userRole)) && (
-              <Tab
-                component={Link}
-                href={`/user/detail/${params}?mode=edit`}
-                label="Editovat"
-              />
-            )}
-          </Tabs>
-        </div>
-      </div>
-      {mode === "edit" ? (
-        <UserDetailForm userDetail={userDetail} roles={roles} />
+      {userDetail ? (
+        <>
+          <div className="flex justify-between">
+            <div>
+              <Tabs
+                aria-label="basic tabs example"
+                value={mode === "edit" ? 1 : 0}
+              >
+                {(selfAccount ||
+                  rolesConfig.users.modules.userDetail.visit.includes(
+                    userRole
+                  )) && (
+                  <Tab
+                    component={Link}
+                    href={`/user/detail/${params}?mode=view`}
+                    label="Zobrazit"
+                  />
+                )}
+                {(selfAccount ||
+                  rolesConfig.users.modules.userDetail.edit.includes(
+                    userRole
+                  )) && (
+                  <Tab
+                    component={Link}
+                    href={`/user/detail/${params}?mode=edit`}
+                    label="Editovat"
+                  />
+                )}
+              </Tabs>
+            </div>
+          </div>
+          {mode === "edit" ? (
+            <UserDetailForm userDetail={userDetail} roles={roles} />
+          ) : (
+            <UserDetailDisplay userDetail={userDetail} />
+          )}
+        </>
       ) : (
-        <UserDetailDisplay userDetail={userDetail} />
+        <div>Nenalezeno</div>
       )}
     </>
   );

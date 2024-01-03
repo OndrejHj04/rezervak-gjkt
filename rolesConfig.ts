@@ -6,6 +6,13 @@ export const rolesConfig = {
     roles: [],
     menu: [true, false],
   },
+  login: {
+    name: "Přihlášení",
+    path: "/login",
+    modules: [],
+    roles: [],
+    menu: [false, false],
+  },
   photogallery: {
     name: "Galerie",
     path: "/photogallery",
@@ -109,4 +116,20 @@ export const rolesConfig = {
       },
     },
   },
+};
+
+export const getRoutes = (config: any, role: any, result: any = []) => {
+  config.forEach((item: any) => {
+    if (!role) {
+      item.roles && !item.roles.length && result.push(item);
+    } else {
+      if (item.menu && (!item.roles.length || item.roles.includes(role.id))) {
+        result.push(item);
+      } else if (item.modules) {
+        getRoutes(Object.values(item.modules), role, result);
+      }
+    }
+  });
+
+  return result;
 };

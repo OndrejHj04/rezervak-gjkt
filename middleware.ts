@@ -1,13 +1,14 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { rolesConfig } from "./rolesConfig";
+import { getRoutes, rolesConfig } from "./rolesConfig";
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req });
   const role = token?.role;
   const verified = token?.verified;
   const active = token?.active;
-  
+
+  console.log(req.nextUrl.pathname);
 
   if ((!verified || !active) && req.nextUrl.pathname !== "/" && role) {
     return NextResponse.redirect(new URL("/", req.url));
@@ -17,6 +18,13 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
+  if (
+    !getRoutes(Object.values(rolesConfig), role).some(
+      (item: any) => item.path === req.nextUrl.pathname
+    )
+  ) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
   if (req.nextUrl.pathname.startsWith("/user/detail") && role) {
     const id = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
@@ -134,7 +142,9 @@ export default async function middleware(req: NextRequest) {
     if (
       req.nextUrl.search.includes("mode=edit") &&
       !isLeader &&
-      !rolesConfig.reservations.modules.reservationsDetail.edit.includes(role.id)
+      !rolesConfig.reservations.modules.reservationsDetail.edit.includes(
+        role.id
+      )
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }

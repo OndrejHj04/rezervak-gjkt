@@ -9,34 +9,14 @@ import Link from "next/link";
 import { Icon } from "@mui/material";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-
-const actions = [
-  {
-    icon: <PersonAddIcon />,
-    name: "Přidat uživatele",
-    path: "/admin/users/new",
-  },
-  {
-    icon: <GroupAddIcon />,
-    name: "Přidat skupinu",
-    path: "/admin/groups/new",
-  },
-  {
-    icon: <EditCalendar />,
-    name: "Vytvořit rezervaci",
-    path: "/reservations/create",
-  },
-  {
-    icon: <ReceiptLongIcon />,
-    name: "Importovat uživatele",
-    path: "/admin/users/import",
-  },
-];
+import { getRoutes, rolesConfig } from "@/rolesConfig";
 
 export default async function SpeedComponent() {
   const data = (await getServerSession(authOptions)) as any;
+  const menu = getRoutes(Object.values(rolesConfig), data?.user.role).filter(
+    (item: any) => item.menu[1]
+  );
 
-  if (data?.user.role.id !== 1) return null;
   return (
     <>
       <SpeedDial
@@ -44,7 +24,7 @@ export default async function SpeedComponent() {
         sx={{ position: "absolute", bottom: 16, right: 16 }}
         icon={<SpeedDialIcon />}
       >
-        {actions.map((action) => (
+        {menu.map((action: any) => (
           <SpeedDialAction
             key={action.name}
             icon={

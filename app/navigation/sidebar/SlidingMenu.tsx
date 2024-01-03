@@ -20,6 +20,7 @@ import { rolesConfig } from "@/rolesConfig";
 
 export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
   const { panel, setPanel } = store();
+  console.log(menuConfig);
   return (
     <Drawer anchor="left" open={panel} onClose={() => setPanel(false)}>
       <div className="h-full flex flex-col justify-between">

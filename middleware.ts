@@ -7,6 +7,7 @@ export default async function middleware(req: NextRequest) {
   const role = token?.role;
   const verified = token?.verified;
   const active = token?.active;
+  const routes = getRoutes(Object.values(rolesConfig), role);
 
   if ((!verified || !active) && req.nextUrl.pathname !== "/" && role) {
     return NextResponse.redirect(new URL("/", req.url));
@@ -17,12 +18,12 @@ export default async function middleware(req: NextRequest) {
   }
 
   if (
-    !getRoutes(Object.values(rolesConfig), role).some(
-      (item: any) => item.path === req.nextUrl.pathname
-    )
+    !req.nextUrl.pathname.includes("detail") &&
+    !routes.some((item: any) => item.path === req.nextUrl.pathname)
   ) {
     return NextResponse.redirect(new URL("/", req.url));
   }
+
   if (req.nextUrl.pathname.startsWith("/user/detail") && role) {
     const id = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
@@ -34,13 +35,13 @@ export default async function middleware(req: NextRequest) {
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
-
     if (
       !selfAccount &&
       !rolesConfig.users.modules.userDetail.visit.includes(role.id)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
+
     if (
       req.nextUrl.search.includes("mode=edit") &&
       selfAccount &&
@@ -150,5 +151,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: "/((?!api|_next).*)",
+  matcher: "/((?!api|_next|favicon).*)",
 };

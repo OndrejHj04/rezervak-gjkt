@@ -60,6 +60,7 @@ export const rolesConfig = {
         icon: "person_search_icon",
       },
       userDetail: {
+        path: "/user/detail",
         visit: [1, 2],
         visitSelf: [1, 2, 3, 4],
         edit: [1],
@@ -90,6 +91,7 @@ export const rolesConfig = {
         icon: "group",
       },
       groupsDetail: {
+        path: "/group/detail",
         visit: [1, 2],
         visitSelf: [1, 2, 3, 4],
         edit: [1],
@@ -117,9 +119,10 @@ export const rolesConfig = {
           topbar: { search: [1, 2], export: [1, 2], filter: [1, 2] },
         },
         menu: [true, false],
-        icon: "calendar_month_icon"
+        icon: "calendar_month_icon",
       },
       reservationsDetail: {
+        path: "/reservation/detail",
         visit: [1, 2],
         visitSelf: [1, 2, 3, 4],
         edit: [1],

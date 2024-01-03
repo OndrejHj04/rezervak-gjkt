@@ -103,14 +103,14 @@ export const rolesConfig = {
     modules: {
       reservationsCreate: {
         name: "Vytvořit rezervaci",
-        path: "/reservations/create",
+        path: "/reservation/create",
         roles: [1],
         menu: [false, true],
         icon: "edit_calendar_icon",
       },
       reservationsTable: {
         name: "Všechny rezervace",
-        path: "/reservations/list",
+        path: "/reservation/list",
         roles: [1, 2, 3],
         config: {
           delete: [1, 2],

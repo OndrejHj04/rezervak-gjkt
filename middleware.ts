@@ -8,8 +8,6 @@ export default async function middleware(req: NextRequest) {
   const verified = token?.verified;
   const active = token?.active;
 
-  console.log(req.nextUrl.pathname);
-
   if ((!verified || !active) && req.nextUrl.pathname !== "/" && role) {
     return NextResponse.redirect(new URL("/", req.url));
   }

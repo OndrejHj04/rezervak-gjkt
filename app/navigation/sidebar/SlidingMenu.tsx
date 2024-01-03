@@ -27,7 +27,7 @@ export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
             >
               <MenuItem key={item.name}>
                 <ListItemIcon>
-                  <Icon color="primary" fontSize="large">
+                  <Icon fontSize="large" color="primary">
                     {item.icon}
                   </Icon>
                 </ListItemIcon>

@@ -1,4 +1,3 @@
-import UsersPagination from "@/app/reservations/detail/[id]/UsersPagination";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Avatar,
@@ -12,6 +11,7 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import GroupsPagination from "./GroupsPagination";
+import UsersPagination from "@/app/reservation/detail/[id]/UsersPagination";
 
 export default async function GroupDetailDisplay({ group }: { group: any }) {
   return (

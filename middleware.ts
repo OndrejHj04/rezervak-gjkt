@@ -107,7 +107,6 @@ export default async function middleware(req: NextRequest) {
   if (role && req.nextUrl.pathname.startsWith("/reservation/detail")) {
     const reservation = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
-
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/check-user`,
       {

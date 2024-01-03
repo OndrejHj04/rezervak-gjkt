@@ -38,7 +38,9 @@ export async function POST(req: Request) {
       })) as any;
 
       groupReservations.map((group: any) => {
-        const reservations = JSON.parse(group.reservations);
+        const reservations = group.reservations
+          ? JSON.parse(group.reservations)
+          : [];
         reservations.push(data.insertId);
         query({
           query: `UPDATE ${"`groups`"} SET reservations = "${JSON.stringify(
@@ -57,7 +59,9 @@ export async function POST(req: Request) {
         values: [],
       })) as any;
       userReservations.map((user: any) => {
-        const reservations = JSON.parse(user.reservations);
+        const reservations = user.reservations
+          ? JSON.parse(user.reservations)
+          : [];
         reservations.push(data.insertId);
 
         query({

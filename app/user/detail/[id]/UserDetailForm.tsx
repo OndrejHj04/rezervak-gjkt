@@ -350,7 +350,7 @@ export default function UserDetailForm({
                         <IconButton
                           onClick={(e) => {
                             e.stopPropagation();
-                            push(`/reservations/detail/${reservation.id}`);
+                            push(`/reservation/detail/${reservation.id}`);
                           }}
                         >
                           <Icon>info_icon</Icon>

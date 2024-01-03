@@ -10,7 +10,7 @@ export default function SingleReservation({
 }) {
   return (
     <Link
-      href={`/reservations/detail/${reservations.id}`}
+      href={`/reservation/detail/${reservations.id}`}
       className="no-underline text-inherit"
     >
       <MenuItem className="flex justify-between gap-2">

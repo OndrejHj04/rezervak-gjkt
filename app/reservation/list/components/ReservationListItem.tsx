@@ -108,7 +108,7 @@ export default function ReservationListItem({
             userRole
           )) ? (
           <TableCell>
-            <Link href={`/reservations/detail/${reservation.id}`}>
+            <Link href={`/reservation/detail/${reservation.id}`}>
               <Button>detail</Button>
             </Link>
           </TableCell>

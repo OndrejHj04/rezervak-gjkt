@@ -51,7 +51,7 @@ export default async function ReservationDetail({
           <Tabs aria-label="basic tabs example" value={mode === "edit" ? 1 : 0}>
             <Tab
               component={Link}
-              href={`/reservations/detail/${params}?mode=view`}
+              href={`/reservation/detail/${params}?mode=view`}
               label="Zobrazit"
             />
             {(rolesConfig.reservations.modules.reservationsDetail.edit.includes(
@@ -60,7 +60,7 @@ export default async function ReservationDetail({
               isLeader) && (
               <Tab
                 component={Link}
-                href={`/reservations/detail/${params}?mode=edit`}
+                href={`/reservation/detail/${params}?mode=edit`}
                 label="Editovat"
               />
             )}

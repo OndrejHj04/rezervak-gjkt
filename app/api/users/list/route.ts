@@ -41,6 +41,7 @@ export async function GET(req: Request) {
 
     users.map((item: any) => {
       item.role = roles.find((r: any) => r.id === Number(item.role));
+      item.full_name = item.first_name + " " + item.last_name;
     });
 
     return NextResponse.json({

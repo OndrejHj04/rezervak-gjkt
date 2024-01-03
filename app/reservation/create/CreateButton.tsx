@@ -48,7 +48,7 @@ export default function CreateButton() {
           if (value !== "groups" && Array.isArray(data)) {
             return data.length > 0;
           }
-          return Boolean(data);
+          return value === "instructions" ? true : Boolean(data);
         })
       }
     >

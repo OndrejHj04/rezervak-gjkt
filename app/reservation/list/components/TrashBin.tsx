@@ -18,7 +18,7 @@ export default function TrashBin() {
         if (res.success) toast.success("Skupiny byly úspěšně odstraněny");
         else toast.error("Něco se pokazilo");
 
-        ReservationListMakeRefetch("/reservations/list");
+        ReservationListMakeRefetch("/reservation/list");
         setSelectedReservations([]);
       });
   };

@@ -130,7 +130,7 @@ export default function ReservationDetailRender({ users }: { users: User[] }) {
             </div>
             <TextField
               {...register("instructions")}
-              label="Pokyny pro účastníky"
+              label="Pokyny pro účastníky (dobrovolné)"
               multiline
               maxRows={4}
               minRows={4}
@@ -154,6 +154,7 @@ export default function ReservationDetailRender({ users }: { users: User[] }) {
                   leader: 0,
                   purpouse: "",
                   name: "",
+                  instructions: "",
                 });
                 reset({
                   purpouse: "",

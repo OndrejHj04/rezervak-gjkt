@@ -25,19 +25,19 @@ const getUserDetail = async (email: any) => {
 };
 
 export default async function Home({ searchParams }: { searchParams: any }) {
-  const { user } = (await getServerSession(authOptions)) as any;
-  const data = await getUserDetail(user.email);
+  const user = (await getServerSession(authOptions)) as any;
+  const data = await getUserDetail(user?.user.email);
 
   const homepage = (
     <div className="flex gap-2 h-min">
       {rolesConfig.homepage.modules.personalGroups.display.includes(
-        user.role.id
+        user?.user.role.id
       ) && <DisplayGroups searchParams={searchParams} />}
       {rolesConfig.homepage.modules.personalReservations.display.includes(
-        user.role.id
+        user?.user.role.id
       ) && <DisplayReservations searchParams={searchParams} />}
       {rolesConfig.homepage.modules.allReservations.display.includes(
-        user.role.id
+        user?.user.role.id
       ) && <HomepageCalendar />}
     </div>
   );

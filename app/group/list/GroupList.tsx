@@ -46,7 +46,7 @@ export default async function GroupList({
   if (!groups) return <div>loading...</div>;
   return (
     <div className="flex flex-col w-full gap-2">
-      <div className="flex justify-between">
+      <div className="flex gap-3 justify-end">
         {rolesConfig.groups.modules.groupsTable.config.topbar.search.includes(
           userRole
         ) && <SearchBar label={"skupiny"} />}

@@ -89,8 +89,8 @@ export default function GroupDetailForm({ group }: { group: any }) {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove-member`, {
       method: "POST",
       body: JSON.stringify({
-        group: group?.id,
-        currentMembers: group?.users.map((user: any) => user.id),
+        group: group.id,
+        currentMembers: group.users.data.map((user: any) => user.id),
         membersForRemove: checked,
       }),
     })
@@ -125,7 +125,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
       body: JSON.stringify({
         group: group.id,
         removeReservaitons: selectReservation,
-        currentReservations: group?.reservations.map(
+        currentReservations: group?.reservations.data.map(
           (reservation: any) => reservation.id
         ),
       }),
@@ -174,7 +174,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
       )}
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
         <Paper className="flex gap-4 p-4 flex-col">
-          <div className="flex gap-2 justify-between">
+          <div className="flex gap-2">
             <div className="flex flex-col gap-1">
               <Typography variant="h5">Vedoucí skupiny</Typography>
               <div className="flex gap-2">
@@ -189,7 +189,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
               <div className="flex ">
                 <Typography variant="h6">Počet členů:</Typography>
                 <Chip
-                  label={`${group.users.length} členů`}
+                  label={`${group.users.count} členů`}
                   sx={{
                     margin: "auto",
                   }}
@@ -212,7 +212,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
                 maxRows={4}
               />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 ml-auto">
               <Button
                 variant="outlined"
                 color="error"

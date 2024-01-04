@@ -43,7 +43,7 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
               <ListItem disablePadding key={group.id}>
                 <ListItemText
                   primary={<Typography>{group.name}</Typography>}
-                  secondary={`Počet členů: ${group.users.length}`}
+                  secondary={`Počet členů: ${JSON.parse(group.users).length}`}
                 />
               </ListItem>
             ))

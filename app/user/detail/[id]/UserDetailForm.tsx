@@ -282,7 +282,9 @@ export default function UserDetailForm({
                       >
                         <ListItemText
                           primary={<Typography>{group.name}</Typography>}
-                          secondary={`Počet členů: ${group.users.length}`}
+                          secondary={`Počet členů: ${
+                            JSON.parse(group.users).length
+                          }`}
                         />
                         <Checkbox
                           disableRipple

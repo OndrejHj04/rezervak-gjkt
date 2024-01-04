@@ -57,13 +57,13 @@ export default async function UserList({
   const roles = await getRoles();
   return (
     <div className="flex flex-col w-full gap-2">
-      <div className="flex justify-between">
-        {rolesConfig.users.modules.userTable.config.topbar.filter.includes(
-          userRole
-        ) && <UserRolesSelect roles={roles} />}
+      <div className="flex gap-3 justify-end">
         {rolesConfig.users.modules.userTable.config.topbar.search.includes(
           userRole
         ) && <SearchBar label="uživatele" />}
+        {rolesConfig.users.modules.userTable.config.topbar.filter.includes(
+          userRole
+        ) && <UserRolesSelect roles={roles} />}
         {rolesConfig.users.modules.userTable.config.topbar.export.includes(
           userRole
         ) && <ExportButton prop="users" />}

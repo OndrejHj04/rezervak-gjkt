@@ -9,7 +9,6 @@ export async function GET(
   const url = new URL(req.url);
   const rpage = Number(url.searchParams.get("reservations")) || 1;
   const upage = Number(url.searchParams.get("users")) || 1;
-
   try {
     const data = (await query({
       query: `
@@ -26,7 +25,7 @@ export async function GET(
       query({
         query: `
       SELECT id, image, first_name, last_name, email FROM users ${
-        JSON.parse(data[0].users.length).length
+        JSON.parse(data[0].users).length
           ? `WHERE id IN (${JSON.parse(data[0].users).join(",")})`
           : `WHERE 1=2`
       }`,

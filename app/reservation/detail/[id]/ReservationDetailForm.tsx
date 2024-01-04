@@ -315,10 +315,7 @@ export default function ReservationDetailForm({
                       <ListItem disablePadding key={user.id}>
                         <ListItemButton
                           sx={{ padding: 1 }}
-                          onClick={() =>
-                            user.id !== reservation.leader.id &&
-                            handleCheckUser(user.id)
-                          }
+                          onClick={() => handleCheckUser(user.id)}
                         >
                           <ListItemIcon>
                             <AvatarWrapper data={user} />

@@ -16,7 +16,12 @@ export async function GET(
       values: [id],
     })) as any;
 
-    const [users, groups, status] = (await Promise.all([
+    const [leader, users, groups, status] = (await Promise.all([
+      query({
+        query: `SELECT id, first_name, last_name, image, email FROM users WHERE id = ${data[0].leader}`,
+        values: [],
+      }),
+
       query({
         query: `SELECT id, first_name, last_name, image, email FROM users ${
           JSON.parse(data[0].users).length
@@ -50,7 +55,7 @@ export async function GET(
       data: groups.slice((gpage - 1) * 5, gpage * 5),
     };
 
-    data[0].leader = users.find((user: any) => user.id === data[0].leader);
+    data[0].leader = leader[0];
     data[0].status = status[0];
 
     return NextResponse.json({

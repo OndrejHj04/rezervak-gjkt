@@ -383,7 +383,9 @@ export default function ReservationDetailForm({
                         >
                           <ListItemText
                             primary={group.name}
-                            secondary={"Počet členů: " + group.users.length}
+                            secondary={
+                              "Počet členů: " + JSON.parse(group.users).length
+                            }
                           />
                           <Checkbox
                             disableRipple

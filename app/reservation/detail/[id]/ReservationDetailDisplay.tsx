@@ -105,7 +105,7 @@ export default function ReservationDetailDisplay({
               <ListItem disablePadding key={group.id}>
                 <ListItemText
                   primary={group.name}
-                  secondary={"Počet členů: " + group.users.length}
+                  secondary={"Počet členů: " + JSON.parse(group.users).length}
                 />
               </ListItem>
             ))

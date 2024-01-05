@@ -2,7 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export default async function MakeGroupRefetch(url: any) {
+export default async function MakeGroupRefetch() {
   revalidatePath("/group/list");
-  redirect(url);
+  redirect("/group/list");
 }

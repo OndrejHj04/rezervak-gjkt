@@ -25,7 +25,7 @@ import { useForm } from "react-hook-form";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import dayjs from "dayjs";
 import MakeGroupRefetch from "../../list/refetch";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import MakeGroupDetailRefetch from "./refetch";
 import AddUsersToGroupModal from "./AddUsersToGroupModal";
 import AddGroupToReservationModal from "./AddGroupToReservationModal";
@@ -81,8 +81,8 @@ export default function GroupDetailForm({ group }: { group: any }) {
       .then((res) => {
         if (res.success) toast.success("Skupina úspěšně odstraněna");
         else toast.error("Něco se nepovedlo");
-        MakeGroupRefetch("/group/list");
       });
+    MakeGroupRefetch();
   };
 
   const handleDeleteMembers = () => {

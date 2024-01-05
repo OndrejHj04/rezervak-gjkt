@@ -153,10 +153,10 @@ export default function ReservationDetailForm({
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
-          ReservationListMakeRefetch("/reservations/list");
           toast.success("Rezervace byla odstraněna");
         } else toast.error("Něco se nepovedlo");
       });
+    ReservationListMakeRefetch("/reservation/list");
   };
 
   const handleUpdateStatus = () => {

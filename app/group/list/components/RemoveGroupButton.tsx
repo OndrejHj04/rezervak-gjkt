@@ -17,7 +17,7 @@ export default function RemoveGroups() {
       .then((res) => {
         if (res.success) toast.success("Skupiny byly úspěšně odstraněny");
         else toast.error("Něco se pokazilo");
-        MakeGroupRefetch("/group/list");
+        MakeGroupRefetch();
         setSelectedGroups([]);
       });
   };

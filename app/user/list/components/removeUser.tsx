@@ -10,7 +10,7 @@ export default function RemoveUser() {
 
   const deleteUsers = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/delete`, {
-      method: "DELETE",
+      method: "POST",
       body: JSON.stringify({ users: selectedUsers }),
     })
       .then((res) => res.json())

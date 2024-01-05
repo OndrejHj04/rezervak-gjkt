@@ -1,11 +1,5 @@
 "use client";
-import {
-  Autocomplete,
-  Box,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Autocomplete, Box, Paper, TextField, Typography } from "@mui/material";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
@@ -57,7 +51,7 @@ export default function GroupNewForm({
       <div className="mb-2 flex justify-between gap-2">
         <Typography variant="h5">Nová skupina</Typography>
         <LoadingButton type="submit" variant="contained" loading={loading}>
-          Přihlásit se
+          Uložit
         </LoadingButton>
       </div>
       <Paper className="p-4 flex flex-col gap-4">

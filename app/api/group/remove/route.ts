@@ -2,42 +2,55 @@ import { query } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { groups } = await req.json();
+  try {
+    const { groups } = await req.json();
 
-  const data = await query({
-    query: `DELETE FROM ${"`groups`"} WHERE id IN (${groups.join(",")});`,
-    values: [],
-  });
+    const [userGroups, reservationGroups] = (await Promise.all([
+      await query({
+        query: `SELECT id, ${"`groups`"} FROM users`,
+        values: [],
+      }),
+      await query({
+        query: `SELECT id, ${"`groups`"} FROM reservations`,
+        values: [],
+      }),
+    ])) as any;
 
-  groups.map(async (group: any) => {
-    const userGroups = (await query({
-      query: `SELECT id, ${"`groups`"} FROM users`,
-      values: [],
-    })) as any;
+    groups.map(async (group: any) => {
+      userGroups.map(async (user: any) => {
+        let groupsData = JSON.parse(user.groups);
 
-    userGroups.map(async (user: any) => {
-      let groupsData = user.groups ? JSON.parse(user.groups) : null;
-
-      if (groupsData.includes(group)) {
-        groupsData = groupsData.filter((num: number) => num !== group);
-        if (groupsData.length) {
+        if (groupsData.includes(group)) {
+          groupsData = groupsData.filter((num: number) => num !== group);
           await query({
             query: `UPDATE users SET ${"`groups`"} = "${JSON.stringify(
               groupsData
             )}" WHERE id = "${user.id}"`,
             values: [],
           });
-        } else {
+        }
+      });
+
+      reservationGroups.map(async (reservation: any) => {
+        let reservationData = JSON.parse(reservation.groups);
+
+        if (reservationData.includes(group)) {
+          reservationData = reservationData.filter((num: any) => num !== group);
           await query({
-            query: `UPDATE users SET ${"`groups`"} = null WHERE id = "${user.id}"`,
+            query: `UPDATE reservations SET ${"`groups`"} = "${JSON.stringify(
+              reservationData
+            )}" WHERE id = "${reservation.id}"`,
             values: [],
           });
         }
-      }
+      });
     });
-  });
 
-  try {
+    const data = await query({
+      query: `DELETE FROM ${"`groups`"} WHERE id IN (${groups.join(",")})`,
+      values: [],
+    });
+
     return NextResponse.json({
       success: true,
       message: "Operation successful",

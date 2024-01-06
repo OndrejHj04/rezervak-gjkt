@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         to: email,
         subject: "Nový účet",
-        html: NewUserTemplate(password),
+        html: NewUserTemplate(email, password),
       }),
     });
     return NextResponse.json({

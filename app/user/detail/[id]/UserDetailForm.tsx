@@ -36,6 +36,8 @@ import AddGroupsModal from "./AddGroupsModal";
 import AddReservationsModal from "./AddReservationsModal";
 import UserSleepModal from "./UserSleepModal";
 import UserSleepAnnouncment from "./UserSleepAnnouncment";
+import GroupsPagination from "./GroupsPagination";
+import ReservationsPagination from "./ReservationsPagination";
 
 export default function UserDetailForm({
   userDetail,
@@ -60,6 +62,7 @@ export default function UserDetailForm({
   const [groupsModal, setGroupsModal] = useState(false);
   const [reservationsModal, setReservationsModal] = useState(false);
 
+  console.log(userDetail);
   const makeUserSleep = (id: any, active: any) => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/sleep`, {
       method: "POST",
@@ -272,7 +275,7 @@ export default function UserDetailForm({
             <div className="flex flex-col">
               <Typography variant="h5">Skupiny uživatele</Typography>
               <Divider />
-              <List sx={{ height: 400 }}>
+              <List sx={{ height: 360 }}>
                 {userDetail.groups.count ? (
                   userDetail.groups.data.map((group: any) => (
                     <ListItem disablePadding key={group.id}>
@@ -307,6 +310,7 @@ export default function UserDetailForm({
                   </>
                 )}
               </List>
+              <GroupsPagination count={userDetail.groups.count} />
               <div className="flex flex-col gap-2">
                 <Button
                   variant="contained"
@@ -329,7 +333,7 @@ export default function UserDetailForm({
             <div className="flex flex-col">
               <Typography variant="h5">Rezervace uživatele</Typography>
               <Divider />
-              <List sx={{ height: 400 }}>
+              <List sx={{ height: 360 }}>
                 {userDetail.reservations.count ? (
                   userDetail.reservations.data.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>
@@ -366,6 +370,7 @@ export default function UserDetailForm({
                   </>
                 )}
               </List>
+              <ReservationsPagination count={userDetail.reservations.count} />
               <div className="flex flex-col gap-2">
                 <Button
                   variant="contained"

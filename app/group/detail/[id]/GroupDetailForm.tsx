@@ -29,6 +29,8 @@ import { redirect, useRouter } from "next/navigation";
 import MakeGroupDetailRefetch from "./refetch";
 import AddUsersToGroupModal from "./AddUsersToGroupModal";
 import AddGroupToReservationModal from "./AddGroupToReservationModal";
+import UsersPagination from "@/app/reservation/detail/[id]/UsersPagination";
+import ReservationsPagination from "./ReservationsPagination";
 
 interface selecteUser {
   label: string;
@@ -230,8 +232,8 @@ export default function GroupDetailForm({ group }: { group: any }) {
             <div className="flex flex-col">
               <Typography variant="h5">Uživatelé ve skupině </Typography>
               <Divider />
-              <List sx={{ height: 400 }}>
-                {group.users ? (
+              <List sx={{ height: 360 }}>
+                {group.users.count ? (
                   group.users.data.map((user: any) => (
                     <ListItem disablePadding key={user.id}>
                       <ListItemButton
@@ -267,6 +269,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
                   </>
                 )}
               </List>
+              <UsersPagination count={group.users} />
               <div className="flex flex-col gap-2">
                 <Button
                   variant="contained"
@@ -289,8 +292,8 @@ export default function GroupDetailForm({ group }: { group: any }) {
             <div className="flex flex-col">
               <Typography variant="h5">Rezervace skupiny </Typography>
               <Divider />
-              <List sx={{ height: 400 }}>
-                {group.reservations ? (
+              <List sx={{ height: 360 }}>
+                {group.reservations.count ? (
                   group.reservations.data.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>
                       <ListItemButton
@@ -322,10 +325,11 @@ export default function GroupDetailForm({ group }: { group: any }) {
                   ))
                 ) : (
                   <>
-                    <Typography>Žádní rezervace skupiny</Typography>
+                    <Typography>Žádné rezervace skupiny</Typography>
                   </>
                 )}
               </List>
+              <ReservationsPagination count={group.reservations.count} />
               <div className="flex flex-col gap-2">
                 <Button
                   variant="contained"

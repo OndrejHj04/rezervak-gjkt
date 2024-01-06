@@ -45,6 +45,8 @@ import AddGroupsModal from "./AddGroupsModal";
 import MakeReservationDetailRefetch from "./refetch";
 import ReservationListMakeRefetch from "../../list/refetch";
 import PerfectScrollbar from "react-perfect-scrollbar";
+import GroupsPagination from "./GroupsPagination";
+import UsersPagination from "./UsersPagination";
 
 export default function ReservationDetailForm({
   reservation,
@@ -308,9 +310,9 @@ export default function ReservationDetailForm({
             <div className="flex flex-col">
               <Typography variant="h5">Uživatelé v rezervaci</Typography>
               <Divider />
-              <List sx={{ height: 400 }}>
+              <List sx={{ height: 360 }}>
                 <PerfectScrollbar>
-                  {reservation.users.data.length ? (
+                  {reservation.users.count ? (
                     reservation.users.data.map((user: any) => (
                       <ListItem disablePadding key={user.id}>
                         <ListItemButton
@@ -350,6 +352,7 @@ export default function ReservationDetailForm({
                   )}
                 </PerfectScrollbar>
               </List>
+              <UsersPagination count={reservation.users.count} />
               <div className="flex flex-col gap-2">
                 <Button
                   variant="contained"
@@ -372,9 +375,9 @@ export default function ReservationDetailForm({
             <div className="flex flex-col">
               <Typography variant="h5">Skupiny v rezervaci</Typography>
               <Divider />
-              <List sx={{ height: 400 }}>
+              <List sx={{ height: 360 }}>
                 <PerfectScrollbar>
-                  {reservation.groups.data.length ? (
+                  {reservation.groups.count ? (
                     reservation.groups.data.map((group: any) => (
                       <ListItem disablePadding key={group.id}>
                         <ListItemButton
@@ -406,6 +409,7 @@ export default function ReservationDetailForm({
                   )}
                 </PerfectScrollbar>
               </List>
+              <GroupsPagination count={reservation.groups.count} />
               <div className="flex flex-col gap-2 ">
                 <Button
                   variant="contained"
@@ -428,7 +432,7 @@ export default function ReservationDetailForm({
             <div className="flex flex-col">
               <Typography variant="h5">Status rezervace</Typography>
               <Divider />
-              <List sx={{ height: 400 }}>
+              <List sx={{ height: 412 }}>
                 {reservationStatus.map((status: any) => (
                   <ListItem disablePadding key={status.id} value={status.id}>
                     <ListItemButton
@@ -454,7 +458,6 @@ export default function ReservationDetailForm({
                   </ListItem>
                 ))}
               </List>
-
               <div className="flex flex-col gap-2 ">
                 <Button
                   variant="contained"

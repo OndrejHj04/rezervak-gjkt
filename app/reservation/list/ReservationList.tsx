@@ -17,13 +17,19 @@ import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
 import ExportButton from "@/ui-components/ExportButton";
 import { rolesConfig } from "@/rolesConfig";
+import ExpiredReservations from "./components/ExpiredReservations";
 
-const getReservations = async (page: any, status: any, search: any) => {
+const getReservations = async (
+  page: any,
+  status: any,
+  search: any,
+  type: any
+) => {
   try {
     const req = await fetch(
       `${
         process.env.NEXT_PUBLIC_API_URL
-      }/api/reservations/list?page=${page}&status=${status}${
+      }/api/reservations/list?page=${page}&type=${type}&status=${status}${
         search ? `&search=${search}` : ""
       }`,
       { cache: "no-cache" }
@@ -63,7 +69,13 @@ export default async function ReservationList({
   const page = searchParams["page"] || 1;
   const status = searchParams["status"] || 0;
   const search = searchParams["search"] || 0;
-  const reservations = (await getReservations(page, status, search)) as any;
+  const type = searchParams["type"] || "all";
+  const reservations = (await getReservations(
+    page,
+    status,
+    search,
+    type
+  )) as any;
   const statuses = await getStatuses();
 
   return (
@@ -72,9 +84,14 @@ export default async function ReservationList({
         {rolesConfig.reservations.modules.reservationsTable.config.topbar.search.includes(
           userRole
         ) && <SearchBar label={"rezervace"} />}
-        {rolesConfig.reservations.modules.reservationsTable.config.topbar.export.includes(
+        {rolesConfig.reservations.modules.reservationsTable.config.topbar.filter.includes(
           userRole
-        ) && <StatusSelect statuses={statuses} />}
+        ) && (
+          <>
+            <ExpiredReservations />
+            <StatusSelect statuses={statuses} />
+          </>
+        )}
         {rolesConfig.reservations.modules.reservationsTable.config.topbar.export.includes(
           userRole
         ) && <ExportButton prop={"reservations"} />}

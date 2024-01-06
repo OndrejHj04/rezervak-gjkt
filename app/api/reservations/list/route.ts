@@ -8,6 +8,9 @@ export async function GET(req: Request) {
     const page = Number(url.searchParams.get("page"));
     const search = url.searchParams.get("search");
     const limit = Number(url.searchParams.get("limit")) || 10;
+    const type = url.searchParams.get("type");
+    const notStatus = Number(url.searchParams.get("not_status"));
+
     let countSql = `SELECT COUNT(*) FROM reservations WHERE 1=1`;
 
     if (status) {
@@ -15,6 +18,12 @@ export async function GET(req: Request) {
     }
     if (search) {
       countSql += ` AND name LIKE ${`"%${search}%"`}`;
+    }
+    if (notStatus) {
+      countSql += ` AND status <> ${notStatus}`;
+    }
+    if (type === "expired") {
+      countSql += ` AND to_date < CURDATE()`;
     }
 
     let sql = `SELECT * FROM reservations WHERE 1=1`;
@@ -24,6 +33,12 @@ export async function GET(req: Request) {
     }
     if (search) {
       sql += ` AND name LIKE ${`"%${search}%"`}`;
+    }
+    if (type === "expired") {
+      sql += ` AND to_date < CURDATE()`;
+    }
+    if (notStatus) {
+      sql += ` AND status <> ${notStatus}`;
     }
     if (page) {
       sql += ` LIMIT ${limit} OFFSET ${page * limit - limit}`;

@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 const getReservations = async (id: any, page: any) => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?status=1&limit=5&page=${page}`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?not_status=1&limit=5&page=${page}&type=expired`
     );
     const data = await req.json();
     return data;

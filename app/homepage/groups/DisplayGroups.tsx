@@ -31,7 +31,7 @@ export default async function DisplayGroups({
     : [];
 
   return (
-    <Paper className="p-2">
+    <Paper className="p-2 flex flex-col">
       <div className="flex justify-between items-center gap-3">
         <GroupIcon color="primary" />
         <Typography variant="h5">Moje skupiny</Typography>
@@ -48,7 +48,9 @@ export default async function DisplayGroups({
           </Typography>
         )}
       </MenuList>
-      <GroupsPagination count={groups.count} />
+      <div className="mt-auto">
+        <GroupsPagination count={groups.count} />
+      </div>
     </Paper>
   );
 }

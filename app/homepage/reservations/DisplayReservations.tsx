@@ -41,7 +41,7 @@ export default async function DisplayReservations({
     : [];
 
   return (
-    <Paper className="p-2">
+    <Paper className="p-2 flex-col flex">
       <div className="flex justify-between items-center gap-3">
         <EventIcon color="primary" />
         <Typography variant="h5">Moje rezervace</Typography>
@@ -59,7 +59,9 @@ export default async function DisplayReservations({
           <Typography className="text-center">žádné rezervace</Typography>
         )}
       </MenuList>
-      <ReservationPagination count={reservations.count} name="reservations" />
+      <div className="mt-auto">
+        <ReservationPagination count={reservations.count} name="reservations" />
+      </div>
     </Paper>
   );
 }

@@ -48,8 +48,10 @@ export default async function PastReservationsWidget({
           </Typography>
         )}
       </MenuList>
-      <ReservationPagination count={reservations.count} name="archive" />
-      <MakeReservationsArchive />
+      <div className="mt-auto">
+        <ReservationPagination count={reservations.count} name="archive" />
+      </div>
+      <MakeReservationsArchive disabled={!reservations.data.length} />
     </Paper>
   );
 }

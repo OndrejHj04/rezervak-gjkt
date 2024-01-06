@@ -32,7 +32,10 @@ export default async function Home({ searchParams }: { searchParams: any }) {
   const data = await getUserDetail(user?.user.email);
 
   const homepage = (
-    <div className="flex gap-2 h-min">
+    <div
+      className="grid gap-2"
+      style={{ gridTemplateColumns: "repeat(auto-fit, minmax(335px, 1fr))" }}
+    >
       {rolesConfig.homepage.modules.personalGroups.display.includes(
         user?.user.role.id
       ) && <DisplayGroups searchParams={searchParams} />}

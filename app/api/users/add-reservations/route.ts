@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import NewReservationMember from "@/templates/reservationAddMember/template";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -8,15 +9,15 @@ export async function POST(req: Request) {
     const getReservation = await query({
       query: `UPDATE users SET reservations = "[${[
         ...currentReservations,
-        ...newReservations,
-      ]}]" WHERE id = ${user}`,
+        ...newReservations.map((res: any) => res.id),
+      ]}]" WHERE id = ${user.id}`,
       values: [],
     });
 
     const reservations = (await query({
-      query: `SELECT id, users FROM reservations WHERE id IN (${newReservations.join(
-        ","
-      )})`,
+      query: `SELECT id, users FROM reservations WHERE id IN (${newReservations
+        .map((res: any) => res.id)
+        .join(",")})`,
       values: [],
     })) as any;
     reservations.forEach((reservation: any) => {
@@ -27,9 +28,19 @@ export async function POST(req: Request) {
       await query({
         query: `UPDATE reservations SET users = "${JSON.stringify([
           ...reservation.users,
-          user,
+          user.id,
         ])}" WHERE id = ${reservation.id}`,
         values: [],
+      });
+    });
+    newReservations.map(async (reservation: any) => {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
+        method: "POST",
+        body: JSON.stringify({
+          to: user.email,
+          subject: "Nová rezervace",
+          html: NewReservationMember(reservation, "add"),
+        }),
       });
     });
 

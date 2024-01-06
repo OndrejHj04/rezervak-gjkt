@@ -23,10 +23,12 @@ const style = {
 export default function AddReservationsModal({
   currentReservations,
   userId,
+  userEmail,
   setModal,
 }: {
   currentReservations: number[];
   userId: number;
+  userEmail: any;
   setModal: Dispatch<SetStateAction<boolean>>;
 }) {
   const {
@@ -48,9 +50,15 @@ export default function AddReservationsModal({
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/add-reservations`, {
       method: "POST",
       body: JSON.stringify({
-        user: userId,
+        user: { id: userId, email: userEmail },
         newReservations: data.reservations.map(
-          (reservation: any) => reservation.id
+          ({ id, from_date, to_date, leader, instructions }: any) => ({
+            id,
+            from_date,
+            to_date,
+            leader,
+            instructions,
+          })
         ),
         currentReservations,
       }),

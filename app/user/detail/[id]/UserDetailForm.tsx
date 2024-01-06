@@ -62,7 +62,6 @@ export default function UserDetailForm({
   const [groupsModal, setGroupsModal] = useState(false);
   const [reservationsModal, setReservationsModal] = useState(false);
 
-  console.log(userDetail);
   const makeUserSleep = (id: any, active: any) => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/sleep`, {
       method: "POST",
@@ -135,12 +134,13 @@ export default function UserDetailForm({
   };
 
   const removeReservations = () => {
+    console.log(selectReservations);
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/remove-reservations`, {
       method: "POST",
       body: JSON.stringify({
-        user: userDetail.id,
+        user: { id: userDetail.id, email: userDetail.email },
         currentReservations: userDetail.reservations.data.map(
-          (reservation: any) => reservation.id
+          (res: any) => res.id
         ),
         removeReservations: selectReservations,
       }),
@@ -181,6 +181,7 @@ export default function UserDetailForm({
                 (group: any) => group.id
               )}
               userId={userDetail.id}
+              userEmail={userDetail.email}
               setModal={setReservationsModal}
             />
           )}

@@ -4,8 +4,11 @@ export default function NewReservationMember(
   reservation: any,
   type: "add" | "remove"
 ) {
+  console.log(reservation);
   return `
-  V aplikaci rezervačního systému školní chaty byl Váš účet ${type === "add" ? "<b>přidán</b> do" : "<b>odebrán</b> z"} nadcházející rezervace.<br/>
+  V aplikaci rezervačního systému školní chaty byl Váš účet ${
+    type === "add" ? "<b>přidán</b> do" : "<b>odebrán</b> z"
+  } nadcházející rezervace.<br/>
   Detail rezervace:
   <ul>
     <li>Datum: ${dayjs(reservation.from_date).format("DD.MM.YYYY")} - ${dayjs(

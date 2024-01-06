@@ -51,15 +51,7 @@ export default function AddReservationsModal({
       method: "POST",
       body: JSON.stringify({
         user: { id: userId, email: userEmail },
-        newReservations: data.reservations.map(
-          ({ id, from_date, to_date, leader, instructions }: any) => ({
-            id,
-            from_date,
-            to_date,
-            leader,
-            instructions,
-          })
-        ),
+        newReservations: data.reservations.map((res: any) => res.id),
         currentReservations,
       }),
     })

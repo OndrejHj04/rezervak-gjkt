@@ -6,42 +6,55 @@ export async function POST(req: Request) {
   try {
     const { user, newReservations, currentReservations } = await req.json();
 
-    const getReservation = await query({
-      query: `UPDATE users SET reservations = "[${[
-        ...currentReservations,
-        ...newReservations.map((res: any) => res.id),
-      ]}]" WHERE id = ${user.id}`,
-      values: [],
-    });
+    const [_, reservations] = (await Promise.all([
+      await query({
+        query: `UPDATE users SET reservations = "[${[
+          ...currentReservations,
+          ...newReservations.map((res: any) => res.id),
+        ]}]" WHERE id = ${user.id}`,
+        values: [],
+      }),
+      await query({
+        query: `SELECT id, users, from_date, to_date, leader, instructions, users FROM reservations WHERE id IN (${newReservations
+          .map((res: any) => res.id)
+          .join(",")})`,
+        values: [],
+      }),
+    ])) as any;
 
-    const reservations = (await query({
-      query: `SELECT id, users FROM reservations WHERE id IN (${newReservations
-        .map((res: any) => res.id)
+    const users = (await query({
+      query: `SELECT id, first_name, last_name FROM users WHERE id IN (${reservations
+        .map((res: any) => res.leader)
         .join(",")})`,
       values: [],
     })) as any;
-    reservations.forEach((reservation: any) => {
-      reservation.users = JSON.parse(reservation.users);
-    });
 
     reservations.map(async (reservation: any) => {
-      await query({
-        query: `UPDATE reservations SET users = "${JSON.stringify([
-          ...reservation.users,
-          user.id,
-        ])}" WHERE id = ${reservation.id}`,
-        values: [],
-      });
-    });
-    newReservations.map(async (reservation: any) => {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
-        method: "POST",
-        body: JSON.stringify({
-          to: user.email,
-          subject: "Nová rezervace",
-          html: NewReservationMember(reservation, "add"),
+      await Promise.all([
+        query({
+          query: `UPDATE reservations SET users = "${JSON.stringify([
+            ...JSON.parse(reservation.users),
+            user.id,
+          ])}" WHERE id = ${reservation.id}`,
+          values: [],
         }),
-      });
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
+          method: "POST",
+          body: JSON.stringify({
+            to: user.email,
+            subject: "Nová rezervace",
+            html: NewReservationMember(
+              {
+                ...reservation,
+                leader: users.find(
+                  (user: any) => user.id === reservation.leader
+                ),
+              },
+              "add"
+            ),
+          }),
+        }),
+      ]);
     });
 
     return NextResponse.json({

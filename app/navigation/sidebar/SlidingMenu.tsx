@@ -50,6 +50,9 @@ export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
           </MenuItem>
         </MenuList>
       </div>
+      <Typography className="text-center">
+        Made with 💘 by Ondřej Hájek
+      </Typography>
     </Drawer>
   );
 }

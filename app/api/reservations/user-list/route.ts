@@ -14,17 +14,17 @@ export async function GET(req: Request) {
 
   const filtered = reservations.filter((item: any) => {
     const users = JSON.parse(item.users);
-    if (users.includes(id) || item.owner === id) {
+    if (users.includes(id) || item.leader === id) {
       return item;
     }
   });
-  
+
   try {
     return NextResponse.json({
       success: true,
       message: "Operation successful",
       count: filtered.length,
-    data: filtered.slice((page - 1) * 5, page * 5),
+      data: filtered.slice((page - 1) * 5, page * 5),
     });
   } catch (e) {
     return NextResponse.json(

@@ -1,8 +1,9 @@
-import { Button, Paper, Typography } from "@mui/material";
+import { Button, MenuList, Paper, Typography } from "@mui/material";
 import ElderlyIcon from "@mui/icons-material/Elderly";
 import SingleReservation from "../reservations/SingleReservation";
 import ReservationPagination from "../reservations/ReservationsPagination";
 import { useSearchParams } from "next/navigation";
+import MakeReservationsArchive from "./MakeReservationsArchive";
 
 const getReservations = async (id: any, page: any) => {
   try {
@@ -33,19 +34,22 @@ export default async function PastReservationsWidget({
         <Typography variant="h5">Uskutečněné rezervace</Typography>
         <ElderlyIcon color="primary" />
       </div>
-      {reservations.data.length ? (
-        reservations.data.map((reservation: any) => (
-          <SingleReservation key={reservation.id} reservations={reservation} />
-        ))
-      ) : (
-        <Typography className="text-center">
-          Všechny uskutečněné rezervace mají stav {"archiv"}
-        </Typography>
-      )}
+      <MenuList>
+        {reservations.data.length ? (
+          reservations.data.map((reservation: any) => (
+            <SingleReservation
+              key={reservation.id}
+              reservations={reservation}
+            />
+          ))
+        ) : (
+          <Typography className="text-center">
+            Všechny uskutečněné rezervace mají stav {"archiv"}
+          </Typography>
+        )}
+      </MenuList>
       <ReservationPagination count={reservations.count} name="archive" />
-      <Button variant="contained" className="mt-auto">
-        Archivovat rezervace
-      </Button>
+      <MakeReservationsArchive />
     </Paper>
   );
 }

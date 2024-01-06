@@ -12,6 +12,9 @@ export const rolesConfig = {
       allReservations: {
         display: [1, 2],
       },
+      pastReservations: {
+        display: [1, 2],
+      },
     },
     roles: [],
     menu: [true, false],

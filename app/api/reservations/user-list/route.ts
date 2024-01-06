@@ -18,13 +18,13 @@ export async function GET(req: Request) {
       return item;
     }
   });
-
+  
   try {
     return NextResponse.json({
       success: true,
       message: "Operation successful",
       count: filtered.length,
-      data: filtered.slice((page - 1) * 10, page * 10),
+    data: filtered.slice((page - 1) * 5, page * 5),
     });
   } catch (e) {
     return NextResponse.json(

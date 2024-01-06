@@ -59,7 +59,7 @@ export default async function DisplayReservations({
           <Typography className="text-center">žádné rezervace</Typography>
         )}
       </MenuList>
-      <ReservationPagination count={reservations.count} />
+      <ReservationPagination count={reservations.count} name="reservations" />
     </Paper>
   );
 }

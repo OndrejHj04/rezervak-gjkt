@@ -7,7 +7,7 @@ export async function GET(req: Request) {
     const status = Number(url.searchParams.get("status"));
     const page = Number(url.searchParams.get("page"));
     const search = url.searchParams.get("search");
-
+    const limit = Number(url.searchParams.get("limit")) || 10;
     let countSql = `SELECT COUNT(*) FROM reservations WHERE 1=1`;
 
     if (status) {
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
       sql += ` AND name LIKE ${`"%${search}%"`}`;
     }
     if (page) {
-      sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
+      sql += ` LIMIT ${limit} OFFSET ${page * limit - limit}`;
     }
 
     const [count, reservations, users, groups, statusList] = (await Promise.all(

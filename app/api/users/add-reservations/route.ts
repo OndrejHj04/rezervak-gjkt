@@ -10,14 +10,14 @@ export async function POST(req: Request) {
       await query({
         query: `UPDATE users SET reservations = "[${[
           ...currentReservations,
-          ...newReservations.map((res: any) => res.id),
+          ...newReservations,
         ]}]" WHERE id = ${user.id}`,
         values: [],
       }),
       await query({
-        query: `SELECT id, users, from_date, to_date, leader, instructions, users FROM reservations WHERE id IN (${newReservations
-          .map((res: any) => res.id)
-          .join(",")})`,
+        query: `SELECT id, users, from_date, to_date, leader, instructions, users FROM reservations WHERE id IN (${newReservations.join(
+          ","
+        )})`,
         values: [],
       }),
     ])) as any;

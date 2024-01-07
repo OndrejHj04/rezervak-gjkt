@@ -26,11 +26,11 @@ const style = {
 export default function AddUsersToGroupModal({
   setModal,
   currentUsers,
-  groupId,
+  group,
 }: {
   setModal: Dispatch<SetStateAction<boolean>>;
   currentUsers: number[];
-  groupId: number;
+  group: any;
 }) {
   const [users, setUsers] = useState(null);
   const {
@@ -50,7 +50,7 @@ export default function AddUsersToGroupModal({
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/add-member`, {
       method: "POST",
       body: JSON.stringify({
-        group: groupId,
+        group: group,
         newMembers: data.users.map((group: any) => group.id),
         currentMembers: currentUsers,
       }),
@@ -59,9 +59,10 @@ export default function AddUsersToGroupModal({
       .then((res) => {
         if (res.success) toast.success("Skupiny úspěšně přidány");
         else toast.error("Něco se nepovedlo");
-        MakeGroupDetailRefetch(groupId);
-        setModal(false);
       });
+
+    setModal(false);
+    MakeGroupDetailRefetch(group.id);
   };
 
   return (

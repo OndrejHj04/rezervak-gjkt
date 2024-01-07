@@ -134,7 +134,6 @@ export default function UserDetailForm({
   };
 
   const removeReservations = () => {
-    console.log(selectReservations);
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/remove-reservations`, {
       method: "POST",
       body: JSON.stringify({

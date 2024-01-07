@@ -91,7 +91,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove-member`, {
       method: "POST",
       body: JSON.stringify({
-        group: group.id,
+        group: { id: group.id, owner: group.owner, name: group.name },
         currentMembers: group.users.data.map((user: any) => user.id),
         membersForRemove: checked,
       }),
@@ -100,8 +100,8 @@ export default function GroupDetailForm({ group }: { group: any }) {
       .then((res) => {
         if (res.success) toast.success("Uživatelé odebráni");
         else toast.error("Něco se nepovedlo");
-        MakeGroupDetailRefetch(group.id);
         setChecked([]);
+        MakeGroupDetailRefetch(group.id);
       });
   };
 
@@ -154,7 +154,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
       {usersModal && (
         <Modal open={usersModal} onClose={() => setUsersModal(false)}>
           <AddUsersToGroupModal
-            groupId={group.id}
+            group={group}
             setModal={setUsersModal}
             currentUsers={group.users.data.map((user: any) => user.id)}
           />

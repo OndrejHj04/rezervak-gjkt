@@ -1,20 +1,46 @@
 import { query } from "@/lib/db";
+import GroupUsersEdit from "@/templates/groupUserEdit/template";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const { currentMembers, group, membersForRemove } = await req.json();
 
-    const remove = currentMembers.filter(
-      (num: number) => !membersForRemove.includes(num)
-    );
+    const [_, users] = (await Promise.all([
+      query({
+        query: `UPDATE ${"`groups`"} SET users = "${JSON.stringify(
+          currentMembers.filter(
+            (num: number) => !membersForRemove.includes(num)
+          )
+        )}" WHERE id = ${group.id}`,
+        values: [],
+      }),
+      query({
+        query: `SELECT * FROM users WHERE id IN(${membersForRemove.join(",")})`,
+        values: [],
+      }),
+    ])) as any;
 
-    const data = (await query({
-      query: `UPDATE ${"`groups`"} SET users = "${JSON.stringify(
-        remove
-      )}" WHERE id = ${group}`,
-      values: [],
-    })) as any;
+    users.map(async (user: any) => {
+      await Promise.all([
+        query({
+          query: `UPDATE users SET groups = "${JSON.stringify([
+            ...JSON.parse(user.groups),
+            group.id,
+          ])}" WHERE id = ${user.id}`,
+          values: [],
+        }),
+
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
+          method: "POST",
+          body: JSON.stringify({
+            to: user.email,
+            subject: "Nová skupina",
+            html: GroupUsersEdit(group, "remove"),
+          }),
+        }),
+      ]);
+    });
 
     membersForRemove.forEach(async (member: any) => {
       const user = (await query({
@@ -36,7 +62,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: data,
+      data: [],
     });
   } catch (e: any) {
     return NextResponse.json(

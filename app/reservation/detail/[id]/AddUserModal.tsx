@@ -23,11 +23,11 @@ const style = {
 
 export default function AddUserModal({
   currentUsers,
-  reservationId,
+  reservation,
   setModal,
 }: {
   currentUsers: number[];
-  reservationId: number;
+  reservation: any;
   setModal: Dispatch<SetStateAction<boolean>>;
 }) {
   const [users, setUsers] = useState(null);
@@ -49,7 +49,13 @@ export default function AddUserModal({
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/add-users`, {
       method: "POST",
       body: JSON.stringify({
-        reservation: reservationId,
+        reservation: {
+          id: reservation.id,
+          from_date: reservation.from_date,
+          to_date: reservation.to_date,
+          instructions: reservation.instructions,
+          leader: reservation.leader,
+        },
         newUsers: data.users.map((user: any) => user.id),
         currentUsers,
       }),
@@ -59,7 +65,7 @@ export default function AddUserModal({
         if (res.success) toast.success("Uživatelé úspěšně přidány");
         else toast.error("Něco se nepovedlo");
 
-        MakeRefetch(reservationId);
+        MakeRefetch(reservation.id);
         setModal(false);
       });
   };

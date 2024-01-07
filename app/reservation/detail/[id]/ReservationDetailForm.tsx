@@ -114,7 +114,7 @@ export default function ReservationDetailForm({
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/remove-users`, {
       method: "POST",
       body: JSON.stringify({
-        reservation: reservation.id,
+        reservation: reservation,
         removeUsers: selectedUsers,
         currentUsers: reservation.users.data.map((user: any) => user.id),
       }),
@@ -186,7 +186,7 @@ export default function ReservationDetailForm({
         <Modal open={usersModal} onClose={() => setUsersModal(false)}>
           {usersModal && (
             <AddUserModal
-              reservationId={reservation.id}
+              reservation={reservation}
               currentUsers={reservation.users.data.map((user: any) => user.id)}
               setModal={setUsersModal}
             />

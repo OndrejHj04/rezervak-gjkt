@@ -13,7 +13,11 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  if (req.nextUrl.pathname.startsWith("/login") && role) {
+  if (
+    (req.nextUrl.pathname.startsWith("/login") ||
+      req.nextUrl.pathname.startsWith("/password")) &&
+    role
+  ) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 

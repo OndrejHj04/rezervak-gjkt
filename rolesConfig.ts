@@ -27,6 +27,13 @@ export const rolesConfig = {
     roles: [],
     menu: [false, false],
   },
+  password: {
+    name: "Zapomenuté heslo",
+    path: "/password",
+    modules: [],
+    roles: [],
+    menu: [false, false],
+  },
   photogallery: {
     name: "Galerie",
     path: "/photogallery",

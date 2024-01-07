@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -71,18 +72,30 @@ export default function Page({ searchParams }: { searchParams: any }) {
             ),
           }}
         />
-        <LoadingButton
-          type="submit"
-          variant="contained"
-          loading={loading}
-          disabled={!isValid}
-        >
-          Přihlásit se
-        </LoadingButton>
+        <div className="flex gap-3">
+          <Link href="/password" className="w-full">
+            <Button variant="contained" className="w-full">
+              Zapomenuté heslo
+            </Button>
+          </Link>
+          <LoadingButton
+            type="submit"
+            className="w-full"
+            variant="contained"
+            loading={loading}
+            disabled={!isValid}
+          >
+            Přihlásit se
+          </LoadingButton>
+          <Button
+            className="w-full"
+            variant="contained"
+            onClick={() => signIn("google")}
+          >
+            GOOGLE
+          </Button>
+        </div>
       </form>
-      <Button variant="contained" onClick={() => signIn("google")}>
-        GOOGLE
-      </Button>
       {searchParams.error && (
         <Alert severity="error">Nepodařilo se přihlásit</Alert>
       )}

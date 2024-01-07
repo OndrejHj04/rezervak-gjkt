@@ -108,7 +108,7 @@ export default function UserDetailForm({
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/remove-groups`, {
       method: "POST",
       body: JSON.stringify({
-        user: userDetail.id,
+        user: { id: userDetail.id, email: userDetail.email },
         currentGroups: userDetail.groups.data.map((group: any) => group.id),
         removeGroups: selectGroups,
       }),
@@ -165,6 +165,7 @@ export default function UserDetailForm({
                 (group: any) => group.id
               )}
               userId={userDetail.id}
+              userEmail={userDetail.email}
               setModal={setGroupsModal}
             />
           )}

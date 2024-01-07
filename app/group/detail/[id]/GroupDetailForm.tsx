@@ -269,7 +269,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
                   </>
                 )}
               </List>
-              <UsersPagination count={group.users} />
+              <UsersPagination count={group.users.count} />
               <div className="flex flex-col gap-2">
                 <Button
                   variant="contained"

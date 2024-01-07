@@ -23,10 +23,12 @@ const style = {
 export default function AddGroupsModal({
   currentGroups,
   userId,
+  userEmail,
   setModal,
 }: {
   currentGroups: number[];
   userId: number;
+  userEmail: any;
   setModal: Dispatch<SetStateAction<boolean>>;
 }) {
   const {
@@ -48,7 +50,7 @@ export default function AddGroupsModal({
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/add-groups`, {
       method: "POST",
       body: JSON.stringify({
-        user: userId,
+        user: { id: userId, email: userEmail },
         newGroups: data.groups.map((group: any) => group.id),
         currentGroups,
       }),

@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { name, description, owner } = await req.json();
-    console.log(owner);
     const members = [owner.id];
 
     const [data, groups, _] = (await Promise.all([

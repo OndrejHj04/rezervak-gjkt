@@ -76,7 +76,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove`, {
       method: "POST",
       body: JSON.stringify({
-        groups: [group.id],
+        group: group.id,
       }),
     })
       .then((res) => res.json())

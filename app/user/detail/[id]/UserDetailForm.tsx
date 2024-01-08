@@ -38,13 +38,16 @@ import UserSleepModal from "./UserSleepModal";
 import UserSleepAnnouncment from "./UserSleepAnnouncment";
 import GroupsPagination from "./GroupsPagination";
 import ReservationsPagination from "./ReservationsPagination";
+import { rolesConfig } from "@/rolesConfig";
 
 export default function UserDetailForm({
   userDetail,
   roles,
+  userRole,
 }: {
   userDetail: any;
   roles: Role[];
+  userRole: any;
 }) {
   const {
     register,
@@ -61,6 +64,7 @@ export default function UserDetailForm({
   const [selectReservations, setSelectReservation] = useState<number[]>([]);
   const [groupsModal, setGroupsModal] = useState(false);
   const [reservationsModal, setReservationsModal] = useState(false);
+  const makeEdit = rolesConfig.users.modules.userDetail.edit.includes(userRole);
 
   const makeUserSleep = (id: any, active: any) => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/sleep`, {
@@ -230,6 +234,7 @@ export default function UserDetailForm({
                   render={({ field: { value, onChange } }) => (
                     <Autocomplete
                       value={value}
+                      disabled={!makeEdit}
                       isOptionEqualToValue={(option, value) =>
                         option.id === value.id
                       }
@@ -259,14 +264,18 @@ export default function UserDetailForm({
                 defaultValue={userDetail.adress}
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <Button
-                variant="outlined"
-                color="error"
-                onClick={() => makeUserSleep(userDetail.id, userDetail.active)}
-              >
-                {userDetail.active ? "Uspat uživatele" : "Probudit uživatele"}
-              </Button>
+            <div className="flex flex-col gap-2 ml-auto">
+              {makeEdit && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() =>
+                    makeUserSleep(userDetail.id, userDetail.active)
+                  }
+                >
+                  {userDetail.active ? "Uspat uživatele" : "Probudit uživatele"}
+                </Button>
+              )}
               <Button variant="outlined" type="submit" disabled={!isDirty}>
                 Uložit
               </Button>
@@ -312,24 +321,26 @@ export default function UserDetailForm({
                 )}
               </List>
               <GroupsPagination count={userDetail.groups.count} />
-              <div className="flex flex-col gap-2">
-                <Button
-                  variant="contained"
-                  color="error"
-                  endIcon={<DeleteForeverIcon />}
-                  disabled={!selectGroups.length}
-                  onClick={removeGroups}
-                >
-                  Odebrat uživatele z vybraných skupin
-                </Button>
-                <Button
-                  variant="contained"
-                  endIcon={<AddToPhotosIcon />}
-                  onClick={() => setGroupsModal(true)}
-                >
-                  Přidat uživatele do skupiny
-                </Button>
-              </div>
+              {makeEdit && (
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant="contained"
+                    color="error"
+                    endIcon={<DeleteForeverIcon />}
+                    disabled={!selectGroups.length}
+                    onClick={removeGroups}
+                  >
+                    Odebrat uživatele z vybraných skupin
+                  </Button>
+                  <Button
+                    variant="contained"
+                    endIcon={<AddToPhotosIcon />}
+                    onClick={() => setGroupsModal(true)}
+                  >
+                    Přidat uživatele do skupiny
+                  </Button>
+                </div>
+              )}
             </div>
             <div className="flex flex-col">
               <Typography variant="h5">Rezervace uživatele</Typography>
@@ -372,24 +383,26 @@ export default function UserDetailForm({
                 )}
               </List>
               <ReservationsPagination count={userDetail.reservations.count} />
-              <div className="flex flex-col gap-2">
-                <Button
-                  variant="contained"
-                  color="error"
-                  endIcon={<DeleteForeverIcon />}
-                  disabled={!selectReservations.length}
-                  onClick={removeReservations}
-                >
-                  Odebrat vybrané uživatele ze skupiny
-                </Button>
-                <Button
-                  variant="contained"
-                  endIcon={<AddToPhotosIcon />}
-                  onClick={() => setReservationsModal(true)}
-                >
-                  Přidat uživatele do skupiny
-                </Button>
-              </div>
+              {makeEdit && (
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant="contained"
+                    color="error"
+                    endIcon={<DeleteForeverIcon />}
+                    disabled={!selectReservations.length}
+                    onClick={removeReservations}
+                  >
+                    Odebrat uživatele z vybraných rezervací
+                  </Button>
+                  <Button
+                    variant="contained"
+                    endIcon={<AddToPhotosIcon />}
+                    onClick={() => setReservationsModal(true)}
+                  >
+                    Přidat uživatele do rezervace
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </Paper>

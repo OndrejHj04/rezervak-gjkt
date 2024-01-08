@@ -19,9 +19,6 @@ export default function GroupListItem({
 
   return (
     <TableRow className="cursor-pointer">
-      {rolesConfig.groups.modules.groupsTable.config.delete.includes(
-        userRole
-      ) && <TableListCheckbox id={group.id} prop="groups" />}
       <TableCell>{group.name}</TableCell>
       <TableCell>{group.description}</TableCell>
       <TableCell>{group.users.length}</TableCell>

@@ -72,7 +72,11 @@ export default async function UserDetail({
             </div>
           </div>
           {mode === "edit" ? (
-            <UserDetailForm userDetail={userDetail} roles={roles} />
+            <UserDetailForm
+              userDetail={userDetail}
+              roles={roles}
+              userRole={userRole}
+            />
           ) : (
             <UserDetailDisplay userDetail={userDetail} />
           )}

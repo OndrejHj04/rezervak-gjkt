@@ -8,7 +8,6 @@ import {
   TableRow,
 } from "@mui/material";
 import GroupListItem from "./components/GroupListItem";
-import RemoveGroups from "./components/RemoveGroupButton";
 import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
 import ExportButton from "@/ui-components/ExportButton";
@@ -58,13 +57,6 @@ export default async function GroupList({
         <Table>
           <TableHead>
             <TableRow>
-              {rolesConfig.groups.modules.groupsTable.config.delete.includes(
-                userRole
-              ) && (
-                <TableCell sx={{ padding: 1.5 }}>
-                  <RemoveGroups />
-                </TableCell>
-              )}
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Název" />
               </TableCell>

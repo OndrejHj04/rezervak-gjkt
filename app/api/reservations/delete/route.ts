@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import NewReservationMember from "@/templates/reservationUserEdit/template";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -12,9 +13,19 @@ export async function POST(req: Request) {
       values: [],
     })) as any;
 
+    const leaders = (await query({
+      query: `SELECT id, first_name, last_name FROM users WHERE id IN (${getReservations
+        .map((r: any) => r.leader)
+        .join(",")})`,
+      values: [],
+    })) as any;
+
     getReservations.forEach((reservation: any) => {
       reservation.groups = JSON.parse(reservation.groups);
       reservation.users = JSON.parse(reservation.users);
+      reservation.leader = leaders.find(
+        (leader: any) => leader.id === reservation.leader
+      );
     });
 
     if (
@@ -46,7 +57,7 @@ export async function POST(req: Request) {
       getReservations.some((reservation: any) => reservation.users.length > 0)
     ) {
       const usersReservations = (await query({
-        query: `SELECT id, reservations FROM users WHERE id IN (${getReservations
+        query: `SELECT id, reservations, email FROM users WHERE id IN (${getReservations
           .map((reservation: any) => reservation.users)
           .flat()
           .join(",")})`,
@@ -54,13 +65,28 @@ export async function POST(req: Request) {
       })) as any;
 
       usersReservations.map((user: any) => {
-        let reservations = JSON.parse(user.reservations);
-        reservations = reservations.filter(
-          (reservation: any) => !reservations.includes(reservation)
-        );
+        let usersReservations = JSON.parse(user.reservations);
+
+        const result = usersReservations.filter((reservation: any) => {
+          if (reservations.includes(reservation)) {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
+              method: "POST",
+              body: JSON.stringify({
+                to: user.email,
+                subject: "Nová rezervace",
+                html: NewReservationMember(
+                  getReservations.find((r: any) => r.id === reservation),
+                  "remove"
+                ),
+              }),
+            });
+          }
+          return !reservations.includes(reservation);
+        });
+
         query({
           query: `UPDATE users SET reservations = "${JSON.stringify(
-            reservations
+            result
           )}" WHERE id = ${user.id}`,
           values: [],
         });

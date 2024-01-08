@@ -211,7 +211,9 @@ export default function UserDetailForm({
                   <Controller
                     control={control}
                     name="birth_date"
-                    defaultValue={dayjs(userDetail.birth_date) as any}
+                    defaultValue={
+                      userDetail.birth_date && dayjs(userDetail.birth_date)
+                    }
                     render={({ field }) => (
                       <DateField
                         {...field}
@@ -234,7 +236,6 @@ export default function UserDetailForm({
                   render={({ field: { value, onChange } }) => (
                     <Autocomplete
                       value={value}
-                      disabled={!makeEdit}
                       isOptionEqualToValue={(option, value) =>
                         option.id === value.id
                       }

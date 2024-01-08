@@ -84,7 +84,7 @@ export const rolesConfig = {
         visit: [1, 2],
         visitSelf: [1, 2, 3, 4],
         edit: [1],
-        selfEdit: [1, 2, 3, 4],
+        selfEdit: [1, 2, 3],
       },
     },
   },

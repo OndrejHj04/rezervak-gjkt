@@ -37,7 +37,11 @@ export default async function UserDetail({
   );
   const roles = await getRoles();
   const selfAccount = Number(params) === userId;
+  const selfEdit =
+    rolesConfig.users.modules.userDetail.selfEdit.includes(userRole);
 
+  const selfVisit =
+    rolesConfig.users.modules.userDetail.visitSelf.includes(userRole);
   return (
     <>
       {userDetail ? (
@@ -48,7 +52,7 @@ export default async function UserDetail({
                 aria-label="basic tabs example"
                 value={mode === "edit" ? 1 : 0}
               >
-                {(selfAccount ||
+                {((selfAccount && selfVisit) ||
                   rolesConfig.users.modules.userDetail.visit.includes(
                     userRole
                   )) && (
@@ -58,7 +62,7 @@ export default async function UserDetail({
                     label="Zobrazit"
                   />
                 )}
-                {(selfAccount ||
+                {((selfAccount && selfEdit) ||
                   rolesConfig.users.modules.userDetail.edit.includes(
                     userRole
                   )) && (

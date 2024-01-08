@@ -13,6 +13,7 @@ import GroupsPagination from "./GroupsPagination";
 import ReservationsPagination from "./ReservationsPagination";
 
 export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
+  console.log(userDetail)
   return (
     <Paper className="p-4 flex gap-4">
       <div className="flex flex-col">
@@ -28,7 +29,9 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
         />
 
         <Typography variant="h6">
-          Datum narození: {dayjs(userDetail.birth_date).format("DD. MM. YYYY")}
+          Datum narození:{" "}
+          {userDetail.birth_date &&
+            dayjs(userDetail.birth_date).format("DD. MM. YYYY")}
         </Typography>
         <Typography>Číslo OP: {userDetail.ID_code}</Typography>
         <Typography>Role: {userDetail.role.name}</Typography>

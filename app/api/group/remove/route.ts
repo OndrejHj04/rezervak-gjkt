@@ -17,32 +17,36 @@ export async function POST(req: Request) {
         values: [],
       }),
     ])) as any;
-
     const owner = (await query({
       query: `SELECT * FROM users WHERE id = ${groupDetail[0].owner}`,
       values: [],
     })) as any;
 
-    const groupUsers = (await query({
-      query: `SELECT * FROM users WHERE id IN(${JSON.parse(
-        groupDetail[0].users
-      )})`,
-      values: [],
-    })) as any;
+    const groupUsers = JSON.parse(groupDetail[0].users).length
+      ? await query({
+          query: `SELECT * FROM users WHERE id IN(${JSON.parse(
+            groupDetail[0].users
+          ).join(",")})`,
+          values: [],
+        })
+      : ([] as any);
 
-    const groupReservations = (await query({
-      query: `SELECT * FROM reservations WHERE id IN(${JSON.parse(
-        groupDetail[0].reservations
-      )})`,
-      values: [],
-    })) as any;
+    const groupReservations = JSON.parse(groupDetail[0].reservations).length
+      ? await query({
+          query: `SELECT * FROM reservations WHERE id IN(${JSON.parse(
+            groupDetail[0].reservations
+          ).join(",")})`,
+          values: [],
+        })
+      : ([] as any);
 
+    console.log(groupUsers, groupReservations);
     groupReservations.map(async (res: any) => {
       const reservationGroups = JSON.parse(res.groups).filter(
         (r: any) => r !== group
       );
       await query({
-        query: `UPDATE reservations SET groups = "${JSON.stringify(
+        query: `UPDATE reservations SET ${"`groups`"} = "${JSON.stringify(
           reservationGroups
         )}" WHERE id = ${res.id}`,
         values: [],
@@ -55,7 +59,7 @@ export async function POST(req: Request) {
       );
       await Promise.all([
         query({
-          query: `UPDATE users SET groups = "${JSON.stringify(
+          query: `UPDATE users SET ${"`groups`"} = "${JSON.stringify(
             userGroups
           )}" WHERE id = ${u.id}`,
           values: [],

@@ -47,6 +47,7 @@ export default function UsersImportForm({ roles }: { roles: any }) {
     e.preventDefault();
     const newData = [] as any;
     data.map((item: any) => {
+      console.log(item);
       if (item[4]) {
         let obj = {} as any;
         item.slice(0, item.length - 1).map((i: any, c: any) => {
@@ -84,16 +85,27 @@ export default function UsersImportForm({ roles }: { roles: any }) {
     if (!file) setData([]);
   }, [file]);
 
-  const validateTable = (data: any) => {
+  const validateTable = async (data: any) => {
     if (
       JSON.stringify(data[0]) ===
       JSON.stringify(importUsersValidFormat.map((item) => item.value))
     ) {
-      setData(
-        data.slice(1).map((item: any) => {
-          return [...item, validateRow(item)];
-        })
-      );
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/valid-import`, {
+        method: "POST",
+        body: JSON.stringify({ data: data.slice(1) }),
+      })
+        .then((res) => res.json())
+        .then(({ data }) => {
+          setData(
+            data.map((item: any) => {
+              return [
+                ...item.slice(0, 4),
+                item[4] ? validateRow(item.slice(0, 4)) : false,
+              ];
+            })
+          );
+        });
+
       setMessage("");
     } else {
       setMessage("Špatný formát souboru");

@@ -68,7 +68,7 @@ export async function POST(req: Request) {
           method: "POST",
           body: JSON.stringify({
             to: u.email,
-            subject: "Odstranění skupiny",
+            subject: "Odstranění účtu ze skupiny",
             html: GroupUsersEdit(
               { name: groupDetail[0].name, owner: owner[0] },
               "remove"

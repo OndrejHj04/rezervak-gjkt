@@ -73,7 +73,7 @@ export async function POST(req: Request) {
               method: "POST",
               body: JSON.stringify({
                 to: user.email,
-                subject: "Nová rezervace",
+                subject: "Odstranění účtu z rezervace",
                 html: NewReservationMember(
                   getReservations.find((r: any) => r.id === reservation),
                   "remove"

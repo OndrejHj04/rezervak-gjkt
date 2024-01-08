@@ -34,7 +34,7 @@ export async function POST(req: Request) {
           method: "POST",
           body: JSON.stringify({
             to: user.email,
-            subject: "Nová rezervace",
+            subject: "Přidání účtu do skupiny",
             html: GroupUsersEdit(
               { name: group.name, owner: group.owner },
               "add"

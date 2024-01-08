@@ -42,7 +42,7 @@ export async function POST(req: Request) {
           method: "POST",
           body: JSON.stringify({
             to: user.email,
-            subject: "Nová rezervace",
+            subject: "Přidání účtu do rezervace",
             html: NewReservationMember(
               {
                 ...reservation,

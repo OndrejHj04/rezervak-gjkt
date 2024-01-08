@@ -19,11 +19,14 @@ import ExportButton from "@/ui-components/ExportButton";
 import { rolesConfig } from "@/rolesConfig";
 import ExpiredReservations from "./components/ExpiredReservations";
 
+import ReservationTableSort from "./components/Sort";
 const getReservations = async (
   page: any,
   status: any,
   search: any,
-  type: any
+  type: any,
+  column: any,
+  dir: any
 ) => {
   try {
     const req = await fetch(
@@ -31,7 +34,7 @@ const getReservations = async (
         process.env.NEXT_PUBLIC_API_URL
       }/api/reservations/list?page=${page}&type=${type}&status=${status}${
         search ? `&search=${search}` : ""
-      }`,
+      }${column ? `&col=${column}` : ""}${dir ? `&dir=${dir}` : ""}`,
       { cache: "no-cache" }
     );
     const data = await req.json();
@@ -70,11 +73,15 @@ export default async function ReservationList({
   const status = searchParams["status"] || 0;
   const search = searchParams["search"] || 0;
   const type = searchParams["type"] || "all";
+  const column = searchParams["col"];
+  const dir = searchParams["dir"];
   const reservations = (await getReservations(
     page,
     status,
     search,
-    type
+    type,
+    column,
+    dir
   )) as any;
   const statuses = await getStatuses();
 
@@ -111,12 +118,7 @@ export default async function ReservationList({
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Název" />
               </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Začátek" />
-              </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Konec" />
-              </TableCell>
+              <ReservationTableSort />
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Počet účastníků" />
               </TableCell>

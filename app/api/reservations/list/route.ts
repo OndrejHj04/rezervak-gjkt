@@ -9,6 +9,8 @@ export async function GET(req: Request) {
     const search = url.searchParams.get("search");
     const limit = Number(url.searchParams.get("limit")) || 10;
     const type = url.searchParams.get("type");
+    const col = url.searchParams.get("col");
+    const dir = url.searchParams.get("dir");
     const notStatus = Number(url.searchParams.get("not_status"));
 
     let countSql = `SELECT COUNT(*) FROM reservations WHERE 1=1`;
@@ -39,6 +41,9 @@ export async function GET(req: Request) {
     }
     if (notStatus) {
       sql += ` AND status <> ${notStatus}`;
+    }
+    if (col && dir) {
+      sql += ` ORDER BY ${col} ${dir.toUpperCase()}`;
     }
     if (page) {
       sql += ` LIMIT ${limit} OFFSET ${page * limit - limit}`;

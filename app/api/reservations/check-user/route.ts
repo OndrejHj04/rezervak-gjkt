@@ -5,11 +5,16 @@ export async function POST(req: Request) {
   try {
     const { reservationId, userId } = await req.json();
 
-    let result = { isMember: false, isLeader: false, exist: false };
+    let result = {
+      isMember: false,
+      isLeader: false,
+      exist: false,
+      archived: false,
+    };
 
     const reservation = (await query({
       query: `
-      SELECT leader, users FROM reservations WHERE id = ${reservationId}
+      SELECT leader, users, status FROM reservations WHERE id = ${reservationId}
       `,
       values: [],
     })) as any;
@@ -18,6 +23,7 @@ export async function POST(req: Request) {
       result.isMember = JSON.parse(reservation[0].users).includes(userId);
       result.isLeader = reservation[0].leader === userId;
       result.exist = true;
+      result.archived = reservation[0].status === 1;
     }
 
     return NextResponse.json({

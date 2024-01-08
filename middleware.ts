@@ -123,7 +123,7 @@ export default async function middleware(req: NextRequest) {
     );
 
     const {
-      data: { isMember, isLeader, exist },
+      data: { isMember, isLeader, exist, archived },
     } = await request.json();
 
     if (!exist) {
@@ -146,13 +146,13 @@ export default async function middleware(req: NextRequest) {
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
-
     if (
       req.nextUrl.search.includes("mode=edit") &&
-      !isLeader &&
-      !rolesConfig.reservations.modules.reservationsDetail.edit.includes(
-        role.id
-      )
+      ((!isLeader &&
+        !rolesConfig.reservations.modules.reservationsDetail.edit.includes(
+          role.id
+        )) ||
+        archived)
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }

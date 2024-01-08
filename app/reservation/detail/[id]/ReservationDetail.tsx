@@ -44,6 +44,8 @@ export default async function ReservationDetail({
     (await getReservationStatus()) as ReservationStatus[];
 
   const isLeader = reservation.leader.id === userId;
+  const archived = reservation.status.id === 1;
+
   return (
     <>
       <div className="flex justify-between">
@@ -54,16 +56,17 @@ export default async function ReservationDetail({
               href={`/reservation/detail/${params}?mode=view`}
               label="Zobrazit"
             />
-            {(rolesConfig.reservations.modules.reservationsDetail.edit.includes(
-              userRole
-            ) ||
-              isLeader) && (
-              <Tab
-                component={Link}
-                href={`/reservation/detail/${params}?mode=edit`}
-                label="Editovat"
-              />
-            )}
+            {!archived &&
+              (rolesConfig.reservations.modules.reservationsDetail.edit.includes(
+                userRole
+              ) ||
+                isLeader) && (
+                <Tab
+                  component={Link}
+                  href={`/reservation/detail/${params}?mode=edit`}
+                  label="Editovat"
+                />
+              )}
           </Tabs>
         </div>
       </div>

@@ -175,7 +175,9 @@ export default function ReservationDetailForm({
       .then((res) => {
         if (res.success) toast.success("Status rezervace byl změněn");
         else toast.error("Něco se nepovedlo");
-        MakeReservationDetailRefetch(reservation.id);
+        selectedStatus !== 1
+          ? MakeReservationDetailRefetch(reservation.id)
+          : window.location.reload();
         reset();
       });
   };
@@ -467,6 +469,15 @@ export default function ReservationDetailForm({
                 >
                   Uložit stav
                 </Button>
+                {selectedStatus === 1 && (
+                  <Typography
+                    color="error"
+                    className="text-center"
+                    variant="body1"
+                  >
+                    Tato akce je nevratná!
+                  </Typography>
+                )}
               </div>
             </div>
           </div>

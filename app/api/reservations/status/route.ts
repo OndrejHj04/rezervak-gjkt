@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const data = (await query({
-      query: `SELECT * FROM status`,
+      query: `SELECT * FROM status WHERE id <> 5`,
       values: [],
     })) as any;
 

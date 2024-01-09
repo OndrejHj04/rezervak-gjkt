@@ -22,7 +22,7 @@ export default function MakeReservationsArchive({
     <Button
       variant="contained"
       disabled={disabled}
-      className="mt-auto"
+      className="w-full"
       onClick={handleClick}
     >
       Archivovat rezervace

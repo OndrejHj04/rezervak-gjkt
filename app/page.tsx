@@ -4,6 +4,9 @@ import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
 import { authOptions } from "./api/auth/[...nextauth]/options";
 
+const BlockDates = dynamic(
+  () => import("@/app/homepage/blockDates/BlockDates")
+);
 const DisplayReservations = dynamic(
   () => import("@/app/homepage/reservations/DisplayReservations")
 );
@@ -48,6 +51,9 @@ export default async function Home({ searchParams }: { searchParams: any }) {
       {rolesConfig.homepage.modules.pastReservations.display.includes(
         user?.user.role.id
       ) && <PastReservations user={user} searchParams={searchParams} />}
+      {rolesConfig.homepage.modules.blockDates.display.includes(
+        user?.user.role.id
+      ) && <BlockDates user={user}/>}
     </div>
   );
 

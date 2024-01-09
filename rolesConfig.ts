@@ -15,6 +15,9 @@ export const rolesConfig = {
       pastReservations: {
         display: [1, 2],
       },
+      blockDates: {
+        display: [1],
+      },
     },
     roles: [],
     menu: [true, false],

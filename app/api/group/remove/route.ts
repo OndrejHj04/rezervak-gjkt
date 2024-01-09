@@ -40,7 +40,6 @@ export async function POST(req: Request) {
         })
       : ([] as any);
 
-    console.log(groupUsers, groupReservations);
     groupReservations.map(async (res: any) => {
       const reservationGroups = JSON.parse(res.groups).filter(
         (r: any) => r !== group

@@ -73,7 +73,6 @@ export default function GroupDetailForm({ group }: { group: any }) {
   };
 
   const handleRemoveGroup = () => {
-    console.log(group.id);
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove`, {
       method: "POST",
       body: JSON.stringify({

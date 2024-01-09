@@ -47,7 +47,6 @@ export default function UsersImportForm({ roles }: { roles: any }) {
     e.preventDefault();
     const newData = [] as any;
     data.map((item: any) => {
-      console.log(item);
       if (item[4]) {
         let obj = {} as any;
         item.slice(0, item.length - 1).map((i: any, c: any) => {

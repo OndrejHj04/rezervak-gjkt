@@ -66,18 +66,17 @@ export async function POST(req: Request) {
 
       usersReservations.map((user: any) => {
         let usersReservations = JSON.parse(user.reservations);
-
         const result = usersReservations.filter((reservation: any) => {
-          if (reservations.includes(reservation)) {
+          const resDetail = getReservations.find(
+            (r: any) => r.id === reservation
+          );
+          if (reservations.includes(reservation) && resDetail.status !== 1) {
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
               method: "POST",
               body: JSON.stringify({
                 to: user.email,
                 subject: "Odstranění účtu z rezervace",
-                html: NewReservationMember(
-                  getReservations.find((r: any) => r.id === reservation),
-                  "remove"
-                ),
+                html: NewReservationMember(resDetail, "remove"),
               }),
             });
           }

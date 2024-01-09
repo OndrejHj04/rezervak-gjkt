@@ -6,18 +6,28 @@ export async function GET(req: Request) {
   const id = Number(url.searchParams.get("id"));
   const page = Number(url.searchParams.get("page"));
 
-  const [reservations] = (await Promise.all([
+  const [reservations, status] = (await Promise.all([
     query({
       query: `SELECT * FROM reservations`,
     }),
+    query({
+      query: `SELECT * FROM status`,
+    }),
   ])) as any;
 
-  const filtered = reservations.filter((item: any) => {
-    const users = JSON.parse(item.users);
-    if (users.includes(id) || item.leader === id) {
-      return item;
-    }
-  });
+  const filtered = reservations
+    .filter((item: any) => {
+      const users = JSON.parse(item.users);
+      if (users.includes(id) || item.leader === id) {
+        return item;
+      }
+    })
+    .map((item: any) => {
+      return {
+        ...item,
+        status: status.find((stat: any) => stat.id === item.status),
+      };
+    });
 
   try {
     return NextResponse.json({

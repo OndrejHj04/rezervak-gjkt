@@ -123,10 +123,10 @@ export default async function middleware(req: NextRequest) {
     );
 
     const {
-      data: { isMember, isLeader, exist, archived },
+      data: { isMember, isLeader, exist, archived, forbidden },
     } = await request.json();
 
-    if (!exist) {
+    if (!exist || forbidden) {
       return NextResponse.redirect(new URL("/", req.url));
     }
     if (

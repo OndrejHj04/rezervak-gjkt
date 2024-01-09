@@ -47,7 +47,7 @@ const getReservations = async (
 const getStatuses = async () => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/status`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/status?type=all`
     );
     const { data } = await req.json();
     return data;

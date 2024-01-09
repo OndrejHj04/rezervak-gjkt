@@ -10,6 +10,7 @@ export async function POST(req: Request) {
       isLeader: false,
       exist: false,
       archived: false,
+      forbidden: false,
     };
 
     const reservation = (await query({
@@ -24,6 +25,7 @@ export async function POST(req: Request) {
       result.isLeader = reservation[0].leader === userId;
       result.exist = true;
       result.archived = reservation[0].status === 1;
+      result.forbidden = reservation[0].status === 5;
     }
 
     return NextResponse.json({

@@ -100,13 +100,14 @@ export default function ReservationListItem({
             </IconButton>
           </Tooltip>
         </TableCell>
-        {rolesConfig.reservations.modules.reservationsDetail.visit.includes(
+        {(rolesConfig.reservations.modules.reservationsDetail.visit.includes(
           userRole
         ) ||
-        (isMember &&
-          rolesConfig.reservations.modules.reservationsDetail.visitSelf.includes(
-            userRole
-          )) ? (
+          (isMember &&
+            rolesConfig.reservations.modules.reservationsDetail.visitSelf.includes(
+              userRole
+            ))) &&
+        reservation.status.id !== 5 ? (
           <TableCell>
             <Link href={`/reservation/detail/${reservation.id}`}>
               <Button>detail</Button>

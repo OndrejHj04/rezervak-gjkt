@@ -33,12 +33,12 @@ export async function POST(req: Request) {
         query({
           query: `UPDATE ${"`groups`"} SET users = "${JSON.stringify([
             ...JSON.parse(group.users),
-            user,
+            user.id,
           ])}" WHERE id = ${group.id}`,
           values: [],
         }),
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
-          method: "POST",
+          method: "POST", 
           body: JSON.stringify({
             to: user.email,
             subject: "Přidání účtu do skupiny",

@@ -21,7 +21,7 @@ export default function RemoveUser() {
           toast.error("Něco se pokazilo");
         }
         setSelectedUsers([]);
-        MakeUserListRefetch("user/list");
+        MakeUserListRefetch("/user/list");
       });
   };
 

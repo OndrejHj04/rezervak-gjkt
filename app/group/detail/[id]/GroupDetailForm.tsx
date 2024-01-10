@@ -238,7 +238,9 @@ export default function GroupDetailForm({ group }: { group: any }) {
                     <ListItem disablePadding key={user.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}
-                        onClick={() => handleCheck(user.id)}
+                        onClick={() =>
+                          group.owner.id !== user.id && handleCheck(user.id)
+                        }
                       >
                         <ListItemIcon>
                           <AvatarWrapper data={user} />
@@ -253,6 +255,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
                         />
                         <Checkbox
                           disableRipple
+                          disabled={group.owner.id === user.id}
                           checked={checked.includes(user.id)}
                         />
                         <IconButton

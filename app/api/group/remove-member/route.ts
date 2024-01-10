@@ -24,9 +24,8 @@ export async function POST(req: Request) {
     users.map(async (user: any) => {
       await Promise.all([
         query({
-          query: `UPDATE users SET groups = "${JSON.stringify([
-            ...JSON.parse(user.groups),
-            group.id,
+          query: `UPDATE  users SET ${"`groups`"} = "${JSON.stringify([
+            ...JSON.parse(user.groups).filter((grp: any) => grp !== group.id),
           ])}" WHERE id = ${user.id}`,
           values: [],
         }),
@@ -40,23 +39,6 @@ export async function POST(req: Request) {
           }),
         }),
       ]);
-    });
-
-    membersForRemove.forEach(async (member: any) => {
-      const user = (await query({
-        query: `SELECT ${"`groups`"} FROM users WHERE id = ${member}`,
-        values: [],
-      })) as any;
-      const userGroups = JSON.parse(user[0].groups).filter(
-        (userGroup: any) => Number(userGroup) !== group
-      );
-
-      await query({
-        query: `UPDATE users SET ${"`groups`"} = "${JSON.stringify(
-          userGroups
-        )}" WHERE id = ${member}`,
-        values: [],
-      });
     });
 
     return NextResponse.json({

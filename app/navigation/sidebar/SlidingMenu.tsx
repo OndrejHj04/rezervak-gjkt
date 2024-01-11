@@ -10,10 +10,11 @@ import MenuItem from "@mui/material/MenuItem";
 import { Icon, Typography } from "@mui/material";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { env } from "process";
 
 export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
   const { panel, setPanel } = store();
-
+  console.log(process.env.APP_VERSION);
   return (
     <Drawer anchor="left" open={panel} onClose={() => setPanel(false)}>
       <div className="h-full flex flex-col justify-between">

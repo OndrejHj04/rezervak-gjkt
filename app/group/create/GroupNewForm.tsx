@@ -22,7 +22,7 @@ export default function GroupNewForm({
     setLoading(true);
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/create`, {
       method: "POST",
-      body: JSON.stringify({ ...formData, owner: formData.owner }),
+      body: JSON.stringify({ ...formData }),
     })
       .then((res) => res.json())
       .then((res) => {

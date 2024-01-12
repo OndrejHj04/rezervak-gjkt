@@ -14,7 +14,6 @@ import { env } from "process";
 
 export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
   const { panel, setPanel } = store();
-  console.log(process.env.APP_VERSION);
   return (
     <Drawer anchor="left" open={panel} onClose={() => setPanel(false)}>
       <div className="h-full flex flex-col justify-between">

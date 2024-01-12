@@ -16,17 +16,7 @@ export async function POST(req: Request) {
       instructions,
       name,
     } = await req.json();
-    console.log(
-      `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, ${"`groups`"}, users, instructions, name, status) VALUES ("${dayjs(
-        from_date
-      ).format("YYYY-MM-DD")}", "${dayjs(to_date).format(
-        "YYYY-MM-DD"
-      )}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
-        groups
-      )}", "${JSON.stringify(members)}", "${Math.round(
-        Math.random() * 1000000
-      )}", "${instructions}", "${name}", 2)`
-    );
+
     const [data, resLeader] = (await Promise.all([
       query({
         query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, ${"`groups`"}, users, instructions, name, status) VALUES ("${dayjs(

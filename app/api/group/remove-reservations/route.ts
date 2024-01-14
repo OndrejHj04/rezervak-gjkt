@@ -3,43 +3,16 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { group, removeReservaitons, currentReservations } = await req.json();
+    const { group, reservations } = await req.json();
 
-    const remove = currentReservations.filter(
-      (reservation: any) => !removeReservaitons.includes(reservation)
-    );
-
-    const data = await query({
-      query: `UPDATE ${"`groups`"} SET reservations = "${JSON.stringify(
-        remove
-      )}" WHERE id = ${group}`,
-      values: [],
-    });
-
-    const reservations = (await query({
-      query: `SELECT * FROM reservations WHERE id IN (${removeReservaitons.join(
-        ","
-      )})`,
-      values: [],
-    })) as any;
-
-    reservations.forEach((reservation: any) => {
-      reservation.groups = JSON.parse(reservation.groups);
-    });
-
-    reservations.map(async (reservation: any) => {
-      let newReservation = (reservation.groups = reservation.groups.filter(
-        (res: any) => res !== group
-      ));
-
-      await query({
-        query: `UPDATE reservations SET ${"`groups`"} = "${JSON.stringify(
-          newReservation
-        )}" WHERE id = ${reservation.id}`,
-        values: [],
-      });
-    });
-
+    await Promise.all([
+      query({
+        query: `DELETE FROM reservations_groups WHERE groupId = ? AND reservationId IN (${reservations.map(
+          () => "?"
+        )})`,
+        values: [group, ...reservations],
+      }),
+    ]);
     return NextResponse.json({
       success: true,
       message: "Operation successful",

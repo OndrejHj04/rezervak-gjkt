@@ -1,80 +1,47 @@
 import { query } from "@/lib/db";
 import GroupUsersEdit from "@/templates/groupUserEdit/template";
-import { group } from "console";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { group } = await req.json();
+    const { groups } = await req.json();
 
-    const [groupDetail, _] = (await Promise.all([
+    const [allGroups, _] = (await Promise.all([
       query({
-        query: `SELECT * FROM ${"`groups`"} WHERE id = ${group}`,
-        values: [],
+        query: `
+        SELECT groups.name, groups.description, JSON_OBJECT('first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner, GROUP_CONCAT(users.email) as users 
+        FROM groups 
+        INNER JOIN users_groups ON users_groups.groupId = groups.id 
+        INNER JOIN users ON users.id = users_groups.userId 
+        INNER JOIN users AS owner ON owner.id = groups.owner 
+        WHERE groups.id IN(${groups.map(() => "?")}) 
+        GROUP BY groups.id`,
+        values: [...groups],
       }),
       query({
-        query: `DELETE FROM ${"`groups`"} WHERE id = ${group}`,
-        values: [],
+        query: `DELETE FROM groups WHERE id IN(${groups.map(() => "?")})`,
+        values: [...groups],
+      }),
+      query({
+        query: `DELETE FROM users_groups WHERE groupId IN(${groups.map(
+          () => "?"
+        )})`,
+        values: [...groups],
+      }),
+      query({
+        query: `DELETE FROM reservations_groups WHERE groupId IN(${groups.map(
+          () => "?"
+        )})`,
+        values: [...groups],
       }),
     ])) as any;
-    const owner = (await query({
-      query: `SELECT * FROM users WHERE id = ${groupDetail[0].owner}`,
-      values: [],
-    })) as any;
 
-    const groupUsers = JSON.parse(groupDetail[0].users).length
-      ? await query({
-          query: `SELECT * FROM users WHERE id IN(${JSON.parse(
-            groupDetail[0].users
-          ).join(",")})`,
-          values: [],
-        })
-      : ([] as any);
-
-    const groupReservations = JSON.parse(groupDetail[0].reservations).length
-      ? await query({
-          query: `SELECT * FROM reservations WHERE id IN(${JSON.parse(
-            groupDetail[0].reservations
-          ).join(",")})`,
-          values: [],
-        })
-      : ([] as any);
-
-    groupReservations.map(async (res: any) => {
-      const reservationGroups = JSON.parse(res.groups).filter(
-        (r: any) => r !== group
-      );
-      await query({
-        query: `UPDATE reservations SET ${"`groups`"} = "${JSON.stringify(
-          reservationGroups
-        )}" WHERE id = ${res.id}`,
-        values: [],
-      });
-    });
-
-    groupUsers.map(async (u: any) => {
-      const userGroups = JSON.parse(u.groups).filter(
-        (grp: any) => grp !== group
-      );
-      await Promise.all([
-        query({
-          query: `UPDATE users SET ${"`groups`"} = "${JSON.stringify(
-            userGroups
-          )}" WHERE id = ${u.id}`,
-          values: [],
-        }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
-          method: "POST",
-          body: JSON.stringify({
-            to: u.email,
-            subject: "Odstranění účtu ze skupiny",
-            html: GroupUsersEdit(
-              { name: groupDetail[0].name, owner: owner[0] },
-              "remove"
-            ),
-          }),
-        }),
+    allGroups.map((group: any) => {
+      const emails = new Set([
+        JSON.parse(group.owner).email,
+        ...group.users.split(","),
       ]);
+      //fetch(email)
     });
 
     return NextResponse.json({
@@ -86,7 +53,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         success: false,
-        message: e.message || "Something went wrong",
+        message: "Something went wrong",
       },
       { status: 500 }
     );

@@ -3,38 +3,28 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { currentReservations, newReservations, group } = await req.json();
+    const { group, reservations } = await req.json();
 
-    const data = await query({
-      query: `UPDATE ${"`groups`"} SET reservations = "${JSON.stringify([
-        ...currentReservations,
-        ...newReservations,
-      ])}" WHERE id = ${group}`,
-      values: [],
-    });
+    const placeholder = reservations.map(() => "(?,?,?)");
+    const values = reservations.flatMap((res: any) => [
+      res,
+      group,
+      [res, group].join(","),
+    ]);
 
-    newReservations.forEach(async (reserv: any) => {
-      const user = (await query({
-        query: `SELECT ${"`groups`"} FROM reservations WHERE id = ${reserv}`,
-        values: [],
-      })) as any;
-
-      const groups = user[0].groups ? JSON.parse(user[0].groups) : [];
-
-      groups.push(group);
-
-      await query({
-        query: `UPDATE reservations SET ${"`groups`"} = "${JSON.stringify(
-          groups
-        )}" WHERE id = ${reserv}`,
-        values: [],
-      });
-    });
+    (await Promise.all([
+      query({
+        query: `INSERT IGNORE INTO reservations_groups (reservationId, groupId, id) VALUES ${placeholder}`,
+        values,
+      }),
+    ])) as any;
 
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: [],
+      data: {
+        count: reservations.length,
+      },
     });
   } catch (e) {
     return NextResponse.json(

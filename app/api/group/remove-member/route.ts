@@ -4,47 +4,40 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { currentMembers, group, membersForRemove } = await req.json();
+    const { group, members } = await req.json();
 
-    const [_, users] = (await Promise.all([
+    const [groupDetail, users, owner, reservations] = (await Promise.all([
       query({
-        query: `UPDATE ${"`groups`"} SET users = "${JSON.stringify(
-          currentMembers.filter(
-            (num: number) => !membersForRemove.includes(num)
-          )
-        )}" WHERE id = ${group.id}`,
-        values: [],
+        query: `SELECT * FROM groups WHERE id = ?`,
+        values: [group],
       }),
       query({
-        query: `SELECT * FROM users WHERE id IN(${membersForRemove.join(",")})`,
-        values: [],
+        query: `SELECT first_name, last_name, email FROM users WHERE id IN(${members.map(
+          () => "?"
+        )})`,
+        values: [...members],
+      }),
+      query({
+        query: `SELECT first_name, last_name, email FROM users INNER JOIN groups ON groups.owner = users.id WHERE groups.id = ?`,
+        values: [group],
+      }),
+      query({
+        query: `SELECT * FROM reservations INNER JOIN reservations_groups ON reservations.id = reservations_groups.groupId WHERE reservations_groups.groupId = ?`,
+        values: [group],
+      }),
+      query({
+        query: `DELETE FROM users_groups WHERE groupId = ? AND userId IN (${members.map(
+          () => "?"
+        )})`,
+        values: [group, ...members],
       }),
     ])) as any;
 
-    users.map(async (user: any) => {
-      await Promise.all([
-        query({
-          query: `UPDATE  users SET ${"`groups`"} = "${JSON.stringify([
-            ...JSON.parse(user.groups).filter((grp: any) => grp !== group.id),
-          ])}" WHERE id = ${user.id}`,
-          values: [],
-        }),
-
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
-          method: "POST",
-          body: JSON.stringify({
-            to: user.email,
-            subject: "Odstranění účtu ze skupiny",
-            html: GroupUsersEdit(group, "remove"),
-          }),
-        }),
-      ]);
-    });
-
+    const data = { ...groupDetail[0], owner: owner[0], users, reservations };
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: [],
+      data,
     });
   } catch (e: any) {
     return NextResponse.json(

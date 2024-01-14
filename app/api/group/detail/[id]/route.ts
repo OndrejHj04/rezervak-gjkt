@@ -6,56 +6,49 @@ export async function GET(
   req: Request,
   { params: { id } }: { params: { id: string } }
 ) {
-  const url = new URL(req.url);
-  const rpage = Number(url.searchParams.get("reservations")) || 1;
-  const upage = Number(url.searchParams.get("users")) || 1;
   try {
-    const data = (await query({
-      query: `
-        SELECT * FROM ${"`groups`"} WHERE id = ?`,
-      values: [id],
-    })) as any;
+    const url = new URL(req.url);
+    const rpage = Number(url.searchParams.get("reservations")) || 1;
+    const upage = Number(url.searchParams.get("users")) || 1;
 
-    const [owner, users, reservations] = (await Promise.all([
-      query({
-        query: `
-      SELECT id, image, first_name, last_name, email FROM users WHERE id = ${data[0].owner}`,
-        values: [],
-      }),
-      query({
-        query: `
-      SELECT id, image, first_name, last_name, email FROM users ${
-        JSON.parse(data[0].users).length
-          ? `WHERE id IN (${JSON.parse(data[0].users).join(",")})`
-          : `WHERE 1=2`
-      }`,
-        values: [],
-      }),
-      query({
-        query: `
-      SELECT id, name, from_date, to_date, users FROM reservations ${
-        JSON.parse(data[0].reservations).length
-          ? `WHERE id IN (${JSON.parse(data[0].reservations).join(",")})`
-          : `WHERE 1=2`
-      }`,
-        values: [],
-      }),
-    ])) as any;
+    const [group, reservations, resCount, users, usersCount] =
+      (await Promise.all([
+        query({
+          query: `SELECT name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as owner FROM groups INNER JOIN users ON users.id = groups.owner WHERE groups.id = ?`,
+          values: [id],
+        }),
+        query({
+          query: `SELECT from_date, to_date, name, status FROM reservations 
+        INNER JOIN reservations_groups ON reservations.id = reservations_groups.reservationId 
+        WHERE reservations_groups.groupId = ? LIMIT 10 OFFSET ?`,
+          values: [id, rpage * 10 - 10],
+        }),
+        query({
+          query: `SELECT COUNT(*) AS total FROM reservations_groups WHERE reservations_groups.groupId = ?`,
+          values: [id],
+        }),
+        query({
+          query: `SELECT first_name, last_name, email, image FROM users 
+        INNER JOIN users_groups ON users.id = users_groups.userId 
+        WHERE users_groups.groupId = ? LIMIT 10 OFFSET ?`,
+          values: [id, upage * 10 - 10],
+        }),
+        query({
+          query: `SELECT COUNT(*) AS total FROM users_groups WHERE users_groups.groupId = ?`,
+          values: [id],
+        }),
+      ])) as any;
 
-    data[0].users = {
-      count: users.length,
-      data: users.slice((upage - 1) * 5, upage * 5),
+    group[0] = {
+      ...group[0],
+      owner: JSON.parse(group[0].owner),
+      reservations: { data: reservations, count: resCount[0].total },
+      users: { data: users, count: usersCount[0].total },
     };
-    data[0].reservations = {
-      count: reservations.length,
-      data: reservations.slice((rpage - 1) * 5, rpage * 5),
-    };
-
-    data[0].owner = owner[0];
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: data[0],
+      data: group[0],
     });
   } catch (e) {
     return NextResponse.json(

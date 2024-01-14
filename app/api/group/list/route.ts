@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import GroupUsersEdit from "@/templates/groupUserEdit/template";
 import { GroupOwner } from "@/types";
 import { NextResponse } from "next/server";
 
@@ -8,50 +9,57 @@ export async function GET(req: Request) {
     const page = Number(url.searchParams.get("page"));
     const search = url.searchParams.get("search");
 
-    let sql = `SELECT * FROM ${"`groups`"} WHERE 1=1`;
-    let countSql = `SELECT COUNT(*) FROM ${"`groups`"} WHERE 1=1`;
-
-    if (search) {
-      sql += ` AND name LIKE ${`"%${search}%"`}`;
-      countSql += ` AND name LIKE ${`"%${search}%"`}`;
-    }
-
-    if (page) {
-      sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
-    }
-
-    const [count, groups, users] = (await Promise.all([
-      query({
-        query: countSql,
-        values: [],
-      }),
-      query({
-        query: sql,
-        values: [],
-      }),
+    const [groups, reservations, users, count] = (await Promise.all([
       query({
         query: `
-        SELECT id, image, first_name, last_name, email FROM users
-      `,
+          SELECT groups.name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner, 
+          GROUP_CONCAT(DISTINCT reservationId) AS reservations, GROUP_CONCAT(DISTINCT userId) AS users 
+          FROM groups LEFT JOIN users ON users.id = owner LEFT JOIN users_groups ON users_groups.groupId = groups.id 
+          LEFT JOIN reservations_groups ON reservations_groups.groupId = groups.id 
+          LEFT JOIN reservations ON reservations.id = reservations_groups.groupId 
+          WHERE groups.name LIKE ? GROUP BY groups.id
+          LIMIT 10 OFFSET ?
+        `,
+        values: [`%${search}%`, page * 10 - 10],
+      }),
+      query({
+        query: `SELECT id, from_date, to_date, name FROM reservations`,
         values: [],
       }),
+      query({
+        query: `SELECT first_name, last_name, email, id FROM users`,
+        values: [],
+      }),
+      query({
+        query: `SELECT COUNT(*) as total FROM groups WHERE groups.name LIKE ?`,
+        values: [`%${search}%`],
+      }),
     ])) as any;
-
-    groups.map((item: any) => {
-      item.owner = users.find(
-        (user: any) => user.id === (item.owner as unknown as number)
-      ) as unknown as GroupOwner;
-      item.users = item.users ? JSON.parse(item.users as any) : [];
-      item.reservations = item.reservations
-        ? JSON.parse(item.reservations as any)
-        : [];
+    
+    const data = groups.map((group: any) => {
+      return {
+        ...group,
+        owner: JSON.parse(group.owner),
+        reservations: group.reservations
+          ? group.reservations
+              .split(",")
+              .map((res: any) =>
+                reservations.find((r: any) => r.id === Number(res))
+              )
+          : [],
+        users: group.users
+          ? group.users
+              .split(",")
+              .map((u: any) => users.find((us: any) => Number(u) === us.id))
+          : [],
+      };
     });
 
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: groups,
-      count: count[0]["COUNT(*)"],
+      data: data,
+      count: count[0].total,
     });
   } catch (e) {
     return NextResponse.json(

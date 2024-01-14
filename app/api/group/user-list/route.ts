@@ -2,35 +2,35 @@ import { query } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const id = Number(url.searchParams.get("id"));
-  const page = Number(url.searchParams.get("page"));
-
-  const [groups, users] = (await Promise.all([
-    query({
-      query: `SELECT id, name, users, owner FROM ${"`groups`"}`,
-    }),
-    query({
-      query: `SELECT id, first_name, last_name, image FROM users`,
-    }),
-  ])) as any;
-
-  const filtered = groups.filter((item: any) => {
-    const users = JSON.parse(item.users);
-    if (users.includes(id) || item.owner === id) {
-      return item;
-    }
-  });
-
-  filtered.map((item: any) => {
-    item.owner = users.find((user: any) => user.id === item.owner);
-  });
   try {
+    const url = new URL(req.url);
+    const id = Number(url.searchParams.get("id"));
+    const page = Number(url.searchParams.get("page"));
+
+    const [groups, count] = (await Promise.all([
+      query({
+        query: `SELECT name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner 
+        FROM groups INNER JOIN users_groups ON groups.id = users_groups.groupId INNER JOIN users ON groups.owner = users.id 
+        WHERE users_groups.userId = ? LIMIT 10 OFFSET ?`,
+        values: [id, page * 10 - 10],
+      }),
+      query({
+        query: `SELECT COUNT(*) as total FROM users_groups WHERE users_groups.userId = ?`,
+        values: [id],
+      }),
+    ])) as any;
+
+    const data = groups.map((group: any) => {
+      return {
+        ...group,
+        owner: JSON.parse(group.owner),
+      };
+    });
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      count: filtered.length,
-      data: filtered.slice((page - 1) * 10, page * 10),
+      data: data,
+      count: count[0].total,
     });
   } catch (e) {
     return NextResponse.json(

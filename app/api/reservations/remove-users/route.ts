@@ -4,49 +4,21 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { reservation, removeUsers, currentUsers } = await req.json();
+    const { reservation, users } = await req.json();
 
-    const [_, users] = (await Promise.all([
+    const [] = await Promise.all([
       query({
-        query: `UPDATE reservations SET users = "${JSON.stringify(
-          currentUsers.filter((user: any) => !removeUsers.includes(user))
-        )}" WHERE id = ${reservation.id}`,
-        values: [],
+        query: `DELETE FROM users_reservations WHERE reservationId = ? AND userId IN(${users.map(
+          () => "?"
+        )})`,
+        values: [reservation, ...users],
       }),
-      query({
-        query: `SELECT * FROM users WHERE id IN (${removeUsers.join(",")})`,
-        values: [],
-      }),
-    ])) as any;
-
-    users.map(async (user: any) => {
-      user.reservations = JSON.parse(user.reservations);
-      let newReservation = (user.reservations = user.reservations.filter(
-        (res: any) => res !== reservation.id
-      ));
-
-      await Promise.all([
-        query({
-          query: `UPDATE users SET reservations = "${JSON.stringify(
-            newReservation
-          )}" WHERE id = ${user.id}`,
-          values: [],
-        }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
-          method: "POST",
-          body: JSON.stringify({
-            to: user.email,
-            subject: "Odstranění účtu z rezervace",
-            html: NewReservationMember(reservation, "remove"),
-          }),
-        }),
-      ]);
-    });
+    ]);
 
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: users,
+      data: [],
     });
   } catch (e) {
     return NextResponse.json(

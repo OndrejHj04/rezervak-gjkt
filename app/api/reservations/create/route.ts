@@ -17,78 +17,39 @@ export async function POST(req: Request) {
       name,
     } = await req.json();
 
-    const [data, resLeader] = (await Promise.all([
-      query({
-        query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, ${"`groups`"}, users, instructions, name, status) VALUES ("${dayjs(
-          from_date
-        ).format("YYYY-MM-DD")}", "${dayjs(to_date).format(
-          "YYYY-MM-DD"
-        )}", "${rooms}", "${purpouse}", "${leader}", "${JSON.stringify(
-          groups
-        )}", "${JSON.stringify(members)}", "${instructions}", "${name}", 2)`,
-        values: [],
-      }),
-      query({
-        query: `SELECT id, email, first_name, last_name FROM users WHERE id = ${leader}`,
-        values: [],
-      }),
-    ])) as any;
+    const reservation = (await query({
+      query: `INSERT INTO reservations (from_date, to_date, rooms, purpouse, leader, instructions, name, status) VALUES ("${dayjs(
+        from_date
+      ).format("YYYY-MM-DD")}", "${dayjs(to_date).format(
+        "YYYY-MM-DD"
+      )}", "${rooms}", "${purpouse}", "${leader}", "${instructions}", "${name}", 2)`,
+      values: [],
+    })) as any;
 
-    if (groups.length) {
-      const groupReservations = (await query({
-        query: `SELECT id, reservations FROM ${"`groups`"} WHERE id IN (${groups.join(
-          ","
-        )})`,
-        values: [],
-      })) as any;
-
-      groupReservations.map(async (group: any) => {
-        const reservations = group.reservations
-          ? JSON.parse(group.reservations)
-          : [];
-        reservations.push(data.insertId);
-        await query({
-          query: `UPDATE ${"`groups`"} SET reservations = "${JSON.stringify(
-            reservations
-          )}" WHERE id = ${group.id}`,
-          values: [],
-        });
-      });
-    }
-
-    if (members.length) {
-      const userReservations = (await query({
-        query: `SELECT id, reservations, email  FROM users WHERE id IN (${members.join(
-          ","
-        )})`,
-        values: [],
-      })) as any;
-      userReservations.map(async (user: any) => {
-        const reservations = user.reservations
-          ? JSON.parse(user.reservations)
-          : [];
-        reservations.push(data.insertId);
-        await Promise.all([
-          query({
-            query: `UPDATE users SET reservations = "${JSON.stringify(
-              reservations
-            )}" WHERE id = ${user.id}`,
-            values: [],
-          }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
-            method: "POST",
-            body: JSON.stringify({
-              to: user.email,
-              subject: "Přidání účtu do rezervace",
-              html: NewReservationMember(
-                { from_date, to_date, leader: resLeader[0], instructions },
-                "add"
-              ),
-            }),
-          }),
-        ]);
-      });
-    }
+    await Promise.all([
+      members.length &&
+        query({
+          query: `INSERT INTO users_reservations (userId, reservationId, id) VALUES ${members
+            .map(() => "(?,?,?)")
+            .join(", ")}`,
+          values: members.flatMap((member: any) => [
+            member,
+            reservation.insertId,
+            [member, reservation.insertId].join(","),
+          ]),
+        }),
+      groups.length &&
+        query({
+          query: `INSERT INTO reservations_groups (reservationId, groupId, id) VALUES ${groups
+            .map(() => "(?,?,?)")
+            .join(", ")}`,
+          values: groups.flatMap((group: any) => [
+            reservation.insertId,
+            group,
+            [group, reservation.insertId].join(","),
+          ]),
+        }),
+    ]);
 
     return NextResponse.json({
       success: true,
@@ -99,7 +60,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         success: false,
-        message: "Something went wrong",
+        message: e.message || "Something went wrong",
         error: e,
       },
       { status: 500 }

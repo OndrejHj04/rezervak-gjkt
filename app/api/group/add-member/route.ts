@@ -31,7 +31,7 @@ export async function POST(req: Request) {
         query: `SELECT first_name, last_name, email FROM users WHERE id IN(${newMembers.map(
           () => "?"
         )})`,
-      values: [...newMembers],
+        values: [...newMembers],
       }),
       query({
         query: `SELECT reservations.* FROM reservations INNER JOIN reservations_groups ON reservations.id = reservations_groups.reservationId`,

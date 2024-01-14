@@ -4,45 +4,22 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { reservation, newUsers, currentUsers } = await req.json();
+    const { reservation, users } = await req.json();
 
-    const [_, users] = (await Promise.all([
+    const values = users.flatMap((user: any) => [
+      user,
+      reservation,
+      [user, reservation].join(","),
+    ]);
+
+    const placeholder = users.map(() => "(?,?,?)").join(", ");
+
+    const [] = await Promise.all([
       query({
-        query: `UPDATE reservations SET users = "[${[
-          ...currentUsers,
-          ...newUsers,
-        ]}]" WHERE id = ${reservation.id}`,
-        values: [],
+        query: `INSERT IGNORE INTO users_reservations (userId, reservationId, id) VALUES ${placeholder}`,
+        values,
       }),
-
-      query({
-        query: `SELECT id, reservations, email FROM users WHERE id IN (${newUsers.join(
-          ","
-        )})`,
-        values: [],
-      }),
-    ])) as any;
-
-    users.map(async (user: any) => {
-      await Promise.all([
-        query({
-          query: `UPDATE users SET reservations = "${JSON.stringify([
-            ...JSON.parse(user.reservations),
-            reservation.id,
-          ])}" WHERE id = ${user.id}`,
-          values: [],
-        }),
-
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
-          method: "POST",
-          body: JSON.stringify({
-            to: user.email,
-            subject: "Přidání účtu do rezervace",
-            html: NewReservationMember(reservation, "add"),
-          }),
-        }),
-      ]);
-    });
+    ]);
 
     return NextResponse.json({
       success: true,

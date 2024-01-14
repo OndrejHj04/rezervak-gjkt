@@ -12,14 +12,6 @@ export async function POST(req: Request) {
       values: [first_name, last_name, email, role, password],
     });
 
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
-      method: "POST",
-      body: JSON.stringify({
-        to: email,
-        subject: "Nový účet",
-        html: NewUserTemplate(email, password),
-      }),
-    });
     return NextResponse.json({
       success: true,
       message: `Uživatel ${first_name} ${last_name} byl úspěšně vytvořen.`,

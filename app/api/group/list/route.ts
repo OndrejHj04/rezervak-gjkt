@@ -18,9 +18,9 @@ export async function GET(req: Request) {
           LEFT JOIN reservations_groups ON reservations_groups.groupId = groups.id 
           LEFT JOIN reservations ON reservations.id = reservations_groups.groupId 
           WHERE groups.name LIKE ? GROUP BY groups.id
-          LIMIT 10 OFFSET ?
+          ${page ? `LIMIT 10 OFFSET ${page * 10 - 10}` : ""}
         `,
-        values: [`%${search}%`, page * 10 - 10],
+        values: [`%${search}%`],
       }),
       query({
         query: `SELECT id, from_date, to_date, name FROM reservations`,
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
         values: [`%${search}%`],
       }),
     ])) as any;
-    
+
     const data = groups.map((group: any) => {
       return {
         ...group,

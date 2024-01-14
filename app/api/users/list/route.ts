@@ -8,47 +8,34 @@ export async function GET(req: Request) {
     const role = Number(url.searchParams.get("role"));
     const search = url.searchParams.get("search");
 
-    let sql = `SELECT id, first_name, last_name, email, role, birth_date, verified, active, image FROM users WHERE 1=1`;
-    let countSql = `SELECT COUNT(*) FROM users WHERE 1=1
-    `;
-    if (role) {
-      sql += ` AND role = ${role}`;
-      countSql += ` AND role = ${role}`;
-    }
-
-    if (search) {
-      sql += ` AND first_name LIKE ${`"%${search}%"`} OR last_name LIKE ${`"%${search}%"`}`;
-      countSql += ` AND first_name LIKE ${`"%${search}%"`} OR last_name LIKE ${`"%${search}%"`}`;
-    }
-
-    if (page) {
-      sql += ` LIMIT 10 OFFSET ${page * 10 - 10}`;
-    }
-
-    const [roles, users, count] = (await Promise.all([
+    const [users, count] = (await Promise.all([
       query({
-        query: "SELECT * FROM roles",
-      }),
-      query({
-        query: sql,
+        query: `SELECT first_name, last_name, email, image, verified, birth_date, active, JSON_OBJECT('id', roles.id, 'name', roles.name) as role
+          FROM users INNER JOIN roles ON roles.id = users.role WHERE 1=1
+        ${search? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`: ""}
+        ${role ? `AND users.role = ${role}` : ""}
+        ${page ? `LIMIT 10 OFFSET ${page * 10 - 10}` : ""}`,
         values: [],
       }),
       query({
-        query: countSql,
+        query: `SELECT COUNT(*) as total FROM users WHERE 1=1 
+        ${search ? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`: ""}
+        ${role ? `AND users.role = ${role}` : ""}
+        `,
         values: [],
       }),
     ])) as any;
 
-    users.map((item: any) => {
-      item.role = roles.find((r: any) => r.id === Number(item.role));
-      item.full_name = item.first_name + " " + item.last_name;
-    });
+    const data = users.map((user: any) => ({
+      ...user,
+      role: JSON.parse(user.role),
+    }));
 
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: users,
-      count: count[0]["COUNT(*)"],
+      data,
+      count: count[0].total,
     });
   } catch (e) {
     return NextResponse.json(

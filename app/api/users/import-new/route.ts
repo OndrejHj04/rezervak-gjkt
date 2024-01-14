@@ -18,17 +18,6 @@ export async function POST(req: Request) {
       }),
     ])) as any;
 
-    users.map((user: any) => {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
-        method: "POST",
-        body: JSON.stringify({
-          to: user.email,
-          subject: "Nový účet",
-          html: NewUserTemplate(user.email, user.password),
-        }),
-      });
-    });
-
     return NextResponse.json({
       success: true,
       message: `${data.affectedRows} uživatelů úspěšně importováno`,

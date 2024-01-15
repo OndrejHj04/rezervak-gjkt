@@ -128,7 +128,7 @@ export const rolesConfig = {
       reservationsCreate: {
         name: "Vytvořit rezervaci",
         path: "/reservation/create",
-        roles: [1],
+        roles: [1, 2, 3],
         menu: [false, true],
         icon: "edit_calendar_icon",
       },

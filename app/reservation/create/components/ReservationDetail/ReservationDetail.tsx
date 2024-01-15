@@ -1,18 +1,9 @@
+import { getServerSession } from "next-auth";
 import ReservationDetailRender from "./ReservationDetailRender";
-
-const getUsers = async () => {
-  try {
-    const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/list`
-    );
-    const { data } = await req.json();
-    return data;
-  } catch (e) {
-    return [];
-  }
-};
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 export default async function ReservationDetail() {
-  const users = await getUsers();
-  return <ReservationDetailRender users={users} />;
+  const { user } = (await getServerSession(authOptions)) as any;
+
+  return <ReservationDetailRender id={user.id} />;
 }

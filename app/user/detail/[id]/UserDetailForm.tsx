@@ -349,7 +349,10 @@ export default function UserDetailForm({
                     <ListItem disablePadding key={reservation.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}
-                        onClick={() => handleCheckReservation(reservation.id)}
+                        onClick={() =>
+                          reservation.leader.id !== userDetail.id &&
+                          handleCheckReservation(reservation.id)
+                        }
                       >
                         <ListItemText
                           primary={<Typography>{reservation.name}</Typography>}

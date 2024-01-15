@@ -141,7 +141,6 @@ export default async function middleware(req: NextRequest) {
 
     if (
       !isMember &&
-      !isLeader &&
       !rolesConfig.reservations.modules.reservationsDetail.visit.includes(
         role.id
       )

@@ -39,7 +39,7 @@ export async function GET(
           values: [id],
         }),
         query({
-          query: `SELECT reservations.id, from_date, to_date, reservations.name, JSON_OBJECT('first_name', first_name, 'last_name', last_name, 'email', email, 'image', image) as leader, JSON_OBJECT('name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status
+          query: `SELECT reservations.id, from_date, to_date, reservations.name, JSON_OBJECT('id', users.id, 'first_name', first_name, 'last_name', last_name, 'email', email, 'image', image) as leader, JSON_OBJECT('name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status
           FROM users_reservations
           INNER JOIN reservations ON reservations.id = users_reservations.reservationId
           INNER JOIN users ON users.id = reservations.leader

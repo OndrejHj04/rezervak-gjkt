@@ -112,9 +112,8 @@ export default function UserDetailForm({
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/remove-groups`, {
       method: "POST",
       body: JSON.stringify({
-        user: { id: userDetail.id, email: userDetail.email },
-        currentGroups: userDetail.groups.data.map((group: any) => group.id),
-        removeGroups: selectGroups,
+        user: userDetail.id,
+        groups: selectGroups,
       }),
     })
       .then((req) => req.json())
@@ -138,14 +137,12 @@ export default function UserDetailForm({
   };
 
   const removeReservations = () => {
+    
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/remove-reservations`, {
       method: "POST",
       body: JSON.stringify({
-        user: { id: userDetail.id, email: userDetail.email },
-        currentReservations: userDetail.reservations.data.map(
-          (res: any) => res.id
-        ),
-        removeReservations: selectReservations,
+        user: userDetail.id,
+        reservations: selectReservations,
       }),
     })
       .then((req) => req.json())
@@ -296,9 +293,7 @@ export default function UserDetailForm({
                       >
                         <ListItemText
                           primary={<Typography>{group.name}</Typography>}
-                          secondary={`Počet členů: ${
-                            JSON.parse(group.users).length
-                          }`}
+                          secondary={`Počet členů: ${group.users.length}`}
                         />
                         <Checkbox
                           disableRipple

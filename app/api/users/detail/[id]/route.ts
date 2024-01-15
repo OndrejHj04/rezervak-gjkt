@@ -15,13 +15,22 @@ export async function GET(
     const [user, groups, groupsCount, reservations, reservationsCount] =
       (await Promise.all([
         query({
-          query: `SELECT first_name, image, last_name, email, active, verified, adress, ID_code, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE users.id = ?`,
+          query: `SELECT users.id, first_name, image, last_name, email, active, verified, adress, ID_code, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE users.id = ?`,
           values: [id],
         }),
         query({
-          query: `SELECT name, description, JSON_OBJECT('first_name', first_name, 'last_name', last_name, 'email', email) as owner FROM users_groups 
-        INNER JOIN groups ON users_groups.groupId = groups.id INNER JOIN users ON users.id = groups.owner WHERE users_groups.userId = ?
-        LIMIT 10 OFFSET ?
+          query: `
+          SELECT groups.id, groups.name, groups.description, 
+          JSON_OBJECT('first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner,
+          GROUP_CONCAT(users_groups.userId) as users
+          FROM users_groups
+          INNER JOIN groups ON users_groups.groupId = groups.id 
+          INNER JOIN users AS owner ON owner.id = groups.owner
+          WHERE groups.id IN (
+            SELECT groupId FROM users_groups WHERE userId = ?
+          )
+          GROUP BY groups.id
+          LIMIT 10 OFFSET ?
         `,
           values: [id, gpage * 10 - 10],
         }),
@@ -30,7 +39,7 @@ export async function GET(
           values: [id],
         }),
         query({
-          query: `SELECT from_date, to_date, reservations.name, JSON_OBJECT('first_name', first_name, 'last_name', last_name, 'email', email, 'image', image) as leader, JSON_OBJECT('name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status
+          query: `SELECT reservations.id, from_date, to_date, reservations.name, JSON_OBJECT('first_name', first_name, 'last_name', last_name, 'email', email, 'image', image) as leader, JSON_OBJECT('name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status
           FROM users_reservations
           INNER JOIN reservations ON reservations.id = users_reservations.reservationId
           INNER JOIN users ON users.id = reservations.leader
@@ -47,7 +56,7 @@ export async function GET(
     const data = {
       ...user[0],
       role: JSON.parse(user[0].role),
-      reservation: {
+      reservations: {
         data: reservations.map((res: any) => ({
           ...res,
           leader: JSON.parse(res.leader),
@@ -59,6 +68,7 @@ export async function GET(
         data: groups.map((group: any) => ({
           ...group,
           owner: JSON.parse(group.owner),
+          users: group.users.split(","),
         })),
         count: groupsCount[0].total,
       },

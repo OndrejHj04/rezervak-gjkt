@@ -50,9 +50,8 @@ export default function AddReservationsModal({
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/add-reservations`, {
       method: "POST",
       body: JSON.stringify({
-        user: { id: userId, email: userEmail },
-        newReservations: data.reservations.map((res: any) => res.id),
-        currentReservations,
+        user: userId,
+        reservations: data.reservations.map((res: any) => res.id),
       }),
     })
       .then((req) => req.json())

@@ -13,6 +13,7 @@ import GroupsPagination from "./GroupsPagination";
 import ReservationsPagination from "./ReservationsPagination";
 
 export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
+  console.log(userDetail)
   return (
     <Paper className="p-4 flex gap-4">
       <div className="flex flex-col">
@@ -45,7 +46,7 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
               <ListItem disablePadding key={group.id}>
                 <ListItemText
                   primary={<Typography>{group.name}</Typography>}
-                  secondary={`Počet členů: ${JSON.parse(group.users).length}`}
+                  secondary={`Počet členů: ${group.users.length}`}
                 />
               </ListItem>
             ))

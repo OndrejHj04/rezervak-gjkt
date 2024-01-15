@@ -8,7 +8,7 @@ export async function GET(req: Request) {
 
     const [reservations] = (await Promise.all([
       query({
-        query: `SELECT from_date, to_date, status, reservations.name, leader, 
+        query: `SELECT reservations.id, from_date, to_date, status, reservations.name, leader, 
         JSON_OBJECT('id', status.id, 'name', status.name, 'color', 'display_name', status.display_name, status.color, 'icon', status.icon) as status,
         JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader
         FROM users_reservations 

@@ -12,6 +12,7 @@ import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
 import ExportButton from "@/ui-components/ExportButton";
 import { rolesConfig } from "@/rolesConfig";
+import GroupsDelete from "./components/GroupsDelete";
 
 const getGroups = async (page: any, search: any) => {
   try {
@@ -57,6 +58,13 @@ export default async function GroupList({
         <Table>
           <TableHead>
             <TableRow>
+              {rolesConfig.groups.modules.groupsTable.config.topbar.delete.includes(
+                userRole
+              ) && (
+                <TableCell sx={{ padding: 1.5 }}>
+                  <GroupsDelete />
+                </TableCell>
+              )}
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Název" />
               </TableCell>

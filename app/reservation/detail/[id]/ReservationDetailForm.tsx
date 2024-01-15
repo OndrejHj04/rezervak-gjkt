@@ -114,9 +114,8 @@ export default function ReservationDetailForm({
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/remove-users`, {
       method: "POST",
       body: JSON.stringify({
-        reservation: reservation,
-        removeUsers: selectedUsers,
-        currentUsers: reservation.users.data.map((user: any) => user.id),
+        reservation: reservation.id,
+        users: selectedUsers,
       }),
     })
       .then((res) => res.json())
@@ -134,8 +133,7 @@ export default function ReservationDetailForm({
       method: "POST",
       body: JSON.stringify({
         reservation: reservation.id,
-        removeGroups: selectedGroups,
-        currentGroups: reservation.groups.data.map((group: any) => group.id),
+        groups: selectedGroups,
       }),
     })
       .then((res) => res.json())
@@ -388,9 +386,7 @@ export default function ReservationDetailForm({
                         >
                           <ListItemText
                             primary={group.name}
-                            secondary={
-                              "Počet členů: " + JSON.parse(group.users).length
-                            }
+                            secondary={"Počet členů: " + group.users.length}
                           />
                           <Checkbox
                             disableRipple

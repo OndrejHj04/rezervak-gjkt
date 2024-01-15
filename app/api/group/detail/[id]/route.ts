@@ -28,7 +28,7 @@ export async function GET(
           values: [id],
         }),
         query({
-          query: `SELECT first_name, last_name, email, image FROM users 
+          query: `SELECT users.id, first_name, last_name, email, image FROM users 
         INNER JOIN users_groups ON users.id = users_groups.userId 
         WHERE users_groups.groupId = ? LIMIT 10 OFFSET ?`,
           values: [id, upage * 10 - 10],

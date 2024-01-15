@@ -37,6 +37,7 @@ export default function AddUserModal({
     control,
     register,
     formState: { isValid },
+    watch,
   } = useForm();
 
   useEffect(() => {
@@ -49,15 +50,8 @@ export default function AddUserModal({
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/add-users`, {
       method: "POST",
       body: JSON.stringify({
-        reservation: {
-          id: reservation.id,
-          from_date: reservation.from_date,
-          to_date: reservation.to_date,
-          instructions: reservation.instructions,
-          leader: reservation.leader,
-        },
-        newUsers: data.users.map((user: any) => user.id),
-        currentUsers,
+        reservation: reservation.id,
+        users: data.users.map((user: any) => user.id),
       }),
     })
       .then((req) => req.json())

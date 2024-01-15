@@ -12,15 +12,16 @@ export async function GET(req: Request) {
     const [groups, reservations, users, count] = (await Promise.all([
       query({
         query: `
-          SELECT groups.name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner, 
+          SELECT groups.id, groups.name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner, 
           GROUP_CONCAT(DISTINCT reservationId) AS reservations, GROUP_CONCAT(DISTINCT userId) AS users 
           FROM groups LEFT JOIN users ON users.id = owner LEFT JOIN users_groups ON users_groups.groupId = groups.id 
           LEFT JOIN reservations_groups ON reservations_groups.groupId = groups.id 
           LEFT JOIN reservations ON reservations.id = reservations_groups.groupId 
-          WHERE groups.name LIKE ? GROUP BY groups.id
+          ${search ? `WHERE groups.name LIKE "%${search}%"` : ""}
+          GROUP BY groups.id
           ${page ? `LIMIT 10 OFFSET ${page * 10 - 10}` : ""}
         `,
-        values: [`%${search}%`],
+        values: [],
       }),
       query({
         query: `SELECT id, from_date, to_date, name FROM reservations`,
@@ -31,7 +32,10 @@ export async function GET(req: Request) {
         values: [],
       }),
       query({
-        query: `SELECT COUNT(*) as total FROM groups WHERE groups.name LIKE ?`,
+        query: `
+          SELECT COUNT(*) as total FROM groups
+          ${search ? `WHERE groups.name LIKE "%${search}%"` : ""}
+        `,
         values: [`%${search}%`],
       }),
     ])) as any;

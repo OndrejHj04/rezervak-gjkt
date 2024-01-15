@@ -46,8 +46,7 @@ export default function AddGroupsModal({
       method: "POST",
       body: JSON.stringify({
         reservation: reservationId,
-        newGroups: data.groups.map((group: any) => group.id),
-        currentGroups,
+        groups: data.groups.map((group: any) => group.id),
       }),
     })
       .then((req) => req.json())
@@ -59,7 +58,7 @@ export default function AddGroupsModal({
         setModal(false);
       });
   };
-
+  console.log(groups);
   return (
     <Paper sx={style} className="p-2">
       <Typography variant="h5" className="mb-2 text-center">

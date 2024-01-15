@@ -13,15 +13,19 @@ export async function POST(req: Request) {
       forbidden: false,
     };
 
-    const reservation = (await query({
-      query: `
-      SELECT leader, users, status FROM reservations WHERE id = ${reservationId}
-      `,
-      values: [],
-    })) as any;
+    const [reservation, users] = (await Promise.all([
+      query({
+        query: `SELECT leader, status FROM reservations WHERE id = ${reservationId}`,
+        values: [],
+      }),
+      query({
+        query: `SELECT * FROM users_reservations WHERE reservationId = ? AND userId = ?`,
+        values: [reservationId, userId],
+      }),
+    ])) as any;
 
     if (reservation.length) {
-      result.isMember = JSON.parse(reservation[0].users).includes(userId);
+      result.isMember = Boolean(users.length);
       result.isLeader = reservation[0].leader === userId;
       result.exist = true;
       result.archived = reservation[0].status === 1;

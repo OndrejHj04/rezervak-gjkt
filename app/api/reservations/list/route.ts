@@ -16,7 +16,7 @@ export async function GET(req: Request) {
     const [reservations, reservationsCount] = (await Promise.all([
       query({
         query: `
-          SELECT from_date, to_date, reservations.name, purpouse, leader, status, creation_date,
+          SELECT reservations.id, from_date, to_date, reservations.name, purpouse, leader, status, creation_date,
           JSON_OBJECT('id', status.id, 'name', status.name, 'color', 'display_name', status.display_name, status.color, 'icon', status.icon) as status,
           JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader, 
           GROUP_CONCAT(DISTINCT groupId) as groups,
@@ -33,7 +33,7 @@ export async function GET(req: Request) {
           ${type === "expired" ? `AND to_date < CURDATE()` : ""}
           ${col && dir ? `ORDER BY ${col} ${dir.toUpperCase()}` : ""}
           GROUP BY reservations.id
-          LIMIT ${limit || 10} OFFSET ${page * limit - limit}
+          ${page ? `LIMIT ${limit || 10} OFFSET ${page * limit - limit}` : ""}
         `,
         values: [],
       }),

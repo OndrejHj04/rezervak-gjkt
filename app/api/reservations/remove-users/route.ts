@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { reservation, users } = await req.json();
-
+ console.log(reservation, users)
     const [] = await Promise.all([
       query({
         query: `DELETE FROM users_reservations WHERE reservationId = ? AND userId IN(${users.map(

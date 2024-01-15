@@ -107,7 +107,7 @@ export const rolesConfig = {
         path: "/group/list",
         roles: [1, 2, 3],
         config: {
-          topbar: { search: [1, 2], export: [1, 2] },
+          topbar: { search: [1, 2], export: [1, 2], delete: [1, 2] },
         },
         menu: [true, false],
         icon: "group",

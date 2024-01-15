@@ -14,9 +14,9 @@ export async function GET(
     const [reservations, users, usersCount, groups, groupsCount] =
       (await Promise.all([
         query({
-          query: `SELECT from_date, to_date, reservations.name, leader, instructions, purpouse, rooms, creation_date, 
+          query: `SELECT reservations.id, from_date, to_date, reservations.name, leader, instructions, purpouse, rooms, creation_date, 
         JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', display_name, 'icon', icon) as status, 
-        JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader
+        JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader
         FROM reservations
         INNER JOIN status ON reservations.status = status.id
         INNER JOIN users ON users.id = reservations.leader
@@ -24,7 +24,7 @@ export async function GET(
           values: [id],
         }),
         query({
-          query: `SELECT first_name, last_name, image, email FROM users_reservations INNER JOIN users ON users.id = userId WHERE reservationId = ? LIMIT 10 OFFSET ?`,
+          query: `SELECT users.id, first_name, last_name, image, email FROM users_reservations INNER JOIN users ON users.id = userId WHERE reservationId = ? LIMIT 10 OFFSET ?`,
           values: [id, upage * 10 - 10],
         }),
         query({
@@ -32,7 +32,15 @@ export async function GET(
           values: [id],
         }),
         query({
-          query: `SELECT * FROM reservations_groups INNER JOIN groups ON groupId = groups.id WHERE reservationId = ? LIMIT 10 OFFSET ?`,
+          query: `
+            SELECT groups.id, groups.name, description, GROUP_CONCAT(DISTINCT userId) as users
+            FROM reservations_groups
+            INNER JOIN groups ON reservations_groups.groupId = groups.id
+            LEFT JOIN users_groups ON groups.id = users_groups.groupId
+            WHERE reservationId = ?
+            GROUP BY groups.id
+            LIMIT 10 OFFSET ?
+            `,
           values: [id, gpage * 10 - 10],
         }),
         query({
@@ -50,7 +58,10 @@ export async function GET(
         count: usersCount[0].total,
       },
       groups: {
-        data: groups,
+        data: groups.map((group: any) => ({
+          ...group,
+          users: group.users ? group.users.split(",") : [],
+        })),
         count: groupsCount[0].total,
       },
     };

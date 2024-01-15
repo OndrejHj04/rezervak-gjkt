@@ -29,6 +29,7 @@ export default function ReservationDetailDisplay({
   users: any;
   groups: any;
 }) {
+
   return (
     <Paper className="p-4 flex gap-4">
       <div>
@@ -74,7 +75,7 @@ export default function ReservationDetailDisplay({
         <List sx={{ height: 300 }}>
           {reservation.users.data.length ? (
             reservation.users.data.map((user: any) => (
-              <ListItem disablePadding key={user.id}>
+              <ListItem key={user.id}>
                 <ListItemIcon>
                   <AvatarWrapper data={user} />
                 </ListItemIcon>

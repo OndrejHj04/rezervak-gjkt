@@ -1,10 +1,12 @@
 import { Group } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
-import { Button, TableCell, TableRow } from "@mui/material";
+import { Button, Checkbox, TableCell, TableRow } from "@mui/material";
 
 import Link from "next/link";
 import TableListCheckbox from "@/ui-components/TableListCheckbox";
 import { rolesConfig } from "@/rolesConfig";
+import { store } from "@/store/store";
+import GroupItemCheckbox from "./GroupItemCheckbox";
 
 export default function GroupListItem({
   group,
@@ -19,6 +21,13 @@ export default function GroupListItem({
 
   return (
     <TableRow className="cursor-pointer">
+      {rolesConfig.groups.modules.groupsTable.config.topbar.delete.includes(
+        userRole
+      ) && (
+        <TableCell>
+          <GroupItemCheckbox group={group.id} />
+        </TableCell>
+      )}
       <TableCell>{group.name}</TableCell>
       <TableCell>{group.description}</TableCell>
       <TableCell>{group.users.length}</TableCell>

@@ -14,6 +14,8 @@ import GroupsPagination from "./GroupsPagination";
 import UsersPagination from "@/app/reservation/detail/[id]/UsersPagination";
 
 export default async function GroupDetailDisplay({ group }: { group: any }) {
+
+  console.log(group.users)
   return (
     <Paper className="flex p-4 gap-4">
       <div>
@@ -37,7 +39,7 @@ export default async function GroupDetailDisplay({ group }: { group: any }) {
           <Typography variant="h5">Uživatelé ve skupině </Typography>
           <Divider />
           <List>
-            {group.users ? (
+            {group.users.count ? (
               group.users.data.map((user: any) => (
                 <ListItem disablePadding key={user.id}>
                   <ListItemIcon>
@@ -65,7 +67,7 @@ export default async function GroupDetailDisplay({ group }: { group: any }) {
           <Typography variant="h5">Rezervace skupiny </Typography>
           <Divider />
           <List>
-            {group.reservations.data ? (
+            {group.reservations.count ? (
               group.reservations.data.map((reservation: any) => (
                 <ListItem disablePadding key={reservation.id}>
                   <ListItemText

@@ -10,7 +10,7 @@ export async function GET(req: Request) {
 
     const [users, count] = (await Promise.all([
       query({
-        query: `SELECT first_name, last_name, email, image, verified, birth_date, active, JSON_OBJECT('id', roles.id, 'name', roles.name) as role
+        query: `SELECT users.id, first_name, last_name, email, image, verified, birth_date, active, JSON_OBJECT('id', roles.id, 'name', roles.name) as role
           FROM users INNER JOIN roles ON roles.id = users.role WHERE 1=1
         ${search? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`: ""}
         ${role ? `AND users.role = ${role}` : ""}

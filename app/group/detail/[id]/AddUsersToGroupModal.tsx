@@ -50,9 +50,8 @@ export default function AddUsersToGroupModal({
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/add-member`, {
       method: "POST",
       body: JSON.stringify({
-        group: group,
+        group: group.id,
         newMembers: data.users.map((group: any) => group.id),
-        currentMembers: currentUsers,
       }),
     })
       .then((req) => req.json())

@@ -14,11 +14,11 @@ export async function GET(
     const [group, reservations, resCount, users, usersCount] =
       (await Promise.all([
         query({
-          query: `SELECT name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as owner FROM groups INNER JOIN users ON users.id = groups.owner WHERE groups.id = ?`,
+          query: `SELECT groups.id, name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as owner FROM groups INNER JOIN users ON users.id = groups.owner WHERE groups.id = ?`,
           values: [id],
         }),
         query({
-          query: `SELECT from_date, to_date, name, status FROM reservations 
+          query: `SELECT reservations.id, from_date, to_date, name, status FROM reservations 
         INNER JOIN reservations_groups ON reservations.id = reservations_groups.reservationId 
         WHERE reservations_groups.groupId = ? LIMIT 10 OFFSET ?`,
           values: [id, rpage * 10 - 10],

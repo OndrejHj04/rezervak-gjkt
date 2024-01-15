@@ -91,9 +91,8 @@ export default function GroupDetailForm({ group }: { group: any }) {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove-member`, {
       method: "POST",
       body: JSON.stringify({
-        group: { id: group.id, owner: group.owner, name: group.name },
-        currentMembers: group.users.data.map((user: any) => user.id),
-        membersForRemove: checked,
+        group: group.id,
+        members: checked,
       }),
     })
       .then((res) => res.json())
@@ -126,10 +125,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
       method: "POST",
       body: JSON.stringify({
         group: group.id,
-        removeReservaitons: selectReservation,
-        currentReservations: group?.reservations.data.map(
-          (reservation: any) => reservation.id
-        ),
+        reservations: selectReservation,
       }),
     })
       .then((res) => res.json())

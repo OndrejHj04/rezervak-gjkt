@@ -52,8 +52,7 @@ export default function AddGroupToReservationModal({
       method: "POST",
       body: JSON.stringify({
         group: groupId,
-        newReservations: data.reservations.map((group: any) => group.id),
-        currentReservations: currentReservations,
+        reservations: data.reservations.map((group: any) => group.id),
       }),
     })
       .then((req) => req.json())

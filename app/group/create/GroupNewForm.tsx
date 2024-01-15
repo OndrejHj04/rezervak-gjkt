@@ -28,7 +28,7 @@ export default function GroupNewForm({
       .then((res) => {
         if (res.success) {
           toast.success(`Skupina ${res.data.name} byla vytvořena`);
-          MakeGroupDetailRefetch(res.data.newGroupId);
+          MakeGroupDetailRefetch(res.data.newGroupId, 1);
         } else {
           toast.error("Něco se pokazilo");
           setLoading(false);

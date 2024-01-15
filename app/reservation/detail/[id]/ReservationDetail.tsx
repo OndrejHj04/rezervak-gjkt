@@ -45,7 +45,6 @@ export default async function ReservationDetail({
 
   const isLeader = reservation.leader.id === userId;
   const archived = reservation.status.id === 1;
-
   return (
     <>
       <div className="flex justify-between">

@@ -29,7 +29,6 @@ export default function ReservationDetailDisplay({
   users: any;
   groups: any;
 }) {
-
   return (
     <Paper className="p-4 flex gap-4">
       <div>
@@ -72,7 +71,7 @@ export default function ReservationDetailDisplay({
       <div>
         <Typography variant="h5">Uživatelé v rezervaci</Typography>
         <Divider />
-        <List sx={{ height: 300 }}>
+        <List sx={{ height: 360 }}>
           {reservation.users.data.length ? (
             reservation.users.data.map((user: any) => (
               <ListItem key={user.id}>
@@ -106,7 +105,7 @@ export default function ReservationDetailDisplay({
               <ListItem disablePadding key={group.id}>
                 <ListItemText
                   primary={group.name}
-                  secondary={"Počet členů: " + JSON.parse(group.users).length}
+                  secondary={"Počet členů: " + group.users.length}
                 />
               </ListItem>
             ))

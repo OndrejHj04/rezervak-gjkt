@@ -137,7 +137,6 @@ export default function UserDetailForm({
   };
 
   const removeReservations = () => {
-    
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/remove-reservations`, {
       method: "POST",
       body: JSON.stringify({
@@ -289,7 +288,10 @@ export default function UserDetailForm({
                     <ListItem disablePadding key={group.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}
-                        onClick={() => handleCheckGroup(group.id)}
+                        onClick={() =>
+                          group.owner.id !== userDetail.id &&
+                          handleCheckGroup(group.id)
+                        }
                       >
                         <ListItemText
                           primary={<Typography>{group.name}</Typography>}

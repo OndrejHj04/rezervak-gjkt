@@ -42,6 +42,7 @@ export default async function UserDetail({
 
   const selfVisit =
     rolesConfig.users.modules.userDetail.visitSelf.includes(userRole);
+
   return (
     <>
       {userDetail ? (

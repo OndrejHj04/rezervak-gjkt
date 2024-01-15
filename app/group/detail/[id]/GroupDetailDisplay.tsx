@@ -15,7 +15,6 @@ import UsersPagination from "@/app/reservation/detail/[id]/UsersPagination";
 
 export default async function GroupDetailDisplay({ group }: { group: any }) {
 
-  console.log(group.users)
   return (
     <Paper className="flex p-4 gap-4">
       <div>

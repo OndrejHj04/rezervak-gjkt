@@ -55,7 +55,6 @@ export default function ReservationDetailRender({ users }: { users: User[] }) {
       setLoading(false);
     }
   }, [data?.user]);
-
   return (
     <Accordion expanded={expanded}>
       <AccordionSummary

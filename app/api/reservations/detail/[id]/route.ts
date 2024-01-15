@@ -24,8 +24,8 @@ export async function GET(
           values: [id],
         }),
         query({
-          query: `SELECT users.id, first_name, last_name, image, email FROM users_reservations INNER JOIN users ON users.id = userId WHERE reservationId = ? LIMIT 10 OFFSET ?`,
-          values: [id, upage * 10 - 10],
+          query: `SELECT users.id, first_name, last_name, image, email FROM users_reservations INNER JOIN users ON users.id = userId WHERE reservationId = ? LIMIT 5 OFFSET ?`,
+          values: [id, upage * 5 - 5],
         }),
         query({
           query: `SELECT COUNT(*) as total FROM users_reservations WHERE reservationId = ?`,
@@ -39,9 +39,9 @@ export async function GET(
             LEFT JOIN users_groups ON groups.id = users_groups.groupId
             WHERE reservationId = ?
             GROUP BY groups.id
-            LIMIT 10 OFFSET ?
+            LIMIT 5 OFFSET ?
             `,
-          values: [id, gpage * 10 - 10],
+          values: [id, gpage * 5 - 5],
         }),
         query({
           query: `SELECT COUNT(*) as total FROM reservations_groups WHERE reservationId = ?`,

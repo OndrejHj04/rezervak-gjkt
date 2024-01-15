@@ -9,10 +9,10 @@ export async function GET(req: Request) {
 
     const [groups, count] = (await Promise.all([
       query({
-        query: `SELECT name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner 
+        query: `SELECT groups.id, name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner 
         FROM groups INNER JOIN users_groups ON groups.id = users_groups.groupId INNER JOIN users ON groups.owner = users.id 
-        WHERE users_groups.userId = ? LIMIT 10 OFFSET ?`,
-        values: [id, page * 10 - 10],
+        WHERE users_groups.userId = ? LIMIT 5 OFFSET ?`,
+        values: [id, page * 5 - 5],
       }),
       query({
         query: `SELECT COUNT(*) as total FROM users_groups WHERE users_groups.userId = ?`,

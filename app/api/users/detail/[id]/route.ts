@@ -21,7 +21,7 @@ export async function GET(
         query({
           query: `
           SELECT groups.id, groups.name, groups.description, 
-          JSON_OBJECT('first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner,
+          JSON_OBJECT('id', owner.id, 'first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner,
           GROUP_CONCAT(users_groups.userId) as users
           FROM users_groups
           INNER JOIN groups ON users_groups.groupId = groups.id 
@@ -30,9 +30,9 @@ export async function GET(
             SELECT groupId FROM users_groups WHERE userId = ?
           )
           GROUP BY groups.id
-          LIMIT 10 OFFSET ?
+          LIMIT 5 OFFSET ?
         `,
-          values: [id, gpage * 10 - 10],
+          values: [id, gpage * 5 - 5],
         }),
         query({
           query: `SELECT COUNT(*) as total FROM users_groups WHERE userId = ?`,
@@ -44,8 +44,8 @@ export async function GET(
           INNER JOIN reservations ON reservations.id = users_reservations.reservationId
           INNER JOIN users ON users.id = reservations.leader
           INNER JOIN status ON status.id = reservations.status
-          WHERE userId = ? LIMIT 10 OFFSET ?`,
-          values: [id, rpage * 10 - 10],
+          WHERE userId = ? LIMIT 5 OFFSET ?`,
+          values: [id, rpage * 5 - 5],
         }),
         query({
           query: `SELECT COUNT(*) as total FROM users_reservations WHERE userId = ?`,

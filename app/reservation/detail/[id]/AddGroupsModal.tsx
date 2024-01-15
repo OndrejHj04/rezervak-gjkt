@@ -58,7 +58,6 @@ export default function AddGroupsModal({
         setModal(false);
       });
   };
-  console.log(groups);
   return (
     <Paper sx={style} className="p-2">
       <Typography variant="h5" className="mb-2 text-center">

@@ -47,7 +47,6 @@ export default function AddGroupsModal({
   }, []);
 
   const onSubmit = (data: any) => {
-    console.log(data.groups, userId);
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/add-groups`, {
       method: "POST",
       body: JSON.stringify({

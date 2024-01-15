@@ -141,12 +141,14 @@ export default async function middleware(req: NextRequest) {
 
     if (
       !isMember &&
+      !isLeader &&
       !rolesConfig.reservations.modules.reservationsDetail.visit.includes(
         role.id
       )
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
+
     if (
       req.nextUrl.search.includes("mode=edit") &&
       ((!isLeader &&

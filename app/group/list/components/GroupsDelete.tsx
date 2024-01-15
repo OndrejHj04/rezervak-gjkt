@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import MakeGroupRefetch from "../refetch";
 
 export default function GroupsDelete() {
-  const { selectedGroups, setSelectedGroups } = store()
+  const { selectedGroups, setSelectedGroups } = store();
 
   const handleRemove = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove`, {
@@ -16,7 +16,7 @@ export default function GroupsDelete() {
     })
       .then((res) => res.json())
       .then((res) => {
-        if (res.success) toast.success("Skupiny byly úspěšně odstraněny");
+        if (res.success) toast.success("Rezervace byly úspěšně odstraněny");
         else toast.error("Něco se pokazilo");
         MakeGroupRefetch();
         setSelectedGroups([]);

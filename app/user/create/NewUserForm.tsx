@@ -2,6 +2,7 @@
 import MakeUserListRefetch from "@/app/user/list/refetch";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Autocomplete, Paper, TextField, Typography } from "@mui/material";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -25,8 +26,14 @@ export default function NewUserForm({ roles }: { roles: any }) {
       .then((res) => {
         if (res.success) {
           toast.success("Uživatel úspěšně vytvořen");
-          MakeUserListRefetch("/user/list");
-        } else setLoading(false);
+          MakeUserListRefetch("/user/list", 1);
+        } else if (res.duplicate) {
+          toast.error("Uživatel s tímto emailem už existuje");
+        } else {
+          toast.error("Něco se nepovedlo");
+        }
+
+        setLoading(false);
       });
   };
 

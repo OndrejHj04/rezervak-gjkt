@@ -15,13 +15,13 @@ export async function POST(req: Request) {
         values: [...users],
       }),
       query({
-        query: `DELTE FORM users_groups WHERE userId IN(${users.map(
+        query: `DELETE FROM users_groups WHERE userId IN(${users.map(
           () => "?"
         )})`,
         values: [...users],
       }),
       query({
-        query: `DELETE FROM users_groups WHERE userId IN(${users.map(
+        query: `DELETE FROM users_reservations WHERE userId IN(${users.map(
           () => "?"
         )})`,
         values: [...users],

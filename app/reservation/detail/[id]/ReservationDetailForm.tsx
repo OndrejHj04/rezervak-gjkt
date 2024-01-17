@@ -23,6 +23,7 @@ import {
   ListItemText,
   MenuItem,
   Modal,
+  OutlinedInput,
   Paper,
   Radio,
   RadioGroup,
@@ -206,7 +207,7 @@ export default function ReservationDetailForm({
       )}
 
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-        <Paper className="p-4 flex flex-col gap-4">
+        <Paper className="p-4 flex flex-col gap-3">
           <div className="flex">
             <div className="flex flex-col gap-1">
               <Typography variant="h5">Vedoucí rezervace</Typography>
@@ -235,15 +236,21 @@ export default function ReservationDetailForm({
                 />
               </div>
             </div>
-            <div>
+
+            <div className="flex flex-col gap-3 mx-3">
               <TextField
                 label="Název"
                 {...register("name")}
                 defaultValue={reservation.name}
               />
+              <TextField
+                {...register("purpouse")}
+                label="Účel rezervace"
+                defaultValue={reservation.purpouse}
+              />
             </div>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <div className="flex flex-col gap-3 mx-3">
+              <div className="flex flex-col gap-3 mr-3">
                 <DatePicker
                   value={dayjs(reservation.from_date)}
                   disabled
@@ -259,36 +266,11 @@ export default function ReservationDetailForm({
                 />
               </div>
             </LocalizationProvider>
-            <div className="flex flex-col gap-3 mr-3">
-              <TextField
-                {...register("purpouse")}
-                label="Účel rezervace"
-                defaultValue={reservation.purpouse}
-              />
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
-                  Počet pokojů
-                </InputLabel>
-                <Select
-                  id="demo-simple-select"
-                  labelId="demo-simple-select-label"
-                  defaultValue={reservation.rooms}
-                  label="Počet pokojů"
-                  {...register("rooms")}
-                >
-                  {[...Array(5)].map((_, i) => (
-                    <MenuItem key={i} value={i + 1}>
-                      {i + 1} Pokojů
-                    </MenuItem>
-                  ))}
-                  <MenuItem value={6}>Celá chata</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
             <TextField
               multiline
               label="Pokyny pro účastníky"
               minRows={4}
+              className="h-full mr-3"
               defaultValue={reservation.instructions}
               maxRows={4}
               {...register("instructions")}
@@ -305,6 +287,15 @@ export default function ReservationDetailForm({
                 Uložit
               </Button>
             </div>
+          </div>
+          <div className="flex gap-2">
+            <Typography variant="h6">Pokoje:</Typography>
+            {reservation.rooms.map((room: any) => (
+              <Chip
+                key={room.id}
+                label={`Pokoj č. ${room.id}, ${room.people} lůžkový`}
+              />
+            ))}
           </div>
           <div className="flex gap-2">
             <div className="flex flex-col">

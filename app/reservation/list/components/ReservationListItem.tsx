@@ -17,6 +17,7 @@ import { Icon } from "@mui/material";
 import Link from "next/link";
 import TableListCheckbox from "@/ui-components/TableListCheckbox";
 import { rolesConfig } from "@/rolesConfig";
+import BedroomChildIcon from "@mui/icons-material/BedroomChild";
 
 export default function ReservationListItem({
   reservation,
@@ -59,6 +60,22 @@ export default function ReservationListItem({
               {reservation.leader.first_name} {reservation.leader.last_name}
             </Typography>
           </div>
+        </TableCell>
+        <TableCell>
+          {!!reservation.rooms.length && (
+            <Tooltip
+              title={reservation.rooms.map((room: any) => (
+                <Chip
+                  key={room.id}
+                  label={`Pokoj č. ${room.id}, ${room.people} lůžkový`}
+                />
+              ))}
+            >
+              <Badge badgeContent={reservation.rooms.length} color="primary">
+                <BedroomChildIcon color="primary" />
+              </Badge>
+            </Tooltip>
+          )}
         </TableCell>
         <TableCell>
           {!!reservation.groups.length && (

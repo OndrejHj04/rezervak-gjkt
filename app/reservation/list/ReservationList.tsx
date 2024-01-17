@@ -126,6 +126,9 @@ export default async function ReservationList({
                 <Chip label="Vedoucí" />
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>
+                <Chip label="Pokoje" />
+              </TableCell>
+              <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Skupiny" />
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>

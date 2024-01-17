@@ -63,7 +63,16 @@ export default function ReservationDetailDisplay({
           />
         </div>
         <Typography>Účel rezervace: {reservation.purpouse}</Typography>
-        <Typography>Počet pokojů: {reservation.rooms}</Typography>
+        <Typography>Pokoje: </Typography>
+        <ul className="ml-6">
+          {reservation.rooms.map((room: any) => (
+            <li key={room.id}>
+              <Typography>
+                Pokoj č. {room.id}, {room.people} lůžkový
+              </Typography>
+            </li>
+          ))}
+        </ul>
         <Typography>
           Pokyny pro účastníky: {reservation.instructions}
         </Typography>

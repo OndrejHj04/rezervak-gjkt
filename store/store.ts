@@ -27,7 +27,7 @@ export const store = create<stateInterface>((set) => ({
     to_date: "",
     groups: [],
     members: [],
-    rooms: 0,
+    rooms: [],
     leader: 0,
     purpouse: "",
     instructions: "",

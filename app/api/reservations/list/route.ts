@@ -20,10 +20,15 @@ export async function GET(req: Request) {
           JSON_OBJECT('id', status.id, 'name', status.name, 'color', 'display_name', status.display_name, status.color, 'icon', status.icon) as status,
           JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader, 
           GROUP_CONCAT(DISTINCT groupId) as groups,
-          GROUP_CONCAT(DISTINCT userId) as users
+          GROUP_CONCAT(DISTINCT userId) as users,
+          GROUP_CONCAT(
+            DISTINCT JSON_OBJECT('id', rooms.id, 'people', rooms.people)
+          ) as rooms
           FROM reservations
           INNER JOIN status ON status.id = reservations.status
           INNER JOIN users ON users.id = reservations.leader
+          INNER JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
+          INNER JOIN rooms ON rooms.id = reservations_rooms.roomId
           LEFT JOIN reservations_groups ON reservations_groups.reservationId = reservations.id
           LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id
           WHERE 1=1
@@ -57,6 +62,7 @@ export async function GET(req: Request) {
       status: JSON.parse(reservation.status),
       groups: reservation.groups ? reservation.groups.split(",") : [],
       users: reservation.users ? reservation.users.split(",") : [],
+      rooms: JSON.parse(`[${reservations[0].rooms}]`),
     }));
 
     return NextResponse.json({

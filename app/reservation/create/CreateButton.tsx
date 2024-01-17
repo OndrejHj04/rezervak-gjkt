@@ -15,7 +15,7 @@ export default function CreateButton() {
       to_date: "",
       groups: [],
       members: [],
-      rooms: 0,
+      rooms: [],
       leader: 0,
       purpouse: "",
       instructions: "",

@@ -24,7 +24,7 @@ export default function ReservationListItem({
   userRole,
   userId,
 }: {
-  reservation: Reservation;
+  reservation: any;
   userRole: any;
   userId: any;
 }) {
@@ -129,6 +129,11 @@ export default function ReservationListItem({
               </Icon>
             </IconButton>
           </Tooltip>
+        </TableCell>
+        <TableCell>
+          <Typography>
+            {dayjs(reservation.creation_date).format("DD. MM. YYYY")}
+          </Typography>
         </TableCell>
         {(rolesConfig.reservations.modules.reservationsDetail.visit.includes(
           userRole

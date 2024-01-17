@@ -17,7 +17,7 @@ export async function GET(req: Request) {
       query({
         query: `
           SELECT reservations.id, from_date, to_date, reservations.name, purpouse, leader, status, creation_date,
-          JSON_OBJECT('id', status.id, 'name', status.name, 'color', 'display_name', status.display_name, status.color, 'icon', status.icon) as status,
+          JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status,
           JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader, 
           GROUP_CONCAT(
               DISTINCT groups.name
@@ -29,8 +29,8 @@ export async function GET(req: Request) {
           FROM reservations
           INNER JOIN status ON status.id = reservations.status
           INNER JOIN users ON users.id = reservations.leader
-          INNER JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
-          INNER JOIN rooms ON rooms.id = reservations_rooms.roomId
+          LEFT JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
+          LEFT JOIN rooms ON rooms.id = reservations_rooms.roomId
           LEFT JOIN reservations_groups ON reservations_groups.reservationId = reservations.id
           LEFT JOIN groups ON reservations_groups.groupId = groups.id
           LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id
@@ -65,7 +65,7 @@ export async function GET(req: Request) {
       status: JSON.parse(reservation.status),
       groups: reservation.groups ? reservation.groups.split(",") : [],
       users: reservation.users ? reservation.users.split(",") : [],
-      rooms: JSON.parse(`[${reservations[0].rooms}]`),
+      rooms: JSON.parse(`[${reservation.rooms}]`),
     }));
 
     return NextResponse.json({

@@ -1,5 +1,4 @@
 import { query } from "@/lib/db";
-import NewReservationMember from "@/templates/reservationUserEdit/template";
 import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 
@@ -16,14 +15,16 @@ export async function POST(req: Request) {
       instructions,
       name,
     } = await req.json();
-    console.log(rooms);
+
     const reservation = (await query({
-      query: `INSERT INTO reservations (from_date, to_date, purpouse, leader, instructions, name, status)
+      query: `INSERT INTO reservations (from_date, to_date, purpouse, leader, instructions, name, status, creation_date)
       VALUES ("${dayjs(from_date).format("YYYY-MM-DD")}", "${dayjs(
         to_date
       ).format(
         "YYYY-MM-DD"
-      )}", "${purpouse}", "${leader}", "${instructions}", "${name}", 2)`,
+      )}", "${purpouse}", "${leader}", "${instructions}", "${name}", 2, "${dayjs(
+        new Date()
+      ).format("YYYY-MM-DD")}")`,
       values: [],
     })) as any;
 

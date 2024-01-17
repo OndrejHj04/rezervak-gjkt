@@ -20,6 +20,7 @@ import { rolesConfig } from "@/rolesConfig";
 import ExpiredReservations from "./components/ExpiredReservations";
 
 import ReservationTableSort from "./components/Sort";
+import dayjs from "dayjs";
 const getReservations = async (
   page: any,
   status: any,
@@ -133,6 +134,9 @@ export default async function ReservationList({
               </TableCell>
               <TableCell sx={{ padding: 1.5 }}>
                 <Chip label="Stav" />
+              </TableCell>
+              <TableCell sx={{ padding: 1.5 }}>
+                <Chip label="Datum vytvoření" />
               </TableCell>
               <TableCell />
             </TableRow>

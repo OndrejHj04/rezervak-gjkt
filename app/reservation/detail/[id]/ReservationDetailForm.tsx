@@ -221,7 +221,7 @@ export default function ReservationDetailForm({
                   <Typography>{reservation.leader.email}</Typography>
                 </div>
               </div>
-              <div className="flex ">
+              <div className="flex">
                 <Typography variant="h6">Status:</Typography>
                 <Chip
                   label={reservation.status.display_name}
@@ -296,6 +296,10 @@ export default function ReservationDetailForm({
                 label={`Pokoj č. ${room.id}, ${room.people} lůžkový`}
               />
             ))}
+            <Typography variant="h6">
+              Datum vytvoření:{" "}
+              {dayjs(reservation.creation_date).format("DD. MM. YYYY")}
+            </Typography>
           </div>
           <div className="flex gap-2">
             <div className="flex flex-col">

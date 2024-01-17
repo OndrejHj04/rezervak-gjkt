@@ -51,6 +51,10 @@ export default function ReservationDetailDisplay({
         <Typography variant="h6">
           Konec rezervace: {dayjs(reservation.to_date).format("DD.MM.YYYY")}
         </Typography>
+        <Typography variant="h6">
+          Datum vytvoření:{" "}
+          {dayjs(reservation.creation_date).format("DD.MM.YYYY")}
+        </Typography>
         <div className="flex gap-2">
           <Typography variant="h6">Status:</Typography>
           <Chip
@@ -64,15 +68,11 @@ export default function ReservationDetailDisplay({
         </div>
         <Typography>Účel rezervace: {reservation.purpouse}</Typography>
         <Typography>Pokoje: </Typography>
-        <ul className="ml-6">
+        <div className="flex gap-2 flex-col">
           {reservation.rooms.map((room: any) => (
-            <li key={room.id}>
-              <Typography>
-                Pokoj č. {room.id}, {room.people} lůžkový
-              </Typography>
-            </li>
+            <Chip key={room.id} label={`Pokoj č. ${room.id}, ${room.people}`} />
           ))}
-        </ul>
+        </div>
         <Typography>
           Pokyny pro účastníky: {reservation.instructions}
         </Typography>

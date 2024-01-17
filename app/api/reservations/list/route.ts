@@ -19,7 +19,9 @@ export async function GET(req: Request) {
           SELECT reservations.id, from_date, to_date, reservations.name, purpouse, leader, status, creation_date,
           JSON_OBJECT('id', status.id, 'name', status.name, 'color', 'display_name', status.display_name, status.color, 'icon', status.icon) as status,
           JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader, 
-          GROUP_CONCAT(DISTINCT groupId) as groups,
+          GROUP_CONCAT(
+              DISTINCT groups.name
+            ) as groups,
           GROUP_CONCAT(DISTINCT userId) as users,
           GROUP_CONCAT(
             DISTINCT JSON_OBJECT('id', rooms.id, 'people', rooms.people)
@@ -30,6 +32,7 @@ export async function GET(req: Request) {
           INNER JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
           INNER JOIN rooms ON rooms.id = reservations_rooms.roomId
           LEFT JOIN reservations_groups ON reservations_groups.reservationId = reservations.id
+          LEFT JOIN groups ON reservations_groups.groupId = groups.id
           LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id
           WHERE 1=1
           ${status ? `AND status.id = ${status}` : ""}

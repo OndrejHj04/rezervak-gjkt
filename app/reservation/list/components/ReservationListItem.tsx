@@ -72,7 +72,19 @@ export default function ReservationListItem({
               ))}
             >
               <Badge badgeContent={reservation.rooms.length} color="primary">
-                <BedroomChildIcon color="primary" />
+                <Badge
+                  badgeContent={reservation.rooms.reduce(
+                    (a: any, b: any) => a + b.people,
+                    0
+                  )}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  color="error"
+                >
+                  <BedroomChildIcon color="primary" />
+                </Badge>
               </Badge>
             </Tooltip>
           )}
@@ -81,7 +93,7 @@ export default function ReservationListItem({
           {!!reservation.groups.length && (
             <Tooltip
               title={reservation.groups.map((group: any) => (
-                <Chip key={group.id} label={group.name} />
+                <Chip key={group} label={group} />
               ))}
             >
               <Badge badgeContent={reservation.groups.length} color="primary">

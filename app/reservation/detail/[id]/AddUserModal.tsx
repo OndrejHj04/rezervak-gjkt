@@ -40,6 +40,15 @@ export default function AddUserModal({
     watch,
   } = useForm();
 
+  const userReduction = reservation.rooms.reduce(
+    (a: any, b: any) => a + b.people,
+    0
+  );
+  const usersLogic =
+    userReduction >= reservation.users.count + (watch("users")?.length || 0);
+  const valid = isValid && usersLogic;
+  console.log();
+
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)
       .then((res) => res.json())
@@ -113,10 +122,14 @@ export default function AddUserModal({
           variant="contained"
           className="mt-2"
           type="submit"
-          disabled={!isValid}
+          disabled={!valid}
         >
           Uložit
         </Button>
+        <Typography variant="caption" className="text-center">
+          můžete přidat maximálně {userReduction - reservation.users.count}{" "}
+          uživatelů
+        </Typography>
       </form>
     </Paper>
   );

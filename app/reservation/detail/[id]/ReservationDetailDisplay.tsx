@@ -70,7 +70,11 @@ export default function ReservationDetailDisplay({
         <Typography>Pokoje: </Typography>
         <div className="flex gap-2 flex-col">
           {reservation.rooms.map((room: any) => (
-            <Chip key={room.id} label={`Pokoj č. ${room.id}, ${room.people}`} />
+            <Chip
+              className="w-min"
+              key={room.id}
+              label={`Pokoj č. ${room.id}, ${room.people} lůžkový`}
+            />
           ))}
         </div>
         <Typography>

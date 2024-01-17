@@ -181,6 +181,10 @@ export default function ReservationDetailForm({
       });
   };
 
+  const maxMembers = reservation.rooms.reduce(
+    (a: any, b: any) => a + b.people,
+    0
+  );
   return (
     <>
       {usersModal && (
@@ -365,8 +369,10 @@ export default function ReservationDetailForm({
                   variant="contained"
                   onClick={() => setUsersModal(true)}
                   endIcon={<AddToPhotosIcon />}
+                  disabled={maxMembers <= reservation.users.count}
                 >
-                  Přidat uživatele
+                  Přidat uživatele (max.
+                  {maxMembers})
                 </Button>
               </div>
             </div>

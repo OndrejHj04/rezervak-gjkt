@@ -28,7 +28,7 @@ export default function ReservationMembersRender({
   groups,
   users,
 }: {
-  groups: Group[];
+  groups: any;
   users: User[];
 }) {
   const { setCreateReservation, createReservation } = store();
@@ -36,7 +36,7 @@ export default function ReservationMembersRender({
   const isValid = createReservation.members.length;
   const [groupsIncluded, setGroupsIncluded] = useState<number[]>([]);
   const [members, setMembers] = useState<number[]>([]);
-  const [groupsFilter, setGroupsFilter] = useState<Group[]>(groups);
+  const [groupsFilter, setGroupsFilter] = useState(groups);
   const [groupsSearch, setGroupsSearch] = useState("");
 
   const [usersFilter, setUsersFilter] = useState<User[]>(users);
@@ -45,7 +45,12 @@ export default function ReservationMembersRender({
   const makeReset = () => {
     setMembers([]);
     setGroupsIncluded([]);
-    setCreateReservation({ ...createReservation, members: [], groups: [] });
+    setCreateReservation({
+      ...createReservation,
+      members: [],
+      groups: [],
+      rooms: [],
+    });
   };
 
   useEffect(() => {
@@ -65,7 +70,7 @@ export default function ReservationMembersRender({
       setGroupsFilter(groups);
     } else {
       setGroupsFilter(
-        groups.filter((group) =>
+        groups.filter((group: any) =>
           group.name.toLowerCase().includes(groupsSearch.toLowerCase())
         )
       );
@@ -77,6 +82,7 @@ export default function ReservationMembersRender({
       ...createReservation,
       members,
       groups: groupsIncluded,
+      rooms: [],
     });
     setExpanded(false);
   };
@@ -127,7 +133,7 @@ export default function ReservationMembersRender({
         >
           <div style={{ height: 250 }}>
             <PerfectScrollbar>
-              {groupsFilter?.map((group) => {
+              {groupsFilter?.map((group: any) => {
                 const isChecked = groupsIncluded.includes(group.id);
                 const handleClick = () => {
                   if (isChecked) {
@@ -138,7 +144,9 @@ export default function ReservationMembersRender({
                   } else {
                     setGroupsIncluded((c) => [...c, group.id]);
                     setMembers((c) => [
-                      ...(new Set(c.concat(group.users as any)) as any),
+                      ...(new Set(
+                        c.concat(group.users.map(({ id }: { id: any }) => id))
+                      ) as any),
                     ]);
                   }
                 };

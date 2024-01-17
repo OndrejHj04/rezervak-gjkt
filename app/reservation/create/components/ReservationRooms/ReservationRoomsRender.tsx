@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { store } from "@/store/store";
 
 const roomsPlan = [
@@ -38,12 +38,19 @@ export default function ReservationRoomsRender() {
   const { createReservation, setCreateReservation } = store();
   const [expanded, setExpanded] = useState(false);
   const [state, setState] = useState(defaultState);
-  const isValid = createReservation.rooms.length;
 
   const calculateBeds = roomsPlan.reduce(
     (a: any, b: any) => (state[b.name as never] ? a + b.people : a + 0),
     0
   );
+
+  const isValid = createReservation.rooms.length;
+  const formValidation =
+    calculateBeds && calculateBeds >= createReservation.members.length;
+
+  useEffect(() => {
+    setState(defaultState);
+  }, [createReservation.members]);
 
   const handleSubmit = () => {
     setCreateReservation({
@@ -82,7 +89,11 @@ export default function ReservationRoomsRender() {
         </div>
       </AccordionSummary>
       <AccordionDetails className="flex gap-5">
-        <FormControl component="fieldset" variant="standard">
+        <FormControl
+          component="fieldset"
+          variant="standard"
+          disabled={!createReservation.members.length}
+        >
           <FormGroup>
             {roomsPlan.map((check: any) => (
               <FormControlLabel
@@ -98,13 +109,35 @@ export default function ReservationRoomsRender() {
               />
             ))}
           </FormGroup>
-          <FormHelperText>Vybráno {calculateBeds} lůžek</FormHelperText>
+          {createReservation.members.length ? (
+            <>
+              <Typography sx={{ color: "#66bb6a" }} variant="caption">
+                {createReservation.members.length} uživatelů vybráno do
+                rezervace
+              </Typography>
+              {formValidation ? (
+                <Typography variant="caption" sx={{ color: "#66bb6a" }}>
+                  vybráno {calculateBeds} lůžek
+                </Typography>
+              ) : (
+                <Typography variant="caption" color="error">
+                  vybráno {calculateBeds} lůžek
+                </Typography>
+              )}
+            </>
+          ) : (
+            <>
+              <Typography color="error" variant="caption">
+                Žádní uživatelé nebyli přiřazeni do rezervace
+              </Typography>
+            </>
+          )}
         </FormControl>
         <div className="flex flex-col gap-2">
           <Button
             variant="contained"
             onClick={handleSubmit}
-            disabled={!Boolean(calculateBeds)}
+            disabled={!formValidation}
           >
             Uložit
           </Button>
@@ -118,7 +151,7 @@ export default function ReservationRoomsRender() {
                 rooms: [],
               });
             }}
-            disabled={!Boolean(calculateBeds)}
+            disabled={!formValidation}
           >
             Smazat
           </Button>

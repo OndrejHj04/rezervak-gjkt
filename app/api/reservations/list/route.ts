@@ -32,7 +32,7 @@ export async function GET(req: Request) {
           LEFT JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
           LEFT JOIN rooms ON rooms.id = reservations_rooms.roomId
           LEFT JOIN reservations_groups ON reservations_groups.reservationId = reservations.id
-          LEFT JOIN groups ON reservations_groups.groupId = groups.id
+          LEFT JOIN groups ON reservations_groups.groupId = groups.id 
           LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id
           WHERE 1=1
           ${status ? `AND status.id = ${status}` : ""}
@@ -65,7 +65,9 @@ export async function GET(req: Request) {
       status: JSON.parse(reservation.status),
       groups: reservation.groups ? reservation.groups.split(",") : [],
       users: reservation.users ? reservation.users.split(",") : [],
-      rooms: JSON.parse(`[${reservation.rooms}]`),
+      rooms: JSON.parse(`[${reservation.rooms}]`).filter(
+        ({ id }: { id: any }) => id
+      ),
     }));
 
     return NextResponse.json({

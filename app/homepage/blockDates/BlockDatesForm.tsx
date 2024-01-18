@@ -66,7 +66,9 @@ export default function BlockDatesForm({
       <Tooltip
         title={
           <Box color="primary">
-            <SingleReservation reservations={isReservation[0]} />
+            {isReservation.map((res: any) => (
+              <SingleReservation reservations={res} key={res.id} />
+            ))}
           </Box>
         }
         disableHoverListener={!isReservation.length}

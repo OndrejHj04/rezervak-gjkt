@@ -6,7 +6,7 @@ import CottageIcon from "@mui/icons-material/Cottage";
 const getReservations = async (id: number) => {
   try {
     const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?not_status=4`
     );
     const { data } = await req.json();
     return data;
@@ -26,7 +26,6 @@ export default async function HomepageCalendar() {
         <Typography variant="h5">Všechny rezervace</Typography>
         <CottageIcon color="primary" />
       </div>
-      <Typography>filter stavů</Typography>
       <RenderCalendar reservations={reservations} />
     </Paper>
   );

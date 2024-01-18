@@ -18,6 +18,7 @@ const renderDay = (props: any) => {
   const isReservation = reservations?.filter((r: any) =>
     dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
   );
+  const isBlocation = isReservation.filter((r: any) => r.status.id === 5);
   const thisDayRooms = isReservation.reduce(
     (a: any, b: any) => a + b.rooms.length,
     0
@@ -49,6 +50,7 @@ const renderDay = (props: any) => {
         <PickersDay
           {...other}
           day={day}
+          disabled={isBlocation.length}
           outsideCurrentMonth={outsideCurrentMonth}
         />
       </Badge>

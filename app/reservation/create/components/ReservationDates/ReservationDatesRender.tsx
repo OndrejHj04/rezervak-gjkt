@@ -38,7 +38,7 @@ const renderDay = (props: any) => {
   const isReservation = reservations?.filter((r: any) =>
     dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
   );
-
+  const isBlocked = isReservation.filter((r: any) => r.status.id === 5);
   const thisDayRooms = isReservation.reduce(
     (a: any, b: any) => a + b.rooms.length,
     0
@@ -52,11 +52,20 @@ const renderDay = (props: any) => {
         isReservation.length && !outsideCurrentMonth ? thisDayRooms : 0
       }
     >
-      <PickersDay
-        {...other}
-        day={day}
-        outsideCurrentMonth={outsideCurrentMonth}
-      />
+      <Badge
+        color="error"
+        sx={{ "& .MuiBadge-badge": { transform: "translate(0px, -5px)" } }}
+        variant="dot"
+        invisible={!isBlocked.length}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <PickersDay
+          {...other}
+          day={day}
+          disabled={isBlocked.length}
+          outsideCurrentMonth={outsideCurrentMonth}
+        />
+      </Badge>
     </Badge>
   );
 };

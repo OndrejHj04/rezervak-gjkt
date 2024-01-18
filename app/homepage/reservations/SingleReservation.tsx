@@ -19,12 +19,13 @@ export default function SingleReservation({
   display?: any;
   link?: any;
 }) {
+  console.log(reservations.status)
   return (
     <Link
       href={`/reservation/detail/${reservations.id}`}
       className="no-underline text-inherit"
       style={{
-        pointerEvents: link ? "auto" : "none",
+        pointerEvents: link === "no-link" ? "none" : "auto",
       }}
     >
       <MenuItem className="flex justify-between gap-2">

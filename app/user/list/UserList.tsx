@@ -74,7 +74,7 @@ export default async function UserList({
         ) && <UserRolesSelect roles={roles} />}
         {rolesConfig.users.modules.userTable.config.topbar.export.includes(
           userRole
-        ) && <ExportButton prop="users" />}
+        ) && <ExportButton prop="users" translate={"uživatelé"} />}
       </div>
       <Paper className="w-full p-2">
         <Table>

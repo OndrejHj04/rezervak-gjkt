@@ -1,14 +1,11 @@
-export default function handleExport(blob: any, fileName: string) {
-  const url = URL.createObjectURL(blob);
+// thanks github copilot
+export default function handleExport(blob: any, fileName: any) {
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = fileName;
+  link.style.display = "none";
 
-  const a = document.createElement("a");
-  a.style.display = "none";
-  a.href = url;
-  a.download = `${fileName}.csv`;
-  document.body.appendChild(a);
-  a.click();
-
-  document.body.removeChild(a);
-
-  return URL.revokeObjectURL(url);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }

@@ -52,7 +52,7 @@ export default async function GroupList({
         ) && <SearchBar label={"skupiny"} />}
         {rolesConfig.groups.modules.groupsTable.config.topbar.export.includes(
           userRole
-        ) && <ExportButton prop={"groups"} />}
+        ) && <ExportButton prop={"group"} translate={"skupiny"} />}
       </div>
       <Paper className="w-full p-2">
         <Table>

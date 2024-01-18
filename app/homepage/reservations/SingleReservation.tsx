@@ -19,7 +19,6 @@ export default function SingleReservation({
   display?: any;
   link?: any;
 }) {
-  console.log(reservations.status)
   return (
     <Link
       href={`/reservation/detail/${reservations.id}`}

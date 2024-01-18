@@ -102,7 +102,7 @@ export default async function ReservationList({
         )}
         {rolesConfig.reservations.modules.reservationsTable.config.topbar.export.includes(
           userRole
-        ) && <ExportButton prop={"reservations"} />}
+        ) && <ExportButton prop={"reservations"} translate={"rezervace"}/>}
       </div>
       <Paper>
         <Table>

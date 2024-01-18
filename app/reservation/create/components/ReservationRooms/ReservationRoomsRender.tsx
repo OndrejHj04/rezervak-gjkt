@@ -48,10 +48,6 @@ export default function ReservationRoomsRender() {
   const formValidation =
     calculateBeds && calculateBeds >= createReservation.members.length;
 
-  useEffect(() => {
-    setState(defaultState);
-  }, [createReservation.members]);
-
   const handleSubmit = () => {
     setCreateReservation({
       ...createReservation,
@@ -89,11 +85,7 @@ export default function ReservationRoomsRender() {
         </div>
       </AccordionSummary>
       <AccordionDetails className="flex gap-5">
-        <FormControl
-          component="fieldset"
-          variant="standard"
-          disabled={!createReservation.members.length}
-        >
+        <FormControl component="fieldset" variant="standard">
           <FormGroup>
             {roomsPlan.map((check: any) => (
               <FormControlLabel
@@ -109,35 +101,22 @@ export default function ReservationRoomsRender() {
               />
             ))}
           </FormGroup>
-          {createReservation.members.length ? (
-            <>
-              <Typography sx={{ color: "#66bb6a" }} variant="caption">
-                {createReservation.members.length} uživatelů vybráno do
-                rezervace
-              </Typography>
-              {formValidation ? (
-                <Typography variant="caption" sx={{ color: "#66bb6a" }}>
-                  vybráno {calculateBeds} lůžek
-                </Typography>
-              ) : (
-                <Typography variant="caption" color="error">
-                  vybráno {calculateBeds} lůžek
-                </Typography>
-              )}
-            </>
+
+          {formValidation ? (
+            <Typography variant="caption" sx={{ color: "#66bb6a" }}>
+              vybráno {calculateBeds} lůžek
+            </Typography>
           ) : (
-            <>
-              <Typography color="error" variant="caption">
-                Žádní uživatelé nebyli přiřazeni do rezervace
-              </Typography>
-            </>
+            <Typography variant="caption" color="error">
+              vybráno {calculateBeds} lůžek
+            </Typography>
           )}
         </FormControl>
         <div className="flex flex-col gap-2">
           <Button
             variant="contained"
             onClick={handleSubmit}
-            disabled={!formValidation}
+            disabled={!calculateBeds}
           >
             Uložit
           </Button>
@@ -151,7 +130,7 @@ export default function ReservationRoomsRender() {
                 rooms: [],
               });
             }}
-            disabled={!formValidation}
+            disabled={!isValid}
           >
             Smazat
           </Button>

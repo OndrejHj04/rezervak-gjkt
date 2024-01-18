@@ -15,8 +15,8 @@ export async function POST(req: Request) {
         values: [],
       }),
       query({
-        query: `INSERT INTO reservations (from_date, to_date, groups, users, name, status, leader, purpouse, instructions) 
-        VALUES ("${fromDate}", "${toDate}", "[]", "[]", "Blokace", 5, ${userId}, "blokace", "")`,
+        query: `INSERT INTO reservations (from_date, to_date, name, status, leader, purpouse, instructions) 
+        VALUES ("${fromDate}", "${toDate}", "Blokace", 5, ${userId}, "blokace", "")`,
         values: [],
       }),
     ]);

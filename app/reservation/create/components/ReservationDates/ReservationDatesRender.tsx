@@ -44,7 +44,6 @@ const renderDay = (props: any) => {
     0
   );
   const isFull = thisDayRooms >= 6;
-  console.log(thisDayRooms);
   return (
     <Badge
       sx={{ "& .MuiBadge-badge": { transform: "translate(5px, -5px)" } }}
@@ -132,6 +131,15 @@ export default function ReservationDatesRender({
     );
   };
 
+  const res: any =
+    from_date &&
+    to_date &&
+    (reservations.filter(
+      (res: any) =>
+        dayjs(res.from_date).isBetween(from_date, to_date, "day", "[]") ||
+        dayjs(res.to_date).isBetween(from_date, to_date, "day", "[]")
+    ) as any);
+
   return (
     <form onSubmit={handleSubmit(onSubmit as any)}>
       <Accordion expanded={expanded}>
@@ -206,32 +214,22 @@ export default function ReservationDatesRender({
                 <Typography>
                   Ve zvoleném termínu se nacházejí také tyto rezervace:
                 </Typography>
-                {from_date &&
-                  to_date &&
-                  reservations
-                    .filter(
-                      (res: any) =>
-                        dayjs(res.from_date).isBetween(
-                          from_date,
-                          to_date,
-                          "day",
-                          "[]"
-                        ) ||
-                        dayjs(res.to_date).isBetween(
-                          from_date,
-                          to_date,
-                          "day",
-                          "[]"
-                        )
-                    )
-                    .map((res: any) => (
-                      <SingleReservation
-                        display="long"
-                        link={false}
-                        key={res.id}
-                        reservations={res}
-                      />
-                    ))}
+                {res && res.length ? (
+                  res.map((res: any) => (
+                    <SingleReservation
+                      display="long"
+                      link={false}
+                      key={res.id}
+                      reservations={res}
+                    />
+                  ))
+                ) : (
+                  <>
+                    {from_date && to_date && (
+                      <Typography>žádné rezervace</Typography>
+                    )}
+                  </>
+                )}
               </div>
               <div className="flex flex-col gap-2">
                 <Button

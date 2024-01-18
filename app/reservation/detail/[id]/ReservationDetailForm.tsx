@@ -369,10 +369,8 @@ export default function ReservationDetailForm({
                   variant="contained"
                   onClick={() => setUsersModal(true)}
                   endIcon={<AddToPhotosIcon />}
-                  disabled={maxMembers <= reservation.users.count}
                 >
-                  Přidat uživatele (max.
-                  {maxMembers})
+                  Přidat uživatele
                 </Button>
               </div>
             </div>

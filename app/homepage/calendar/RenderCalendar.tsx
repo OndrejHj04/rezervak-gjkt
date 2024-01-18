@@ -24,7 +24,6 @@ const renderDay = (props: any) => {
   );
   const isFull = thisDayRooms >= 6;
 
-  console.log(other);
   return (
     <Tooltip
       title={

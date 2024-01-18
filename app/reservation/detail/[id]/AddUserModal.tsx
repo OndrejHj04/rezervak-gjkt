@@ -44,9 +44,6 @@ export default function AddUserModal({
     (a: any, b: any) => a + b.people,
     0
   );
-  const usersLogic =
-    userReduction >= reservation.users.count + (watch("users")?.length || 0);
-  const valid = isValid && usersLogic;
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)
@@ -117,18 +114,9 @@ export default function AddUserModal({
         ) : (
           <CircularProgress />
         )}
-        <Button
-          variant="contained"
-          className="mt-2"
-          type="submit"
-          disabled={!valid}
-        >
+        <Button variant="contained" className="mt-2" type="submit">
           Uložit
         </Button>
-        <Typography variant="caption" className="text-center">
-          můžete přidat maximálně {userReduction - reservation.users.count}{" "}
-          uživatelů
-        </Typography>
       </form>
     </Paper>
   );

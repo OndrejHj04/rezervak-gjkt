@@ -26,6 +26,7 @@ import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
 import { Controller, useForm } from "react-hook-form";
 import { store } from "@/store/store";
+import SingleReservation from "@/app/homepage/reservations/SingleReservation";
 
 dayjs.extend(isBetween as any);
 dayjs.extend(isSameOrAfter as any);
@@ -34,16 +35,23 @@ dayjs.extend(isSameOrBefore as any);
 const renderDay = (props: any) => {
   const { day, outsideCurrentMonth, reservations, ...other } = props;
 
-  const isReservation = reservations?.some((r: any) =>
+  const isReservation = reservations?.filter((r: any) =>
     dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
   );
 
+  const thisDayRooms = isReservation.reduce(
+    (a: any, b: any) => a + b.rooms.length,
+    0
+  );
+  const isFull = thisDayRooms >= 6;
+  console.log(thisDayRooms);
   return (
     <Badge
-      variant="dot"
-      sx={{ "& .MuiBadge-badge": { transform: "translate(-5px, 5px)" } }}
-      color="error"
-      invisible={outsideCurrentMonth || !isReservation}
+      sx={{ "& .MuiBadge-badge": { transform: "translate(5px, -5px)" } }}
+      color={isFull ? "error" : "success"}
+      badgeContent={
+        isReservation.length && !outsideCurrentMonth ? thisDayRooms : 0
+      }
     >
       <PickersDay
         {...other}
@@ -57,7 +65,7 @@ const renderDay = (props: any) => {
 export default function ReservationDatesRender({
   reservations,
 }: {
-  reservations: Reservation[];
+  reservations: any[];
 }) {
   const { createReservation, setCreateReservation } = store();
   const [expanded, setExpanded] = useState(false);
@@ -69,6 +77,7 @@ export default function ReservationDatesRender({
     defaultValues: { from_date: null, to_date: null },
   });
 
+  const { from_date, to_date } = watch();
   const onSubmit = ({
     from_date,
     to_date,
@@ -112,26 +121,14 @@ export default function ReservationDatesRender({
   const toDateDisabled = (date: any) => {
     return (
       dayjs().isAfter(date) ||
-      reservations?.some((r) =>
-        dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
-      ) ||
-      dayjs(date).isSameOrBefore(watch("from_date"), "day") ||
-      ((dayjs(date).isAfter(dayjs(watch("from_date"))) &&
-        dayjs(date).diff(dayjs(watch("from_date")), "day")) as number) >
-        afterReservation
+      dayjs(date).isSameOrBefore(watch("from_date"), "day")
     );
   };
 
   const afterDateDisabled = (date: any) => {
     return (
       dayjs().isAfter(date) ||
-      reservations?.some((r) =>
-        dayjs(date).isBetween(r.from_date, r.to_date, "day", "[]")
-      ) ||
-      dayjs(date).isSameOrAfter(watch("to_date"), "day") ||
-      ((dayjs(date).isBefore(dayjs(watch("to_date"))) &&
-        dayjs(watch("to_date")).diff(dayjs(date), "day")) as number) >
-        beforeReservation
+      dayjs(date).isSameOrAfter(watch("to_date"), "day")
     );
   };
 
@@ -205,6 +202,37 @@ export default function ReservationDatesRender({
                   />
                 )}
               />
+              <div>
+                <Typography>
+                  Ve zvoleném termínu se nacházejí také tyto rezervace:
+                </Typography>
+                {from_date &&
+                  to_date &&
+                  reservations
+                    .filter(
+                      (res: any) =>
+                        dayjs(res.from_date).isBetween(
+                          from_date,
+                          to_date,
+                          "day",
+                          "[]"
+                        ) ||
+                        dayjs(res.to_date).isBetween(
+                          from_date,
+                          to_date,
+                          "day",
+                          "[]"
+                        )
+                    )
+                    .map((res: any) => (
+                      <SingleReservation
+                        display="long"
+                        link={false}
+                        key={res.id}
+                        reservations={res}
+                      />
+                    ))}
+              </div>
               <div className="flex flex-col gap-2">
                 <Button
                   variant="contained"

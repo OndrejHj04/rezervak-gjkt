@@ -6,7 +6,7 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const id = Number(url.searchParams.get("id"));
 
-    const [reservations] = (await Promise.all([
+    const [reservations, count] = (await Promise.all([
       query({
         query: `SELECT reservations.id, from_date, to_date, status, reservations.name, leader, 
         JSON_OBJECT('id', status.id, 'name', status.name, 'color', 'display_name', status.display_name, status.color, 'icon', status.icon) as status,
@@ -21,7 +21,12 @@ export async function GET(req: Request) {
         INNER JOIN rooms ON reservations_rooms.roomId = rooms.id
         INNER JOIN users ON users.id = reservations.leader
         WHERE userId = ?
+        GROUP BY reservations.id
         `,
+        values: [id],
+      }),
+      query({
+        query: `SELECT COUNT(*) as total FROM users_reservations WHERE userId = ?`,
         values: [id],
       }),
     ])) as any;
@@ -30,14 +35,14 @@ export async function GET(req: Request) {
       ...reservation,
       status: JSON.parse(reservation.status),
       leader: JSON.parse(reservation.leader),
-      rooms: JSON.parse(`[${reservations[0].rooms}]`),
+      rooms: JSON.parse(`[${reservation.rooms}]`),
     }));
 
     return NextResponse.json({
       success: true,
       message: "Operation successful",
       data,
-      count: 5,
+      count: count[0].total,
     });
   } catch (e) {
     return NextResponse.json(

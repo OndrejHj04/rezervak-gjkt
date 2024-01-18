@@ -1,6 +1,6 @@
 "use client";
 import { Reservation } from "@/types";
-import { Badge, Box, Tooltip } from "@mui/material";
+import { Badge, Box, Tooltip, Typography } from "@mui/material";
 import {
   DateCalendar,
   LocalizationProvider,
@@ -18,21 +18,34 @@ const renderDay = (props: any) => {
   const isReservation = reservations?.filter((r: any) =>
     dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
   );
+  const thisDayRooms = isReservation.reduce(
+    (a: any, b: any) => a + b.rooms.length,
+    0
+  );
+  const isFull = thisDayRooms >= 6;
 
+  console.log(other);
   return (
     <Tooltip
       title={
         <Box color="primary">
-          <SingleReservation reservations={isReservation[0]} />
+          {isReservation.map((res: any) => (
+            <SingleReservation reservations={res} key={res.id} />
+          ))}
         </Box>
       }
       disableHoverListener={!isReservation.length}
     >
       <Badge
-        variant="dot"
-        sx={{ "& .MuiBadge-badge": { transform: "translate(-5px, 5px)" } }}
-        color="error"
-        invisible={outsideCurrentMonth || !isReservation.length}
+        sx={{
+          "& .MuiBadge-badge": {
+            transform: "translate(5px, -5px)",
+          },
+        }}
+        color={isFull ? "error" : "success"}
+        badgeContent={
+          isReservation.length && !outsideCurrentMonth ? thisDayRooms : 0
+        }
       >
         <PickersDay
           {...other}
@@ -50,21 +63,23 @@ export default function RenderCalendar({
   reservations: Reservation[];
 }) {
   return (
-    <LocalizationProvider
-      dateAdapter={AdapterDayjs}
-      adapterLocale={CzechLocale as any}
-      localeText={
-        csCZ.components.MuiLocalizationProvider.defaultProps.localeText
-      }
-    >
-      <DateCalendar
-        slots={{
-          day: renderDay,
-        }}
-        slotProps={{
-          day: { reservations: reservations } as any,
-        }}
-      />
-    </LocalizationProvider>
+    <>
+      <LocalizationProvider
+        dateAdapter={AdapterDayjs}
+        adapterLocale={CzechLocale as any}
+        localeText={
+          csCZ.components.MuiLocalizationProvider.defaultProps.localeText
+        }
+      >
+        <DateCalendar
+          slots={{
+            day: renderDay,
+          }}
+          slotProps={{
+            day: { reservations: reservations } as any,
+          }}
+        />
+      </LocalizationProvider>
+    </>
   );
 }

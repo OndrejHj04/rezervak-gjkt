@@ -50,7 +50,9 @@ export default async function DisplayReservations({
         <Typography variant="h5">Moje rezervace</Typography>
         <EventIcon color="primary" />
       </div>
-      {searchParams.mode === "list" && (
+      {searchParams.mode === "calendar" ? (
+        <RenderCalendar reservations={reservations.data} />
+      ) : (
         <MenuList>
           {reservations.data.length ? (
             reservations.data.map((reservation: any) => (
@@ -63,9 +65,6 @@ export default async function DisplayReservations({
             <Typography className="text-center">žádné rezervace</Typography>
           )}
         </MenuList>
-      )}
-      {searchParams.mode === "calendar" && (
-        <RenderCalendar reservations={reservations.data} />
       )}
       <div className="mt-auto flex items-center justify-between">
         <ReservationsSwitch />

@@ -26,6 +26,7 @@ export default async function HomepageCalendar() {
         <Typography variant="h5">Všechny rezervace</Typography>
         <CottageIcon color="primary" />
       </div>
+      <Typography>filter stavů</Typography>
       <RenderCalendar reservations={reservations} />
     </Paper>
   );

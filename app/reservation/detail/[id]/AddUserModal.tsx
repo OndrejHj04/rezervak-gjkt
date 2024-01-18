@@ -47,7 +47,6 @@ export default function AddUserModal({
   const usersLogic =
     userReduction >= reservation.users.count + (watch("users")?.length || 0);
   const valid = isValid && usersLogic;
-  console.log();
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)

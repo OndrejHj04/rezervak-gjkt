@@ -33,6 +33,11 @@ export default function UserListItem({
       <HotelIcon sx={{ color: "#4579ac", fontSize: 36 }} />
     </Box>
   );
+
+  const cells = rolesConfig.users.modules.userTable.columns[
+    userRole as never
+  ] as any;
+
   return (
     <Tooltip
       title={sleepingUser}
@@ -47,27 +52,31 @@ export default function UserListItem({
         <TableCell>
           <AvatarWrapper data={user} />
         </TableCell>
-        <TableCell>
-          {user.first_name} {user.last_name}
-        </TableCell>
-        <TableCell>{user.email}</TableCell>
-        <TableCell>
-          <Chip
-            label={
-              <Typography variant="subtitle2">{user.role.name}</Typography>
-            }
-          />
-        </TableCell>
-        <TableCell>
-          {user.birth_date && dayjs(user.birth_date).format("DD.MM.YYYY")}
-        </TableCell>
-        <TableCell>
-          {user.verified ? (
-            <CheckCircleIcon color="success" sx={{ width: 32, height: 32 }} />
-          ) : (
-            <CancelIcon color="error" sx={{ width: 32, height: 32 }} />
-          )}
-        </TableCell>
+        {cells.includes("name") && (
+          <TableCell>
+            {user.first_name} {user.last_name}
+          </TableCell>
+        )}
+        {cells.includes("email") && <TableCell>{user.email}</TableCell>}
+        {cells.includes("role") && (
+          <TableCell>
+            <Typography variant="subtitle2">{user.role.name}</Typography>
+          </TableCell>
+        )}
+        {cells.includes("birth_date") && (
+          <TableCell>
+            {user.birth_date && dayjs(user.birth_date).format("DD.MM.YYYY")}
+          </TableCell>
+        )}
+        {cells.includes("verified") && (
+          <TableCell>
+            {user.verified ? (
+              <CheckCircleIcon color="success" sx={{ width: 32, height: 32 }} />
+            ) : (
+              <CancelIcon color="error" sx={{ width: 32, height: 32 }} />
+            )}
+          </TableCell>
+        )}
         {rolesConfig.users.modules.userDetail.visit.includes(userRole) ||
         (userId === user.id &&
           rolesConfig.users.modules.userDetail.visitSelf.includes(userRole)) ? (

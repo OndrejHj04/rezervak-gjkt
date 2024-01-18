@@ -40,6 +40,14 @@ const getRoles = async () => {
 
   return data as any;
 };
+
+const columns = {
+  name: "Jméno",
+  email: "Email",
+  role: "Role",
+  birth_date: "Datum narození",
+  verified: "Ověřený účet",
+};
 export default async function UserList({
   searchParams,
   userRole,
@@ -82,21 +90,18 @@ export default async function UserList({
                 </>
               )}
               <TableCell></TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Jméno" />
-              </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Email" />
-              </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Role" />
-              </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Datum narození" />
-              </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Ověřený účet" />
-              </TableCell>
+              {(
+                rolesConfig.users.modules.userTable.columns[
+                  userRole as never
+                ] as any
+              ).map((item: any) => {
+                console.log();
+                return (
+                  <TableCell sx={{ padding: 1.5 }} key={columns[item as never]}>
+                    <Chip label={columns[item as never]} />
+                  </TableCell>
+                );
+              })}
               <TableCell />
             </TableRow>
           </TableHead>

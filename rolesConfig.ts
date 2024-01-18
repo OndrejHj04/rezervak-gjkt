@@ -81,6 +81,12 @@ export const rolesConfig = {
         },
         menu: [true, false],
         icon: "person_search_icon",
+        columns: {
+          1: ["name", "email", "role", "birth_date", "verified"],
+          2: ["name", "email", "role", "birth_date", "verified"],
+          3: ["name", "email", "role"],
+          4: [],
+        },
       },
       userDetail: {
         path: "/user/detail",

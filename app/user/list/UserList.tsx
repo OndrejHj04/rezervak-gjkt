@@ -94,14 +94,11 @@ export default async function UserList({
                 rolesConfig.users.modules.userTable.columns[
                   userRole as never
                 ] as any
-              ).map((item: any) => {
-                console.log();
-                return (
-                  <TableCell sx={{ padding: 1.5 }} key={columns[item as never]}>
-                    <Chip label={columns[item as never]} />
-                  </TableCell>
-                );
-              })}
+              ).map((item: any) => (
+                <TableCell sx={{ padding: 1.5 }} key={columns[item as never]}>
+                  <Chip label={columns[item as never]} />
+                </TableCell>
+              ))}
               <TableCell />
             </TableRow>
           </TableHead>

@@ -1,22 +1,21 @@
 import { query } from "@/lib/db";
-import ResetPasswordTemplate from "@/templates/resetPassword/template";
+import dayjs from "dayjs";
 import { NextResponse } from "next/server";
+import { sign } from "jsonwebtoken";
 
-export async function POST(req: any) {
+export async function POST(req: Request) {
   try {
-    const { email } = await req.json();
+    const { password, id } = await req.json();
 
-    const checkAccount = (await query({
-      query: `SELECT COUNT(*) FROM users WHERE email = "${email}"`,
+    const users = (await query({
+      query: `UPDATE users SET password = MD5(?) WHERE id = ?`,
+      values: [password, id],
     })) as any;
-
-    if (!checkAccount.length) {
-      return NextResponse.json({ success: false, message: "user not found" });
-    }
 
     return NextResponse.json({
       success: true,
       message: "Operation successful",
+      email: true,
       data: [],
     });
   } catch (e) {

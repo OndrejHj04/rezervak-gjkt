@@ -15,7 +15,7 @@ export default async function middleware(req: NextRequest) {
 
   if (
     (req.nextUrl.pathname.startsWith("/login") ||
-      req.nextUrl.pathname.startsWith("/password")) &&
+      req.nextUrl.pathname.startsWith("/password-reset")) &&
     role
   ) {
     return NextResponse.redirect(new URL("/", req.url));

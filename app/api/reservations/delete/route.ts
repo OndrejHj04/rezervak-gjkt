@@ -25,6 +25,12 @@ export async function POST(req: Request) {
         )})`,
         values: [...reservations],
       }),
+      query({
+        query: `DELETE FROM reservations_rooms WHERE reservationId IN(${reservations.map(
+          () => "?"
+        )})`,
+        values: [...reservations],
+      }),
     ]);
 
     return NextResponse.json({

@@ -26,7 +26,6 @@ export async function POST(req: Request) {
       query: `INSERT INTO users(first_name, last_name, email, role, password, verified, active) VALUES("${first_name}", "${last_name}", "${email}", ${role}, MD5("${password}"), 0, 1)`,
       values: [first_name, last_name, email, role, password],
     });
-console.log(password)
     return NextResponse.json({
       success: true,
       message: `Uživatel ${first_name} ${last_name} byl úspěšně vytvořen.`,

@@ -26,6 +26,7 @@
     "dayjs": "^1.11.9",
     "eslint": "8.47.0",
     "eslint-config-next": "^14.0.0",
+    "jsonwebtoken": "^9.0.2",
     "material-icons": "^1.13.12",
     "mysql2": "^3.6.1",
     "next": "^14.0.0",
@@ -45,6 +46,7 @@
   },
   "devDependencies": {
     "@types/cleave.js": "^1.4.8",
+    "@types/jsonwebtoken": "^9.0.5",
     "@types/nodemailer": "^6.4.14",
     "@types/papaparse": "^5.3.11"
   }

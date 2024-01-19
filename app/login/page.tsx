@@ -73,7 +73,7 @@ export default function Page({ searchParams }: { searchParams: any }) {
           }}
         />
         <div className="flex gap-3">
-          <Link href="/password" className="w-full">
+          <Link href="/password-reset/email" className="w-full">
             <Button variant="contained" className="w-full">
               Zapomenuté heslo
             </Button>

@@ -1,29 +1,40 @@
 "use client";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
-import ResetPasswordTemplate from "@/templates/resetPassword/template";
 import { toast } from "react-toastify";
-import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 
-export default function ResetPassword() {
+export default function ResetPasswordEmail({
+  searchParams: { id, token },
+}: {
+  searchParams: { id: any; token: any };
+}) {
   const {
     register,
     handleSubmit,
-    formState: { isValid },
+    formState: { isValid, errors },
+    setError,
   } = useForm();
+
   const { push } = useRouter();
+
   const onSubmit = (data: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/password-reset`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reset-password/email`, {
       method: "POST",
-      body: JSON.stringify({ email: data.email }),
+      body: JSON.stringify({
+        email: data.email,
+      }),
     })
-      .then((res) => res.json())
+      .then((res: any) => res.json())
       .then((data) => {
-        if (data.success) {
-          toast.success("Email úspěšně odeslán");
-          push("/login");
-        } else toast.error("Tento email není registrován");
+        if (!data.email) {
+          setError("email", {
+            type: "custom",
+            message: "Účet s tímto emailem nebyl nalezen",
+          });
+        } else {
+          toast.success(`Email na obnovení hesla byl odeslán.`);
+        }
       });
   };
 
@@ -34,6 +45,8 @@ export default function ResetPassword() {
         <TextField
           type="text"
           label="Email"
+          error={errors.email as any}
+          helperText={errors.email?.message as any}
           variant="outlined"
           {...register("email", {
             required: true,

@@ -30,9 +30,16 @@ export const rolesConfig = {
     roles: [],
     menu: [false, false],
   },
-  password: {
-    name: "Zapomenuté heslo",
-    path: "/password",
+  passwordEmail: {
+    name: "Obnovit heslo",
+    path: "/password-reset/email",
+    modules: [],
+    roles: [],
+    menu: [false, false],
+  },
+  passwordForm: {
+    name: "Obnovit heslo",
+    path: "/password-reset/form",
     modules: [],
     roles: [],
     menu: [false, false],

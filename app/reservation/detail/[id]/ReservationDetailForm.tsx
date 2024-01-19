@@ -316,10 +316,8 @@ export default function ReservationDetailForm({
                       <ListItem disablePadding key={user.id}>
                         <ListItemButton
                           sx={{ padding: 1 }}
-                          onClick={() =>
-                            reservation.leader.id !== user.id &&
-                            handleCheckUser(user.id)
-                          }
+                          disabled={reservation.leader.id === user.id}
+                          onClick={() => handleCheckUser(user.id)}
                         >
                           <ListItemIcon>
                             <AvatarWrapper data={user} />
@@ -332,10 +330,12 @@ export default function ReservationDetailForm({
                             }
                             secondary={user.email}
                           />
-                          <Checkbox
-                            disableRipple
-                            checked={selectedUsers.includes(user.id)}
-                          />
+                          {reservation.leader.id !== user.id && (
+                            <Checkbox
+                              disableRipple
+                              checked={selectedUsers.includes(user.id)}
+                            />
+                          )}
                           <IconButton
                             onClick={(e) => {
                               e.stopPropagation();

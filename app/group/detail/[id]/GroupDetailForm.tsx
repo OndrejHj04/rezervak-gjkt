@@ -234,9 +234,8 @@ export default function GroupDetailForm({ group }: { group: any }) {
                     <ListItem disablePadding key={user.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}
-                        onClick={() =>
-                          group.owner.id !== user.id && handleCheck(user.id)
-                        }
+                        disabled={group.owner.id === user.id}
+                        onClick={() => handleCheck(user.id)}
                       >
                         <ListItemIcon>
                           <AvatarWrapper data={user} />
@@ -249,11 +248,13 @@ export default function GroupDetailForm({ group }: { group: any }) {
                           }
                           secondary={user.email}
                         />
-                        <Checkbox
-                          disableRipple
-                          disabled={group.owner.id === user.id}
-                          checked={checked.includes(user.id)}
-                        />
+                        {group.owner.id !== user.id && (
+                          <Checkbox
+                            disableRipple
+                            disabled={group.owner.id === user.id}
+                            checked={checked.includes(user.id)}
+                          />
+                        )}
                         <IconButton
                           onClick={(e) => push(`/user/detail/${user.id}`)}
                         >

@@ -15,7 +15,7 @@ export async function GET(
     const [user, groups, groupsCount, reservations, reservationsCount] =
       (await Promise.all([
         query({
-          query: `SELECT users.id, first_name, image, last_name, email, active, verified, adress, ID_code, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE users.id = ?`,
+          query: `SELECT users.id, first_name, image, last_name, email, active, verified, adress, ID_code, birth_date, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE users.id = ?`,
           values: [id],
         }),
         query({

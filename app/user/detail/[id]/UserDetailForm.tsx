@@ -3,6 +3,7 @@
 import { Role } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
+  Alert,
   Autocomplete,
   Avatar,
   Button,
@@ -39,6 +40,7 @@ import UserSleepAnnouncment from "./UserSleepAnnouncment";
 import GroupsPagination from "./GroupsPagination";
 import ReservationsPagination from "./ReservationsPagination";
 import { rolesConfig } from "@/rolesConfig";
+import HotelIcon from "@mui/icons-material/Hotel";
 
 export default function UserDetailForm({
   userDetail,
@@ -190,7 +192,7 @@ export default function UserDetailForm({
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
         <Paper className="p-4 flex flex-col gap-4">
           <div className="flex gap-2">
-            <div className="flex flex-col">
+            <div className="flex flex-col justify-between">
               <div className="flex gap-2">
                 <AvatarWrapper size={56} data={userDetail} />
                 <div className="flex flex-col">
@@ -200,6 +202,23 @@ export default function UserDetailForm({
                   <Typography>{userDetail.email}</Typography>
                 </div>
               </div>
+              {!userDetail.active ? (
+                <Alert variant="outlined" severity="info" icon={<HotelIcon />}>
+                  Účet byl uspán
+                </Alert>
+              ) : (
+                <>
+                  {!userDetail.verified ? (
+                    <Alert variant="outlined" severity="error">
+                      Neověřený uživatel
+                    </Alert>
+                  ) : (
+                    <Alert variant="outlined" severity="success">
+                      Ověřený uživatel
+                    </Alert>
+                  )}
+                </>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex gap-2">
@@ -288,19 +307,19 @@ export default function UserDetailForm({
                     <ListItem disablePadding key={group.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}
-                        onClick={() =>
-                          group.owner.id !== userDetail.id &&
-                          handleCheckGroup(group.id)
-                        }
+                        disabled={group.owner.id === userDetail.id}
+                        onClick={() => handleCheckGroup(group.id)}
                       >
                         <ListItemText
                           primary={<Typography>{group.name}</Typography>}
                           secondary={`Počet členů: ${group.users.length}`}
                         />
-                        <Checkbox
-                          disableRipple
-                          checked={selectGroups.includes(group.id)}
-                        />
+                        {group.owner.id !== userDetail.id && (
+                          <Checkbox
+                            disableRipple
+                            checked={selectGroups.includes(group.id)}
+                          />
+                        )}
                         <IconButton
                           onClick={(e) => {
                             e.stopPropagation();
@@ -349,10 +368,8 @@ export default function UserDetailForm({
                     <ListItem disablePadding key={reservation.id}>
                       <ListItemButton
                         sx={{ padding: 1 }}
-                        onClick={() =>
-                          reservation.leader.id !== userDetail.id &&
-                          handleCheckReservation(reservation.id)
-                        }
+                        disabled={reservation.leader.id === userDetail.id}
+                        onClick={() => handleCheckReservation(reservation.id)}
                       >
                         <ListItemText
                           primary={<Typography>{reservation.name}</Typography>}
@@ -362,10 +379,14 @@ export default function UserDetailForm({
                             "DD.MM.YYYY"
                           )}`}
                         />
-                        <Checkbox
-                          disableRipple
-                          checked={selectReservations.includes(reservation.id)}
-                        />
+                        {reservation.leader.id !== userDetail.id && (
+                          <Checkbox
+                            disableRipple
+                            checked={selectReservations.includes(
+                              reservation.id
+                            )}
+                          />
+                        )}
                         <IconButton
                           onClick={(e) => {
                             e.stopPropagation();

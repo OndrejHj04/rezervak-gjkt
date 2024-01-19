@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     const { email, password } = await req.json();
 
     const data = (await query({
-      query: `SELECT * FROM users WHERE email = "${email}" AND password = "${password}"`,
+      query: `SELECT * FROM users WHERE email = "${email}" AND password = MD5("${password}")`,
       values: [],
     })) as User[];
 

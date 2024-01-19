@@ -11,7 +11,7 @@ export async function POST(
       await req.json();
 
     const data = (await query({
-      query: `UPDATE users SET password = "${newPassword}", ID_code = "${ID_code}", verified = 1, birth_date = "${birth_date}", adress = "${adress}" WHERE id = ${id} AND password = "${password}"`, // verified = 1!! pak přidat
+      query: `UPDATE users SET password = MD5("${newPassword}"), ID_code = "${ID_code}", verified = 1, birth_date = "${birth_date}", adress = "${adress}" WHERE id = ${id} AND password = MD5("${password}")`, // verified = 1!! pak přidat
       values: [],
     })) as User[] | any;
 

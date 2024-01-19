@@ -7,20 +7,18 @@ import { useState } from "react";
 import CancelIcon from "@mui/icons-material/Cancel";
 
 export default function SearchBar({ label }: { label: any }) {
-  const [text, setText] = useState("");
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { replace } = useRouter();
-  const search = searchParams.get("search");
+  const search = searchParams.get("search") || "";
 
-  const makeSearch = (e: any) => {
+  const makeSearch = (value: any) => {
     const params = new URLSearchParams(searchParams);
-    params.set("search", text);
+    params.set("search", value);
     replace(`${pathname}?${params.toString()}`);
   };
 
   const removeFilter = () => {
-    setText("");
     replace(`${pathname}`);
   };
 
@@ -29,8 +27,8 @@ export default function SearchBar({ label }: { label: any }) {
       <TextField
         variant="outlined"
         label={`Hledat ${label}...`}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
+        value={search}
+        onChange={(e) => makeSearch(e.target.value)}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -45,9 +43,6 @@ export default function SearchBar({ label }: { label: any }) {
           ),
         }}
       />
-      <IconButton color="info" disabled={text === search} onClick={makeSearch}>
-        <SearchIcon />
-      </IconButton>
     </div>
   );
 }

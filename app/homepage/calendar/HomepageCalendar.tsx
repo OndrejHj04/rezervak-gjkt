@@ -6,7 +6,7 @@ import CottageIcon from "@mui/icons-material/Cottage";
 import fetcher from "@/lib/fetcher";
 const getReservations = async (id: number) => {
   try {
-    const { data } = await fetcher(`/api/reservations/list?not_status=4`);
+    const { data } = await fetcher(`/api/reservations/list?not_status=1,4`);
     return data;
   } catch (e) {
     return [];

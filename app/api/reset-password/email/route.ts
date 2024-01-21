@@ -10,7 +10,6 @@ export async function POST(req: Request) {
       query: `SELECT  id, email FROM users WHERE email = ?`,
       values: [email],
     })) as any;
-    console.log(users)
     if (users.length) {
       console.log(
         sign(

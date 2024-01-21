@@ -20,6 +20,7 @@ export async function GET(req: Request, res: any) {
         { status: 500 }
       );
     }
+
     const url = new URL(req.url);
     const status = Number(url.searchParams.get("status"));
     const page = Number(url.searchParams.get("page"));
@@ -28,7 +29,7 @@ export async function GET(req: Request, res: any) {
     const type = url.searchParams.get("type");
     const col = url.searchParams.get("col");
     const dir = url.searchParams.get("dir");
-    const notStatus = Number(url.searchParams.get("not_status"));
+    const notStatus = url.searchParams.get("not_status")?.split(",");
 
     const [reservations, reservationsCount] = (await Promise.all([
       query({
@@ -54,7 +55,13 @@ export async function GET(req: Request, res: any) {
           WHERE 1=1
           ${status ? `AND status.id = ${status}` : ""}
           ${search ? `AND reservations.name LIKE "%${search}%"` : ""}
-          ${notStatus ? `AND status.id <> ${notStatus}` : ""}
+          ${
+            notStatus?.length
+              ? notStatus
+                  .map((stat: any) => `AND status.id <> ${stat}`)
+                  .join(" ")
+              : ""
+          }
           ${type === "expired" ? `AND to_date < CURDATE()` : ""}
           ${col && dir ? `ORDER BY ${col} ${dir.toUpperCase()}` : ""}
           GROUP BY reservations.id
@@ -69,7 +76,11 @@ export async function GET(req: Request, res: any) {
         WHERE 1=1
         ${status ? `AND status.id = ${status}` : ""}
         ${search ? `AND reservations.name LIKE "%${search}%"` : ""}
-        ${notStatus ? `AND status.id <> ${notStatus}` : ""}
+        ${
+          notStatus?.length
+            ? notStatus.map((stat: any) => `AND status.id <> ${stat}`).join(" ")
+            : ""
+        }
         ${type === "expired" ? `AND to_date < CURDATE()` : ""}
         `,
         values: [],

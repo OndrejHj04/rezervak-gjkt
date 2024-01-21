@@ -73,14 +73,7 @@ export default function GroupNewForm({
                     `${option.first_name} ${option.last_name}`
                   }
                   renderOption={(props: any, option: any) => (
-                    <div {...props}>
-                      <Box className="flex items-center gap-2">
-                        <AvatarWrapper data={option} />
-                        <Typography className="ml-2">
-                          {option.first_name} {option.last_name}
-                        </Typography>
-                      </Box>
-                    </div>
+                    <UserCard user={option} key={option.id} {...props} />
                   )}
                   renderInput={(params) => (
                     <TextField {...params} label="Vybrat uživatele..." />

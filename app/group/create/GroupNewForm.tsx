@@ -16,6 +16,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "@/app/group/detail/[id]/refetch";
 import fetcher from "@/lib/fetcher";
+import { rolesConfig } from "@/rolesConfig";
 
 export default function GroupNewForm({
   users,
@@ -25,11 +26,8 @@ export default function GroupNewForm({
   user: any;
 }) {
   const { register, handleSubmit, setValue, control, watch } = useForm();
-  const [loading, setLoading] = useState(true);
-  const owner = watch("owner");
 
   const onSubmit = (formData: any) => {
-    setLoading(true);
     fetcher(`/api/group/create`, {
       method: "POST",
       body: JSON.stringify({ ...formData, owner: formData.owner.id }),
@@ -39,7 +37,6 @@ export default function GroupNewForm({
         MakeGroupDetailRefetch(res.data.newGroupId, 1);
       } else {
         toast.error("Něco se pokazilo");
-        setLoading(false);
       }
     });
   };
@@ -50,7 +47,6 @@ export default function GroupNewForm({
         "owner",
         users.find((u: any) => u.id === user.id)
       );
-      setLoading(false);
     }
   }, [user]);
 
@@ -58,7 +54,7 @@ export default function GroupNewForm({
     <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2 flex justify-between gap-2">
         <Typography variant="h5">Nová skupina</Typography>
-        <LoadingButton type="submit" variant="contained" loading={loading}>
+        <LoadingButton type="submit" variant="contained">
           Uložit
         </LoadingButton>
       </div>
@@ -66,43 +62,47 @@ export default function GroupNewForm({
         <div className="flex gap-2">
           <TextField label="Název skupiny" {...register("name")} />
           <TextField label="Popis" {...register("description")} />
-          {Boolean(owner || !loading) && (
-            <Controller
-              control={control}
-              {...register("owner")}
-              render={({ field: { value, onChange } }) => (
-                <Autocomplete
-                  sx={{ width: 223 }}
-                  value={value}
-                  onChange={(e, value) => {
-                    onChange(value);
-                  }}
-                  options={users}
-                  getOptionLabel={(option: any) =>
-                    `${option.first_name} ${option.last_name}`
-                  }
-                  renderOption={(props: any, option: any) => (
-                    <ListItem disablePadding key={option.id} {...props}>
-                      <ListItemIcon>
-                        <AvatarWrapper data={option} />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={
-                          <Typography>
-                            {option.first_name} {option.last_name}
-                          </Typography>
-                        }
-                        secondary={option.email}
-                      />
-                    </ListItem>
-                  )}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Vybrat uživatele..." />
-                  )}
-                />
-              )}
-            />
-          )}
+          <Controller
+            control={control}
+            {...register("owner")}
+            render={({ field: { value, onChange } }) => (
+              <Autocomplete
+                sx={{ width: 223 }}
+                value={value}
+                defaultValue={user}
+                disabled={
+                  !rolesConfig.groups.modules.groupsCreate.select[
+                    user.role.id as never
+                  ]
+                }
+                onChange={(e, value) => {
+                  onChange(value);
+                }}
+                options={users}
+                getOptionLabel={(option: any) =>
+                  `${option.first_name} ${option.last_name}`
+                }
+                renderOption={(props: any, option: any) => (
+                  <ListItem disablePadding key={option.id} {...props}>
+                    <ListItemIcon>
+                      <AvatarWrapper data={option} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Typography>
+                          {option.first_name} {option.last_name}
+                        </Typography>
+                      }
+                      secondary={option.email}
+                    />
+                  </ListItem>
+                )}
+                renderInput={(params) => (
+                  <TextField {...params} label="Majitel skupiny" />
+                )}
+              />
+            )}
+          />
         </div>
       </Paper>
     </form>

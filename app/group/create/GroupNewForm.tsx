@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "@/app/group/detail/[id]/refetch";
 import fetcher from "@/lib/fetcher";
 import { rolesConfig } from "@/rolesConfig";
+import UserCard from "@/app/user/detail/UserCard";
 
 export default function GroupNewForm({
   users,
@@ -83,19 +84,7 @@ export default function GroupNewForm({
                   `${option.first_name} ${option.last_name}`
                 }
                 renderOption={(props: any, option: any) => (
-                  <ListItem disablePadding key={option.id} {...props}>
-                    <ListItemIcon>
-                      <AvatarWrapper data={option} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={
-                        <Typography>
-                          {option.first_name} {option.last_name}
-                        </Typography>
-                      }
-                      secondary={option.email}
-                    />
-                  </ListItem>
+                  <UserCard user={option} {...props} />
                 )}
                 renderInput={(params) => (
                   <TextField {...params} label="Majitel skupiny" />

@@ -3,11 +3,9 @@ import ReservationDatesRender from "./ReservationDatesRender";
 
 const getReservations = async () => {
   try {
-    const request = await fetcher(
-      `/api/reservations/list?not_status=4`,
-      { cache: "no-cache" }
-    );
-    const { data } = await request.json();
+    const { data } = await fetcher(`/api/reservations/list?not_status=4`, {
+      cache: "no-cache",
+    });
     return data;
   } catch (e) {
     return [];

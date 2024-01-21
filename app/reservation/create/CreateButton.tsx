@@ -26,15 +26,14 @@ export default function CreateButton() {
   const handleSubmit = () => {
     fetcher(`/api/reservations/create`, {
       method: "POST",
-      body: JSON.parse(JSON.stringify(createReservation)),
-    })
-      .then((res) => {
-        if (res.success) {
-          toast.success("Rezervace úspěšně vytvořena");
-          ReservationListMakeRefetch("/reservation/list");
-          setDefault();
-        } else toast.error("Něco se nepovedlo");
-      });
+      body: JSON.stringify(createReservation),
+    }).then((res) => {
+      if (res.success) {
+        toast.success("Rezervace úspěšně vytvořena");
+        ReservationListMakeRefetch("/reservation/list");
+        setDefault();
+      } else toast.error("Něco se nepovedlo");
+    });
   };
 
   return (

@@ -43,8 +43,7 @@ export default function AddGroupToReservationModal({
   } = useForm();
 
   useEffect(() => {
-    fetcher(`/api/reservations/list`)
-      .then((res) => setReservations(res.data));
+    fetcher(`/api/reservations/list`).then((res) => setReservations(res.data));
   }, []);
 
   const onSubmit = (data: any) => {
@@ -54,11 +53,10 @@ export default function AddGroupToReservationModal({
         group: groupId,
         reservations: data.reservations.map((group: any) => group.id),
       }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Skupiny úspěšně přidány");
-        else toast.error("Něco se nepovedlo");
-      });
+    }).then((res) => {
+      if (res.success) toast.success("Skupiny úspěšně přidány");
+      else toast.error("Něco se nepovedlo");
+    });
     MakeGroupDetailRefetch(groupId);
     setModal(false);
   };

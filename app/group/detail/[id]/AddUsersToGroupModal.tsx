@@ -6,6 +6,9 @@ import {
   Box,
   Button,
   CircularProgress,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   Paper,
   TextField,
   Typography,
@@ -42,8 +45,7 @@ export default function AddUsersToGroupModal({
   } = useForm();
 
   useEffect(() => {
-    fetcher(`/api/users/list`)
-      .then((res) => setUsers(res.data));
+    fetcher(`/api/users/list`).then((res) => setUsers(res.data));
   }, []);
 
   const onSubmit = (data: any) => {
@@ -53,11 +55,10 @@ export default function AddUsersToGroupModal({
         group: group.id,
         newMembers: data.users.map((group: any) => group.id),
       }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Skupiny úspěšně přidány");
-        else toast.error("Něco se nepovedlo");
-      });
+    }).then((res) => {
+      if (res.success) toast.success("Skupiny úspěšně přidány");
+      else toast.error("Něco se nepovedlo");
+    });
 
     setModal(false);
     MakeGroupDetailRefetch(group.id);

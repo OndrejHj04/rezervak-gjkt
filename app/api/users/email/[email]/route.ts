@@ -7,19 +7,6 @@ export async function GET(
   { params: { email } }: { params: { email: any } }
 ) {
   try {
-    const isAuthorized = (await protect(
-      req.headers.get("Authorization")
-    )) as any;
-
-    if (!isAuthorized) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Auth failed",
-        },
-        { status: 500 }
-      );
-    }
     const [data, roles] = (await Promise.all([
       query({
         query: `

@@ -20,11 +20,11 @@ const getGroups = async (id: number, page: any) => {
 
 export default async function DisplayGroups({
   searchParams,
+  data,
 }: {
   searchParams: any;
+  data: any;
 }) {
-  const data = (await getServerSession(authOptions)) as { user: User };
-
   const groups = data
     ? await getGroups(data.user.id, searchParams.groups || "1")
     : [];

@@ -23,6 +23,7 @@ const HomepageCalendar = dynamic(
 const PastReservations = dynamic(
   () => import("@/app/homepage/pastReservations/PastReservationsWidget")
 );
+
 const getUserDetail = async (email: any) => {
   const { data } = (await fetcher(`/api/users/email/${email}`)) as any;
   return data[0];
@@ -30,7 +31,7 @@ const getUserDetail = async (email: any) => {
 
 export default async function Home({ searchParams }: { searchParams: any }) {
   const user = (await getServerSession(authOptions)) as any;
-  const data = await getUserDetail(user?.user.email);
+  const data = user ? await getUserDetail(user?.user.email) : {};
 
   const homepage = (
     <div
@@ -39,13 +40,13 @@ export default async function Home({ searchParams }: { searchParams: any }) {
     >
       {rolesConfig.homepage.modules.personalGroups.display.includes(
         user?.user.role.id
-      ) && <DisplayGroups searchParams={searchParams} />}
+      ) && <DisplayGroups searchParams={searchParams} data={user} />}
       {rolesConfig.homepage.modules.personalReservations.display.includes(
         user?.user.role.id
-      ) && <DisplayReservations searchParams={searchParams} />}
+      ) && <DisplayReservations searchParams={searchParams} data={user} />}
       {rolesConfig.homepage.modules.allReservations.display.includes(
         user?.user.role.id
-      ) && <HomepageCalendar />}
+      ) && <HomepageCalendar user={user} />}
       {rolesConfig.homepage.modules.pastReservations.display.includes(
         user?.user.role.id
       ) && <PastReservations user={user} searchParams={searchParams} />}

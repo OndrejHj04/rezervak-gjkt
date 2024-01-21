@@ -68,7 +68,7 @@ export default async function middleware(req: NextRequest) {
     const group = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
 
-    const request = await fetcher(`/api/group/check-user`, {
+    const { data } = await fetcher(`/api/group/check-user`, {
       method: "POST",
       body: JSON.stringify({
         groupId: Number(group),
@@ -76,9 +76,7 @@ export default async function middleware(req: NextRequest) {
       }),
     });
 
-    const {
-      data: { isMember, isOwner, exist },
-    } = await request.json();
+    const { isMember, isOwner, exist } = data;
 
     if (!exist) {
       return NextResponse.redirect(new URL("/", req.url));
@@ -110,7 +108,7 @@ export default async function middleware(req: NextRequest) {
     const reservation = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
 
-    const request = await fetcher(`/api/reservations/check-user`, {
+    const { data } = await fetcher(`/api/reservations/check-user`, {
       method: "POST",
       body: JSON.stringify({
         reservationId: Number(reservation),
@@ -118,9 +116,7 @@ export default async function middleware(req: NextRequest) {
       }),
     });
 
-    const {
-      data: { isMember, isLeader, exist, archived, forbidden },
-    } = request;
+    const { isMember, isLeader, exist, archived, forbidden } = data;
 
     if (!exist || forbidden) {
       return NextResponse.redirect(new URL("/", req.url));

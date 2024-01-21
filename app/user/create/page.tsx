@@ -1,14 +1,16 @@
 import fetcher from "@/lib/fetcher";
 import NewUserForm from "./NewUserForm";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-const getRoles = async () => {
-  const { data } = await fetcher(`/api/roles/list`, {
-    cache: "no-cache",
-  });
+const getRoles = async (role: any) => {
+  const { data } = await fetcher(`/api/roles/list?role=${role.id}`);
   return data;
 };
 
 export default async function CreateUserForm() {
-  const roles = await getRoles();
+  const user = (await getServerSession(authOptions)) as any;
+  const roles = await getRoles(user?.user.role);
+
   return <NewUserForm roles={roles} />;
 }

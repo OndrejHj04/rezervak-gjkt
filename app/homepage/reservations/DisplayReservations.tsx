@@ -31,10 +31,11 @@ const getReservations = async (id: number, page: string) => {
 
 export default async function DisplayReservations({
   searchParams,
+  data,
 }: {
   searchParams: any;
+  data: any;
 }) {
-  const data = (await getServerSession(authOptions)) as { user: User };
 
   const reservations = data
     ? ((await getReservations(

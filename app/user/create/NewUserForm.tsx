@@ -3,7 +3,6 @@ import MakeUserListRefetch from "@/app/user/list/refetch";
 import fetcher from "@/lib/fetcher";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Autocomplete, Paper, TextField, Typography } from "@mui/material";
-import { redirect } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -22,19 +21,18 @@ export default function NewUserForm({ roles }: { roles: any }) {
     fetcher(`/api/users/new`, {
       method: "POST",
       body: JSON.stringify({ ...data, role: data.role.value }),
-    })
-      .then((res) => {
-        if (res.success) {
-          toast.success("Uživatel úspěšně vytvořen");
-          MakeUserListRefetch("/user/list", 1);
-        } else if (res.duplicate) {
-          toast.error("Uživatel s tímto emailem už existuje");
-        } else {
-          toast.error("Něco se nepovedlo");
-        }
+    }).then((res) => {
+      if (res.success) {
+        toast.success("Uživatel úspěšně vytvořen");
+        MakeUserListRefetch("/user/list", 1);
+      } else if (res.duplicate) {
+        toast.error("Uživatel s tímto emailem už existuje");
+      } else {
+        toast.error("Něco se nepovedlo");
+      }
 
-        setLoading(false);
-      });
+      setLoading(false);
+    });
   };
 
   return (

@@ -70,6 +70,12 @@ export const rolesConfig = {
         roles: [1, 2, 3],
         menu: [false, true],
         icon: "person_add_icon",
+        options: {
+          1: [1, 2, 3, 4],
+          2: [3,4],
+          3: [4],
+          4: []
+        },
       },
       usersImport: {
         name: "Importovat uživatele",

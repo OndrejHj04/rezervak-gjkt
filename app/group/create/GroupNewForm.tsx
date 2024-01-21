@@ -1,5 +1,14 @@
 "use client";
-import { Autocomplete, Box, Paper, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
@@ -73,7 +82,19 @@ export default function GroupNewForm({
                     `${option.first_name} ${option.last_name}`
                   }
                   renderOption={(props: any, option: any) => (
-                    <UserCard user={option} key={option.id} {...props} />
+                    <ListItem disablePadding key={option.id} {...props}>
+                      <ListItemIcon>
+                        <AvatarWrapper data={option} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={
+                          <Typography>
+                            {option.first_name} {option.last_name}
+                          </Typography>
+                        }
+                        secondary={option.email}
+                      />
+                    </ListItem>
                   )}
                   renderInput={(params) => (
                     <TextField {...params} label="Vybrat uživatele..." />

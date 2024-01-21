@@ -16,15 +16,11 @@ import GroupsDelete from "./components/GroupsDelete";
 import fetcher from "@/lib/fetcher";
 
 const getGroups = async (page: any, search: any) => {
-  try {
-    const { data } = await fetcher(
-      `/api/group/list?page=${page}${search ? `&search=${search}` : ""}`,
-      { cache: "no-cache" }
-    );
-    return data;
-  } catch (e) {
-    return [];
-  }
+  const data = await fetcher(
+    `/api/group/list?page=${page}${search ? `&search=${search}` : ""}`,
+    { cache: "no-cache" }
+  );
+  return data;
 };
 
 export default async function GroupList({

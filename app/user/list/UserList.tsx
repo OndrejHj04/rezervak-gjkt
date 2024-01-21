@@ -20,7 +20,7 @@ import { rolesConfig } from "@/rolesConfig";
 import fetcher from "@/lib/fetcher";
 
 const getUsers = async (page: any, search: any, role: any) => {
-  const { data } = await fetcher(
+  const data = await fetcher(
     `/api/users/list?page=${page}&role=${role}${
       search.length ? `&search=${search}` : ""
     }`,

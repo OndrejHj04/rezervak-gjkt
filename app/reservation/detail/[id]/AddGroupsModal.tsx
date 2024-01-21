@@ -53,10 +53,9 @@ export default function AddGroupsModal({
       .then((res) => {
         if (res.success) toast.success("Skupiny úspěšně přidány");
         else toast.error("Něco se nepovedlo");
-
-        MakeRefetch(reservationId);
-        setModal(false);
       });
+    MakeRefetch(reservationId);
+    setModal(false);
   };
   return (
     <Paper sx={style} className="p-2">

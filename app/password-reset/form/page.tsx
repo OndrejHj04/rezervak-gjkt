@@ -23,7 +23,7 @@ export default function ResetPassword({
   useEffect(() => {
     try {
       const { exp, id: userId } = decode(token) as any;
-      if (userId !== Number(id) || dayjs(exp).isAfter(dayjs())) {
+      if (userId !== Number(id) || dayjs(exp).isBefore(dayjs())) {
         push("/");
       }
     } catch (e) {
@@ -40,9 +40,11 @@ export default function ResetPassword({
           password: first_password,
           id,
         }),
-      }).then(res=>res.json()).then(()=>{
-        toast.success("Heslo úspěšně změněno")
       })
+        .then((res) => res.json())
+        .then(() => {
+          toast.success("Heslo úspěšně změněno");
+        });
     } else {
       setError("second_password", {
         type: "custom",

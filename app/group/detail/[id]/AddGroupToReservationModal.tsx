@@ -59,11 +59,9 @@ export default function AddGroupToReservationModal({
       .then((res) => {
         if (res.success) toast.success("Skupiny úspěšně přidány");
         else toast.error("Něco se nepovedlo");
-      })
-      .finally(() => {
-        MakeGroupDetailRefetch(groupId);
-        setModal(false);
       });
+    MakeGroupDetailRefetch(groupId);
+    setModal(false);
   };
 
   return (
@@ -114,7 +112,7 @@ export default function AddGroupToReservationModal({
           <CircularProgress />
         )}
         <Button variant="contained" type="submit" disabled={!isValid}>
-          Uložit
+          Uložitttt
         </Button>
       </form>
     </Paper>

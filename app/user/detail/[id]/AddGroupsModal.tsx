@@ -58,10 +58,10 @@ export default function AddGroupsModal({
       .then((res) => {
         if (res.success) toast.success("Skupiny úspěšně přidány");
         else toast.error("Něco se nepovedlo");
-
-        MakeUserDetailRefetch(userId);
-        setModal(false);
       });
+
+    MakeUserDetailRefetch(userId);
+    setModal(false);
   };
 
   return (

@@ -15,6 +15,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "./refetch";
+import fetcher from "@/lib/fetcher";
 
 const style = {
   position: "absolute" as "absolute",
@@ -42,20 +43,18 @@ export default function AddGroupToReservationModal({
   } = useForm();
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list`)
-      .then((res) => res.json())
+    fetcher(`/api/reservations/list`)
       .then((res) => setReservations(res.data));
   }, []);
 
   const onSubmit = (data: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/add-reservations`, {
+    fetcher(`/api/group/add-reservations`, {
       method: "POST",
       body: JSON.stringify({
         group: groupId,
         reservations: data.reservations.map((group: any) => group.id),
       }),
     })
-      .then((req) => req.json())
       .then((res) => {
         if (res.success) toast.success("Skupiny úspěšně přidány");
         else toast.error("Něco se nepovedlo");

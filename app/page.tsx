@@ -3,6 +3,7 @@ import { rolesConfig } from "@/rolesConfig";
 import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
 import { authOptions } from "./api/auth/[...nextauth]/options";
+import fetcher from "@/lib/fetcher";
 
 const BlockDates = dynamic(
   () => import("@/app/homepage/blockDates/BlockDates")
@@ -23,10 +24,7 @@ const PastReservations = dynamic(
   () => import("@/app/homepage/pastReservations/PastReservationsWidget")
 );
 const getUserDetail = async (email: any) => {
-  const req = (await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/users/email/${email}`
-  )) as any;
-  const { data } = await req.json();
+  const { data } = (await fetcher(`/api/users/email/${email}`)) as any;
   return data[0];
 };
 
@@ -53,7 +51,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
       ) && <PastReservations user={user} searchParams={searchParams} />}
       {rolesConfig.homepage.modules.blockDates.display.includes(
         user?.user.role.id
-      ) && <BlockDates user={user}/>}
+      ) && <BlockDates user={user} />}
     </div>
   );
 

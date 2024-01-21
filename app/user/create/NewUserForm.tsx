@@ -1,5 +1,6 @@
 "use client";
 import MakeUserListRefetch from "@/app/user/list/refetch";
+import fetcher from "@/lib/fetcher";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Autocomplete, Paper, TextField, Typography } from "@mui/material";
 import { redirect } from "next/navigation";
@@ -18,11 +19,10 @@ export default function NewUserForm({ roles }: { roles: any }) {
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/new`, {
+    fetcher(`/api/users/new`, {
       method: "POST",
       body: JSON.stringify({ ...data, role: data.role.value }),
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) {
           toast.success("Uživatel úspěšně vytvořen");

@@ -31,6 +31,7 @@ import AddUsersToGroupModal from "./AddUsersToGroupModal";
 import AddGroupToReservationModal from "./AddGroupToReservationModal";
 import UsersPagination from "@/app/reservation/detail/[id]/UsersPagination";
 import ReservationsPagination from "./ReservationsPagination";
+import fetcher from "@/lib/fetcher";
 
 interface selecteUser {
   label: string;
@@ -54,13 +55,12 @@ export default function GroupDetailForm({ group }: { group: any }) {
   } = useForm();
 
   const onSubmit = (data: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/edit/${group.id}`, {
+    fetcher(`/api/group/edit/${group.id}`, {
       method: "POST",
       body: JSON.stringify({
         ...data,
       }),
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) {
           toast.success("Skupina upravena");
@@ -73,13 +73,12 @@ export default function GroupDetailForm({ group }: { group: any }) {
   };
 
   const handleRemoveGroup = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove`, {
+    fetcher(`/api/group/remove`, {
       method: "POST",
       body: JSON.stringify({
         group: group.id,
       }),
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) toast.success("Skupina úspěšně odstraněna");
         else toast.error("Něco se nepovedlo");
@@ -88,14 +87,13 @@ export default function GroupDetailForm({ group }: { group: any }) {
   };
 
   const handleDeleteMembers = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove-member`, {
+    fetcher(`/api/group/remove-member`, {
       method: "POST",
       body: JSON.stringify({
         group: group.id,
         members: checked,
       }),
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) toast.success("Uživatelé odebráni");
         else toast.error("Něco se nepovedlo");
@@ -121,14 +119,13 @@ export default function GroupDetailForm({ group }: { group: any }) {
   };
 
   const removeFromReservations = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove-reservations`, {
+    fetcher(`/api/group/remove-reservations`, {
       method: "POST",
       body: JSON.stringify({
         group: group.id,
         reservations: selectReservation,
       }),
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) toast.success("Rezervace odstraněny");
         else toast.error("Něco se nepovedlo");

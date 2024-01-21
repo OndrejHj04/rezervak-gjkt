@@ -1,3 +1,4 @@
+import fetcher from "@/lib/fetcher";
 import { NextAuthOptions } from "next-auth";
 
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -9,25 +10,19 @@ export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       async profile(profile: GoogleProfile) {
-        const req = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/email/${profile.email}`
-        );
-        const { data } = await req.json();
+        const { data } = await fetcher(`/api/users/email/${profile.email}`);
         if (
           data.length &&
           profile.picture &&
           data[0].image !== profile.picture
         ) {
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`,
-            {
-              method: "POST",
-              body: JSON.stringify({
-                picture: profile.picture,
-                id: data[0].id,
-              }),
-            }
-          );
+          await fetcher(`/api/login/upload-pic`, {
+            method: "POST",
+            body: JSON.stringify({
+              picture: profile.picture,
+              id: data[0].id,
+            }),
+          });
         }
         if (data.length) {
           return {
@@ -60,17 +55,13 @@ export const authOptions: NextAuthOptions = {
           email: credentials?.email,
           password: credentials?.password,
         } as any;
-        const request = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
-          {
-            body: JSON.stringify(userObject),
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const { data } = await request.json();
+        const { data } = await fetcher(`/api/users/login`, {
+          body: JSON.stringify(userObject),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         return data || null;
       },
     }),
@@ -91,15 +82,9 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token, trigger }) {
+    async session({ session, token, user }) {
       if (session?.user) {
-        session.user.role = token.role;
-        session.user.id = token.id;
-        session.user.verified = token.verified;
-        session.user.active = token.active;
-        session.user.first_name = token.first_name;
-        session.user.last_name = token.last_name;
-        session.user.image = token.image;
+        session.user = token;
       }
       return session;
     },

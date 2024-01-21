@@ -11,6 +11,7 @@ import "react-perfect-scrollbar/dist/css/styles.css";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/options";
 import SlidingMenuConfig from "./navigation/sidebar/SlidingMenuConfig";
+import fetcher from "@/lib/fetcher";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,10 +19,8 @@ export const metadata: Metadata = {
 };
 
 const getUserTheme = async (id: string) => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${id}/theme`
-  );
-  const { data } = await req.json();
+  const { data } = await fetcher(`/api/users/detail/${id}/theme`);
+
   return data;
 };
 

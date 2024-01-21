@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { decode } from "jsonwebtoken";
 import { useEffect } from "react";
 import dayjs from "dayjs";
+import fetcher from "@/lib/fetcher";
 export default function ResetPassword({
   searchParams: { id, token },
 }: {
@@ -34,14 +35,13 @@ export default function ResetPassword({
   const onSubmit = (data: any) => {
     const { first_password, second_password } = data;
     if (first_password === second_password) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reset-password`, {
+      fetcher(`/api/reset-password`, {
         method: "POST",
         body: JSON.stringify({
           password: first_password,
           id,
         }),
       })
-        .then((res) => res.json())
         .then(() => {
           toast.success("Heslo úspěšně změněno");
         });

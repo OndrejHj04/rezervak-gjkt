@@ -4,6 +4,7 @@ import * as XLSX from "xlsx";
 import handleExport from "@/lib/handleExport";
 import { Button } from "@mui/material";
 import Papa from "papaparse";
+import fetcher from "@/lib/fetcher";
 
 function s2ab(s: any) {
   const buf = new ArrayBuffer(s.length);
@@ -20,10 +21,7 @@ export default function ExportButton({
   translate: any;
 }) {
   const makeExport = async () => {
-    const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/${prop}/export`
-    );
-    const { data } = await req.json();
+    const { data } = await fetcher(`/api/${prop}/export`);
 
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(data);

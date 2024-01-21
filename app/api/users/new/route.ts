@@ -1,12 +1,26 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import NewUserTemplate from "@/templates/userLogin/template";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { first_name, last_name, email, role } = await req.json();
-  const password = Math.random().toString(36).slice(-9) as any;
-
   try {
+    const { first_name, last_name, email, role } = await req.json();
+    const password = Math.random().toString(36).slice(-9) as any;
+
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
     const check = (await query({
       query: `SELECT * FROM users WHERE email = ?`,
       values: [email],

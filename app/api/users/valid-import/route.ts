@@ -1,8 +1,22 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import { NextResponse } from "next/server";
 
 export async function POST(req: any) {
   try {
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
     const { data } = await req.json();
     const validData = data.filter((item: any) =>
       item.every((row: any) => row.length)

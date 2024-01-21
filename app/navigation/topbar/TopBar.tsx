@@ -1,12 +1,10 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import TopBarComponent from "./TopBarComponent";
+import fetcher from "@/lib/fetcher";
 
 const getUserTheme = async (id: string) => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${id}/theme`
-  );
-  const { data } = await req.json();
+  const { data } = await fetcher(`/api/users/detail/${id}/theme`);
   return data;
 };
 

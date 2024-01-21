@@ -1,10 +1,25 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import GroupUsersEdit from "@/templates/groupUserEdit/template";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const { group, members } = await req.json();
+
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
 
     const [groupDetail, users, owner, reservations] = (await Promise.all([
       query({

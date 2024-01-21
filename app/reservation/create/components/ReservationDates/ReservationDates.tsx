@@ -1,9 +1,10 @@
+import fetcher from "@/lib/fetcher";
 import ReservationDatesRender from "./ReservationDatesRender";
 
 const getReservations = async () => {
   try {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?not_status=4`,
+    const request = await fetcher(
+      `/api/reservations/list?not_status=4`,
       { cache: "no-cache" }
     );
     const { data } = await request.json();

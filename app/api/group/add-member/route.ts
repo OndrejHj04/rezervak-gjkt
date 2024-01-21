@@ -1,4 +1,6 @@
 import { query } from "@/lib/db";
+import fetcher from "@/lib/fetcher";
+import protect from "@/lib/protect";
 import GroupUsersEdit from "@/templates/groupUserEdit/template";
 import { NextResponse } from "next/server";
 
@@ -6,6 +8,19 @@ export async function POST(req: Request) {
   try {
     const { newMembers, group } = await req.json();
 
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
     const values = newMembers.flatMap((newMember: any) => [
       newMember,
       group,
@@ -45,15 +60,6 @@ export async function POST(req: Request) {
       users,
       reservations,
     };
-
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
-      method: "POST",
-      body: JSON.stringify({
-        to: users.map(({ email }: { email: any }) => email),
-        subject: "Přidání účtu do rezervace",
-        html: GroupUsersEdit(groupDetail, users, reservations),
-      }),
-    });
 
     return NextResponse.json({
       success: true,

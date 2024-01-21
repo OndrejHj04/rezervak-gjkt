@@ -5,6 +5,7 @@ import { Button } from "@mui/material";
 import { toast } from "react-toastify";
 import ReservationListMakeRefetch from "../list/refetch";
 import { NewReservation } from "@/types";
+import fetcher from "@/lib/fetcher";
 
 export default function CreateButton() {
   const { createReservation, setCreateReservation } = store();
@@ -23,11 +24,10 @@ export default function CreateButton() {
     });
   };
   const handleSubmit = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/create`, {
+    fetcher(`/api/reservations/create`, {
       method: "POST",
-      body: JSON.stringify(createReservation),
+      body: JSON.parse(JSON.stringify(createReservation)),
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) {
           toast.success("Rezervace úspěšně vytvořena");

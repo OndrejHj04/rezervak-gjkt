@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "@/app/group/detail/[id]/refetch";
+import fetcher from "@/lib/fetcher";
 
 export default function GroupNewForm({
   users,
@@ -20,20 +21,18 @@ export default function GroupNewForm({
 
   const onSubmit = (formData: any) => {
     setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/create`, {
+    fetcher(`/api/group/create`, {
       method: "POST",
       body: JSON.stringify({ ...formData, owner: formData.owner.id }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.success) {
-          toast.success(`Skupina ${res.data.name} byla vytvořena`);
-          MakeGroupDetailRefetch(res.data.newGroupId, 1);
-        } else {
-          toast.error("Něco se pokazilo");
-          setLoading(false);
-        }
-      });
+    }).then((res) => {
+      if (res.success) {
+        toast.success(`Skupina ${res.data.name} byla vytvořena`);
+        MakeGroupDetailRefetch(res.data.newGroupId, 1);
+      } else {
+        toast.error("Něco se pokazilo");
+        setLoading(false);
+      }
+    });
   };
 
   useEffect(() => {

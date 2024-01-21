@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import { group } from "console";
 import { User } from "next-auth";
 import { NextResponse } from "next/server";
@@ -8,6 +9,19 @@ export async function GET(
   { params: { id } }: { params: { id: string } }
 ) {
   try {
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
     const url = new URL(req.url);
     const rpage = Number(url.searchParams.get("reservations")) || 1;
     const gpage = Number(url.searchParams.get("groups")) || 1;

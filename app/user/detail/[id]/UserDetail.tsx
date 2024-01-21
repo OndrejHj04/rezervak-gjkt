@@ -3,19 +3,18 @@ import UserDetailDisplay from "./UserDetailDisplay";
 import UserDetailForm from "./UserDetailForm";
 import Link from "next/link";
 import { rolesConfig } from "@/rolesConfig";
+import fetcher from "@/lib/fetcher";
 
 const getUserDetail = async (id: string, reservations: any, groups: any) => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/users/detail/${id}?reservations=${reservations}&groups=${groups}`,
+  const { data } = await fetcher(
+    `/api/users/detail/${id}?reservations=${reservations}&groups=${groups}`,
     { cache: "no-cache" }
   );
-  const { data } = await req.json();
   return data;
 };
 
 const getRoles = async () => {
-  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/list`);
-  const { data } = await req.json();
+  const { data } = await fetcher(`/api/roles/list`);
   return data;
 };
 

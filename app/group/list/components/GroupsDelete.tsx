@@ -5,16 +5,16 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { store } from "@/store/store";
 import { toast } from "react-toastify";
 import MakeGroupRefetch from "../refetch";
+import fetcher from "@/lib/fetcher";
 
 export default function GroupsDelete() {
   const { selectedGroups, setSelectedGroups } = store();
 
   const handleRemove = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/remove`, {
+    fetcher(`/api/group/remove`, {
       method: "POST",
       body: JSON.stringify({ groups: selectedGroups }),
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) toast.success("Rezervace byly úspěšně odstraněny");
         else toast.error("Něco se pokazilo");

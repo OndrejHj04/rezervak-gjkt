@@ -14,14 +14,14 @@ import EventIcon from "@mui/icons-material/Event";
 import ReservationPagination from "./ReservationsPagination";
 import ReservationsSwitch from "./ReservationsSwitch";
 import RenderCalendar from "../calendar/RenderCalendar";
+import fetcher from "@/lib/fetcher";
 
 const getReservations = async (id: number, page: string) => {
   try {
-    const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/user-list?id=${id}&page=${page}`,
+    const data = await fetcher(
+      `/api/reservations/user-list?id=${id}&page=${page}`,
       { cache: "no-cache" }
     );
-    const data = await req.json();
 
     return data;
   } catch (e) {

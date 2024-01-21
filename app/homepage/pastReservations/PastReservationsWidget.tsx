@@ -4,13 +4,13 @@ import SingleReservation from "../reservations/SingleReservation";
 import ReservationPagination from "../reservations/ReservationsPagination";
 import { useSearchParams } from "next/navigation";
 import MakeReservationsArchive from "./MakeReservationsArchive";
+import fetcher from "@/lib/fetcher";
 
 const getReservations = async (id: any, page: any) => {
   try {
-    const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list?not_status=1&limit=5&page=${page}&type=expired`
+    const data = await fetcher(
+      `/api/reservations/list?not_status=1&limit=5&page=${page}&type=expired`
     );
-    const data = await req.json();
     return data;
   } catch (e) {
     return [];

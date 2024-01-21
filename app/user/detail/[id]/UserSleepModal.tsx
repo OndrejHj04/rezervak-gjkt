@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction } from "react";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { toast } from "react-toastify";
 import MakeUserListRefetch from "../../list/refetch";
+import fetcher from "@/lib/fetcher";
 
 const style = {
   position: "absolute" as "absolute",
@@ -22,11 +23,10 @@ export default function UserSleepModal({
   data: any;
 }) {
   const makeUserSleep = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/edit/${data?.id}`, {
+    fetcher(`/api/users/edit/${data?.id}`, {
       body: JSON.stringify({ active: false }),
       method: "POST",
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) {
           toast.success(

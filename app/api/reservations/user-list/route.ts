@@ -1,10 +1,25 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const id = Number(url.searchParams.get("id"));
+
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
 
     const [reservations, count] = (await Promise.all([
       query({

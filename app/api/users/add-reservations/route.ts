@@ -1,10 +1,25 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import NewReservationMember from "@/templates/reservationUserEdit/template";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const { user, reservations } = await req.json();
+
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
 
     const values = reservations.flatMap((newReservation: any) => [
       user,

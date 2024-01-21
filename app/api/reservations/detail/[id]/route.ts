@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import { Reservation } from "@/types";
 import { NextResponse } from "next/server";
 
@@ -10,6 +11,20 @@ export async function GET(
     const url = new URL(req.url);
     const upage = Number(url.searchParams.get("users")) || 1;
     const gpage = Number(url.searchParams.get("groups")) || 1;
+
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
 
     const [reservations, users, usersCount, groups, groupsCount] =
       (await Promise.all([

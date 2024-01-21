@@ -1,8 +1,25 @@
 import { query } from "@/lib/db";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import { authOptions } from "../../auth/[...nextauth]/options";
+import { NextApiRequest, NextApiResponse } from "next";
+import protect from "@/lib/protect";
 
-export async function GET(req: Request) {
+export async function GET(req: Request, res: any) {
   try {
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
     const url = new URL(req.url);
     const status = Number(url.searchParams.get("status"));
     const page = Number(url.searchParams.get("page"));

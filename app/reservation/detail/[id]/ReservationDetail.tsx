@@ -4,22 +4,19 @@ import ReservationDetailDisplay from "./ReservationDetailDisplay";
 import { Tab, Tabs } from "@mui/material";
 import Link from "next/link";
 import { rolesConfig } from "@/rolesConfig";
+import fetcher from "@/lib/fetcher";
 
 const getReservation = async (id: string, users: any, groups: any) => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/detail/${id}?users=${users}&groups=${groups}`,
+  const { data } = await fetcher(
+    `/api/reservations/detail/${id}?users=${users}&groups=${groups}`,
     { cache: "no-cache" }
   );
-  const { data } = await req.json();
 
   return data;
 };
 
 const getReservationStatus = async () => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/status?type=limit`
-  );
-  const { data } = await req.json();
+  const { data } = await fetcher(`/api/reservations/status?type=limit`);
 
   return data;
 };

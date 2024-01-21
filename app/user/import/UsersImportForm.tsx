@@ -17,6 +17,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { toast } from "react-toastify";
 import MakeUserListRefetch from "@/app/user/list/refetch";
+import fetcher from "@/lib/fetcher";
 
 const importUsersValidFormat = [
   { value: "first_name", name: "Jméno" },
@@ -56,11 +57,10 @@ export default function UsersImportForm({ roles }: { roles: any }) {
       }
     });
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/import-new`, {
+    fetcher(`/api/users/import-new`, {
       method: "POST",
       body: JSON.stringify(newData),
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) {
           toast.success(res.message);
@@ -89,11 +89,10 @@ export default function UsersImportForm({ roles }: { roles: any }) {
       JSON.stringify(data[0]) ===
       JSON.stringify(importUsersValidFormat.map((item) => item.value))
     ) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/valid-import`, {
+      fetcher(`/api/users/valid-import`, {
         method: "POST",
         body: JSON.stringify({ data: data.slice(1) }),
       })
-        .then((res) => res.json())
         .then(({ data }) => {
           setData(
             data.map((item: any) => {

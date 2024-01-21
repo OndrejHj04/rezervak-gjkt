@@ -1,13 +1,11 @@
 import { Paper, Typography } from "@mui/material";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import BlockDatesForm from "./BlockDatesForm";
+import fetcher from "@/lib/fetcher";
 
 const getReservations = async () => {
   try {
-    const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list`
-    );
-    const { data } = await req.json();
+    const { data } = await fetcher(`/api/reservations/list`);
     return data;
   } catch (e) {
     return [];

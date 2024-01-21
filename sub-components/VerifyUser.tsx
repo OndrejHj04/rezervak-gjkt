@@ -15,6 +15,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
+import fetcher from "@/lib/fetcher";
 
 export interface verifyForm {
   ID_code: string;
@@ -42,22 +43,20 @@ export default function VerifyUser({ id }: { id?: number }) {
       newPassword: data.newPassword,
     };
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/account/verify/${id}`, {
+    fetcher(`/api/account/verify/${id}`, {
       method: "POST",
       body: JSON.stringify(body),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.success) {
-          signIn("credentials", {
-            password: data.newPassword,
-            email: res.data.email,
-          });
-        } else {
-          methods.setError("password", { message: "Nesprávné heslo" });
-        }
-        setLoading(false);
-      });
+    }).then((res) => {
+      if (res.success) {
+        signIn("credentials", {
+          password: data.newPassword,
+          email: res.data.email,
+        });
+      } else {
+        methods.setError("password", { message: "Nesprávné heslo" });
+      }
+      setLoading(false);
+    });
   };
 
   return (

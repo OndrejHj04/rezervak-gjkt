@@ -48,6 +48,7 @@ import ReservationListMakeRefetch from "../../list/refetch";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import GroupsPagination from "./GroupsPagination";
 import UsersPagination from "./UsersPagination";
+import fetcher from "@/lib/fetcher";
 
 export default function ReservationDetailForm({
   reservation,
@@ -65,19 +66,15 @@ export default function ReservationDetailForm({
   } = useForm();
 
   const onSubmit = (data: any) => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/edit-reservation/${reservation.id}`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          name: data.name,
-          purpouse: data.purpouse,
-          rooms: Number(data.rooms),
-          instructions: data.instructions,
-        }),
-      }
-    )
-      .then((res) => res.json())
+    fetcher(`/api/reservations/edit-reservation/${reservation.id}`, {
+      method: "POST",
+      body: JSON.stringify({
+        name: data.name,
+        purpouse: data.purpouse,
+        rooms: Number(data.rooms),
+        instructions: data.instructions,
+      }),
+    })
       .then((res) => {
         if (res.success) toast.success("Rezervace byla upravena");
         else toast.error("Něco se nepovedlo");
@@ -112,14 +109,13 @@ export default function ReservationDetailForm({
   };
 
   const handleRemoveUsers = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/remove-users`, {
+    fetcher(`$/api/reservations/remove-users`, {
       method: "POST",
       body: JSON.stringify({
         reservation: reservation.id,
         users: selectedUsers,
       }),
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) toast.success("Uživatelé byli odebráni z rezervace");
         else toast.error("Něco se nepovedlo");
@@ -130,14 +126,13 @@ export default function ReservationDetailForm({
   };
 
   const handleRemoveGroups = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/remove-groups`, {
+    fetcher(`/api/reservations/remove-groups`, {
       method: "POST",
       body: JSON.stringify({
         reservation: reservation.id,
         groups: selectedGroups,
       }),
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) toast.success("Skupiny byly odebrány z rezervace");
         else toast.error("Něco se nepovedlo");
@@ -147,11 +142,10 @@ export default function ReservationDetailForm({
   };
 
   const handleDeleteReservation = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/delete`, {
+    fetcher(`/api/reservations/delete`, {
       method: "POST",
       body: JSON.stringify({ reservations: [reservation.id] }),
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) {
           toast.success("Rezervace byla odstraněna");
@@ -161,16 +155,12 @@ export default function ReservationDetailForm({
   };
 
   const handleUpdateStatus = () => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/update-status/${reservation.id}`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          status: selectedStatus,
-        }),
-      }
-    )
-      .then((res) => res.json())
+    fetcher(`/api/reservations/update-status/${reservation.id}`, {
+      method: "POST",
+      body: JSON.stringify({
+        status: selectedStatus,
+      }),
+    })
       .then((res) => {
         if (res.success) toast.success("Status rezervace byl změněn");
         else toast.error("Něco se nepovedlo");

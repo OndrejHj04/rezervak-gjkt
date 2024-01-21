@@ -14,6 +14,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "./refetch";
+import fetcher from "@/lib/fetcher";
 
 const style = {
   position: "absolute" as "absolute",
@@ -41,20 +42,18 @@ export default function AddUsersToGroupModal({
   } = useForm();
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)
-      .then((res) => res.json())
+    fetcher(`/api/users/list`)
       .then((res) => setUsers(res.data));
   }, []);
 
   const onSubmit = (data: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/add-member`, {
+    fetcher(`/api/group/add-member`, {
       method: "POST",
       body: JSON.stringify({
         group: group.id,
         newMembers: data.users.map((group: any) => group.id),
       }),
     })
-      .then((req) => req.json())
       .then((res) => {
         if (res.success) toast.success("Skupiny úspěšně přidány");
         else toast.error("Něco se nepovedlo");

@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -7,6 +8,20 @@ export async function POST(
 ) {
   try {
     const { purpouse, rooms, instructions, name } = await req.json();
+
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
 
     const data = (await query({
       query: `UPDATE reservations SET purpouse = "${purpouse}", name = "${name}", instructions = "${instructions}", rooms = ${rooms} WHERE id = ${id}`,

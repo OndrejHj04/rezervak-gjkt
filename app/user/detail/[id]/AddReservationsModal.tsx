@@ -12,6 +12,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeUserDetailRefetch from "./refetch";
+import fetcher from "@/lib/fetcher";
 
 const style = {
   position: "absolute" as "absolute",
@@ -41,20 +42,18 @@ export default function AddReservationsModal({
   const [reservations, setReservations] = useState(null);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/list`)
-      .then((res) => res.json())
+    fetcher(`/api/reservations/list`)
       .then((res) => setReservations(res.data));
   }, []);
 
   const onSubmit = (data: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/add-reservations`, {
+    fetcher(`/api/users/add-reservations`, {
       method: "POST",
       body: JSON.stringify({
         user: userId,
         reservations: data.reservations.map((res: any) => res.id),
       }),
     })
-      .then((req) => req.json())
       .then((res) => {
         if (res.success) toast.success("Rezervace úspěšně přidány");
         else toast.error("Něco se nepovedlo");

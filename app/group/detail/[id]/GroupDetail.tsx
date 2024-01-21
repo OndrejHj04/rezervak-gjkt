@@ -3,13 +3,13 @@ import GroupDetailDisplay from "./GroupDetailDisplay";
 import GroupDetailForm from "./GroupDetailForm";
 import Link from "next/link";
 import { rolesConfig } from "@/rolesConfig";
+import fetcher from "@/lib/fetcher";
 
 const getGroupDetail = async (id: string, reservations: any, users: any) => {
-  const req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/group/detail/${id}?reservations=${reservations}&users=${users}`,
+  const { data } = await fetcher(
+    `/api/group/detail/${id}?reservations=${reservations}&users=${users}`,
     { cache: "no-cache" }
   );
-  const { data } = await req.json();
   return data;
 };
 

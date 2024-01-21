@@ -4,14 +4,13 @@ import GroupIcon from "@mui/icons-material/Group";
 import { User, getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import GroupsPagination from "./GroupsPagination";
+import fetcher from "@/lib/fetcher";
 
 const getGroups = async (id: number, page: any) => {
   try {
-    const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/group/user-list?id=${id}&page=${page}`,
-      { cache: "no-cache" }
-    );
-    const data = await req.json();
+    const data = await fetcher(`/api/group/user-list?id=${id}&page=${page}`, {
+      cache: "no-cache",
+    });
 
     return data;
   } catch (e) {

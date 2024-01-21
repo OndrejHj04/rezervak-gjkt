@@ -13,16 +13,14 @@ import TableListPagination from "@/ui-components/TableListPagination";
 import ExportButton from "@/ui-components/ExportButton";
 import { rolesConfig } from "@/rolesConfig";
 import GroupsDelete from "./components/GroupsDelete";
+import fetcher from "@/lib/fetcher";
 
 const getGroups = async (page: any, search: any) => {
   try {
-    const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/group/list?page=${page}${
-        search ? `&search=${search}` : ""
-      }`,
+    const { data } = await fetcher(
+      `/api/group/list?page=${page}${search ? `&search=${search}` : ""}`,
       { cache: "no-cache" }
     );
-    const data = await req.json();
     return data;
   } catch (e) {
     return [];

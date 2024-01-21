@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -7,6 +8,20 @@ export async function GET(req: Request) {
     const id = Number(url.searchParams.get("id"));
     const page = Number(url.searchParams.get("page"));
 
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
+     
     const [groups, count] = (await Promise.all([
       query({
         query: `SELECT groups.id, name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner 

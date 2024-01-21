@@ -1,10 +1,25 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const { from_date, to_date, userId } = await req.json();
+
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
 
     const fromDate = dayjs(from_date).format("YYYY-MM-DD");
     const toDate = dayjs(to_date).format("YYYY-MM-DD");

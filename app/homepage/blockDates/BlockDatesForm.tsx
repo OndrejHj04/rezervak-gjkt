@@ -16,6 +16,7 @@ import SingleReservation from "../reservations/SingleReservation";
 import { toast } from "react-toastify";
 import { revalidatePath } from "next/cache";
 import HomepageRefetch from "../refetch";
+import fetcher from "@/lib/fetcher";
 
 export default function BlockDatesForm({
   reservations,
@@ -37,7 +38,7 @@ export default function BlockDatesForm({
     },
   });
   const onSubmit = (data: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/block`, {
+    fetcher(`/api/reservations/block`, {
       method: "POST",
       body: JSON.stringify({
         from_date: data.from_date,
@@ -45,7 +46,6 @@ export default function BlockDatesForm({
         userId: userId,
       }),
     })
-      .then((res) => res.json())
       .then(({ data }: any) => {
         toast.success(
           `Termín od ${dayjs(data.from_date).format("DD. MM. YYYY")} do ${dayjs(

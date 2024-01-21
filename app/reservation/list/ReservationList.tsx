@@ -21,6 +21,7 @@ import ExpiredReservations from "./components/ExpiredReservations";
 
 import ReservationTableSort from "./components/Sort";
 import dayjs from "dayjs";
+import fetcher from "@/lib/fetcher";
 const getReservations = async (
   page: any,
   status: any,
@@ -30,16 +31,12 @@ const getReservations = async (
   dir: any
 ) => {
   try {
-    const req = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_API_URL
-      }/api/reservations/list?page=${page}&type=${type}&status=${status}${
+    const data = await fetcher(
+      `/api/reservations/list?page=${page}&type=${type}&status=${status}${
         search ? `&search=${search}` : ""
-      }${column ? `&col=${column}` : ""}${dir ? `&dir=${dir}` : ""}`,
-      { cache: "no-cache" }
+      }${column ? `&col=${column}` : ""}${dir ? `&dir=${dir}` : ""}`
     );
-    const data = await req.json();
-    return data as Reservation[];
+    return data;
   } catch (e) {
     return [];
   }
@@ -47,10 +44,7 @@ const getReservations = async (
 
 const getStatuses = async () => {
   try {
-    const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/status?type=all`
-    );
-    const { data } = await req.json();
+    const { data } = await fetcher(`/api/reservations/status?type=all`);
     return data;
   } catch (e) {
     return [];
@@ -102,7 +96,7 @@ export default async function ReservationList({
         )}
         {rolesConfig.reservations.modules.reservationsTable.config.topbar.export.includes(
           userRole
-        ) && <ExportButton prop={"reservations"} translate={"rezervace"}/>}
+        ) && <ExportButton prop={"reservations"} translate={"rezervace"} />}
       </div>
       <Paper>
         <Table>

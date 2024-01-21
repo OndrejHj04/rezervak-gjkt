@@ -17,26 +17,22 @@ import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
 import ExportButton from "@/ui-components/ExportButton";
 import { rolesConfig } from "@/rolesConfig";
+import fetcher from "@/lib/fetcher";
 
 const getUsers = async (page: any, search: any, role: any) => {
-  const req = await fetch(
-    `${
-      process.env.NEXT_PUBLIC_API_URL
-    }/api/users/list?page=${page}&role=${role}${
+  const { data } = await fetcher(
+    `/api/users/list?page=${page}&role=${role}${
       search.length ? `&search=${search}` : ""
     }`,
     {
       cache: "no-cache",
     }
   );
-  const data = await req.json();
-
   return data;
 };
 
 const getRoles = async () => {
-  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/list`);
-  const { data } = await req.json();
+  const { data } = await fetcher(`/api/roles/list`);
 
   return data as any;
 };

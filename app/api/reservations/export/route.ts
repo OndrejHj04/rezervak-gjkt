@@ -1,9 +1,23 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   try {
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
     const reservations = (await query({
       query: `SELECT reservations.id, from_date, to_date, CONCAT(users.first_name, ' ', users.last_name) as leader,
       reservations.name, purpouse, instructions, status.display_name as status, creation_date 

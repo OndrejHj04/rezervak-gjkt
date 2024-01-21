@@ -1,10 +1,25 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import NewUserTemplate from "@/templates/userLogin/template";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const users = await req.json();
+
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
 
     const [data] = (await Promise.all([
       query({

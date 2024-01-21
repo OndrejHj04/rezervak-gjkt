@@ -1,6 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { getRoutes, rolesConfig } from "./rolesConfig";
+import fetcher from "./lib/fetcher";
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req });
@@ -67,16 +68,13 @@ export default async function middleware(req: NextRequest) {
     const group = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
 
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/group/check-user`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          groupId: Number(group),
-          userId: Number(userId),
-        }),
-      }
-    );
+    const request = await fetcher(`/api/group/check-user`, {
+      method: "POST",
+      body: JSON.stringify({
+        groupId: Number(group),
+        userId: Number(userId),
+      }),
+    });
 
     const {
       data: { isMember, isOwner, exist },
@@ -112,20 +110,17 @@ export default async function middleware(req: NextRequest) {
     const reservation = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
 
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/check-user`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          reservationId: Number(reservation),
-          userId: Number(userId),
-        }),
-      }
-    );
+    const request = await fetcher(`/api/reservations/check-user`, {
+      method: "POST",
+      body: JSON.stringify({
+        reservationId: Number(reservation),
+        userId: Number(userId),
+      }),
+    });
 
     const {
       data: { isMember, isLeader, exist, archived, forbidden },
-    } = await request.json();
+    } = request;
 
     if (!exist || forbidden) {
       return NextResponse.redirect(new URL("/", req.url));

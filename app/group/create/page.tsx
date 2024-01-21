@@ -1,12 +1,12 @@
 import { getServerSession } from "next-auth";
 import GroupNewForm from "./GroupNewForm";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import fetcher from "@/lib/fetcher";
 
 const getAccounts = async () => {
-  const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`, {
+  const { data } = await fetcher(`/api/users/list`, {
     cache: "no-cache",
   });
-  const { data } = await req.json();
   return data;
 };
 

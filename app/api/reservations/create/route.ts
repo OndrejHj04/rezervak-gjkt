@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import protect from "@/lib/protect";
 import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 
@@ -15,6 +16,20 @@ export async function POST(req: Request) {
       instructions,
       name,
     } = await req.json();
+
+    const isAuthorized = (await protect(
+      req.headers.get("Authorization")
+    )) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
 
     const reservation = (await query({
       query: `INSERT INTO reservations (from_date, to_date, purpouse, leader, instructions, name, status, creation_date)

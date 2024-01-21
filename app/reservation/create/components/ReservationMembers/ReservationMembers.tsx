@@ -1,14 +1,11 @@
+import fetcher from "@/lib/fetcher";
 import ReservationMembersRender from "./ReservationMembersRender";
 
 const getGroups = async () => {
   try {
-    const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/group/list`,
-      {
-        cache: "no-cache",
-      }
-    );
-    const { data } = await req.json();
+    const { data } = await fetcher(`/api/group/list`, {
+      cache: "no-cache",
+    });
     return data;
   } catch (e) {
     return [];
@@ -17,13 +14,9 @@ const getGroups = async () => {
 
 const getUsers = async () => {
   try {
-    const req = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/list`,
-      {
-        cache: "no-cache",
-      }
-    );
-    const { data } = await req.json();
+    const { data } = await fetcher(`/api/users/list`, {
+      cache: "no-cache",
+    });
     return data;
   } catch (e) {
     return [];

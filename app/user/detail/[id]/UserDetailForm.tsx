@@ -41,6 +41,7 @@ import GroupsPagination from "./GroupsPagination";
 import ReservationsPagination from "./ReservationsPagination";
 import { rolesConfig } from "@/rolesConfig";
 import HotelIcon from "@mui/icons-material/Hotel";
+import fetcher from "@/lib/fetcher";
 
 export default function UserDetailForm({
   userDetail,
@@ -69,37 +70,30 @@ export default function UserDetailForm({
   const makeEdit = rolesConfig.users.modules.userDetail.edit.includes(userRole);
 
   const makeUserSleep = (id: any, active: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/sleep`, {
+    fetcher(`/api/users/sleep`, {
       method: "POST",
       body: JSON.stringify({ id, active }),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        MakeUserDetailRefetch(userDetail.id);
-        toast.success("Uživatel byl upraven");
-      });
+    }).then(() => {
+      MakeUserDetailRefetch(userDetail.id);
+      toast.success("Uživatel byl upraven");
+    });
   };
 
   const onSubmit = (data: any) => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/edit/${userDetail.id}`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          ...data,
-          birth_date: dayjs(data.birth_date).format("YYYY-MM-DD"),
-          role: data.role.id,
-        }),
-      }
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.success) {
-          toast.success("Uživatel byl upraven.");
-          MakeUserDetailRefetch(userDetail.id);
-        } else toast.error("Něco se pokazilo.");
-        setValue("birth_date", data.birth_date);
-      });
+    fetcher(`/api/users/edit/${userDetail.id}`, {
+      method: "POST",
+      body: JSON.stringify({
+        ...data,
+        birth_date: dayjs(data.birth_date).format("YYYY-MM-DD"),
+        role: data.role.id,
+      }),
+    }).then((res) => {
+      if (res.success) {
+        toast.success("Uživatel byl upraven.");
+        MakeUserDetailRefetch(userDetail.id);
+      } else toast.error("Něco se pokazilo.");
+      setValue("birth_date", data.birth_date);
+    });
   };
 
   const handleCheckGroup = (id: number) => {
@@ -111,21 +105,19 @@ export default function UserDetailForm({
   };
 
   const removeGroups = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/remove-groups`, {
+    fetcher(`/api/users/remove-groups`, {
       method: "POST",
       body: JSON.stringify({
         user: userDetail.id,
         groups: selectGroups,
       }),
-    })
-      .then((req) => req.json())
-      .then((res) => {
-        if (res.success) toast.success("Skupiny úspěšně odebrány");
-        else toast.error("Něco se nepovedlo");
+    }).then((res) => {
+      if (res.success) toast.success("Skupiny úspěšně odebrány");
+      else toast.error("Něco se nepovedlo");
 
-        setSelectGroups([]);
-        MakeUserDetailRefetch(userDetail.id);
-      });
+      setSelectGroups([]);
+      MakeUserDetailRefetch(userDetail.id);
+    });
   };
 
   const handleCheckReservation = (id: number) => {
@@ -139,21 +131,19 @@ export default function UserDetailForm({
   };
 
   const removeReservations = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/remove-reservations`, {
+    fetcher(`/api/users/remove-reservations`, {
       method: "POST",
       body: JSON.stringify({
         user: userDetail.id,
         reservations: selectReservations,
       }),
-    })
-      .then((req) => req.json())
-      .then((res) => {
-        if (res.success) toast.success("Rezervace úspěšně odebrány");
-        else toast.error("Něco se nepovedlo");
+    }).then((res) => {
+      if (res.success) toast.success("Rezervace úspěšně odebrány");
+      else toast.error("Něco se nepovedlo");
 
-        setSelectReservation([]);
-        MakeUserDetailRefetch(userDetail.id);
-      });
+      setSelectReservation([]);
+      MakeUserDetailRefetch(userDetail.id);
+    });
   };
 
   return (

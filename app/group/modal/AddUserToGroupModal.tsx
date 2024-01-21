@@ -1,3 +1,4 @@
+import fetcher from "@/lib/fetcher";
 import { Group } from "@/types";
 import { Divider, Modal, Paper, Typography } from "@mui/material";
 import { User as NextAuthUser } from "next-auth";
@@ -19,8 +20,7 @@ export default function AddUserToGroupModal({ group }: { group: Group }) {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)
-      .then((res) => res.json())
+    fetcher(`/api/users/list`)
       .then(({ data }) => setUsers(data));
   }, []);
 

@@ -12,6 +12,7 @@ import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeRefetch from "./refetch";
+import fetcher from "@/lib/fetcher";
 
 const style = {
   position: "absolute" as "absolute",
@@ -46,24 +47,20 @@ export default function AddUserModal({
   );
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list`)
-      .then((res) => res.json())
-      .then((res) => setUsers(res.data));
+    fetcher(`/api/users/list`).then(({ data }) => setUsers(data));
   }, []);
 
   const onSubmit = (data: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/add-users`, {
+    fetcher(`/api/reservations/add-users`, {
       method: "POST",
       body: JSON.stringify({
         reservation: reservation.id,
         users: data.users.map((user: any) => user.id),
       }),
-    })
-      .then((req) => req.json())
-      .then((res) => {
-        if (res.success) toast.success("Uživatelé úspěšně přidány");
-        else toast.error("Něco se nepovedlo");
-      });
+    }).then((res) => {
+      if (res.success) toast.success("Uživatelé úspěšně přidány");
+      else toast.error("Něco se nepovedlo");
+    });
     MakeRefetch(reservation.id);
     setModal(false);
   };

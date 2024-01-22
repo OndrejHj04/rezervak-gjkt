@@ -1,52 +1,23 @@
 "use client";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Autocomplete,
-  Checkbox,
-  FormControlLabel,
-  ListItem,
-  ListItemText,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Button } from "@mui/material";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import MailingAccordion from "./MailingAccordion";
 
 export default function MailingEvents({ events }: { events: any }) {
-  return (
-    <div>
-      {events.map((event: any) => (
-        <Accordion key={event.name}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            {event.name}
-          </AccordionSummary>
+  const methods = useForm();
 
-          <AccordionDetails>
-            {event.children.map((singleEvent: any) => (
-              <ListItem key={singleEvent.id} className="">
-                <ListItemText
-                  primary={singleEvent.primary_txt}
-                  secondary={singleEvent.secondary_txt}
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={singleEvent.template !== null} />}
-                  label="Aktivní"
-                />
-                <Autocomplete
-                  options={[]}
-                  disabled={singleEvent.template === null}
-                  sx={{ width: 300 }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Šablona" />
-                  )}
-                />
-              </ListItem>
-            ))}
-          </AccordionDetails>
-        </Accordion>
-      ))}
-    </div>
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };
+
+  return (
+    <FormProvider {...methods}>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <Button type="submit">Uložit</Button>
+        {events.map((event: any) => (
+          <MailingAccordion event={event} key={event.id} />
+        ))}
+      </form>
+    </FormProvider>
   );
 }

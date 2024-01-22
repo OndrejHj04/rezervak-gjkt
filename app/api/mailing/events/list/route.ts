@@ -23,7 +23,7 @@ export async function GET(req: Request) {
       query: `
       SELECT events.id, events.name,
       GROUP_CONCAT(
-        JSON_OBJECT('primary_txt', events_children.primary_txt, 'secondary_txt', events_children.secondary_txt, 'template', events_children.template)
+        JSON_OBJECT('id', events_children.id, 'primary_txt', events_children.primary_txt, 'secondary_txt', events_children.secondary_txt, 'template', events_children.template)
       ) as children
       FROM events INNER JOIN events_children ON events_children.event = events.id GROUP BY events.id
     `,

@@ -14,9 +14,11 @@ export default function TableListCheckbox({
     selectedGroups,
     selectedReservations,
     selectedUsers,
+    selectedTemplates,
     setSelectedGroups,
     setSelectedReservations,
     setSelectedUsers,
+    setSelectedTemplates,
   } = store();
 
   const methods: any = {
@@ -31,6 +33,10 @@ export default function TableListCheckbox({
     users: {
       read: selectedUsers,
       write: setSelectedUsers,
+    },
+    templates: {
+      read: selectedTemplates,
+      write: setSelectedTemplates,
     },
   };
   const { read, write } = methods[prop];

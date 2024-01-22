@@ -1,7 +1,7 @@
 import { Button, Tab, Tabs } from "@mui/material";
 import Link from "next/link";
-import MailingEvents from "./MailingEvents";
-import MailingTemplates from "./MailingTemplates";
+import MailingEvents from "./events/MailingEvents";
+import MailingTemplates from "./templates/MailingTemplates";
 import fetcher from "@/lib/fetcher";
 import SaveButton from "./SaveButton";
 
@@ -41,9 +41,9 @@ export default async function Mailing({
         <SaveButton />
       </div>
       {mode === "events" ? (
-        <MailingEvents events={events} options={templates}/>
+        <MailingEvents events={events} options={templates} />
       ) : (
-        <MailingTemplates templates={templates}/>
+        <MailingTemplates templates={templates} />
       )}
     </div>
   );

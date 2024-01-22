@@ -11,13 +11,18 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 
+import TemplatesTrash from "./TemplatesTrash";
+import TableListCheckbox from "@/ui-components/TableListCheckbox";
+
 export default function MailingTemplates({ templates }: { templates: any }) {
   return (
     <Paper className="w-full p-2">
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell sx={{ padding: 1.5 }} />
+            <TableCell sx={{ padding: 1.5 }}>
+              <TemplatesTrash />
+            </TableCell>
             <TableCell sx={{ padding: 1.5 }}>
               <Chip label={"Název"} />
             </TableCell>
@@ -27,7 +32,7 @@ export default function MailingTemplates({ templates }: { templates: any }) {
         <TableBody>
           {templates.map((temp: any) => (
             <TableRow key={temp.id}>
-              <TableCell sx={{ padding: 1.5 }} />
+              <TableListCheckbox prop="templates" id={temp.id} />
               <TableCell sx={{ padding: 1.5 }}>{temp.title}</TableCell>
               <TableCell sx={{ padding: 1.5 }}>
                 <Link href={`/mailing/templates/detail/${temp.id}`}>

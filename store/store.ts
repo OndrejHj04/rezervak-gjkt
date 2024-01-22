@@ -13,6 +13,8 @@ interface stateInterface {
   setCreateReservation: (value: NewReservation) => void;
   selectedReservations: number[];
   setSelectedReservations: (value: number[]) => void;
+  selectedTemplates: number[];
+  setSelectedTemplates: (value: number[]) => void;
 }
 
 export const store = create<stateInterface>((set) => ({
@@ -37,4 +39,6 @@ export const store = create<stateInterface>((set) => ({
   selectedReservations: [],
   setSelectedReservations: (selectedReservations) =>
     set({ selectedReservations }),
+  selectedTemplates: [],
+  setSelectedTemplates: (selectedTemplates) => set({ selectedTemplates }),
 }));

@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@mui/material";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import MailingAccordion from "./MailingAccordion";
+import MailingAccordion from "../MailingAccordion";
 
 export default function MailingEvents({
   events,

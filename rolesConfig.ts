@@ -182,7 +182,7 @@ export const rolesConfig = {
     modules: {
       newTemplate: {
         name: "Nová šablona",
-        path: "/mailing/new-template",
+        path: "/mailing/templates/create",
         roles: [1, 2],
         menu: [false, true],
         icon: "mail_icon",

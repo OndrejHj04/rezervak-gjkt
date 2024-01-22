@@ -1,35 +1,50 @@
 "use client";
 import fetcher from "@/lib/fetcher";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Tab, Tabs, TextField, Typography } from "@mui/material";
-import Link from "next/link";
+import { TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MailingRefetch from "../mailingRefetch";
 
-export default function NewTemplate() {
+export default function TemplateForm({ template }: { template?: any }) {
   const {
     register,
     handleSubmit,
-    formState: { isValid },
-  } = useForm();
+    formState: { isValid, isDirty },
+    watch,
+  } = useForm({
+    defaultValues: template || null,
+  });
 
   const onSubmit = (data: any) => {
-    console.log(data);
-    fetcher("/api/mailing/templates/create", {
-      body: JSON.stringify({ ...data }),
-      method: "POST",
-    }).then((data) => {
-      toast.success(`Emailová šablona vytvořena`);
-      MailingRefetch("templates");
-    });
+    if (template) {
+      fetcher(`/api/mailing/templates/edit/${template.id}`, {
+        body: JSON.stringify({ text: data.text, title: data.title }),
+        method: "POST",
+      }).then(() => {
+        toast.success(`Emailová šablona upravena`);
+        MailingRefetch("templates");
+      });
+    } else {
+      fetcher("/api/mailing/templates/create", {
+        body: JSON.stringify({ ...data }),
+        method: "POST",
+      }).then((data) => {
+        toast.success(`Emailová šablona vytvořena`);
+        MailingRefetch("templates");
+      });
+    }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2 flex justify-between gap-2">
         <Typography variant="h5">Nová emailová šablona</Typography>
-        <LoadingButton type="submit" variant="contained" disabled={!isValid}>
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          disabled={!isValid || !isDirty}
+        >
           Uložit
         </LoadingButton>
       </div>

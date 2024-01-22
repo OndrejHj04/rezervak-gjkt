@@ -3,7 +3,13 @@ import { Button } from "@mui/material";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import MailingAccordion from "./MailingAccordion";
 
-export default function MailingEvents({ events }: { events: any }) {
+export default function MailingEvents({
+  events,
+  options,
+}: {
+  events: any;
+  options: any;
+}) {
   const methods = useForm();
 
   const onSubmit = (data: any) => {

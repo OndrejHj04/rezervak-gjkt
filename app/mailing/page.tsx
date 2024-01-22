@@ -10,12 +10,19 @@ const getEvents = async () => {
   return data;
 };
 
+const getTemplates = async () => {
+  const { data } = await fetcher("/api/mailing/templates/list");
+  return data;
+};
+
 export default async function Mailing({
   searchParams: { mode },
 }: {
   searchParams: { mode: any };
 }) {
   const events = await getEvents();
+  const templates = await getTemplates();
+
   return (
     <div>
       <div className="flex justify-between items">
@@ -34,9 +41,9 @@ export default async function Mailing({
         <SaveButton />
       </div>
       {mode === "events" ? (
-        <MailingEvents events={events} />
+        <MailingEvents events={events} options={templates}/>
       ) : (
-        <MailingTemplates />
+        <MailingTemplates templates={templates}/>
       )}
     </div>
   );

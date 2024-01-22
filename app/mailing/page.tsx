@@ -1,3 +1,4 @@
+"use server";
 import { Button, Tab, Tabs } from "@mui/material";
 import Link from "next/link";
 import MailingEvents from "./events/MailingEvents";
@@ -38,7 +39,6 @@ export default async function Mailing({
             href={`/mailing?mode=events`}
           />
         </Tabs>
-        <SaveButton />
       </div>
       {mode === "events" ? (
         <MailingEvents events={events} options={templates} />

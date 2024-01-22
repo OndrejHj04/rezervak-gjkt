@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@mui/material";
+import { Button, Paper, Typography } from "@mui/material";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import EventsAccordion from "./EventsAccordion";
 import fetcher from "@/lib/fetcher";
@@ -26,6 +26,7 @@ export default function MailingEvents({
   const methods = useForm({ defaultValues });
 
   const onSubmit = (data: any) => {
+    console.log(data);
     fetcher(`/api/mailing/events/edit`, {
       method: "POST",
       body: JSON.stringify(data),
@@ -37,10 +38,24 @@ export default function MailingEvents({
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
-        <Button type="submit">Uložit</Button>
-        {events.map((event: any) => (
-          <EventsAccordion event={event} key={event.id} options={options} />
-        ))}
+        <Paper className="flex flex-col">
+          <div className="flex justify-between p-2">
+            <Typography variant="h5">
+              Nastavení emailů pro jednotlivé události
+            </Typography>
+            <Button
+              variant="outlined"
+              type="submit"
+              disabled={
+                !methods.formState.isDirty ||
+                (Object.keys(methods.formState.errors).length as any)
+              }
+            >
+              Uložit
+            </Button>
+          </div>
+          <EventsAccordion events={events} options={options} />
+        </Paper>
       </form>
     </FormProvider>
   );

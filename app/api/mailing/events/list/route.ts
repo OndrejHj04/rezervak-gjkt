@@ -5,9 +5,6 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   try {
-    const url = new URL(req.url);
-    const role = url.searchParams.get("role");
-
     const isAuthorized = (await protect(
       req.headers.get("Authorization")
     )) as any;
@@ -22,40 +19,25 @@ export async function GET(req: Request) {
       );
     }
 
-    if (!role) {
-      const data = await query({
-        query: `SELECT * FROM roles`,
-      });
-      return NextResponse.json({
-        success: true,
-        message: "Operation successful",
-        data: data,
-      });
-    }
-
-    const thisRoles = rolesConfig.users.modules.userCreate.options[
-      role as never
-    ] as any;
-
-    if (thisRoles.length === 0) {
-      return NextResponse.json({
-        success: true,
-        message: "No roles found",
-        data: [],
-      });
-    }
-
-    const data = await query({
+    const events = (await query({
       query: `
-      SELECT * FROM roles WHERE id IN(${thisRoles.map(() => "?")})
+      SELECT events.id, events.name,
+      GROUP_CONCAT(
+        JSON_OBJECT('primary_txt', events_children.primary_txt, 'secondary_txt', events_children.secondary_txt, 'template', events_children.template)
+      ) as children
+      FROM events INNER JOIN events_children ON events_children.event = events.id GROUP BY events.id
     `,
-      values: [...thisRoles],
-    });
+      values: [],
+    })) as any;
 
+    const data = events.map((item: any) => ({
+      ...item,
+      children: JSON.parse(`[${item.children}]`),
+    }));
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: data,
+      data,
     });
   } catch (e) {
     return NextResponse.json(

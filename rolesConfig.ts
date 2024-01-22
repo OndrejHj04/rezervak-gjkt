@@ -176,6 +176,26 @@ export const rolesConfig = {
       },
     },
   },
+  emails: {
+    name: "Maily",
+    path: "/mailing",
+    modules: {
+      newTemplate: {
+        name: "Nová šablona",
+        path: "/mailing/new-template",
+        roles: [1, 2],
+        menu: [false, true],
+        icon: "mail_icon",
+      },
+      mailing: {
+        name: "Mailing",
+        path: "/mailing",
+        roles: [1, 2],
+        menu: [true, false],
+        icon: "feed_icon",
+      },
+    },
+  },
 };
 
 export const getRoutes = (config: any, role: any, result: any = []) => {

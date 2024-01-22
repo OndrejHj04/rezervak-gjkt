@@ -21,18 +21,26 @@ export async function GET(req: Request) {
 
     const events = (await query({
       query: `
-      SELECT events.id, events.name,
-      GROUP_CONCAT(
-        JSON_OBJECT('id', events_children.id, 'primary_txt', events_children.primary_txt, 'secondary_txt', events_children.secondary_txt, 'template', events_children.template)
-      ) as children
-      FROM events INNER JOIN events_children ON events_children.event = events.id GROUP BY events.id
+        SELECT events.id, events.name,
+        GROUP_CONCAT(
+          JSON_OBJECT('id', events_children.id, 'primary_txt', events_children.primary_txt,
+          'secondary_txt', events_children.secondary_txt, 'template', 
+          IF(templates.id IS NULL, NULL, JSON_OBJECT('id', templates.id, 'name', templates.name, 'title', templates.title, 'text', templates.text)),
+          'active', events_children.active)
+        ) as children
+        FROM events INNER JOIN events_children ON events_children.event = events.id
+        LEFT JOIN templates ON templates.id = events_children.template
+        GROUP BY events.id
     `,
       values: [],
     })) as any;
 
     const data = events.map((item: any) => ({
       ...item,
-      children: JSON.parse(`[${item.children}]`),
+      children: JSON.parse(`[${item.children}]`).map((child: any) => ({
+        ...child,
+        template: child.template ? JSON.parse(`[${child.template}]`)[0] : null,
+      })),
     }));
     return NextResponse.json({
       success: true,

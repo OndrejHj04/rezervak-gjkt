@@ -3,10 +3,13 @@ import {
   AccordionDetails,
   AccordionSummary,
   Autocomplete,
+  Box,
   Checkbox,
+  Chip,
   FormControlLabel,
   ListItem,
   ListItemText,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -43,17 +46,25 @@ export default function EventsAccordion({
           <AccordionDetails>
             {event.children.map((singleEvent: any) => (
               <ListItem key={singleEvent.id}>
-                <ListItemText
-                  primary={singleEvent.primary_txt}
-                  secondary={singleEvent.secondary_txt}
-                />
+                <div className="flex flex-col">
+                  <ListItemText
+                    primary={singleEvent.primary_txt}
+                    secondary={singleEvent.secondary_txt}
+                  />
+                  <div className="flex gap-2 items-center">
+                    <Typography>Proměnné: </Typography>
+                    {singleEvent.variables.map((item: any, i: any) => (
+                      <Chip key={i} label={item} />
+                    ))}
+                  </div>
+                </div>
                 <Controller
                   {...register(`Checkbox ${singleEvent.id}`)}
                   control={control}
                   render={({ field: { value, onChange } }) => {
                     return (
                       <FormControlLabel
-                        control={<Checkbox checked={value} />}
+                        control={<Switch checked={value} />}
                         onChange={(e, value) => {
                           onChange(value);
                           if (!value) {

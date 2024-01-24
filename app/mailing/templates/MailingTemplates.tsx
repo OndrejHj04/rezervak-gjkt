@@ -26,6 +26,9 @@ export default function MailingTemplates({ templates }: { templates: any }) {
             <TableCell sx={{ padding: 1.5 }}>
               <Chip label={"Název"} />
             </TableCell>
+            <TableCell sx={{ padding: 1.5 }}>
+              <Chip label={"Předmět"} />
+            </TableCell>
             <TableCell sx={{ padding: 1.5 }} />
           </TableRow>
         </TableHead>
@@ -33,6 +36,7 @@ export default function MailingTemplates({ templates }: { templates: any }) {
           {templates.map((temp: any) => (
             <TableRow key={temp.id}>
               <TableListCheckbox prop="templates" id={temp.id} />
+              <TableCell sx={{ padding: 1.5 }}>{temp.name}</TableCell>
               <TableCell sx={{ padding: 1.5 }}>{temp.title}</TableCell>
               <TableCell sx={{ padding: 1.5 }}>
                 <Link href={`/mailing/templates/detail/${temp.id}`}>

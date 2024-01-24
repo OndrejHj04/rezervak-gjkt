@@ -17,13 +17,13 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
-    const { text, title } = await req.json();
+    const { name, text, title } = await req.json();
 
     await query({
       query: `
-      INSERT INTO templates (text, title) VALUES (?,?)
+      INSERT INTO templates (name, text, title) VALUES (?,?,?)
     `,
-      values: [text, title],
+      values: [name, text, title],
     });
 
     return NextResponse.json({

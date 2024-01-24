@@ -19,7 +19,7 @@ export default function TemplateForm({ template }: { template?: any }) {
   const onSubmit = (data: any) => {
     if (template) {
       fetcher(`/api/mailing/templates/edit/${template.id}`, {
-        body: JSON.stringify({ text: data.text, title: data.title }),
+        body: JSON.stringify({ ...data }),
         method: "POST",
       }).then(() => {
         toast.success(`Emailová šablona upravena`);
@@ -39,7 +39,9 @@ export default function TemplateForm({ template }: { template?: any }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2 flex justify-between gap-2">
-        <Typography variant="h5">Nová emailová šablona</Typography>
+        <Typography variant="h5">
+          {template ? "Úprava emailové šablony" : "Nová emailová šablona"}
+        </Typography>
         <LoadingButton
           type="submit"
           variant="contained"
@@ -49,6 +51,11 @@ export default function TemplateForm({ template }: { template?: any }) {
         </LoadingButton>
       </div>
       <div className="flex flex-col gap-2">
+        <TextField
+          {...register("name", { required: true })}
+          className="w-full"
+          label="Název"
+        />
         <TextField
           {...register("title", { required: true, minLength: 10 })}
           className="w-full"

@@ -10,7 +10,10 @@ export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       async profile(profile: GoogleProfile) {
-        const { data } = await fetcher(`/api/users/email/${profile.email}`);
+        const req = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users/email/${profile.email}`
+        );
+        const { data } = await req.json();
         if (
           data.length &&
           profile.picture &&
@@ -55,13 +58,17 @@ export const authOptions: NextAuthOptions = {
           email: credentials?.email,
           password: credentials?.password,
         } as any;
-        const { data } = await fetcher(`/api/users/login`, {
-          body: JSON.stringify(userObject),
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
+          {
+            body: JSON.stringify(userObject),
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const { data } = await res.json();
         return data || null;
       },
     }),

@@ -1,12 +1,28 @@
 import { query } from "@/lib/db";
+import fetcher from "@/lib/fetcher";
+import protect from "@/lib/protect";
 import { User } from "next-auth";
 import { NextResponse } from "next/server";
 
+const eventId = 2;
 export async function POST(
   req: Request,
   { params: { id } }: { params: { id: string } }
 ) {
   try {
+    const token = req.headers.get("Authorization");
+    const isAuthorized = (await protect(token)) as any;
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Auth failed",
+        },
+        { status: 500 }
+      );
+    }
+
     const { ID_code, birth_date, newPassword, password, adress } =
       await req.json();
 
@@ -25,17 +41,23 @@ export async function POST(
       );
     }
 
-    const user = (await query({
-      query: `SELECT * FROM users WHERE id = ?`,
-      values: [id],
-    })) as User[];
+    const [user, template] = (await Promise.all([
+      query({
+        query: `SELECT * FROM users WHERE id = ?`,
+        values: [id],
+      }),
+      fetcher(`/api/mailing/events/detail/${eventId}`, { token }),
+    ])) as any;
 
-    const role = (await query({
-      query: `SELECT * FROM roles WHERE id = ?`,
-      values: [user[0].role],
-    })) as any;
-
-    user.map((item) => (item.role = role[0]));
+    fetcher("/api/email", {
+      method: "POST",
+      body: JSON.stringify({
+        to: user[0].email,
+        template: template.data.template,
+        variables: [{ name: "email", value: user[0].email }],
+      }),
+      token,
+    });
 
     return NextResponse.json({
       success: true,

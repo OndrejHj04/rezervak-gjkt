@@ -47,6 +47,7 @@ export default function VerifyUser({ id }: { id?: number }) {
       method: "POST",
       body: JSON.stringify(body),
     }).then((res) => {
+      console.log(res);
       if (res.success) {
         signIn("credentials", {
           password: data.newPassword,

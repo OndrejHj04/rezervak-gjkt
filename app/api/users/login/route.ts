@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
-
+  
     const data = (await query({
       query: `SELECT * FROM users WHERE email = "${email}" AND password = MD5("${password}")`,
       values: [],

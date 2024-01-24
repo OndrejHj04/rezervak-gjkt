@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
-    
+
     const check = (await query({
       query: `SELECT * FROM users WHERE email = ?`,
       values: [email],
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       }),
       fetcher(`/api/mailing/events/detail/${eventId}`, { token }),
     ])) as any;
-
+    
     fetcher("/api/email", {
       method: "POST",
       body: JSON.stringify({

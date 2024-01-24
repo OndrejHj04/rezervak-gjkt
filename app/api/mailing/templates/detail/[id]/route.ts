@@ -31,7 +31,7 @@ export async function GET(
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: templates,
+      data: templates[0],
     });
   } catch (e) {
     return NextResponse.json(

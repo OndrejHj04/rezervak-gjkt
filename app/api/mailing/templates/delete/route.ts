@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         values: [...templates],
       }),
       query({
-        query: `UPDATE events_children SET template = 0 WHERE event IN(${templates.map(
+        query: `UPDATE events_children SET template = 0, active = 0 WHERE template IN(${templates.map(
           () => "?"
         )})`,
         values: [...templates],

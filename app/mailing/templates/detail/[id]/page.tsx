@@ -16,5 +16,5 @@ export default async function TemplateDetail({
 }) {
   const template = await getTemplateDetail(id);
 
-  return <TemplateForm template={template[0]} />;
+  return <TemplateForm template={template} />;
 }

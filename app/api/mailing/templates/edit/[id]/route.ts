@@ -20,13 +20,13 @@ export async function POST(
         { status: 500 }
       );
     }
-    const { text, title } = await req.json();
+    const { name, text, title } = await req.json();
 
     await query({
       query: `
-      UPDATE templates SET title = ?, text = ? WHERE id = ?
+      UPDATE templates SET name = ?, title = ?, text = ? WHERE id = ?
     `,
-      values: [text, title, id],
+      values: [name,title, text, id],
     });
 
     return NextResponse.json({

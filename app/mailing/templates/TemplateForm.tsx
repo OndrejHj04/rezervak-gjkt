@@ -57,7 +57,7 @@ export default function TemplateForm({ template }: { template?: any }) {
           label="Název"
         />
         <TextField
-          {...register("title", { required: true, minLength: 10 })}
+          {...register("title", { required: true })}
           className="w-full"
           label="Předmět"
         />

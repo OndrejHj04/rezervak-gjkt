@@ -20,6 +20,7 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+    
     const check = (await query({
       query: `SELECT * FROM users WHERE email = ?`,
       values: [email],
@@ -49,7 +50,12 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         to: email,
         template: data.template,
+        variables: [
+          { name: "email", value: email },
+          { name: "password", value: password },
+        ],
       }),
+      token,
     });
 
     return NextResponse.json({

@@ -7,14 +7,15 @@ export default async function fetcher(
     method,
     body,
     cache,
+    token,
     headers,
-  }: { method?: any; body?: any; cache?: any; headers?: any } = {}
+  }: { method?: any; body?: any; cache?: any; headers?: any; token?: any } = {}
 ) {
   const cookieStore = cookies();
-  const token = cookieStore.get("next-auth.session-token")?.value;
+  const authToken = cookieStore.get("next-auth.session-token")?.value || token;
   const req = await fetch(process.env.NEXT_PUBLIC_API_URL + url, {
     headers: {
-      Authorization: `Bearer ${token}` as any,
+      Authorization: `Bearer ${authToken}` as any,
       ...headers,
     },
     method,

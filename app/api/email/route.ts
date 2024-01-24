@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { to, subject, html } = await req.json();
+    const { to, template } = await req.json();
 
     const isAuthorized = (await protect(
       req.headers.get("Authorization")
@@ -19,12 +19,12 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
-    //await transporter.sendMail({
-    //  from: process.env.EMAIL_ADRESS,
-    //  to,
-    //  subject,
-    //  html,
-    // });
+    await transporter.sendMail({
+      from: process.env.EMAIL_ADRESS,
+      to,
+      subject: template.title,
+      html: template.text,
+    });
 
     return NextResponse.json({
       success: true,

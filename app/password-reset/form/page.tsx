@@ -35,16 +35,16 @@ export default function ResetPassword({
   const onSubmit = (data: any) => {
     const { first_password, second_password } = data;
     if (first_password === second_password) {
-      fetcher(`/api/reset-password`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reset-password`, {
         method: "POST",
         body: JSON.stringify({
           password: first_password,
           id,
         }),
-      })
-        .then(() => {
-          toast.success("Heslo úspěšně změněno");
-        });
+      }).then(() => {
+        toast.success("Heslo úspěšně změněno");
+        push("/");
+      });
     } else {
       setError("second_password", {
         type: "custom",

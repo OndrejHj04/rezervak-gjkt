@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 import { sign } from "jsonwebtoken";
 
+const eventId = 4;
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
@@ -11,15 +12,32 @@ export async function POST(req: Request) {
       values: [email],
     })) as any;
     if (users.length) {
-      console.log(
-        sign(
-          {
-            exp: Math.floor(Date.now() / 1000) + 60 * 60,
-            id: users[0].id,
-          },
-          "Kraljeliman"
-        )
+      const tkn = sign(
+        {
+          exp: dayjs().add(1, "day").unix() * 1000,
+          id: users[0].id,
+        },
+        "Kraljeliman"
       );
+
+      const req = (await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/mailing/events/detail/${eventId}`
+      )) as any;
+      const template = await req.json();
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
+        method: "POST",
+        body: JSON.stringify({
+          to: email,
+          template: template.data.template,
+          variables: [
+            {
+              name: "link",
+              value: `${process.env.NEXT_PUBLIC_API_URL}/password-reset/form?id=${users[0].id}&token=${tkn}`,
+            },
+          ],
+          check: false,
+        }),
+      });
     } else {
       return NextResponse.json(
         {

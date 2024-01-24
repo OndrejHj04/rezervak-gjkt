@@ -20,21 +20,23 @@ export default function ResetPasswordEmail({
   const { push } = useRouter();
 
   const onSubmit = (data: any) => {
-    fetcher(`/api/reset-password/email`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reset-password/email`, {
       method: "POST",
       body: JSON.stringify({
         email: data.email,
       }),
-    }).then((data) => {
-      if (!data.email) {
-        setError("email", {
-          type: "custom",
-          message: "Účet s tímto emailem nebyl nalezen",
-        });
-      } else {
-        toast.success(`Email na obnovení hesla byl odeslán.`);
-      }
-    });
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.email) {
+          setError("email", {
+            type: "custom",
+            message: "Účet s tímto emailem nebyl nalezen",
+          });
+        } else {
+          toast.success(`Email na obnovení hesla byl odeslán.`);
+        }
+      });
   };
 
   return (

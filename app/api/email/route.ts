@@ -5,13 +5,13 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { to, template, variables } = await req.json();
+    const { to, template, variables, check = true } = await req.json();
 
     const isAuthorized = (await protect(
       req.headers.get("Authorization")
     )) as any;
 
-    if (!isAuthorized) {
+    if (!isAuthorized && check) {
       return NextResponse.json(
         {
           success: false,
@@ -21,13 +21,14 @@ export async function POST(req: Request) {
       );
     }
 
+    console.log(MakeEmailText(template.text, variables));
     await transporter.sendMail({
       from: process.env.EMAIL_ADRESS,
       to,
       subject: template.title,
       html: MakeEmailText(template.text, variables),
     });
-  
+
     return NextResponse.json({
       success: true,
       message: "Operation successful",

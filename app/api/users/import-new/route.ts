@@ -1,8 +1,8 @@
 import { query } from "@/lib/db";
 import protect from "@/lib/protect";
-import NewUserTemplate from "@/templates/userLogin/template";
 import { NextResponse } from "next/server";
 
+const eventId = 1;
 export async function POST(req: Request) {
   try {
     const users = await req.json();

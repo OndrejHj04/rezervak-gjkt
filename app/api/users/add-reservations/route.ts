@@ -1,6 +1,5 @@
 import { query } from "@/lib/db";
 import protect from "@/lib/protect";
-import NewReservationMember from "@/templates/reservationUserEdit/template";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

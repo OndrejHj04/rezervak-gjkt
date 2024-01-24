@@ -1,6 +1,5 @@
 import { query } from "@/lib/db";
 import protect from "@/lib/protect";
-import GroupUsersEdit from "@/templates/groupUserEdit/template";
 import { error } from "console";
 import { NextResponse } from "next/server";
 

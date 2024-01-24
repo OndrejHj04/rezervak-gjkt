@@ -1,7 +1,6 @@
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
-import NewUserTemplate from "@/templates/userLogin/template";
 import { NextResponse } from "next/server";
 
 const eventId = 1;

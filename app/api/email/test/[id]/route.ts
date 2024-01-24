@@ -1,7 +1,6 @@
 import { transporter } from "@/lib/email";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
-import NewUserTemplate from "@/templates/userLogin/template";
 import { NextResponse } from "next/server";
 
 export async function POST(

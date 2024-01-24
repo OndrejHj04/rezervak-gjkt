@@ -1,7 +1,6 @@
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
-import GroupUsersEdit from "@/templates/groupUserEdit/template";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

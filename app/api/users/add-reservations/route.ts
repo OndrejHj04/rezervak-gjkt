@@ -50,10 +50,9 @@ export async function POST(req: Request) {
       }),
     ])) as any;
 
-    console.log(userDetail[0], data.template);
-    reservationsDetail.map((res: any) => {
+    reservationsDetail.map(async (res: any) => {
       res = { ...res, owner: JSON.parse(res.owner) };
-      fetcher("/api/email", {
+      await fetcher("/api/email", {
         method: "POST",
         body: JSON.stringify({
           to: userDetail[0].email,

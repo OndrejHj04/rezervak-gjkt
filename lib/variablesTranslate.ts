@@ -7,4 +7,10 @@ export const varTranslate = {
   users_count: "počet členů",
   owner_name: "jméno vlastníka",
   owner_email: "email vlastníka",
+  leader_name: "jméno vedoucího",
+  leader_email: "email vedoucího",
+  reservation_start: "začátek rezervace",
+  reservation_end: "konec rezervace",
+  reservation_status: "status rezervace",
+  reservations_rooms: "rezervované pokoje",
 };

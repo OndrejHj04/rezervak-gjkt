@@ -6,5 +6,5 @@ export const varTranslate = {
   group_name: "název skupiny",
   users_count: "počet členů",
   owner_name: "jméno vlastníka",
-  owner_email: "email_vlastníka",
+  owner_email: "email vlastníka",
 };

@@ -63,7 +63,7 @@ export async function POST(req: Request) {
       users,
       reservations,
     };
-    console.log(groupDetail);
+    
     fetcher("/api/email", {
       method: "POST",
       body: JSON.stringify({

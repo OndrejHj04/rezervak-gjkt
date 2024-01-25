@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     const data = await req.json();
     for (let i = 0; i < Object.keys(data).length / 2; i++) {
       const [first, second] = Object.keys(data).slice(i * 2, i * 2 + 2) as any;
-      const rowId = first[first.length - 1];
+      const rowId = first.replace("Checkbox ", "");
       const checkSecond = data[second] ? data[second].id : null;
 
       await query({

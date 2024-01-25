@@ -13,4 +13,6 @@ export const varTranslate = {
   reservation_end: "konec rezervace",
   reservation_status: "status rezervace",
   reservations_rooms: "rezervované pokoje",
+  status_before: "původní stav",
+  status_new: "nový stav",
 };

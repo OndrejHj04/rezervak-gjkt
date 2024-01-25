@@ -26,7 +26,6 @@ export default function MailingEvents({
   const methods = useForm({ defaultValues });
 
   const onSubmit = (data: any) => {
-    console.log(data);
     fetcher(`/api/mailing/events/edit`, {
       method: "POST",
       body: JSON.stringify(data),

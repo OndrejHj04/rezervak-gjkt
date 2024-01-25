@@ -21,8 +21,7 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log(MakeEmailText(template.text, variables));
-    await transporter.sendMail({
+    const mail = await transporter.sendMail({
       from: process.env.EMAIL_ADRESS,
       to,
       subject: template.title,

@@ -20,7 +20,6 @@ export default function TemplatesTrash() {
       MailingRefetch("templates");
     });
   };
-  console.log(selectedTemplates);
   return (
     <div>
       <IconButton

@@ -18,6 +18,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "./refetch";
 import fetcher from "@/lib/fetcher";
+import UserCard from "@/app/user/detail/UserCard";
 
 const style = {
   position: "absolute" as "absolute",
@@ -91,14 +92,7 @@ export default function AddUsersToGroupModal({
                 }
                 options={users}
                 renderOption={(props: any, option: any) => (
-                  <div {...props}>
-                    <Box className="flex items-center gap-2">
-                      <AvatarWrapper data={option} />
-                      <Typography className="ml-2">
-                        {option.first_name} {option.last_name}
-                      </Typography>
-                    </Box>
-                  </div>
+                  <UserCard {...props} user={option} />
                 )}
                 renderInput={(params) => (
                   <TextField {...params} label="Vybrat uživatele..." />

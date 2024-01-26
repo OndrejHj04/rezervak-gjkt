@@ -45,16 +45,15 @@ export default function BlockDatesForm({
         to_date: data.to_date,
         userId: userId,
       }),
-    })
-      .then(({ data }: any) => {
-        toast.success(
-          `Termín od ${dayjs(data.from_date).format("DD. MM. YYYY")} do ${dayjs(
-            data.to_date
-          ).format("DD. MM. YYYY")} je blokován.`
-        );
-        reset();
-        HomepageRefetch();
-      });
+    }).then(({ data }: any) => {
+      toast.success(
+        `Termín od ${dayjs(data.from_date).format("DD. MM. YYYY")} do ${dayjs(
+          data.to_date
+        ).format("DD. MM. YYYY")} je blokován.`
+      );
+      reset();
+      HomepageRefetch();
+    });
   };
 
   const renderDay = (props: any) => {
@@ -114,7 +113,6 @@ export default function BlockDatesForm({
                   value={value}
                   className="flex-1"
                   onChange={(date: any) => onChange(date)}
-                  shouldDisableDate={(date) => dayjs(date).isBefore()}
                   slots={{ day: renderDay }}
                 />
               )}
@@ -130,7 +128,6 @@ export default function BlockDatesForm({
                   format="DD. MM. YYYY"
                   value={value}
                   className="flex-1"
-                  shouldDisableDate={(date) => dayjs(date).isBefore()}
                   onChange={(date: any) => onChange(date)}
                   slots={{ day: renderDay }}
                 />

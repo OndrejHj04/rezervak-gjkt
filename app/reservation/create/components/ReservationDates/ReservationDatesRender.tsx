@@ -57,12 +57,15 @@ const renderDay = (props: any) => {
         sx={{ "& .MuiBadge-badge": { transform: "translate(0px, -5px)" } }}
         variant="dot"
         invisible={!isBlocked.length}
+        badgeContent={outsideCurrentMonth ? 0 : ""}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
         <PickersDay
           {...other}
           day={day}
-          disabled={isBlocked.length}
+          disabled={
+            isBlocked.length || dayjs(dayjs(day).add(1, "day")).isBefore()
+          }
           outsideCurrentMonth={outsideCurrentMonth}
         />
       </Badge>
@@ -189,7 +192,6 @@ export default function ReservationDatesRender({
                     }}
                     onChange={(date) => onChange(date)}
                     shouldDisableDate={(date) => afterDateDisabled(date)}
-                    disableHighlightToday
                     slotProps={{
                       actionBar: { actions: [] },
                       day: { reservations: reservations } as any,
@@ -211,7 +213,6 @@ export default function ReservationDatesRender({
                     }}
                     shouldDisableDate={(date) => toDateDisabled(date)}
                     onChange={(date) => onChange(date)}
-                    disableHighlightToday
                     slotProps={{
                       actionBar: { actions: [] },
                       day: { reservations } as any,

@@ -29,9 +29,9 @@ export async function POST(
       query({
         query: `SELECT reservations.from_date, reservations.name, reservations.to_date, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader,
         GROUP_CONCAT(distinct users.email) as emails, status.display_name as status_before FROM reservations LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id 
-          INNER JOIN users as leader ON leader.id = users_reservations.userId
           INNER JOIN status ON status.id = reservations.status
-          INNER JOIN users ON reservations.leader = users.id
+          INNER JOIN users ON users_reservations.userId = users.id
+          INNER JOIN users as leader ON leader.id = reservations.leader
          WHERE reservations.id = ? GROUP BY reservations.id`,
         values: [id],
       }),
@@ -88,7 +88,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: [],
+      data: resDetail,
     });
   } catch (e) {
     return NextResponse.json(

@@ -20,13 +20,10 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
-    const [{ data }, allGroups, _] = (await Promise.all([
-      fetcher(`/api/mailing/events/detail/${eventId}`, {
-        token,
-      }),
+
+    const [allGroups, { data }] = (await Promise.all([
       query({
-        query: `
-        SELECT groups.name, groups.description, JSON_OBJECT('first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner, GROUP_CONCAT(users.email) as users 
+        query: `SELECT groups.name, groups.description, JSON_OBJECT('first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner, GROUP_CONCAT(users.email) as users 
         FROM groups 
         LEFT JOIN users_groups ON users_groups.groupId = groups.id 
         INNER JOIN users ON users.id = users_groups.userId 
@@ -35,7 +32,29 @@ export async function POST(req: Request) {
         GROUP BY groups.id`,
         values: [...groups],
       }),
+      fetcher(`/api/mailing/events/detail/${eventId}`, {
+        token,
+      }),
     ])) as any;
+
+    await Promise.all([
+      query({
+        query: `DELETE FROM groups WHERE id IN(${groups.map(() => "?")})`,
+        values: [...groups],
+      }),
+      query({
+        query: `DELETE FROM users_groups WHERE groupId IN(${groups.map(
+          () => "?"
+        )})`,
+        values: [...groups],
+      }),
+      query({
+        query: `DELETE FROM reservations_groups WHERE groupId IN(${groups.map(
+          () => "?"
+        )})`,
+        values: [...groups],
+      }),
+    ]);
 
     allGroups.map(async (grp: any) => {
       grp = { ...grp, owner: JSON.parse(grp.owner) };

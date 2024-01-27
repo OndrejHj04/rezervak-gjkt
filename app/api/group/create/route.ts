@@ -22,9 +22,8 @@ export async function POST(req: Request) {
     }
 
     const newGroup = (await query({
-      query: `INSERT INTO groups (name, description, owner) VALUES ("${name}", ${
-        description ? `"${description}"` : null
-      }, "${owner}")`,
+      query: `INSERT INTO groups (name, description, owner) VALUES (?,?,?)`,
+      values: [name, description, owner],
     })) as any;
 
     await query({
@@ -36,7 +35,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: { name, newGroupId: newGroup.insertId},
+      data: { name, newGroupId: newGroup.insertId },
     });
   } catch (e: any) {
     return NextResponse.json(

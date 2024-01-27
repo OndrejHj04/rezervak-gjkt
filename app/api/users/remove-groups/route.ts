@@ -47,7 +47,6 @@ export async function POST(req: Request) {
 
     groupsDetail.map((detail: any) => {
       detail = { ...detail, owner: JSON.parse(detail.owner) };
-      console.log(detail);
 
       fetcher("/api/email", {
         method: "POST",
@@ -59,8 +58,7 @@ export async function POST(req: Request) {
             { name: "group_name", value: detail.name },
             {
               name: "owner_name",
-              value:
-                detail.owner.first_name + " " + detail.owner.last_name,
+              value: detail.owner.first_name + " " + detail.owner.last_name,
             },
             { name: "owner_email", value: detail.owner.email },
           ],

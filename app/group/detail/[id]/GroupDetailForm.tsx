@@ -32,6 +32,7 @@ import AddGroupToReservationModal from "./AddGroupToReservationModal";
 import UsersPagination from "@/app/reservation/detail/[id]/UsersPagination";
 import ReservationsPagination from "./ReservationsPagination";
 import fetcher from "@/lib/fetcher";
+import _ from "lodash";
 
 interface selecteUser {
   label: string;
@@ -48,11 +49,16 @@ export default function GroupDetailForm({ group }: { group: any }) {
   const [reservationModal, setReservationModal] = useState(false);
   const [selectReservation, setSelectReservation] = useState<number[]>([]);
   const {
-    formState: { isDirty },
+    formState: { isDirty, dirtyFields },
     register,
     handleSubmit,
     reset,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      name: group.name,
+      description: group.description,
+    },
+  });
 
   const onSubmit = (data: any) => {
     fetcher(`/api/group/edit/${group.id}`, {
@@ -60,30 +66,28 @@ export default function GroupDetailForm({ group }: { group: any }) {
       body: JSON.stringify({
         ...data,
       }),
-    })
-      .then((res) => {
-        if (res.success) {
-          toast.success("Skupina upravena");
-          reset();
-          MakeGroupDetailRefetch(group.id);
-        } else {
-          toast.error("Něco se nepovedlo");
-        }
-      });
+    }).then((res) => {
+      if (res.success) {
+        toast.success("Skupina upravena");
+        MakeGroupDetailRefetch(group.id);
+        reset();
+      } else {
+        toast.error("Něco se nepovedlo");
+      }
+    });
   };
 
   const handleRemoveGroup = () => {
     fetcher(`/api/group/remove`, {
       method: "POST",
       body: JSON.stringify({
-        group: group.id,
+        groups: [group.id],
       }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Skupina úspěšně odstraněna");
-        else toast.error("Něco se nepovedlo");
-      });
-    MakeGroupRefetch();
+    }).then((res) => {
+      if (res.success) toast.success("Skupina úspěšně odstraněna");
+      else toast.error("Něco se nepovedlo");
+      MakeGroupRefetch();
+    });
   };
 
   const handleDeleteMembers = () => {
@@ -93,13 +97,12 @@ export default function GroupDetailForm({ group }: { group: any }) {
         group: group.id,
         members: checked,
       }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Uživatelé odebráni");
-        else toast.error("Něco se nepovedlo");
-        setChecked([]);
-        MakeGroupDetailRefetch(group.id);
-      });
+    }).then((res) => {
+      if (res.success) toast.success("Uživatelé odebráni");
+      else toast.error("Něco se nepovedlo");
+      setChecked([]);
+      MakeGroupDetailRefetch(group.id);
+    });
   };
 
   const handleCheck = (Id: number) => {
@@ -125,13 +128,12 @@ export default function GroupDetailForm({ group }: { group: any }) {
         group: group.id,
         reservations: selectReservation,
       }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Rezervace odstraněny");
-        else toast.error("Něco se nepovedlo");
-        MakeGroupDetailRefetch(group.id);
-        setSelectReservation([]);
-      });
+    }).then((res) => {
+      if (res.success) toast.success("Rezervace odstraněny");
+      else toast.error("Něco se nepovedlo");
+      MakeGroupDetailRefetch(group.id);
+      setSelectReservation([]);
+    });
   };
 
   if (!group) {
@@ -193,14 +195,9 @@ export default function GroupDetailForm({ group }: { group: any }) {
               </div>
             </div>
             <div className="flex gap-2">
-              <TextField
-                label="Jméno"
-                {...register("name")}
-                defaultValue={group.name}
-              />
+              <TextField label="Jméno" {...register("name")} />
               <TextField
                 {...register("description")}
-                defaultValue={group.description}
                 multiline
                 label="Popis skupiny"
                 minRows={4}

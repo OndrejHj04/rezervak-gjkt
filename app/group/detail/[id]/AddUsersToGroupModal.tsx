@@ -57,7 +57,7 @@ export default function AddUsersToGroupModal({
         newMembers: data.users.map((group: any) => group.id),
       }),
     }).then((res) => {
-      if (res.success) toast.success("Skupiny úspěšně přidány");
+      if (res.success) toast.success("Uživatelé úspěšně přidány");
       else toast.error("Něco se nepovedlo");
     });
 

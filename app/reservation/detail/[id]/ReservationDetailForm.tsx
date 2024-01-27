@@ -74,13 +74,12 @@ export default function ReservationDetailForm({
         rooms: Number(data.rooms),
         instructions: data.instructions,
       }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Rezervace byla upravena");
-        else toast.error("Něco se nepovedlo");
-        MakeReservationDetailRefetch(reservation.id);
-        reset();
-      });
+    }).then((res) => {
+      if (res.success) toast.success("Rezervace byla upravena");
+      else toast.error("Něco se nepovedlo");
+      MakeReservationDetailRefetch(reservation.id);
+      reset();
+    });
   };
 
   const { push } = useRouter();
@@ -115,14 +114,13 @@ export default function ReservationDetailForm({
         reservation: reservation.id,
         users: selectedUsers,
       }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Uživatelé byli odebráni z rezervace");
-        else toast.error("Něco se nepovedlo");
+    }).then((res) => {
+      if (res.success) toast.success("Uživatelé byli odebráni z rezervace");
+      else toast.error("Něco se nepovedlo");
 
-        MakeReservationDetailRefetch(reservation.id);
-        setSelecetedUsers([]);
-      });
+      MakeReservationDetailRefetch(reservation.id);
+      setSelecetedUsers([]);
+    });
   };
 
   const handleRemoveGroups = () => {
@@ -132,25 +130,23 @@ export default function ReservationDetailForm({
         reservation: reservation.id,
         groups: selectedGroups,
       }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Skupiny byly odebrány z rezervace");
-        else toast.error("Něco se nepovedlo");
-        MakeReservationDetailRefetch(reservation.id);
-        setSelectedGroups([]);
-      });
+    }).then((res) => {
+      if (res.success) toast.success("Skupiny byly odebrány z rezervace");
+      else toast.error("Něco se nepovedlo");
+      MakeReservationDetailRefetch(reservation.id);
+      setSelectedGroups([]);
+    });
   };
 
   const handleDeleteReservation = () => {
     fetcher(`/api/reservations/delete`, {
       method: "POST",
       body: JSON.stringify({ reservations: [reservation.id] }),
-    })
-      .then((res) => {
-        if (res.success) {
-          toast.success("Rezervace byla odstraněna");
-        } else toast.error("Něco se nepovedlo");
-      });
+    }).then((res) => {
+      if (res.success) {
+        toast.success("Rezervace byla odstraněna");
+      } else toast.error("Něco se nepovedlo");
+    });
     ReservationListMakeRefetch("/reservation/list");
   };
 
@@ -158,17 +154,17 @@ export default function ReservationDetailForm({
     fetcher(`/api/reservations/update-status/${reservation.id}`, {
       method: "POST",
       body: JSON.stringify({
-        status: selectedStatus,
+        newStatus: selectedStatus,
+        oldStatus: reservation.status.id,
       }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Status rezervace byl změněn");
-        else toast.error("Něco se nepovedlo");
-        selectedStatus !== 1
-          ? MakeReservationDetailRefetch(reservation.id)
-          : window.location.reload();
-        reset();
-      });
+    }).then((res) => {
+      if (res.success) toast.success("Status rezervace byl změněn");
+      else toast.error("Něco se nepovedlo");
+      selectedStatus !== 1
+        ? MakeReservationDetailRefetch(reservation.id)
+        : window.location.reload();
+      reset();
+    });
   };
 
   const maxMembers = reservation.rooms.reduce(

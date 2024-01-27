@@ -54,7 +54,7 @@ export default function AddGroupToReservationModal({
         reservations: data.reservations.map((group: any) => group.id),
       }),
     }).then((res) => {
-      if (res.success) toast.success("Skupiny úspěšně přidány");
+      if (res.success) toast.success("Rezervace úspěšně přidány");
       else toast.error("Něco se nepovedlo");
     });
     MakeGroupDetailRefetch(groupId);
@@ -109,7 +109,7 @@ export default function AddGroupToReservationModal({
           <CircularProgress />
         )}
         <Button variant="contained" type="submit" disabled={!isValid}>
-          Uložitttt
+          Uložit
         </Button>
       </form>
     </Paper>

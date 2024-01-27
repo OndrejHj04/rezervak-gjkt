@@ -26,10 +26,19 @@ export default function GroupNewForm({
   users: any;
   user: any;
 }) {
-  const { register, handleSubmit, setValue, control, watch } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    formState: { isValid },
+  } = useForm();
 
-  const onSubmit = (formData: any) => {
-    fetcher(`/api/group/create`, {
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (formData: any) => {
+    setLoading(true);
+    await fetcher(`/api/group/create`, {
       method: "POST",
       body: JSON.stringify({ ...formData, owner: formData.owner.id }),
     }).then((res) => {
@@ -38,6 +47,7 @@ export default function GroupNewForm({
         MakeGroupDetailRefetch(res.data.newGroupId, 1);
       } else {
         toast.error("Něco se pokazilo");
+        setLoading(false);
       }
     });
   };
@@ -55,17 +65,27 @@ export default function GroupNewForm({
     <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2 flex justify-between gap-2">
         <Typography variant="h5">Nová skupina</Typography>
-        <LoadingButton type="submit" variant="contained">
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          disabled={!isValid || loading}
+        >
           Uložit
         </LoadingButton>
       </div>
       <Paper className="p-4 flex flex-col gap-4">
         <div className="flex gap-2">
-          <TextField label="Název skupiny" {...register("name")} />
-          <TextField label="Popis" {...register("description")} />
+          <TextField
+            label="Název skupiny"
+            {...register("name", { required: true })}
+          />
+          <TextField
+            label="Popis"
+            {...register("description", { required: true })}
+          />
           <Controller
             control={control}
-            {...register("owner")}
+            {...register("owner", { required: true })}
             render={({ field: { value, onChange } }) => (
               <Autocomplete
                 sx={{ width: 223 }}

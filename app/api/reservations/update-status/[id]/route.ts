@@ -10,7 +10,7 @@ export async function POST(
   { params: { id } }: { params: { id: string } }
 ) {
   try {
-    const { status } = await req.json();
+    const { oldStatus, newStatus } = await req.json();
     const token = req.headers.get("Authorization");
     const isAuthorized = (await protect(token)) as any;
 
@@ -35,7 +35,7 @@ export async function POST(
         values: [id],
       }),
       query({
-        query: `UPDATE reservations SET status = ${status} WHERE id = ${id}`,
+        query: `UPDATE reservations SET status = ${newStatus} WHERE id = ${id}`,
         values: [],
       }),
       fetcher(`/api/mailing/events/detail/${eventId}`, {
@@ -49,7 +49,7 @@ export async function POST(
         UNION ALL
         SELECT status.display_name FROM status WHERE id = ?
       `,
-      values: [reservation[0].status, status],
+      values: [oldStatus, newStatus],
     })) as any;
 
     const resDetail = {

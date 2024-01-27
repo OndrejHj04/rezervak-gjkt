@@ -35,7 +35,6 @@ export async function GET(req: Request) {
       values: [],
     })) as any;
 
-    console.log(events);
     const data = events.map((item: any) => {
       let children = Array.isArray(item.children)
         ? item.children

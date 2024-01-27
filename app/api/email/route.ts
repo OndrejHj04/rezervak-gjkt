@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { to, template, variables, check = true } = await req.json();
+    const { send, to, template, variables, check = true } = await req.json();
 
     const isAuthorized = (await protect(
       req.headers.get("Authorization")
@@ -19,6 +19,13 @@ export async function POST(req: Request) {
         },
         { status: 500 }
       );
+    }
+
+    if (!send) {
+      return NextResponse.json({
+        success: true,
+        message: "Email send is forbidden.",
+      });
     }
 
     const mail = await transporter.sendMail({

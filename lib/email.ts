@@ -8,3 +8,12 @@ export const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD,
   },
 });
+
+//export const transporter = nodemailer.createTransport({
+//  host: "localhost",
+//   port: 1025,
+//   auth: {
+//   user: "project.1",
+//  pass: "secret.1",
+//   },
+//  });

@@ -13,7 +13,7 @@ export default async function fetcher(
 ) {
   const cookieStore = cookies();
   const authToken =
-    cookieStore.get("next-auth.session-token")?.value ||
+    cookieStore.get(process.env.SESSION_TOKEN as any)?.value ||
     token.replace("Bearer ", "");
   const req = await fetch(process.env.NEXT_PUBLIC_API_URL + url, {
     headers: {

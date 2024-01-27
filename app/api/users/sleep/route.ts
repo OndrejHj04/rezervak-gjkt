@@ -40,6 +40,7 @@ export async function POST(req: Request) {
       method: "POST",
       token,
       body: JSON.stringify({
+        send: data.active,
         to: user[0].email,
         template: data.template,
         variables: [{ name: "email", value: user[0].email }],

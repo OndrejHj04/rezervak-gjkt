@@ -42,6 +42,7 @@ export async function POST(req: Request) {
       await fetcher("/api/email", {
         method: "POST",
         body: JSON.stringify({
+          send: data.active,
           to: grp.users.split(","),
           template: data.template,
           variables: [

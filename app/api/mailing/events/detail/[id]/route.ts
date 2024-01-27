@@ -11,7 +11,7 @@ export async function GET(
       query: `
         SELECT events_children.id, primary_txt, secondary_txt, active, variables,
         JSON_OBJECT('id', templates.id, 'name', templates.name, 'title', templates.title, 'text', templates.text) as template 
-        FROM events_children INNER JOIN templates ON templates.id = events_children.template WHERE events_children.id = ?
+        FROM events_children LEFT JOIN templates ON templates.id = events_children.template WHERE events_children.id = ?
     `,
       values: [id],
     })) as any;

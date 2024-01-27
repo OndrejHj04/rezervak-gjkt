@@ -19,13 +19,16 @@ export const authOptions: NextAuthOptions = {
           profile.picture &&
           data[0].image !== profile.picture
         ) {
-          await fetcher(`/api/login/upload-pic`, {
-            method: "POST",
-            body: JSON.stringify({
-              picture: profile.picture,
-              id: data[0].id,
-            }),
-          });
+          await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                picture: profile.picture,
+                id: data[0].id,
+              }),
+            }
+          );
         }
         if (data.length) {
           return {

@@ -100,6 +100,7 @@ export async function POST(req: Request) {
     fetcher("/api/email", {
       method: "POST",
       body: JSON.stringify({
+        send: data.active,
         to: membersEmail.map(({ email }: { email: any }) => email),
         template: data.template,
         variables: [

@@ -2,7 +2,6 @@ import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
 import dayjs from "dayjs";
-import { values } from "lodash";
 import { NextResponse } from "next/server";
 
 const eventId = 10;
@@ -25,10 +24,10 @@ export async function POST(
       );
     }
 
-    const [reservation, _, newStatus, { data }] = (await Promise.all([
+    const [reservation, _, { data }] = (await Promise.all([
       query({
-        query: `SELECT reservations.from_date, reservations.name, reservations.to_date, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader,
-        GROUP_CONCAT(distinct users.email) as emails, status.display_name as status_before FROM reservations LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id 
+        query: `SELECT reservations.from_date, reservations.status, reservations.name, reservations.to_date, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader,
+        GROUP_CONCAT(distinct users.email) as emails FROM reservations LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id 
           INNER JOIN status ON status.id = reservations.status
           INNER JOIN users ON users_reservations.userId = users.id
           INNER JOIN users as leader ON leader.id = reservations.leader
@@ -39,24 +38,29 @@ export async function POST(
         query: `UPDATE reservations SET status = ${status} WHERE id = ${id}`,
         values: [],
       }),
-      query({
-        query: `SELECT status.display_name as status_new FROM status WHERE id = ?`,
-        values: [status],
-      }),
       fetcher(`/api/mailing/events/detail/${eventId}`, {
         token,
       }),
     ])) as any;
 
+    const statuses = (await query({
+      query: `
+        SELECT status.display_name FROM status WHERE id = ?
+        UNION ALL
+        SELECT status.display_name FROM status WHERE id = ?
+      `,
+      values: [reservation[0].status, status],
+    })) as any;
+
     const resDetail = {
       ...reservation[0],
-      status_new: newStatus[0].status_new,
       leader: JSON.parse(reservation[0].leader),
     };
 
     await fetcher("/api/email", {
       method: "POST",
       body: JSON.stringify({
+        send: data.active,
         to: resDetail.emails.split(","),
         template: data.template,
         variables: [
@@ -72,8 +76,8 @@ export async function POST(
             name: "reservation_end",
             value: dayjs(resDetail.to_date).format("DD.MM.YYYY"),
           },
-          { name: "status_before", value: resDetail.status_before },
-          { name: "status_new", value: resDetail.status_new },
+          { name: "status_before", value: statuses[0].display_name },
+          { name: "status_new", value: statuses[1].display_name },
           { name: "leader_email", value: resDetail.leader.email },
           {
             name: "leader_name",

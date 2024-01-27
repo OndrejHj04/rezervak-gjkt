@@ -35,14 +35,26 @@ export async function GET(req: Request) {
       values: [],
     })) as any;
 
-    const data = events.map((item: any) => ({
-      ...item,
-      children: JSON.parse(`[${item.children}]`).map((child: any) => ({
-        ...child,
-        variables: child.variables.split(","),
-        template: child.template ? JSON.parse(`[${child.template}]`)[0] : null,
-      })),
-    }));
+    console.log(events);
+    const data = events.map((item: any) => {
+      let children = Array.isArray(item.children)
+        ? item.children
+        : JSON.parse(`[${item.children}]`);
+      return {
+        ...item,
+        children: children.map((child: any) => {
+          let template =
+            typeof child.template === "object"
+              ? child.template
+              : JSON.parse(`[${child.template}]`)[0];
+          return {
+            ...child,
+            variables: child.variables.split(","),
+            template: template,
+          };
+        }),
+      };
+    });
     return NextResponse.json({
       success: true,
       message: "Operation successful",

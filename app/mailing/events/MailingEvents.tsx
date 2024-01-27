@@ -4,6 +4,7 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import EventsAccordion from "./EventsAccordion";
 import fetcher from "@/lib/fetcher";
 import { toast } from "react-toastify";
+import { method } from "lodash";
 
 export default function MailingEvents({
   events,
@@ -32,6 +33,7 @@ export default function MailingEvents({
     }).then(() => {
       toast.success("Události úspěšně upraveny");
     });
+    methods.reset();
   };
 
   return (

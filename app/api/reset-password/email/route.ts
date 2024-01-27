@@ -27,6 +27,7 @@ export async function POST(req: Request) {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
         method: "POST",
         body: JSON.stringify({
+          send: template.data.active,
           to: email,
           template: template.data.template,
           variables: [

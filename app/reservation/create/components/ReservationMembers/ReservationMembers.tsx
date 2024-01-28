@@ -3,7 +3,7 @@ import ReservationMembersRender from "./ReservationMembersRender";
 
 const getGroups = async () => {
   try {
-    const { data } = await fetcher(`/api/group/list`, {
+    const { data } = await fetcher(`/api/group/list?limit=true`, {
       cache: "no-cache",
     });
     return data;

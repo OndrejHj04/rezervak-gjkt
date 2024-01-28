@@ -42,7 +42,7 @@ export default function AddGroupsModal({
   const [groups, setGroups] = useState(null);
 
   useEffect(() => {
-    fetcher(`/api/group/list`).then((res) => setGroups(res.data));
+    fetcher(`/api/group/list?limit=true`).then((res) => setGroups(res.data));
   }, []);
 
   const onSubmit = (data: any) => {
@@ -52,11 +52,10 @@ export default function AddGroupsModal({
         user: userId,
         groups: data.groups.map((group: any) => group.id),
       }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Skupiny úspěšně přidány");
-        else toast.error("Něco se nepovedlo");
-      });
+    }).then((res) => {
+      if (res.success) toast.success("Skupiny úspěšně přidány");
+      else toast.error("Něco se nepovedlo");
+    });
 
     MakeUserDetailRefetch(userId);
     setModal(false);

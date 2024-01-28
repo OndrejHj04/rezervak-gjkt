@@ -49,7 +49,6 @@ export default function ReservationMembersRender({
       ...createReservation,
       members: [],
       groups: [],
-      rooms: [],
     });
   };
 
@@ -82,7 +81,6 @@ export default function ReservationMembersRender({
       ...createReservation,
       members,
       groups: groupsIncluded,
-      rooms: [],
     });
     setExpanded(false);
   };

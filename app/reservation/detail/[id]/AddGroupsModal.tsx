@@ -37,7 +37,7 @@ export default function AddGroupsModal({
     formState: { isValid },
   } = useForm();
   useEffect(() => {
-    fetcher(`/api/group/list`)
+    fetcher(`/api/group/list?limit=true`)
       .then((res) => setGroups(res.data));
   }, []);
 

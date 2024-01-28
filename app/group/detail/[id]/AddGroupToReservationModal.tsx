@@ -43,7 +43,9 @@ export default function AddGroupToReservationModal({
   } = useForm();
 
   useEffect(() => {
-    fetcher(`/api/reservations/list`).then((res) => setReservations(res.data));
+    fetcher(`/api/reservations/list?limit=true&not_status=1,4,5`).then((res) =>
+      setReservations(res.data)
+    );
   }, []);
 
   const onSubmit = (data: any) => {

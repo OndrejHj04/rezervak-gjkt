@@ -14,13 +14,12 @@ export default function GroupsDelete() {
     fetcher(`/api/group/remove`, {
       method: "POST",
       body: JSON.stringify({ groups: selectedGroups }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Rezervace byly úspěšně odstraněny");
-        else toast.error("Něco se pokazilo");
-        MakeGroupRefetch();
-        setSelectedGroups([]);
-      });
+    }).then((res) => {
+      if (res.success) toast.success("Rezervace úspěšně odstraněny");
+      else toast.error("Něco se pokazilo");
+      MakeGroupRefetch();
+      setSelectedGroups([]);
+    });
   };
 
   return (

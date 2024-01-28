@@ -61,7 +61,7 @@ export default function AddUserModal({
         users: data.users.map((user: any) => user.id),
       }),
     }).then((res) => {
-      if (res.success) toast.success("Uživatelé úspěšně přidány");
+      if (res.success) toast.success("Uživatelé úspěšně přidáni");
       else toast.error("Něco se nepovedlo");
     });
     MakeRefetch(reservation.id);

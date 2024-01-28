@@ -4,12 +4,12 @@ import { NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import { NextApiRequest, NextApiResponse } from "next";
 import protect from "@/lib/protect";
+import { decode } from "next-auth/jwt";
 
 export async function GET(req: Request, res: any) {
   try {
-    const isAuthorized = (await protect(
-      req.headers.get("Authorization")
-    )) as any;
+    const token = req.headers.get("Authorization") as any;
+    const isAuthorized = (await protect(token)) as any;
 
     if (!isAuthorized) {
       return NextResponse.json(
@@ -30,13 +30,21 @@ export async function GET(req: Request, res: any) {
     const col = url.searchParams.get("col");
     const dir = url.searchParams.get("dir");
     const notStatus = url.searchParams.get("not_status")?.split(",");
+    const limited = url.searchParams.get("limit");
+
+    const { role, id } = (await decode({
+      token: token.replace("Bearer ", ""),
+      secret: process.env.NEXTAUTH_SECRET as any,
+    })) as any;
+
+    const isLimited = role.id > 2;
 
     const [reservations, reservationsCount] = (await Promise.all([
       query({
         query: `
           SELECT reservations.id, from_date, to_date, reservations.name, purpouse, leader, status, creation_date,
           JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status,
-          JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader, 
+          JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader, 
           GROUP_CONCAT(
               DISTINCT groups.name
             ) as groups,
@@ -54,6 +62,7 @@ export async function GET(req: Request, res: any) {
           LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id
           WHERE 1=1
           ${status ? `AND status.id = ${status}` : ""}
+          ${limited && isLimited ? `AND reservations.leader = ${id}` : ""}
           ${search ? `AND reservations.name LIKE "%${search}%"` : ""}
           ${
             notStatus?.length
@@ -76,6 +85,7 @@ export async function GET(req: Request, res: any) {
         WHERE 1=1
         ${status ? `AND status.id = ${status}` : ""}
         ${search ? `AND reservations.name LIKE "%${search}%"` : ""}
+          ${limited && isLimited ? `AND reservations.leader = ${id}` : ""}
         ${
           notStatus?.length
             ? notStatus.map((stat: any) => `AND status.id <> ${stat}`).join(" ")

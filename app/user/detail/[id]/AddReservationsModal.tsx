@@ -42,8 +42,9 @@ export default function AddReservationsModal({
   const [reservations, setReservations] = useState(null);
 
   useEffect(() => {
-    fetcher(`/api/reservations/list`)
-      .then((res) => setReservations(res.data));
+    fetcher(`/api/reservations/list?limit=true&not_status=1,4,5`).then((res) =>
+      setReservations(res.data)
+    );
   }, []);
 
   const onSubmit = (data: any) => {
@@ -53,11 +54,10 @@ export default function AddReservationsModal({
         user: userId,
         reservations: data.reservations.map((res: any) => res.id),
       }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Rezervace úspěšně přidány");
-        else toast.error("Něco se nepovedlo");
-      });
+    }).then((res) => {
+      if (res.success) toast.success("Rezervace úspěšně přidány");
+      else toast.error("Něco se nepovedlo");
+    });
     MakeUserDetailRefetch(userId);
     setModal(false);
   };

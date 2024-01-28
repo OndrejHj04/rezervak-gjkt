@@ -1,5 +1,6 @@
 "use client";
 import {
+  Button,
   IconButton,
   InputAdornment,
   Paper,
@@ -8,13 +9,11 @@ import {
 } from "@mui/material";
 import RunningWithErrorsIcon from "@mui/icons-material/RunningWithErrors";
 import { FormProvider, useForm } from "react-hook-form";
-import { store } from "@/store/store";
 import { signIn } from "next-auth/react";
 import DateInput from "./DateInput";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
-import LoadingButton from "@mui/lab/LoadingButton";
 import fetcher from "@/lib/fetcher";
 
 export interface verifyForm {
@@ -54,8 +53,8 @@ export default function VerifyUser({ id }: { id?: number }) {
         });
       } else {
         methods.setError("password", { message: "Nesprávné heslo" });
+        setLoading(false);
       }
-      setLoading(false);
     });
   };
 
@@ -182,13 +181,13 @@ export default function VerifyUser({ id }: { id?: number }) {
             />
           </div>
 
-          <LoadingButton
-            loading={methods.formState.isSubmitting || loading}
+          <Button
+            disabled={loading || !methods.formState.isValid}
             variant="contained"
             type="submit"
           >
             Odeslat
-          </LoadingButton>
+          </Button>
         </form>
       </FormProvider>
     </Paper>

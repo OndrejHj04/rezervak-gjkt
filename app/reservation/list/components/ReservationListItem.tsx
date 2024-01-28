@@ -29,7 +29,8 @@ export default function ReservationListItem({
   userId: any;
 }) {
   const isMember = reservation.users.includes(userId);
-  const isLeader = (reservation.leader.id = userId);
+  const isLeader = reservation.leader.id === userId;
+
   return (
     <>
       <TableRow>

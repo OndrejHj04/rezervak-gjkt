@@ -102,7 +102,7 @@ export async function GET(req: Request, res: any) {
       leader: JSON.parse(reservation.leader),
       status: JSON.parse(reservation.status),
       groups: reservation.groups ? reservation.groups.split(",") : [],
-      users: reservation.users ? reservation.users.split(",") : [],
+      users: reservation.users ? reservation.users.split(",").map(Number) : [],
       rooms: JSON.parse(`[${reservation.rooms}]`).filter(
         ({ id }: { id: any }) => id
       ),

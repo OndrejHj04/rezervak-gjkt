@@ -79,6 +79,7 @@ export default function RenderCalendar({
           slotProps={{
             day: { reservations: reservations } as any,
           }}
+          sx={{ width: 300 }}
         />
       </LocalizationProvider>
     </>

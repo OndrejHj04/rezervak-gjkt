@@ -1,6 +1,6 @@
 "use client";
 import { store } from "@/store/store";
-import { Box, Skeleton, Typography } from "@mui/material";
+import { Box, CircularProgress, Skeleton, Typography } from "@mui/material";
 import WelcomeComponent from "../sub-components/WelcomeComponent";
 import SleepingUserInfo from "../sub-components/SleepingUserInfo";
 import VerifyUser from "../sub-components/VerifyUser";
@@ -29,7 +29,11 @@ export default function HomepageLoading({
   }, [status]);
 
   if (status === "loading") {
-    return <Typography>loading</Typography>;
+    return (
+      <div className="flex justify-center">
+        <CircularProgress />
+      </div>
+    );
   }
 
   if (status === "unauthenticated") {

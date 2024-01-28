@@ -23,14 +23,12 @@ export default function LoginButton() {
     return (
       <Link href={`/user/detail/${data.user.id}`}>
         <Button>
-          <div className="flex flex-col mx-4 items-end normal-case text-white">
+          <div className="flex-col mx-4 items-end normal-case text-white sm:flex hidden">
             <Typography className="font-semibold capitalize" variant="body1">
               {data.user.first_name} {data.user.last_name}
             </Typography>
             <div className="flex gap-1 items-center">
-              <Typography variant="body2">
-                {data.user.role.name}
-              </Typography>
+              <Typography variant="body2">{data.user.role.name}</Typography>
             </div>
           </div>
           <AvatarWrapper data={data.user} />

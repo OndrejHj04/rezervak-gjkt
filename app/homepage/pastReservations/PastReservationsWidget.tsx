@@ -31,7 +31,9 @@ export default async function PastReservationsWidget({
     <Paper className="p-2 flex flex-col">
       <div className="flex justify-between items-center gap-3">
         <ElderlyIcon color="primary" />
-        <Typography variant="h5">Uskutečněné rezervace</Typography>
+        <Typography variant="h5" className="text-center">
+          Uskutečněné rezervace
+        </Typography>
         <ElderlyIcon color="primary" />
       </div>
       <MenuList>

@@ -12,7 +12,7 @@ export default function TopBarComponent({ theme, id }: any) {
   const { setPanel } = store();
   return (
     <AppBar position="static">
-      <Toolbar>
+      <Toolbar className="sm:px-5 px-2">
         <IconButton
           size="large"
           edge="start"

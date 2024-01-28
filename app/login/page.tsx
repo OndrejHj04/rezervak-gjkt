@@ -72,7 +72,7 @@ export default function Page({ searchParams }: { searchParams: any }) {
             ),
           }}
         />
-        <div className="flex gap-3">
+        <div className="flex gap-3 sm:flex-row flex-col">
           <Link href="/password-reset/email" className="w-full">
             <Button variant="contained" className="w-full">
               Zapomenuté heslo
@@ -92,7 +92,7 @@ export default function Page({ searchParams }: { searchParams: any }) {
             variant="contained"
             onClick={() => signIn("google")}
           >
-            GOOGLE
+            GOOGLE přihlášení
           </Button>
         </div>
       </form>

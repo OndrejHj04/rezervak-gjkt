@@ -42,7 +42,7 @@ export default async function RootLayout({
             <TopBar />
             <SlidingMenuConfig />
             <SpeedComponent />
-            <div className="p-5">{children}</div>
+            <div className="sm:p-5 p-2 h-full">{children}</div>
           </ClientProvider>
           <ToastContainer />
         </div>

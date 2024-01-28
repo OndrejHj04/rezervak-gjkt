@@ -136,7 +136,7 @@ export default function BlockDatesForm({
           </div>
         </DemoContainer>
       </LocalizationProvider>
-      <div className="mt-auto">
+      <div className="mt-3">
         <Button type="submit" variant="contained" disabled={!isValid}>
           Zablokovat termín a zrušit rezervace
         </Button>

@@ -73,8 +73,8 @@ export default function GroupNewForm({
           Uložit
         </LoadingButton>
       </div>
-      <Paper className="p-4 flex flex-col gap-4">
-        <div className="flex gap-2">
+      <Paper className="sm:p-4 p-2 gap-4">
+        <div className="flex sm:flex-row flex-col gap-2">
           <TextField
             label="Název skupiny"
             {...register("name", { required: true })}
@@ -88,7 +88,7 @@ export default function GroupNewForm({
             {...register("owner", { required: true })}
             render={({ field: { value, onChange } }) => (
               <Autocomplete
-                sx={{ width: 223 }}
+                className="sm:w-80 w-full"
                 value={value}
                 defaultValue={user}
                 disabled={

@@ -48,7 +48,7 @@ export default function NewUserForm({ roles }: { roles: any }) {
           Přidat uživatele
         </LoadingButton>
       </div>
-      <Paper className="p-4 flex gap-2">
+      <Paper className="sm:p-4 p-2 flex md:flex-row flex-col gap-2">
         <TextField
           label="Jméno"
           {...register("first_name", { required: true })}
@@ -72,7 +72,7 @@ export default function NewUserForm({ roles }: { roles: any }) {
           {...register("role", { required: true })}
           render={({ field: { value, onChange } }) => (
             <Autocomplete
-              sx={{ width: 223 }}
+              className="md:w-80 w-full"
               disablePortal
               value={value}
               onChange={(_, value) => onChange(value)}

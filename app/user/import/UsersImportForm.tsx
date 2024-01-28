@@ -2,9 +2,11 @@
 
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
+  Box,
   Button,
   Paper,
   Table,
+  TableBody,
   TableCell,
   TableHead,
   TableRow,
@@ -92,17 +94,16 @@ export default function UsersImportForm({ roles }: { roles: any }) {
       fetcher(`/api/users/valid-import`, {
         method: "POST",
         body: JSON.stringify({ data: data.slice(1) }),
-      })
-        .then(({ data }) => {
-          setData(
-            data.map((item: any) => {
-              return [
-                ...item.slice(0, 4),
-                item[4] ? validateRow(item.slice(0, 4)) : false,
-              ];
-            })
-          );
-        });
+      }).then(({ data }) => {
+        setData(
+          data.map((item: any) => {
+            return [
+              ...item.slice(0, 4),
+              item[4] ? validateRow(item.slice(0, 4)) : false,
+            ];
+          })
+        );
+      });
 
       setMessage("");
     } else {
@@ -141,55 +142,59 @@ export default function UsersImportForm({ roles }: { roles: any }) {
           Importovat uživatele
         </LoadingButton>
       </div>
-      <Paper className="p-4 flex gap-4 justify-between">
+      <Paper className="md:p-4 p-2 flex md:flex-row flex-col gap-4 justify-between">
         <div className="flex flex-col gap-2">
-          <Table>
-            <TableHead>
-              <TableRow>
-                {importUsersValidFormat.map((item, i) => (
-                  <TableCell key={i}>{item.name}</TableCell>
-                ))}
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableHead>
-              {data.length ? (
-                <>
-                  {data.map((item, i) => {
-                    return (
-                      <TableRow key={i}>
-                        <TableCell>{item[0]}</TableCell>
-                        <TableCell>{item[1]}</TableCell>
-                        <TableCell>{item[2]}</TableCell>
-                        <TableCell>
-                          {
-                            roles.find(
-                              (role: any) => role.id === Number(item[3])
-                            )?.name
-                          }
-                        </TableCell>
-                        <TableCell>
-                          {item[4] ? (
-                            <CheckCircleIcon color="success" />
-                          ) : (
-                            <CancelIcon color="error" />
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </>
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4}>
-                    <Typography variant="h6">
-                      Žádná uživatelé k zobrazení
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableHead>
-          </Table>
+          <Box sx={{ overflow: "auto" }}>
+            <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    {importUsersValidFormat.map((item, i) => (
+                      <TableCell key={i}>{item.name}</TableCell>
+                    ))}
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {data.length ? (
+                    <>
+                      {data.map((item, i) => {
+                        return (
+                          <TableRow key={i}>
+                            <TableCell>{item[0]}</TableCell>
+                            <TableCell>{item[1]}</TableCell>
+                            <TableCell>{item[2]}</TableCell>
+                            <TableCell>
+                              {
+                                roles.find(
+                                  (role: any) => role.id === Number(item[3])
+                                )?.name
+                              }
+                            </TableCell>
+                            <TableCell>
+                              {item[4] ? (
+                                <CheckCircleIcon color="success" />
+                              ) : (
+                                <CancelIcon color="error" />
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5}>
+                        <Typography variant="h6">
+                          Žádní uživatelé k zobrazení
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </Box>
+          </Box>
           {
             <Typography>
               {file ? `Aktuální soubor: ${file?.name}` : "Soubor nevybrán"}

@@ -4,7 +4,6 @@ import Link from "next/link";
 import MailingEvents from "./events/MailingEvents";
 import MailingTemplates from "./templates/MailingTemplates";
 import fetcher from "@/lib/fetcher";
-import SaveButton from "./SaveButton";
 
 const getEvents = async () => {
   const { data } = await fetcher("/api/mailing/events/list");

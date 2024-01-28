@@ -72,6 +72,7 @@ export default function EventsAccordion({
                             if (!value) {
                               watch(`Select ${singleEvent.id}`) &&
                                 setValue(`Select ${singleEvent.id}`, null);
+                              clearErrors(`Select ${singleEvent.id}`);
                             } else {
                               !watch(`Select ${singleEvent.id}`) &&
                                 setError(`Select ${singleEvent.id}`, {

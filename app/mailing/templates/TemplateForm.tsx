@@ -11,7 +11,7 @@ export default function TemplateForm({ template }: { template?: any }) {
     register,
     handleSubmit,
     formState: { isValid, isDirty },
-    watch,
+    reset,
   } = useForm({
     defaultValues: template || null,
   });
@@ -34,6 +34,7 @@ export default function TemplateForm({ template }: { template?: any }) {
         MailingRefetch("templates");
       });
     }
+    reset();
   };
 
   return (

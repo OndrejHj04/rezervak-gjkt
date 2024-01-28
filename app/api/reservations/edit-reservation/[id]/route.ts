@@ -7,7 +7,7 @@ export async function POST(
   { params: { id } }: { params: { id: string } }
 ) {
   try {
-    const { purpouse, rooms, instructions, name } = await req.json();
+    const { purpouse, instructions, name } = await req.json();
 
     const isAuthorized = (await protect(
       req.headers.get("Authorization")
@@ -24,7 +24,7 @@ export async function POST(
     }
 
     const data = (await query({
-      query: `UPDATE reservations SET purpouse = "${purpouse}", name = "${name}", instructions = "${instructions}", rooms = ${rooms} WHERE id = ${id}`,
+      query: `UPDATE reservations SET purpouse = "${purpouse}", name = "${name}", instructions = "${instructions}" WHERE id = ${id}`,
       values: [],
     })) as any;
 

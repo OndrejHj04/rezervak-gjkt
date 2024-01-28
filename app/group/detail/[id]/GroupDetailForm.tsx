@@ -332,14 +332,14 @@ export default function GroupDetailForm({ group }: { group: any }) {
                   disabled={!selectReservation.length}
                   onClick={() => removeFromReservations()}
                 >
-                  Odebrat z vybraných rezervací
+                  Odpojit vybrané rezervace
                 </Button>
                 <Button
                   variant="contained"
                   onClick={() => setReservationModal(true)}
                   endIcon={<AddToPhotosIcon />}
                 >
-                  Přidat skupinu do rezervace
+                  Připojit rezervaci ke skupině
                 </Button>
               </div>
             </div>

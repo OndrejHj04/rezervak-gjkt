@@ -32,8 +32,8 @@ export default function MailingEvents({
       body: JSON.stringify(data),
     }).then(() => {
       toast.success("Události úspěšně upraveny");
+      methods.reset(data);
     });
-    methods.reset();
   };
 
   return (

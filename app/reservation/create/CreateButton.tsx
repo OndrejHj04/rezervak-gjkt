@@ -6,10 +6,11 @@ import { toast } from "react-toastify";
 import ReservationListMakeRefetch from "../list/refetch";
 import { NewReservation } from "@/types";
 import fetcher from "@/lib/fetcher";
+import { useState } from "react";
 
 export default function CreateButton() {
   const { createReservation, setCreateReservation } = store();
-
+  const [loading, setLoading] = useState(false);
   const setDefault = () => {
     setCreateReservation({
       from_date: "",
@@ -24,6 +25,7 @@ export default function CreateButton() {
     });
   };
   const handleSubmit = () => {
+    setLoading(true);
     fetcher(`/api/reservations/create`, {
       method: "POST",
       body: JSON.stringify(createReservation),
@@ -48,7 +50,7 @@ export default function CreateButton() {
             return data.length > 0;
           }
           return value === "instructions" ? true : Boolean(data);
-        })
+        }) || loading
       }
     >
       Uložit

@@ -68,17 +68,11 @@ export default function ReservationDetailForm({
   const onSubmit = (data: any) => {
     fetcher(`/api/reservations/edit-reservation/${reservation.id}`, {
       method: "POST",
-      body: JSON.stringify({
-        name: data.name,
-        purpouse: data.purpouse,
-        rooms: Number(data.rooms),
-        instructions: data.instructions,
-      }),
+      body: JSON.stringify({ ...data }),
     }).then((res) => {
       if (res.success) toast.success("Rezervace byla upravena");
       else toast.error("Něco se nepovedlo");
-      MakeReservationDetailRefetch(reservation.id);
-      reset();
+      reset(data);
     });
   };
 
@@ -108,7 +102,7 @@ export default function ReservationDetailForm({
   };
 
   const handleRemoveUsers = () => {
-    fetcher(`$/api/reservations/remove-users`, {
+    fetcher(`/api/reservations/remove-users`, {
       method: "POST",
       body: JSON.stringify({
         reservation: reservation.id,

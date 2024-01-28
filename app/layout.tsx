@@ -37,12 +37,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex h-screen flex-col">
+        <div className="flex flex-col h-screen">
           <ClientProvider theme={theme?.theme}>
             <TopBar />
             <SlidingMenuConfig />
             <SpeedComponent />
-            <div className="sm:p-5 p-2 h-full">{children}</div>
+            <div className="sm:p-5 p-2 overflow-auto flex-grow">{children}</div>
           </ClientProvider>
           <ToastContainer />
         </div>

@@ -36,7 +36,6 @@ import { useState } from "react";
 import AddGroupsModal from "./AddGroupsModal";
 import AddReservationsModal from "./AddReservationsModal";
 import UserSleepModal from "./UserSleepModal";
-import UserSleepAnnouncment from "./UserSleepAnnouncment";
 import GroupsPagination from "./GroupsPagination";
 import ReservationsPagination from "./ReservationsPagination";
 import { rolesConfig } from "@/rolesConfig";

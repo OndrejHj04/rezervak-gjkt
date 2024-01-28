@@ -3,15 +3,17 @@ import { rolesConfig } from "@/rolesConfig";
 import ExportButton from "@/ui-components/ExportButton";
 import UserRolesSelect from "./RolesSelect";
 import SearchBar from "@/ui-components/SearchBar";
-import { Button } from "@mui/material";
+import ResponsiveFilter from "./ResponsiveFilter";
 
 const getRoles = async () => {
   const { data } = await fetcher(`/api/roles/list`);
 
   return data as any;
 };
+
 export default async function UserListFilter({ userRole }: { userRole: any }) {
   const roles = await getRoles();
+
   return (
     <>
       <div className="gap-3 justify-end sm:flex hidden">
@@ -26,7 +28,7 @@ export default async function UserListFilter({ userRole }: { userRole: any }) {
         ) && <ExportButton prop="users" translate={"uživatelé"} />}
       </div>
       <div className="sm:hidden flex justify-end">
-        <Button variant="outlined">Filtrovat</Button>
+        <ResponsiveFilter roles={roles} userRole={userRole}/>
       </div>
     </>
   );

@@ -23,26 +23,20 @@ export default function SearchBar({ label }: { label: any }) {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <TextField
-        variant="outlined"
-        label={`Hledat ${label}...`}
-        value={search}
-        onChange={(e) => makeSearch(e.target.value)}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                color="error"
-                disabled={!search}
-                onClick={removeFilter}
-              >
-                <CancelIcon />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
-    </div>
+    <TextField
+      variant="outlined"
+      label={`Hledat ${label}...`}
+      value={search}
+      onChange={(e) => makeSearch(e.target.value)}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton color="error" disabled={!search} onClick={removeFilter}>
+              <CancelIcon />
+            </IconButton>
+          </InputAdornment>
+        ),
+      }}
+    />
   );
 }

@@ -35,7 +35,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
 
   const homepage = (
     <div
-      className="grid gap-2 h-full"
+      className="grid gap-2 h-auto"
       style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}
     >
       {rolesConfig.homepage.modules.personalGroups.display.includes(

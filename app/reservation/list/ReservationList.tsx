@@ -1,4 +1,5 @@
 import {
+  Box,
   Chip,
   Paper,
   Table,
@@ -22,6 +23,7 @@ import ExpiredReservations from "./components/ExpiredReservations";
 import ReservationTableSort from "./components/Sort";
 import dayjs from "dayjs";
 import fetcher from "@/lib/fetcher";
+import ReservationFilters from "./components/ReservationFilters";
 const getReservations = async (
   page: any,
   status: any,
@@ -42,14 +44,6 @@ const getReservations = async (
   }
 };
 
-const getStatuses = async () => {
-  try {
-    const { data } = await fetcher(`/api/reservations/status?type=all`);
-    return data;
-  } catch (e) {
-    return [];
-  }
-};
 
 const ReservationListItem = dynamic(
   () => import("./components/ReservationListItem")
@@ -78,75 +72,63 @@ export default async function ReservationList({
     column,
     dir
   )) as any;
-  const statuses = await getStatuses();
 
   return (
     <div className="flex flex-col w-full gap-2">
-      <div className="flex gap-3 justify-end">
-        {rolesConfig.reservations.modules.reservationsTable.config.topbar.search.includes(
-          userRole
-        ) && <SearchBar label={"rezervace"} />}
-        {rolesConfig.reservations.modules.reservationsTable.config.topbar.filter.includes(
-          userRole
-        ) && (
-          <>
-            <ExpiredReservations />
-            <StatusSelect statuses={statuses} />
-          </>
-        )}
-        {rolesConfig.reservations.modules.reservationsTable.config.topbar.export.includes(
-          userRole
-        ) && <ExportButton prop={"reservations"} translate={"rezervace"} />}
-      </div>
+      <ReservationFilters userRole={userRole}/>
       <Paper>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {rolesConfig.reservations.modules.reservationsTable.config.delete.includes(
-                userRole
-              ) && (
-                <TableCell>
-                  <TrashBin />
-                </TableCell>
-              )}
+        <Box sx={{ overflow: "auto" }}>
+          <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  {rolesConfig.reservations.modules.reservationsTable.config.delete.includes(
+                    userRole
+                  ) && (
+                    <TableCell>
+                      <TrashBin />
+                    </TableCell>
+                  )}
 
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Název" />
-              </TableCell>
-              <ReservationTableSort />
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Počet účastníků" />
-              </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Vedoucí" />
-              </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Pokoje" />
-              </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Skupiny" />
-              </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Stav" />
-              </TableCell>
-              <TableCell sx={{ padding: 1.5 }}>
-                <Chip label="Datum vytvoření" />
-              </TableCell>
-              <TableCell />
-            </TableRow>
-          </TableHead>
-          <TableBody className="overflow-scroll">
-            {reservations.data.map((reservation: any) => (
-              <ReservationListItem
-                userId={userId}
-                userRole={userRole}
-                key={reservation.id}
-                reservation={reservation}
-              />
-            ))}
-          </TableBody>
-        </Table>
-        <TableListPagination count={reservations.count} />
+                  <TableCell sx={{ padding: 1.5 }}>
+                    <Chip label="Název" />
+                  </TableCell>
+                  <ReservationTableSort />
+                  <TableCell sx={{ padding: 1.5 }}>
+                    <Chip label="Počet účastníků" />
+                  </TableCell>
+                  <TableCell sx={{ padding: 1.5 }}>
+                    <Chip label="Vedoucí" />
+                  </TableCell>
+                  <TableCell sx={{ padding: 1.5 }}>
+                    <Chip label="Pokoje" />
+                  </TableCell>
+                  <TableCell sx={{ padding: 1.5 }}>
+                    <Chip label="Skupiny" />
+                  </TableCell>
+                  <TableCell sx={{ padding: 1.5 }}>
+                    <Chip label="Stav" />
+                  </TableCell>
+                  <TableCell sx={{ padding: 1.5 }}>
+                    <Chip label="Datum vytvoření" />
+                  </TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableHead>
+              <TableBody className="overflow-scroll">
+                {reservations.data.map((reservation: any) => (
+                  <ReservationListItem
+                    userId={userId}
+                    userRole={userRole}
+                    key={reservation.id}
+                    reservation={reservation}
+                  />
+                ))}
+              </TableBody>
+            </Table>
+            <TableListPagination count={reservations.count} />
+          </Box>
+        </Box>
       </Paper>
     </div>
   );

@@ -42,7 +42,6 @@ export default function ReservationDetailRender({ id }: { id: any }) {
     setExpanded(false);
   };
 
-
   return (
     <Accordion expanded={expanded}>
       <AccordionSummary
@@ -63,9 +62,12 @@ export default function ReservationDetailRender({ id }: { id: any }) {
         </div>
       </AccordionSummary>
       <AccordionDetails>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex gap-2 md:flex-row flex-col"
+        >
           <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
+            <div className="flex gap-2 md:flex-row flex-col">
               <TextField
                 {...register("name", { required: true })}
                 label="Název rezervace"
@@ -86,11 +88,7 @@ export default function ReservationDetailRender({ id }: { id: any }) {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Button
-              variant="contained"
-              disabled={!isValid}
-              type="submit"
-            >
+            <Button variant="contained" disabled={!isValid} type="submit">
               Uložit
             </Button>
             <Button

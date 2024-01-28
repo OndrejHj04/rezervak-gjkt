@@ -170,7 +170,7 @@ export default function ReservationDatesRender({
             {finalDate && <Typography>{finalDate}</Typography>}
           </div>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails className="md:p-4 p-1">
           <LocalizationProvider
             dateAdapter={AdapterDayjs}
             adapterLocale={CzechLocale as any}
@@ -178,25 +178,27 @@ export default function ReservationDatesRender({
               csCZ.components.MuiLocalizationProvider.defaultProps.localeText
             }
           >
-            <div className="flex gap-2 items-start">
+            <div className="flex gap-2 items-start md:flex-row flex-col">
               <Controller
                 control={control}
                 rules={{ required: true }}
                 name="from_date"
                 render={({ field: { onChange, value } }) => (
-                  <StaticDatePicker
-                    value={value}
-                    orientation="portrait"
-                    slots={{
-                      day: renderDay,
-                    }}
-                    onChange={(date) => onChange(date)}
-                    shouldDisableDate={(date) => afterDateDisabled(date)}
-                    slotProps={{
-                      actionBar: { actions: [] },
-                      day: { reservations: reservations } as any,
-                    }}
-                  />
+                  <div className="sm:w-80 w-threehundred overflow-auto sm:overflow-visible">
+                    <StaticDatePicker
+                      value={value}
+                      orientation="portrait"
+                      slots={{
+                        day: renderDay,
+                      }}
+                      onChange={(date) => onChange(date)}
+                      shouldDisableDate={(date) => afterDateDisabled(date)}
+                      slotProps={{
+                        actionBar: { actions: [] },
+                        day: { reservations: reservations } as any,
+                      }}
+                    />
+                  </div>
                 )}
               />
 
@@ -205,19 +207,21 @@ export default function ReservationDatesRender({
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { onChange, value } }) => (
-                  <StaticDatePicker
-                    value={value}
-                    orientation="portrait"
-                    slots={{
-                      day: renderDay,
-                    }}
-                    shouldDisableDate={(date) => toDateDisabled(date)}
-                    onChange={(date) => onChange(date)}
-                    slotProps={{
-                      actionBar: { actions: [] },
-                      day: { reservations } as any,
-                    }}
-                  />
+                  <div className="sm:w-80 w-threehundred overflow-auto sm:overflow-visible">
+                    <StaticDatePicker
+                      value={value}
+                      orientation="portrait"
+                      slots={{
+                        day: renderDay,
+                      }}
+                      shouldDisableDate={(date) => toDateDisabled(date)}
+                      onChange={(date) => onChange(date)}
+                      slotProps={{
+                        actionBar: { actions: [] },
+                        day: { reservations } as any,
+                      }}
+                    />
+                  </div>
                 )}
               />
               <div>

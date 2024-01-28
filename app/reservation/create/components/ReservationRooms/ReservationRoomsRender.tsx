@@ -84,7 +84,7 @@ export default function ReservationRoomsRender() {
           )}
         </div>
       </AccordionSummary>
-      <AccordionDetails className="flex gap-5">
+      <AccordionDetails className="flex gap-5 md:flex-row flex-col">
         <FormControl component="fieldset" variant="standard">
           <FormGroup>
             {roomsPlan.map((check: any) => (

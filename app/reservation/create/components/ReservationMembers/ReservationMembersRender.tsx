@@ -106,9 +106,8 @@ export default function ReservationMembersRender({
           )}
         </div>
       </AccordionSummary>
-      <AccordionDetails className="flex gap-2">
+      <AccordionDetails className="flex gap-2 md:p-4 p-1 md:flex-row flex-col overflow-auto">
         <List
-          sx={{ width: 320 }}
           subheader={
             <div className="flex items-center gap-2">
               <Typography variant="h6">Skupiny</Typography>
@@ -149,7 +148,11 @@ export default function ReservationMembersRender({
                   }
                 };
                 return (
-                  <ListItemButton key={group.id} onClick={handleClick}>
+                  <ListItemButton
+                    key={group.id}
+                    onClick={handleClick}
+                    className="md:py-2 md:px-4 py-0.5 px-1"
+                  >
                     <Checkbox checked={isChecked} />
                     <ListItemIcon>
                       <Avatar>{group.name[0].toUpperCase()}</Avatar>
@@ -165,7 +168,6 @@ export default function ReservationMembersRender({
           </div>
         </List>
         <List
-          sx={{ width: 320 }}
           subheader={
             <div className="flex items-center gap-2">
               <Typography variant="h6">Uživatelé</Typography>
@@ -198,7 +200,11 @@ export default function ReservationMembersRender({
                   }
                 };
                 return (
-                  <ListItemButton key={user.id} onClick={handleClick}>
+                  <ListItemButton
+                    key={user.id}
+                    onClick={handleClick}
+                    className="md:py-2 md:px-4 py-0.5 px-1"
+                  >
                     <Checkbox checked={isChecked} />
                     <ListItemIcon>
                       <AvatarWrapper data={user} />

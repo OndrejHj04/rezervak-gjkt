@@ -24,13 +24,15 @@ import { store } from "@/store/store";
 import SearchIcon from "@mui/icons-material/Search";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import TableListCheckbox from "@/ui-components/TableListCheckbox";
+import TableListPagination from "@/ui-components/TableListPagination";
 
 export default function ReservationMembersRender({
   groups,
   users,
 }: {
   groups: any;
-  users: User[];
+  users: any;
 }) {
   const { setCreateReservation, createReservation } = store();
   const [expanded, setExpanded] = useState(false);
@@ -116,9 +118,9 @@ export default function ReservationMembersRender({
             </div>
           }
         >
-          <div style={{ height: 250 }}>
+          <div>
             <PerfectScrollbar>
-              {groups.map((group: any) => {
+              {groups.data.map((group: any) => {
                 const isChecked = groupsIncluded.includes(group.id);
                 const handleClick = () => {
                   if (isChecked) {
@@ -149,6 +151,7 @@ export default function ReservationMembersRender({
                 );
               })}
             </PerfectScrollbar>
+            <TableListPagination count={groups.count} name="gpage" rpp={5} />
           </div>
         </List>
         <List
@@ -172,9 +175,9 @@ export default function ReservationMembersRender({
             </div>
           }
         >
-          <div style={{ height: 250 }}>
+          <div>
             <PerfectScrollbar>
-              {users.map((user: any) => {
+              {users.data.map((user: any) => {
                 const isChecked = members.includes(user.id);
                 const handleClick = () => {
                   if (isChecked) {
@@ -201,6 +204,7 @@ export default function ReservationMembersRender({
                 );
               })}
             </PerfectScrollbar>
+            <TableListPagination count={users.count} name="upage" rpp={5} />
           </div>
         </List>
         <div className="flex flex-col gap-2">

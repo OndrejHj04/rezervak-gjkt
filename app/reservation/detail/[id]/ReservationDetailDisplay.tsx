@@ -16,9 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import Pagination from "./UsersPagination";
-import UsersPagination from "./UsersPagination";
-import GroupsPagination from "./GroupsPagination";
+import TableListPagination from "@/ui-components/TableListPagination";
 
 export default function ReservationDetailDisplay({
   reservation,
@@ -108,7 +106,11 @@ export default function ReservationDetailDisplay({
           )}
         </List>
         <div className="mt-auto">
-          <UsersPagination count={reservation.users.count} />
+          <TableListPagination
+            count={reservation.users.count}
+            name="users"
+            rpp={5}
+          />
         </div>
       </div>
       <div className="flex flex-col">
@@ -131,7 +133,11 @@ export default function ReservationDetailDisplay({
           )}
         </List>
         <div>
-          <GroupsPagination count={reservation.groups.count} />
+          <TableListPagination
+            name="group"
+            rpp={5}
+            count={reservation.groups.count}
+          />
         </div>
       </div>
     </Paper>

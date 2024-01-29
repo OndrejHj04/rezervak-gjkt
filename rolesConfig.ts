@@ -56,7 +56,7 @@ export const rolesConfig = {
     name: "Administrace",
     path: "/admin",
     modules: {},
-    roles: [1],
+    roles: [0],
     menu: [true, false],
     icon: "shield_icon",
   },

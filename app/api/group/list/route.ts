@@ -22,6 +22,7 @@ export async function GET(req: Request) {
     const page = Number(url.searchParams.get("page"));
     const search = url.searchParams.get("search");
     const limit = url.searchParams.get("limit");
+    const rpp = Number(url.searchParams.get("rpp")) || 10;
 
     const { role, id } = (await decode({
       token: token.replace("Bearer ", ""),
@@ -44,7 +45,7 @@ export async function GET(req: Request) {
           ${limit && isLimited ? `AND groups.owner = ${id}` : ""}
           GROUP BY 
               groups.id
-          ${page ? `LIMIT 10 OFFSET ${page * 10 - 10}` : ""}
+          ${page ? `LIMIT ${rpp} OFFSET ${page * rpp - rpp}` : ""}
         `,
         values: [],
       }),

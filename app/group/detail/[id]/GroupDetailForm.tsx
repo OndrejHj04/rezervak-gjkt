@@ -29,10 +29,9 @@ import { redirect, useRouter } from "next/navigation";
 import MakeGroupDetailRefetch from "./refetch";
 import AddUsersToGroupModal from "./AddUsersToGroupModal";
 import AddGroupToReservationModal from "./AddGroupToReservationModal";
-import UsersPagination from "@/app/reservation/detail/[id]/UsersPagination";
-import ReservationsPagination from "./ReservationsPagination";
 import fetcher from "@/lib/fetcher";
 import _ from "lodash";
+import TableListPagination from "@/ui-components/TableListPagination";
 
 interface selecteUser {
   label: string;
@@ -261,7 +260,11 @@ export default function GroupDetailForm({ group }: { group: any }) {
                 )}
               </List>
               <div className="mt-auto">
-                <UsersPagination count={group.users.count} />
+                <TableListPagination
+                  count={group.users.count}
+                  name="users"
+                  rpp={5}
+                />
                 <div className="flex flex-col gap-2">
                   <Button
                     variant="contained"
@@ -323,7 +326,11 @@ export default function GroupDetailForm({ group }: { group: any }) {
                 )}
               </List>
               <div className="mt-auto">
-                <ReservationsPagination count={group.reservations.count} />
+                <TableListPagination
+                  rpp={5}
+                  name="reservations"
+                  count={group.reservations.count}
+                />
                 <div className="flex flex-col gap-2">
                   <Button
                     variant="contained"

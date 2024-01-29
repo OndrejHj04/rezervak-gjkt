@@ -3,8 +3,8 @@ import SingleGroup from "./SingleGroup";
 import GroupIcon from "@mui/icons-material/Group";
 import { User, getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import GroupsPagination from "./GroupsPagination";
 import fetcher from "@/lib/fetcher";
+import TableListPagination from "@/ui-components/TableListPagination";
 
 const getGroups = async (id: number, page: any) => {
   try {
@@ -48,7 +48,7 @@ export default async function DisplayGroups({
         )}
       </MenuList>
       <div className="mt-auto">
-        <GroupsPagination count={groups.count} />
+        <TableListPagination rpp={10} name="groups" count={groups.count} />
       </div>
     </Paper>
   );

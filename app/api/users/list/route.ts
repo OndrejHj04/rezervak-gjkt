@@ -8,6 +8,7 @@ export async function GET(req: Request) {
     const page = Number(url.searchParams.get("page"));
     const role = Number(url.searchParams.get("role"));
     const search = url.searchParams.get("search");
+    const rpp = Number(url.searchParams.get("rpp")) || 10;
 
     const isAuthorized = (await protect(
       req.headers.get("Authorization")
@@ -27,14 +28,22 @@ export async function GET(req: Request) {
       query({
         query: `SELECT users.id, first_name, last_name, email, image, verified, birth_date, active, JSON_OBJECT('id', roles.id, 'name', roles.name) as role
           FROM users INNER JOIN roles ON roles.id = users.role WHERE 1=1
-        ${search? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`: ""}
+        ${
+          search
+            ? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`
+            : ""
+        }
         ${role ? `AND users.role = ${role}` : ""}
-        ${page ? `LIMIT 10 OFFSET ${page * 10 - 10}` : ""}`,
+        ${page ? `LIMIT ${rpp} OFFSET ${page * rpp - rpp}` : ""}`,
         values: [],
       }),
       query({
         query: `SELECT COUNT(*) as total FROM users WHERE 1=1 
-        ${search ? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`: ""}
+        ${
+          search
+            ? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`
+            : ""
+        }
         ${role ? `AND users.role = ${role}` : ""}
         `,
         values: [],

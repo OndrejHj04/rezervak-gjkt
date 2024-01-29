@@ -2,15 +2,23 @@
 import { TablePagination } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-export default function TableListPagination({ count }: { count: number }) {
+export default function TableListPagination({
+  count,
+  name,
+  rpp,
+}: {
+  count: number;
+  name: any;
+  rpp: any;
+}) {
   const searchParams = useSearchParams();
-  const page = Number(searchParams.get("page")) || 1;
+  const page = Number(searchParams.get(name)) || 1;
   const { replace } = useRouter();
   const pathname = usePathname();
 
   const pageChange = (_: any, newPage: any) => {
     const params = new URLSearchParams(searchParams);
-    params.set("page", newPage + 1);
+    params.set(name, newPage + 1);
     replace(`${pathname}?${params.toString()}`);
   };
 
@@ -20,7 +28,7 @@ export default function TableListPagination({ count }: { count: number }) {
       count={count}
       page={page - 1}
       onPageChange={pageChange}
-      rowsPerPage={10}
+      rowsPerPage={rpp}
       rowsPerPageOptions={[]}
       onRowsPerPageChange={() => {}}
     />

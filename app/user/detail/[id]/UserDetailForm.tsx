@@ -19,13 +19,13 @@ import {
   ListItemText,
   Modal,
   Paper,
+  TablePagination,
   TextField,
   Typography,
 } from "@mui/material";
 import { DateField, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import { User } from "next-auth";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeUserDetailRefetch from "./refetch";
@@ -35,12 +35,10 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useState } from "react";
 import AddGroupsModal from "./AddGroupsModal";
 import AddReservationsModal from "./AddReservationsModal";
-import UserSleepModal from "./UserSleepModal";
-import GroupsPagination from "./GroupsPagination";
-import ReservationsPagination from "./ReservationsPagination";
 import { rolesConfig } from "@/rolesConfig";
 import HotelIcon from "@mui/icons-material/Hotel";
 import fetcher from "@/lib/fetcher";
+import TableListPagination from "@/ui-components/TableListPagination";
 
 export default function UserDetailForm({
   userDetail,
@@ -327,7 +325,11 @@ export default function UserDetailForm({
                   </>
                 )}
               </List>
-              <GroupsPagination count={userDetail.groups.count} />
+              <TableListPagination
+                name="groups"
+                rpp={5}
+                count={userDetail.groups.count}
+              />
               {makeEdit && (
                 <div className="flex flex-col gap-2">
                   <Button
@@ -395,7 +397,11 @@ export default function UserDetailForm({
                 )}
               </List>
               <div className="mt-auto">
-                <ReservationsPagination count={userDetail.reservations.count} />
+                <TableListPagination
+                  name="reservations"
+                  rpp={5}
+                  count={userDetail.reservations.count}
+                />
                 {makeEdit && (
                   <div className="flex flex-col gap-2">
                     <Button

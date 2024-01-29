@@ -1,33 +1,20 @@
 "use client";
-import { Reservation, ReservationStatus } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
-  Autocomplete,
-  Avatar,
-  Box,
   Button,
-  Card,
-  CardHeader,
   Checkbox,
   Chip,
   Divider,
-  FormControl,
-  FormControlLabel,
   Icon,
   IconButton,
-  InputLabel,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  MenuItem,
   Modal,
-  OutlinedInput,
   Paper,
   Radio,
-  RadioGroup,
-  Select,
   TextField,
   Typography,
 } from "@mui/material";
@@ -46,9 +33,8 @@ import AddGroupsModal from "./AddGroupsModal";
 import MakeReservationDetailRefetch from "./refetch";
 import ReservationListMakeRefetch from "../../list/refetch";
 import PerfectScrollbar from "react-perfect-scrollbar";
-import GroupsPagination from "./GroupsPagination";
-import UsersPagination from "./UsersPagination";
 import fetcher from "@/lib/fetcher";
+import TableListPagination from "@/ui-components/TableListPagination";
 
 export default function ReservationDetailForm({
   reservation,
@@ -340,7 +326,11 @@ export default function ReservationDetailForm({
                 </PerfectScrollbar>
               </List>
               <div className="mt-auto">
-                <UsersPagination count={reservation.users.count} />
+                <TableListPagination
+                  count={reservation.users.count}
+                  name="users"
+                  rpp={5}
+                />
                 <div className="flex flex-col gap-2">
                   <Button
                     variant="contained"
@@ -397,7 +387,11 @@ export default function ReservationDetailForm({
                 </PerfectScrollbar>
               </List>
               <div className="mt-auto">
-                <GroupsPagination count={reservation.groups.count} />
+                <TableListPagination
+                  name="group"
+                  rpp={5}
+                  count={reservation.groups.count}
+                />
                 <div className="flex flex-col gap-2">
                   <Button
                     variant="contained"

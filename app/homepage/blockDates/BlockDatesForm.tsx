@@ -101,7 +101,7 @@ export default function BlockDatesForm({
         }
       >
         <DemoContainer components={["DatePicker"]}>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 w-full">
             <Controller
               control={control}
               name="from_date"

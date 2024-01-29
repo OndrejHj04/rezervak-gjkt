@@ -125,7 +125,11 @@ export default async function ReservationList({
                 ))}
               </TableBody>
             </Table>
-            <TableListPagination count={reservations.count} />
+            <TableListPagination
+              count={reservations.count}
+              name="page"
+              rpp={10}
+            />
           </Box>
         </Box>
       </Paper>

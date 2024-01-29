@@ -9,8 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import GroupsPagination from "./GroupsPagination";
-import ReservationsPagination from "./ReservationsPagination";
+import TableListPagination from "@/ui-components/TableListPagination";
 
 export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
   return (
@@ -58,7 +57,7 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
             )}
           </List>
           <div className="mt-auto">
-            <GroupsPagination count={userDetail.groups.count} />
+            <TableListPagination name="groups" rpp={5} count={userDetail.groups.count} />
           </div>
         </div>
         <div className="flex flex-col">
@@ -83,7 +82,11 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
             )}
           </List>
           <div className="mt-auto">
-            <ReservationsPagination count={userDetail.reservations.count} />
+            <TableListPagination
+              name="reservations"
+              rpp={5}
+              count={userDetail.reservations.count}
+            />
           </div>
         </div>
       </div>

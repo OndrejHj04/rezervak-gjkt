@@ -11,10 +11,10 @@ import { User, getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import SingleReservation from "./SingleReservation";
 import EventIcon from "@mui/icons-material/Event";
-import ReservationPagination from "./ReservationsPagination";
 import ReservationsSwitch from "./ReservationsSwitch";
 import RenderCalendar from "../calendar/RenderCalendar";
 import fetcher from "@/lib/fetcher";
+import TableListPagination from "@/ui-components/TableListPagination";
 
 const getReservations = async (id: number, page: string) => {
   try {
@@ -36,7 +36,6 @@ export default async function DisplayReservations({
   searchParams: any;
   data: any;
 }) {
-
   const reservations = data
     ? ((await getReservations(
         data.user.id,
@@ -69,8 +68,9 @@ export default async function DisplayReservations({
       )}
       <div className="mt-auto flex items-center justify-between">
         <ReservationsSwitch />
-        {searchParams.mode === "list" && (
-          <ReservationPagination
+        {searchParams.mode !== "calendar" && (
+          <TableListPagination
+            rpp={5}
             count={reservations.count}
             name="reservations"
           />

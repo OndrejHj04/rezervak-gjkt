@@ -99,7 +99,7 @@ export default async function UserList({
                 ))}
               </TableBody>
             </Table>
-            <TableListPagination count={users.count} />
+            <TableListPagination count={users.count} name="page" rpp={10} />
           </Box>
         </Box>
       </Paper>

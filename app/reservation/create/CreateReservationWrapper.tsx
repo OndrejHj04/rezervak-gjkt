@@ -9,7 +9,7 @@ export default function CreateReservationWrapper({
 }: {
   searchParams: any;
 }) {
-  const { users, groups } = searchParams;
+  const { users, groups, upage, gpage } = searchParams;
 
   return (
     <div className="flex flex-col">
@@ -18,7 +18,12 @@ export default function CreateReservationWrapper({
         <CreateButton />
       </div>
       <ReservationDates />
-      <ReservationMembers users={users || ""} groups={groups || ""} />
+      <ReservationMembers
+        users={users || ""}
+        groups={groups || ""}
+        upage={upage}
+        gpage={gpage}
+      />
       <ReservationRooms />
       <ReservationDetail />
     </div>

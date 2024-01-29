@@ -30,7 +30,7 @@ export default function ReservationDetailDisplay({
   groups: any;
 }) {
   return (
-    <Paper className="p-4 flex gap-4">
+    <Paper className="md:p-4 p-2 flex gap-4 md:flex-row flex-col">
       <div>
         <Typography variant="h5">Název: {reservation.name}</Typography>
         <Divider />
@@ -81,10 +81,10 @@ export default function ReservationDetailDisplay({
           Pokyny pro účastníky: {reservation.instructions}
         </Typography>
       </div>
-      <div>
+      <div className="flex flex-col">
         <Typography variant="h5">Uživatelé v rezervaci</Typography>
         <Divider />
-        <List sx={{ height: 360 }}>
+        <List>
           {reservation.users.data.length ? (
             reservation.users.data.map((user: any) => (
               <ListItem key={user.id}>
@@ -107,12 +107,14 @@ export default function ReservationDetailDisplay({
             </>
           )}
         </List>
-        <UsersPagination count={reservation.users.count} />
+        <div className="mt-auto">
+          <UsersPagination count={reservation.users.count} />
+        </div>
       </div>
-      <div>
+      <div className="flex flex-col">
         <Typography variant="h5">Skupiny v rezervaci</Typography>
         <Divider />
-        <List sx={{ height: 300 }}>
+        <List>
           {reservation.groups.data.length ? (
             reservation.groups.data.map((group: any) => (
               <ListItem disablePadding key={group.id}>
@@ -128,7 +130,9 @@ export default function ReservationDetailDisplay({
             </>
           )}
         </List>
-        <GroupsPagination count={reservation.groups.count} />
+        <div>
+          <GroupsPagination count={reservation.groups.count} />
+        </div>
       </div>
     </Paper>
   );

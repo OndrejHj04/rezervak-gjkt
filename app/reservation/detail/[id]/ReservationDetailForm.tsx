@@ -191,8 +191,8 @@ export default function ReservationDetailForm({
       )}
 
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-        <Paper className="p-4 flex flex-col gap-3">
-          <div className="flex">
+        <Paper className="lg:p-4 p-2 flex flex-col gap-3">
+          <div className="flex lg:flex-row flex-col gap-2">
             <div className="flex flex-col gap-1">
               <Typography variant="h5">Vedoucí rezervace</Typography>
               <div className="flex gap-2">
@@ -205,13 +205,10 @@ export default function ReservationDetailForm({
                   <Typography>{reservation.leader.email}</Typography>
                 </div>
               </div>
-              <div className="flex">
+              <div className="flex gap-2">
                 <Typography variant="h6">Status:</Typography>
                 <Chip
                   label={reservation.status.display_name}
-                  sx={{
-                    margin: "auto",
-                  }}
                   icon={
                     <Icon sx={{ "&&": { color: reservation.status.color } }}>
                       {reservation.status.icon}
@@ -221,45 +218,51 @@ export default function ReservationDetailForm({
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 mx-3">
-              <TextField
-                label="Název"
-                {...register("name")}
-                defaultValue={reservation.name}
-              />
-              <TextField
-                {...register("purpouse")}
-                label="Účel rezervace"
-                defaultValue={reservation.purpouse}
-              />
-            </div>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <div className="flex flex-col gap-3 mr-3">
-                <DatePicker
-                  value={dayjs(reservation.from_date)}
-                  disabled
-                  label="Začátek rezervace"
-                  format="DD.MM.YYYY"
+            <div className="flex gap-2 sm:flex-row flex-col">
+              <div className="flex flex-col justify-between gap-2">
+                <TextField
+                  label="Název"
+                  {...register("name")}
+                  defaultValue={reservation.name}
                 />
-
-                <DatePicker
-                  value={dayjs(reservation.to_date)}
-                  disabled
-                  label="Konec rezervace"
-                  format="DD.MM.YYYY"
+                <TextField
+                  {...register("purpouse")}
+                  label="Účel rezervace"
+                  defaultValue={reservation.purpouse}
                 />
               </div>
-            </LocalizationProvider>
-            <TextField
-              multiline
-              label="Pokyny pro účastníky"
-              minRows={4}
-              className="h-full mr-3"
-              defaultValue={reservation.instructions}
-              maxRows={4}
-              {...register("instructions")}
-            />
-            <div className="flex flex-col ml-3 gap-2">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <div className="flex flex-col justify-between gap-2">
+                  <DatePicker
+                    value={dayjs(reservation.from_date)}
+                    disabled
+                    label="Začátek rezervace"
+                    format="DD.MM.YYYY"
+                  />
+
+                  <DatePicker
+                    value={dayjs(reservation.to_date)}
+                    disabled
+                    label="Konec rezervace"
+                    format="DD.MM.YYYY"
+                  />
+                </div>
+              </LocalizationProvider>
+              <TextField
+                multiline
+                minRows={4}
+                maxRows={4}
+                label="Pokyny pro účastníky"
+                sx={{
+                  "& .MuiInputBase-root": {
+                    height: "100%",
+                  },
+                }}
+                defaultValue={reservation.instructions}
+                {...register("instructions")}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
               <Button
                 variant="outlined"
                 color="error"
@@ -272,24 +275,26 @@ export default function ReservationDetailForm({
               </Button>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Typography variant="h6">Pokoje:</Typography>
-            {reservation.rooms.map((room: any) => (
-              <Chip
-                key={room.id}
-                label={`Pokoj č. ${room.id}, ${room.people} lůžkový`}
-              />
-            ))}
+          <div className="flex gap-2 lg:flex-row flex-col">
+            <div className="flex sm:flex-row flex-col gap-2">
+              <Typography variant="h6">Pokoje:</Typography>
+              {reservation.rooms.map((room: any) => (
+                <Chip
+                  key={room.id}
+                  label={`Pokoj č. ${room.id}, ${room.people} lůžkový`}
+                />
+              ))}
+            </div>
             <Typography variant="h6">
               Datum vytvoření:{" "}
               {dayjs(reservation.creation_date).format("DD. MM. YYYY")}
             </Typography>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 lg:flex-row flex-col">
             <div className="flex flex-col">
               <Typography variant="h5">Uživatelé v rezervaci</Typography>
               <Divider />
-              <List sx={{ height: 360 }}>
+              <List>
                 <PerfectScrollbar>
                   {reservation.users.count ? (
                     reservation.users.data.map((user: any) => (
@@ -334,30 +339,32 @@ export default function ReservationDetailForm({
                   )}
                 </PerfectScrollbar>
               </List>
-              <UsersPagination count={reservation.users.count} />
-              <div className="flex flex-col gap-2">
-                <Button
-                  variant="contained"
-                  color="error"
-                  endIcon={<DeleteForeverIcon />}
-                  disabled={!selectedUsers.length}
-                  onClick={handleRemoveUsers}
-                >
-                  Odebrat vybrané uživatele
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => setUsersModal(true)}
-                  endIcon={<AddToPhotosIcon />}
-                >
-                  Přidat uživatele
-                </Button>
+              <div className="mt-auto">
+                <UsersPagination count={reservation.users.count} />
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant="contained"
+                    color="error"
+                    endIcon={<DeleteForeverIcon />}
+                    disabled={!selectedUsers.length}
+                    onClick={handleRemoveUsers}
+                  >
+                    Odebrat vybrané uživatele
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => setUsersModal(true)}
+                    endIcon={<AddToPhotosIcon />}
+                  >
+                    Přidat uživatele
+                  </Button>
+                </div>
               </div>
             </div>
             <div className="flex flex-col">
               <Typography variant="h5">Skupiny v rezervaci</Typography>
               <Divider />
-              <List sx={{ height: 360 }}>
+              <List>
                 <PerfectScrollbar>
                   {reservation.groups.count ? (
                     reservation.groups.data.map((group: any) => (
@@ -389,30 +396,32 @@ export default function ReservationDetailForm({
                   )}
                 </PerfectScrollbar>
               </List>
-              <GroupsPagination count={reservation.groups.count} />
-              <div className="flex flex-col gap-2 ">
-                <Button
-                  variant="contained"
-                  color="error"
-                  endIcon={<DeleteForeverIcon />}
-                  disabled={!selectedGroups.length}
-                  onClick={handleRemoveGroups}
-                >
-                  Odebrat vybrané skupiny
-                </Button>
-                <Button
-                  variant="contained"
-                  endIcon={<AddToPhotosIcon />}
-                  onClick={() => setGroupsModal(true)}
-                >
-                  Přidat skupiny
-                </Button>
+              <div className="mt-auto">
+                <GroupsPagination count={reservation.groups.count} />
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant="contained"
+                    color="error"
+                    endIcon={<DeleteForeverIcon />}
+                    disabled={!selectedGroups.length}
+                    onClick={handleRemoveGroups}
+                  >
+                    Odebrat vybrané skupiny
+                  </Button>
+                  <Button
+                    variant="contained"
+                    endIcon={<AddToPhotosIcon />}
+                    onClick={() => setGroupsModal(true)}
+                  >
+                    Přidat skupiny
+                  </Button>
+                </div>
               </div>
             </div>
             <div className="flex flex-col">
               <Typography variant="h5">Status rezervace</Typography>
               <Divider />
-              <List sx={{ height: 412 }}>
+              <List>
                 {reservationStatus.map((status: any) => (
                   <ListItem disablePadding key={status.id} value={status.id}>
                     <ListItemButton
@@ -438,7 +447,7 @@ export default function ReservationDetailForm({
                   </ListItem>
                 ))}
               </List>
-              <div className="flex flex-col gap-2 ">
+              <div className="flex flex-col gap-2 mt-auto">
                 <Button
                   variant="contained"
                   endIcon={<AddToPhotosIcon />}

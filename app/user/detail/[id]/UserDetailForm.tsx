@@ -290,7 +290,7 @@ export default function UserDetailForm({
             <div className="flex flex-col">
               <Typography variant="h5">Skupiny uživatele</Typography>
               <Divider />
-              <List sx={{ height: 360 }}>
+              <List>
                 {userDetail.groups.count ? (
                   userDetail.groups.data.map((group: any) => (
                     <ListItem disablePadding key={group.id}>
@@ -351,7 +351,7 @@ export default function UserDetailForm({
             <div className="flex flex-col">
               <Typography variant="h5">Rezervace uživatele</Typography>
               <Divider />
-              <List sx={{ height: 360 }}>
+              <List>
                 {userDetail.reservations.count ? (
                   userDetail.reservations.data.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>
@@ -393,27 +393,29 @@ export default function UserDetailForm({
                   </>
                 )}
               </List>
-              <ReservationsPagination count={userDetail.reservations.count} />
-              {makeEdit && (
-                <div className="flex flex-col gap-2">
-                  <Button
-                    variant="contained"
-                    color="error"
-                    endIcon={<DeleteForeverIcon />}
-                    disabled={!selectReservations.length}
-                    onClick={removeReservations}
-                  >
-                    Odebrat uživatele z vybraných rezervací
-                  </Button>
-                  <Button
-                    variant="contained"
-                    endIcon={<AddToPhotosIcon />}
-                    onClick={() => setReservationsModal(true)}
-                  >
-                    Přidat uživatele do rezervace
-                  </Button>
-                </div>
-              )}
+              <div className="mt-auto">
+                <ReservationsPagination count={userDetail.reservations.count} />
+                {makeEdit && (
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      variant="contained"
+                      color="error"
+                      endIcon={<DeleteForeverIcon />}
+                      disabled={!selectReservations.length}
+                      onClick={removeReservations}
+                    >
+                      Odebrat uživatele z vybraných rezervací
+                    </Button>
+                    <Button
+                      variant="contained"
+                      endIcon={<AddToPhotosIcon />}
+                      onClick={() => setReservationsModal(true)}
+                    >
+                      Přidat uživatele do rezervace
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </Paper>

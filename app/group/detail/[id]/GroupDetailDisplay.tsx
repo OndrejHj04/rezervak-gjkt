@@ -14,9 +14,8 @@ import GroupsPagination from "./GroupsPagination";
 import UsersPagination from "@/app/reservation/detail/[id]/UsersPagination";
 
 export default async function GroupDetailDisplay({ group }: { group: any }) {
-
   return (
-    <Paper className="flex p-4 gap-4">
+    <Paper className="md:p-4 p-2 flex md:flex-row flex-col gap-4">
       <div>
         <Typography variant="h5">Jméno: {group.name}</Typography>
         <Typography variant="h6">Popis skupiny: {group.description}</Typography>
@@ -33,7 +32,7 @@ export default async function GroupDetailDisplay({ group }: { group: any }) {
           </div>
         </div>
       </div>
-      <div className="flex gap-4">
+      <div className="flex md:flex-row flex-col gap-3">
         <div className="flex flex-col">
           <Typography variant="h5">Uživatelé ve skupině </Typography>
           <Divider />
@@ -60,7 +59,9 @@ export default async function GroupDetailDisplay({ group }: { group: any }) {
               </>
             )}
           </List>
-          <UsersPagination count={group.users.count} />
+          <div className="mt-auto">
+            <UsersPagination count={group.users.count} />
+          </div>
         </div>
         <div className="flex flex-col">
           <Typography variant="h5">Rezervace skupiny </Typography>
@@ -79,11 +80,13 @@ export default async function GroupDetailDisplay({ group }: { group: any }) {
               ))
             ) : (
               <>
-                <Typography>Žádní rezervace skupiny</Typography>
+                <Typography>Žádné rezervace skupiny</Typography>
               </>
             )}
           </List>
-          <GroupsPagination count={group.reservations.count} />
+          <div className="mt-auto">
+            <GroupsPagination count={group.reservations.count} />
+          </div>
         </div>
       </div>
     </Paper>

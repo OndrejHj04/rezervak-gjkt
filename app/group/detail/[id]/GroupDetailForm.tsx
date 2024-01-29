@@ -170,8 +170,8 @@ export default function GroupDetailForm({ group }: { group: any }) {
         </Modal>
       )}
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-        <Paper className="flex gap-4 p-4 flex-col">
-          <div className="flex gap-2">
+        <Paper className="flex gap-4 md:p-4 p-2 flex-col">
+          <div className="flex gap-2 md:flex-row flex-col">
             <div className="flex flex-col gap-1">
               <Typography variant="h5">Vedoucí skupiny</Typography>
               <div className="flex gap-2">
@@ -183,18 +183,16 @@ export default function GroupDetailForm({ group }: { group: any }) {
                   <Typography>{group.owner.email}</Typography>
                 </div>
               </div>
-              <div className="flex ">
+              <div className="flex">
                 <Typography variant="h6">Počet členů:</Typography>
                 <Chip
+                  className="ml-2"
                   label={`${group.users.count} členů`}
-                  sx={{
-                    margin: "auto",
-                  }}
                   icon={<Icon>group_icon</Icon>}
                 />
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 md:flex-row flex-col">
               <TextField label="Jméno" {...register("name")} />
               <TextField
                 {...register("description")}
@@ -218,11 +216,11 @@ export default function GroupDetailForm({ group }: { group: any }) {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex md:flex-row flex-col gap-3">
             <div className="flex flex-col">
               <Typography variant="h5">Uživatelé ve skupině </Typography>
               <Divider />
-              <List sx={{ height: 360 }}>
+              <List>
                 {group.users.count ? (
                   group.users.data.map((user: any) => (
                     <ListItem disablePadding key={user.id}>
@@ -263,30 +261,32 @@ export default function GroupDetailForm({ group }: { group: any }) {
                   </>
                 )}
               </List>
-              <UsersPagination count={group.users.count} />
-              <div className="flex flex-col gap-2">
-                <Button
-                  variant="contained"
-                  color="error"
-                  endIcon={<DeleteForeverIcon />}
-                  disabled={checked.length === 0}
-                  onClick={handleDeleteMembers}
-                >
-                  Odebrat vybrané uživatele ze skupiny
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => setUsersModal(true)}
-                  endIcon={<AddToPhotosIcon />}
-                >
-                  Přidat uživatele do skupiny
-                </Button>
+              <div className="mt-auto">
+                <UsersPagination count={group.users.count} />
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant="contained"
+                    color="error"
+                    endIcon={<DeleteForeverIcon />}
+                    disabled={checked.length === 0}
+                    onClick={handleDeleteMembers}
+                  >
+                    Odebrat vybrané uživatele ze skupiny
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => setUsersModal(true)}
+                    endIcon={<AddToPhotosIcon />}
+                  >
+                    Přidat uživatele do skupiny
+                  </Button>
+                </div>
               </div>
             </div>
             <div className="flex flex-col">
               <Typography variant="h5">Rezervace skupiny </Typography>
               <Divider />
-              <List sx={{ height: 360 }}>
+              <List>
                 {group.reservations.count ? (
                   group.reservations.data.map((reservation: any) => (
                     <ListItem disablePadding key={reservation.id}>
@@ -323,24 +323,26 @@ export default function GroupDetailForm({ group }: { group: any }) {
                   </>
                 )}
               </List>
-              <ReservationsPagination count={group.reservations.count} />
-              <div className="flex flex-col gap-2">
-                <Button
-                  variant="contained"
-                  color="error"
-                  endIcon={<DeleteForeverIcon />}
-                  disabled={!selectReservation.length}
-                  onClick={() => removeFromReservations()}
-                >
-                  Odpojit vybrané rezervace
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => setReservationModal(true)}
-                  endIcon={<AddToPhotosIcon />}
-                >
-                  Připojit rezervaci ke skupině
-                </Button>
+              <div className="mt-auto">
+                <ReservationsPagination count={group.reservations.count} />
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant="contained"
+                    color="error"
+                    endIcon={<DeleteForeverIcon />}
+                    disabled={!selectReservation.length}
+                    onClick={() => removeFromReservations()}
+                  >
+                    Odpojit vybrané rezervace
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => setReservationModal(true)}
+                    endIcon={<AddToPhotosIcon />}
+                  >
+                    Připojit rezervaci ke skupině
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

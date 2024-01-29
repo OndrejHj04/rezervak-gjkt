@@ -44,7 +44,6 @@ const getReservations = async (
   }
 };
 
-
 const ReservationListItem = dynamic(
   () => import("./components/ReservationListItem")
 );
@@ -75,11 +74,11 @@ export default async function ReservationList({
 
   return (
     <div className="flex flex-col w-full gap-2">
-      <ReservationFilters userRole={userRole}/>
+      <ReservationFilters userRole={userRole} />
       <Paper>
         <Box sx={{ overflow: "auto" }}>
           <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
-            <Table>
+            <Table size="small">
               <TableHead>
                 <TableRow>
                   {rolesConfig.reservations.modules.reservationsTable.config.delete.includes(

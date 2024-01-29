@@ -37,8 +37,8 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
         <Typography>Adresa: {userDetail.adress}</Typography>
       </div>
 
-      <div className="md:grid md:grid-cols-2 md:grid-rows-2 flex flex-col">
-        <div className="flex-col">
+      <div className="flex md:flex-row flex-col gap-3">
+        <div className="flex flex-col">
           <Typography variant="h5">Skupiny uživatele </Typography>
           <Divider />
           <List>
@@ -57,8 +57,11 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
               </>
             )}
           </List>
+          <div className="mt-auto">
+            <GroupsPagination count={userDetail.groups.count} />
+          </div>
         </div>
-        <div className="flex-col md:order-2 order-3">
+        <div className="flex flex-col">
           <Typography variant="h5">Rezervace uživatele</Typography>
           <Divider />
           <List>
@@ -79,12 +82,9 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
               </>
             )}
           </List>
-        </div>
-        <div className="md:order-3 order-2">
-          <GroupsPagination count={userDetail.groups.count} />
-        </div>
-        <div className="order-4">
-          <ReservationsPagination count={userDetail.reservations.count} />
+          <div className="mt-auto">
+            <ReservationsPagination count={userDetail.reservations.count} />
+          </div>
         </div>
       </div>
     </Paper>

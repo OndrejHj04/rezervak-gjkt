@@ -57,7 +57,7 @@ export default function VerifyUser({ id }: { id?: number }) {
       }
     });
   };
-
+  console.log(methods.formState.errors);
   return (
     <Paper className="p-2">
       <div className="flex justify-between">
@@ -78,8 +78,8 @@ export default function VerifyUser({ id }: { id?: number }) {
               {...methods.register("ID_code", {
                 required: "Toto pole je povinné",
                 pattern: {
-                  value: /^\d{9}$/,
-                  message: "Číslo OP musí mít 9 číslic",
+                  value: /^(\d{6})\/(\d{4})$/,
+                  message: "RČ musí být ve správném formátu",
                 },
               })}
               error={!!errors.ID_code}

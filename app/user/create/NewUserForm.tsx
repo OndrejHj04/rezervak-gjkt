@@ -26,12 +26,12 @@ export default function NewUserForm({ roles }: { roles: any }) {
         toast.success("Uživatel úspěšně vytvořen");
         MakeUserListRefetch("/user/list", 1);
       } else if (res.duplicate) {
+        setLoading(false);
         toast.error("Uživatel s tímto emailem už existuje");
       } else {
+        setLoading(false);
         toast.error("Něco se nepovedlo");
       }
-
-      setLoading(false);
     });
   };
 

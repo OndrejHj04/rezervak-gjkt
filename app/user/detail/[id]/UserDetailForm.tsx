@@ -229,7 +229,7 @@ export default function UserDetailForm({
                 </LocalizationProvider>
 
                 <TextField
-                  label="Číslo OP"
+                  label="Rodné číslo"
                   {...register("ID_code")}
                   defaultValue={userDetail.ID_code}
                 />
@@ -240,6 +240,7 @@ export default function UserDetailForm({
                   render={({ field: { value, onChange } }) => (
                     <Autocomplete
                       value={value}
+                      disabled={!makeEdit}
                       isOptionEqualToValue={(option, value) =>
                         option.id === value.id
                       }

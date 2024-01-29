@@ -23,6 +23,7 @@ import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { store } from "@/store/store";
 import SearchIcon from "@mui/icons-material/Search";
 import PerfectScrollbar from "react-perfect-scrollbar";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function ReservationMembersRender({
   groups,
@@ -36,11 +37,10 @@ export default function ReservationMembersRender({
   const isValid = createReservation.members.length;
   const [groupsIncluded, setGroupsIncluded] = useState<number[]>([]);
   const [members, setMembers] = useState<number[]>([]);
-  const [groupsFilter, setGroupsFilter] = useState(groups);
-  const [groupsSearch, setGroupsSearch] = useState("");
+  const searchParams = useSearchParams();
 
-  const [usersFilter, setUsersFilter] = useState<User[]>(users);
-  const [usersSearch, setUsersSearch] = useState("");
+  const pathname = usePathname();
+  const { replace } = useRouter();
 
   const makeReset = () => {
     setMembers([]);
@@ -52,30 +52,6 @@ export default function ReservationMembersRender({
     });
   };
 
-  useEffect(() => {
-    if (!usersSearch) {
-      setUsersFilter(users);
-    } else {
-      setUsersFilter(
-        users.filter((user: any) =>
-          user.full_name.toLowerCase().includes(usersSearch.toLowerCase())
-        )
-      );
-    }
-  }, [usersSearch]);
-
-  useEffect(() => {
-    if (!groupsSearch) {
-      setGroupsFilter(groups);
-    } else {
-      setGroupsFilter(
-        groups.filter((group: any) =>
-          group.name.toLowerCase().includes(groupsSearch.toLowerCase())
-        )
-      );
-    }
-  }, [groupsSearch]);
-
   const handleSubmit = () => {
     setCreateReservation({
       ...createReservation,
@@ -83,6 +59,18 @@ export default function ReservationMembersRender({
       groups: groupsIncluded,
     });
     setExpanded(false);
+  };
+
+  const changeUserFilter = (e: any) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("users", e.target.value);
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  const changeGroupFilter = (e: any) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("groups", e.target.value);
+    replace(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -112,9 +100,9 @@ export default function ReservationMembersRender({
             <div className="flex items-center gap-2">
               <Typography variant="h6">Skupiny</Typography>
               <TextField
-                value={groupsSearch}
-                onChange={(e) => setGroupsSearch(e.target.value)}
                 sx={{ width: 200 }}
+                value={searchParams.get("groups")}
+                onChange={changeGroupFilter}
                 size="small"
                 label="Hledat skupinu..."
                 InputProps={{
@@ -130,7 +118,7 @@ export default function ReservationMembersRender({
         >
           <div style={{ height: 250 }}>
             <PerfectScrollbar>
-              {groupsFilter?.map((group: any) => {
+              {groups.map((group: any) => {
                 const isChecked = groupsIncluded.includes(group.id);
                 const handleClick = () => {
                   if (isChecked) {
@@ -140,11 +128,7 @@ export default function ReservationMembersRender({
                     );
                   } else {
                     setGroupsIncluded((c) => [...c, group.id]);
-                    setMembers((c) => [
-                      ...(new Set(
-                        c.concat(group.users.map(({ id }: { id: any }) => id))
-                      ) as any),
-                    ]);
+                    setMembers((c) => [...(new Set(group.users) as any)]);
                   }
                 };
                 return (
@@ -172,9 +156,9 @@ export default function ReservationMembersRender({
             <div className="flex items-center gap-2">
               <Typography variant="h6">Uživatelé</Typography>
               <TextField
-                value={usersSearch}
-                onChange={(e) => setUsersSearch(e.target.value)}
                 sx={{ width: 200 }}
+                value={searchParams.get("users")}
+                onChange={changeUserFilter}
                 size="small"
                 label="Hledat uživatele..."
                 InputProps={{
@@ -190,7 +174,7 @@ export default function ReservationMembersRender({
         >
           <div style={{ height: 250 }}>
             <PerfectScrollbar>
-              {usersFilter?.map((user) => {
+              {users.map((user: any) => {
                 const isChecked = members.includes(user.id);
                 const handleClick = () => {
                   if (isChecked) {

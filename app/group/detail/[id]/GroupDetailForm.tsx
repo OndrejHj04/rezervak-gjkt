@@ -49,7 +49,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
   const [reservationModal, setReservationModal] = useState(false);
   const [selectReservation, setSelectReservation] = useState<number[]>([]);
   const {
-    formState: { isDirty, dirtyFields },
+    formState: { isDirty },
     register,
     handleSubmit,
     reset,
@@ -69,8 +69,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
     }).then((res) => {
       if (res.success) {
         toast.success("Skupina upravena");
-        MakeGroupDetailRefetch(group.id);
-        reset();
+        reset({ ...data });
       } else {
         toast.error("Něco se nepovedlo");
       }

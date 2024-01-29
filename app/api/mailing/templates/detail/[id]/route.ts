@@ -23,15 +23,21 @@ export async function GET(
 
     const templates = (await query({
       query: `
-      SELECT * FROM templates WHERE id = ?
+          SELECT templates.id, templates.name, templates.title, templates.text, events_children.variables 
+          FROM templates 
+          INNER JOIN events_children ON events_children.template = templates.id
+          WHERE templates.id = ?
     `,
       values: [id],
     })) as any;
-
+    const data = {
+      ...templates[0],
+      variables: templates[0].variables.split(","),
+    };
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: templates[0],
+      data,
     });
   } catch (e) {
     return NextResponse.json(

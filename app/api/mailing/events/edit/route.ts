@@ -19,19 +19,17 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    for (let i = 0; i < Object.keys(data).length / 2; i++) {
-      const [first, second] = Object.keys(data).slice(i * 2, i * 2 + 2) as any;
-      const rowId = first.replace("Checkbox ", "");
-      const checkSecond = data[second] ? data[second].id : null;
-
-      await query({
-        query: `UPDATE events_children SET active = ?, template = ? WHERE id = ?`,
-        values: [data[first], checkSecond, rowId],
-      });
-    }
+    const array = Object.entries(data);
 
     await query({
-      query: ``,
+      query: `
+              INSERT INTO events_children (id, active)
+              VALUES ${array.map(
+                (item) => `(${item[0].split(" ")[1]}, ${item[1]})`
+              )}
+              ON DUPLICATE KEY UPDATE id=VALUES(id),
+              active=VALUES(active)
+      `,
       values: [],
     });
 

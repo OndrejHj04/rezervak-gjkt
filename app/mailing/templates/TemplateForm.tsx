@@ -1,7 +1,7 @@
 "use client";
 import fetcher from "@/lib/fetcher";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { TextField, Typography } from "@mui/material";
+import { Chip, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MailingRefetch from "../mailingRefetch";
@@ -68,6 +68,14 @@ export default function TemplateForm({ template }: { template?: any }) {
           rows={10}
           {...register("text", { required: true })}
         />
+        <div className="flex items-center gap-2">
+          <Typography>
+            V této šabloně je možné použít následující proměnné
+          </Typography>
+          {template.variables.map((item: any, i: any) => (
+            <Chip key={i} label={`\${${item}}`} />
+          ))}
+        </div>
       </div>
     </form>
   );

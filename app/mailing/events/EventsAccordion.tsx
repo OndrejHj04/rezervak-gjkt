@@ -4,6 +4,7 @@ import {
   AccordionSummary,
   Autocomplete,
   Box,
+  Button,
   Checkbox,
   Chip,
   FormControlLabel,
@@ -18,23 +19,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useEffect } from "react";
 import _ from "lodash";
 import { varTranslate } from "@/lib/variablesTranslate";
+import Link from "next/link";
 
-export default function EventsAccordion({
-  events,
-  options,
-}: {
-  events: any;
-  options: any;
-}) {
-  const {
-    control,
-    register,
-    watch,
-    setError,
-    setValue,
-    clearErrors,
-    formState: { errors },
-  } = useFormContext();
+export default function EventsAccordion({ events }: { events: any }) {
+  const { control, register } = useFormContext();
 
   return (
     <>
@@ -76,62 +64,17 @@ export default function EventsAccordion({
                               control={<Switch checked={value} />}
                               onChange={(e, value) => {
                                 onChange(value);
-                                if (!value) {
-                                  watch(`Select ${singleEvent.id}`) &&
-                                    setValue(`Select ${singleEvent.id}`, null);
-                                  clearErrors(`Select ${singleEvent.id}`);
-                                } else {
-                                  !watch(`Select ${singleEvent.id}`) &&
-                                    setError(`Select ${singleEvent.id}`, {
-                                      type: "custom",
-                                      message:
-                                        "Aktivní události musí mít přiřazenou šablonu",
-                                    });
-                                }
                               }}
                               label="Aktivní"
                             />
                           );
                         }}
                       />
-                      <Controller
-                        {...register(`Select ${singleEvent.id}`)}
-                        control={control}
-                        render={({ field: { value, onChange } }) => {
-                          const error = errors[`Select ${singleEvent.id}`];
-                          return (
-                            <Autocomplete
-                              value={value}
-                              onChange={(_, value) => {
-                                if (errors[`Select ${singleEvent.id}`]) {
-                                  clearErrors(`Select ${singleEvent.id}`);
-                                }
-
-                                onChange(value);
-                              }}
-                              options={options}
-                              disabled={!watch(`Checkbox ${singleEvent.id}`)}
-                              renderOption={(props: any, option: any) => (
-                                <div {...props}>
-                                  <Typography>{option.name}</Typography>
-                                </div>
-                              )}
-                              getOptionLabel={(option: any) => `${option.name}`}
-                              sx={{ width: 300 }}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  label="Šablona"
-                                  error={Boolean(error)}
-                                  helperText={
-                                    Boolean(error) && (error?.message as any)
-                                  }
-                                />
-                              )}
-                            />
-                          );
-                        }}
-                      />
+                      <Link
+                        href={`/mailing/templates/detail/${singleEvent.template.id}`}
+                      >
+                        <Button>Detail</Button>
+                      </Link>
                     </div>
                   </ListItem>
                 ))}

@@ -4,25 +4,14 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import EventsAccordion from "./EventsAccordion";
 import fetcher from "@/lib/fetcher";
 import { toast } from "react-toastify";
-import { method } from "lodash";
 
-export default function MailingEvents({
-  events,
-  options,
-}: {
-  events: any;
-  options: any;
-}) {
+export default function MailingEvents({ events }: { events: any }) {
   const defaultValues = events
     .reduce((acc: any, event: any) => acc.concat(event.children), [])
-    .reduce(
-      (acc: any, item: any) => ({
-        ...acc,
-        [`Checkbox ${item.id}`]: Boolean(item.active),
-        [`Select ${item.id}`]: item.template,
-      }),
-      {}
-    );
+    .reduce((obj: any, item: any, i: any) => {
+      obj[`Checkbox ${item.id}`] = item.active;
+      return obj;
+    }, {});
 
   const methods = useForm({ defaultValues });
 
@@ -47,15 +36,12 @@ export default function MailingEvents({
             <Button
               variant="outlined"
               type="submit"
-              disabled={
-                !methods.formState.isDirty ||
-                (Object.keys(methods.formState.errors).length as any)
-              }
+              disabled={!methods.formState.isDirty}
             >
               Uložit
             </Button>
           </div>
-          <EventsAccordion events={events} options={options} />
+          <EventsAccordion events={events} />
         </Paper>
       </form>
     </FormProvider>

@@ -180,8 +180,8 @@ export default function UserDetailForm({
       )}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
         <Paper className="p-4 flex flex-col gap-4">
-          <div className="flex gap-2">
-            <div className="flex flex-col justify-between">
+          <div className="flex gap-2 lg:flex-row flex-col">
+            <div className="flex lg:flex-col flex-row justify-between flex-wrap">
               <div className="flex gap-2">
                 <AvatarWrapper size={56} data={userDetail} />
                 <div className="flex flex-col">
@@ -210,7 +210,7 @@ export default function UserDetailForm({
               )}
             </div>
             <div className="flex flex-col gap-2">
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-col lg:flex-row">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <Controller
                     control={control}
@@ -255,7 +255,7 @@ export default function UserDetailForm({
                         <TextField
                           {...params}
                           label="Role"
-                          sx={{ width: 223 }}
+                          className="lg:w-40 w-full"
                         />
                       )}
                     />
@@ -286,7 +286,7 @@ export default function UserDetailForm({
               </Button>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 md:flex-row flex-col">
             <div className="flex flex-col">
               <Typography variant="h5">Skupiny uživatele</Typography>
               <Divider />

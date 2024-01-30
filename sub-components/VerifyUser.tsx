@@ -73,7 +73,7 @@ export default function VerifyUser({ id }: { id?: number }) {
           onSubmit={methods.handleSubmit(onSubmit)}
           className="flex flex-col gap-2"
         >
-          <div className="flex gap-2">
+          <div className="flex gap-2 md:flex-row flex-col">
             <TextField
               {...methods.register("ID_code", {
                 required: "Toto pole je povinné",
@@ -82,14 +82,15 @@ export default function VerifyUser({ id }: { id?: number }) {
                   message: "RČ musí být ve správném formátu",
                 },
               })}
+              className="w-full mt-2"
               error={!!errors.ID_code}
               helperText={errors.ID_code?.message}
               label="Číslo OP"
-              sx={{ width: 215, marginTop: 1 }}
             />
+
             <DateInput />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 md:flex-row flex-col">
             <TextField
               label="Ulice a ČP"
               {...methods.register("street", {
@@ -97,7 +98,6 @@ export default function VerifyUser({ id }: { id?: number }) {
               })}
               error={!!errors.street}
               helperText={errors.street?.message}
-              sx={{ width: 130 }}
             />
             <TextField
               label="Město"
@@ -106,7 +106,6 @@ export default function VerifyUser({ id }: { id?: number }) {
               })}
               error={!!errors.town}
               helperText={errors.town?.message}
-              sx={{ width: 160 }}
             />
 
             <TextField
@@ -120,13 +119,12 @@ export default function VerifyUser({ id }: { id?: number }) {
               error={!!errors.post_number}
               helperText={errors.post_number?.message}
               label="PSČ"
-              sx={{ width: 130 }}
             />
           </div>
-
-          <div className="flex gap-2">
+          <div className="flex gap-2 md:flex-row flex-col">
             <TextField
               label="Současné heslo"
+              className="w-full"
               {...methods.register("password", {
                 required: "Toto pole je povinné",
                 pattern: {
@@ -136,7 +134,6 @@ export default function VerifyUser({ id }: { id?: number }) {
               })}
               error={!!errors.password}
               helperText={errors.password?.message}
-              sx={{ width: 215 }}
               type={hidePassword ? "password" : "text"}
               InputProps={{
                 endAdornment: (
@@ -154,6 +151,7 @@ export default function VerifyUser({ id }: { id?: number }) {
             />
             <TextField
               label="Nové heslo"
+              className="w-full"
               {...methods.register("newPassword", {
                 required: "Toto pole je povinné",
                 pattern: {
@@ -163,7 +161,6 @@ export default function VerifyUser({ id }: { id?: number }) {
               })}
               error={!!errors.newPassword}
               helperText={errors.newPassword?.message}
-              sx={{ width: 215 }}
               type={hidePassword ? "password" : "text"}
               InputProps={{
                 endAdornment: (

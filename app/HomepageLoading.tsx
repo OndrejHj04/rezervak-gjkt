@@ -42,7 +42,7 @@ export default function HomepageLoading({
   if (status === "authenticated" && !data?.user.verified) {
     return (
       <>
-        <div className="absolute z-50">
+        <div className="md:absolute static z-50">
           <VerifyUser id={data?.user.id} />
         </div>
         <Box sx={{ filter: "blur(5px)" }}>{homepage}</Box>

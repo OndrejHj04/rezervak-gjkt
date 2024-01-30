@@ -17,10 +17,10 @@ export default function DateInput() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DemoContainer components={["DatePicker"]}>
+      <DemoContainer components={["DatePicker"]} sx={{ width: "100%" }}>
         <DatePicker
           label="Datum narození"
-          sx={{ width: 215 }}
+          className="md:w-auto w-full"
           slotProps={{
             textField: {
               helperText: errors.birth_date?.message as string,

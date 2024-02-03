@@ -57,8 +57,16 @@ export const rolesConfig = {
     path: "/admin",
     modules: {},
     roles: [0],
-    menu: [true, false],
+    menu: [false, false],
     icon: "shield_icon",
+  },
+  weather: {
+    name: "Počasí",
+    path: "/weather",
+    modules: {},
+    roles: [],
+    menu: [true, false],
+    icon: "wb_sunny_icon",
   },
   users: {
     name: "Uživatelé",

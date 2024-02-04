@@ -18,6 +18,7 @@ import Link from "next/link";
 import TableListCheckbox from "@/ui-components/TableListCheckbox";
 import { rolesConfig } from "@/rolesConfig";
 import BedroomChildIcon from "@mui/icons-material/BedroomChild";
+import ReservationModal from "./ReservationModal";
 
 export default function ReservationListItem({
   reservation,
@@ -33,6 +34,7 @@ export default function ReservationListItem({
 
   return (
     <>
+      <ReservationModal reservation={reservation} />
       <TableRow>
         {rolesConfig.reservations.modules.reservationsTable.config.delete.includes(
           userRole
@@ -124,11 +126,22 @@ export default function ReservationListItem({
               />
             }
           >
-            <IconButton>
-              <Icon sx={{ color: reservation.status.color }}>
-                {reservation.status.icon}
-              </Icon>
-            </IconButton>
+            <Link
+              href={`/reservation/list?reservation_id=${reservation.id}`}
+              className={
+                !rolesConfig.reservations.modules.reservationsTable.config.changeStatus.includes(
+                  userRole
+                )
+                  ? "pointer-events-none"
+                  : ""
+              }
+            >
+              <IconButton>
+                <Icon sx={{ color: reservation.status.color }}>
+                  {reservation.status.icon}
+                </Icon>
+              </IconButton>
+            </Link>
           </Tooltip>
         </TableCell>
         <TableCell>

@@ -175,6 +175,7 @@ export const rolesConfig = {
         config: {
           delete: [1, 2],
           topbar: { search: [1, 2], export: [1, 2], filter: [1, 2] },
+          changeStatus: [1, 2],
         },
         menu: [true, false],
         icon: "calendar_month_icon",

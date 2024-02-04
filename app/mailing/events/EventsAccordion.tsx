@@ -41,6 +41,7 @@ export default function EventsAccordion({ events }: { events: any }) {
                   <ListItem
                     key={singleEvent.id}
                     className="flex justify-between"
+                    sx={{ justifyContent: "space-between !important" }}
                   >
                     <div className="flex flex-col">
                       <ListItemText

@@ -14,6 +14,7 @@ export const authOptions: NextAuthOptions = {
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/email/${profile.email}`
         );
         const { data } = await req.json();
+        console.log(data);
         if (
           data.length &&
           profile.picture &&

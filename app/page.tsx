@@ -24,6 +24,9 @@ const PastReservations = dynamic(
   () => import("@/app/homepage/pastReservations/PastReservationsWidget")
 );
 
+const WeatherWidget = dynamic(
+  () => import("@/app/homepage/weatherWidget/weatherWidget")
+);
 const getUserDetail = async (email: any) => {
   const { data } = (await fetcher(`/api/users/email/${email}`)) as any;
   return data[0];
@@ -53,6 +56,9 @@ export default async function Home({ searchParams }: { searchParams: any }) {
       {rolesConfig.homepage.modules.blockDates.display.includes(
         user?.user.role.id
       ) && <BlockDates user={user} />}
+      {rolesConfig.homepage.modules.weatherWidget.display.includes(
+        user?.user.role.id
+      ) && <WeatherWidget />}
     </div>
   );
 

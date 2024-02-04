@@ -74,7 +74,7 @@ export default async function Weather() {
             {dayjs.unix(day.date).format("DD. MM. YYYY dddd")}
           </AccordionSummary>
           <AccordionDetails>
-            <List className="grid lg:grid-rows-2 lg:grid-cols-4 sm:grid-rows-4 sm:grid-cols-2">
+            <List className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               {day.data.map((item: any, i: any) => (
                 <ListItem key={i}>
                   <ListItemIcon>

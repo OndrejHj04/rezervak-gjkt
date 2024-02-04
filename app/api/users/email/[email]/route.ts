@@ -10,15 +10,9 @@ export async function GET(
     const [data, roles] = (await Promise.all([
       query({
         query: `
-      SELECT * FROM users WHERE email = "${email}"
+          SELECT users.*, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ?
       `,
-        values: [],
-      }),
-      query({
-        query: `
-        SELECT * FROM roles
-      `,
-        values: [],
+        values: [email],
       }),
     ])) as any;
 
@@ -30,18 +24,16 @@ export async function GET(
       });
     }
 
-    data[0].role = roles.find((r: any) => r.id === Number(data[0].role));
-
     return NextResponse.json({
       success: true,
       message: "Operation successful",
-      data: data,
+      data: [{ ...data[0], role: JSON.parse(data[0].role) }],
     });
-  } catch (e) {
+  } catch (e: any) {
     return NextResponse.json(
       {
         success: false,
-        message: "Something went wrong",
+        message: e.message || "Something went wrong",
       },
       { status: 500 }
     );

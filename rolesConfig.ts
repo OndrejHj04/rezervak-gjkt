@@ -9,6 +9,9 @@ export const rolesConfig = {
       personalReservations: {
         display: [1, 2, 3, 4],
       },
+      weatherWidget: {
+        display: [1, 2, 3, 4],
+      },
       allReservations: {
         display: [1, 2],
       },

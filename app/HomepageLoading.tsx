@@ -45,7 +45,9 @@ export default function HomepageLoading({
         <div className="md:absolute static z-50">
           <VerifyUser id={data?.user.id} />
         </div>
-        <Box sx={{ filter: "blur(5px)" }}>{homepage}</Box>
+        <Box sx={{ filter: "blur(5px)", pointerEvents: "none" }}>
+          {homepage}
+        </Box>
       </>
     );
   }
@@ -56,7 +58,9 @@ export default function HomepageLoading({
         <div className="absolute z-50">
           <SleepingUserInfo />
         </div>
-        <Box sx={{ filter: "blur(5px)" }}>{homepage}</Box>
+        <Box sx={{ filter: "blur(5px)", pointerEvents: "none" }}>
+          {homepage}
+        </Box>
       </>
     );
   }

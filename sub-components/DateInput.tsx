@@ -21,6 +21,7 @@ export default function DateInput() {
         <DatePicker
           label="Datum narození"
           className="md:w-auto w-full"
+          format="DD.MM.YYYY"
           slotProps={{
             textField: {
               helperText: errors.birth_date?.message as string,

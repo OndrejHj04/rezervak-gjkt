@@ -10,7 +10,6 @@ import MenuItem from "@mui/material/MenuItem";
 import { Icon, Typography } from "@mui/material";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { env } from "process";
 
 export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
   const { panel, setPanel } = store();
@@ -26,14 +25,12 @@ export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
               className="no-underline text-inherit"
             >
               <MenuItem key={item.name}>
-                <ListItemIcon>
-                  <Icon fontSize="large" color="primary">
-                    {item.icon}
-                  </Icon>
-                </ListItemIcon>
-                <ListItemIcon>
-                  <Typography variant="h6">{item.name}</Typography>
-                </ListItemIcon>
+                <Icon fontSize="large" color="primary">
+                  {item.icon}
+                </Icon>
+                <Typography variant="h6" style={{ margin: "0 0 0 10px" }}>
+                  {item.name}
+                </Typography>
               </MenuItem>
             </Link>
           ))}
@@ -41,12 +38,10 @@ export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
 
         <MenuList>
           <MenuItem onClick={() => signOut()}>
-            <ListItemIcon sx={{ marginRight: 1 }}>
-              <LogoutIcon fontSize="large" color="error" />
-            </ListItemIcon>
-            <ListItemText>
-              <Typography variant="h6">Odhlásit se</Typography>
-            </ListItemText>
+            <LogoutIcon fontSize="large" color="error" />
+            <Typography variant="h6" style={{ margin: "0 0 0 10px" }}>
+              Odhlásit se
+            </Typography>
           </MenuItem>
         </MenuList>
       </div>

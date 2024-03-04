@@ -37,28 +37,30 @@ export default async function Home({ searchParams }: { searchParams: any }) {
   const data = user ? await getUserDetail(user?.user.email) : {};
 
   const homepage = (
-    <div
-      className="grid gap-2 h-auto"
-      style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}
-    >
-      {rolesConfig.homepage.modules.personalGroups.display.includes(
-        user?.user.role.id
-      ) && <DisplayGroups searchParams={searchParams} data={user} />}
-      {rolesConfig.homepage.modules.personalReservations.display.includes(
-        user?.user.role.id
-      ) && <DisplayReservations searchParams={searchParams} data={user} />}
-      {rolesConfig.homepage.modules.allReservations.display.includes(
-        user?.user.role.id
-      ) && <HomepageCalendar user={user} />}
-      {rolesConfig.homepage.modules.pastReservations.display.includes(
-        user?.user.role.id
-      ) && <PastReservations user={user} searchParams={searchParams} />}
-      {rolesConfig.homepage.modules.blockDates.display.includes(
-        user?.user.role.id
-      ) && <BlockDates user={user} />}
-      {rolesConfig.homepage.modules.weatherWidget.display.includes(
-        user?.user.role.id
-      ) && <WeatherWidget />}
+    <div className="flex flex-col gap-2">
+      <div
+        className="grid gap-2 h-auto"
+        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}
+      >
+        {rolesConfig.homepage.modules.personalGroups.display.includes(
+          user?.user.role.id
+        ) && <DisplayGroups searchParams={searchParams} data={user} />}
+        {rolesConfig.homepage.modules.personalReservations.display.includes(
+          user?.user.role.id
+        ) && <DisplayReservations searchParams={searchParams} data={user} />}
+        {rolesConfig.homepage.modules.allReservations.display.includes(
+          user?.user.role.id
+        ) && <HomepageCalendar user={user} />}
+        {rolesConfig.homepage.modules.pastReservations.display.includes(
+          user?.user.role.id
+        ) && <PastReservations user={user} searchParams={searchParams} />}
+        {rolesConfig.homepage.modules.blockDates.display.includes(
+          user?.user.role.id
+        ) && <BlockDates user={user} />}
+        {rolesConfig.homepage.modules.weatherWidget.display.includes(
+          user?.user.role.id
+        ) && <WeatherWidget />}
+      </div>
     </div>
   );
 

@@ -27,7 +27,7 @@ export async function POST(req: Request) {
         message: "Email send is forbidden.",
       });
     }
-
+    console.log(process.env.EMAIL_ADRESS);
     const mail = await transporter.sendMail({
       from: process.env.EMAIL_ADRESS,
       to,

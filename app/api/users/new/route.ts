@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
     const [_, { data }] = (await Promise.all([
       query({
-        query: `INSERT INTO users(first_name, last_name, email, role, password, verified, active) VALUES(?,?,?,? MD5(?), 0, 1)`,
+        query: `INSERT INTO users(first_name, last_name, email, role, password, verified, active) VALUES(?,?,?,?, MD5(?), 0, 1)`,
         values: [first_name, last_name, email, role, password],
       }),
       fetcher(`/api/mailing/events/detail/${eventId}`, { token }),
@@ -64,11 +64,11 @@ export async function POST(req: Request) {
       message: `Uživatel ${first_name} ${last_name} byl úspěšně vytvořen.`,
       data: [],
     });
-  } catch (e) {
+  } catch (e: any) {
     return NextResponse.json(
       {
         success: false,
-        message: "Something went wrong",
+        message: e.message,
       },
       { status: 500 }
     );

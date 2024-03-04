@@ -15,6 +15,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import fetcher from "@/lib/fetcher";
+import { method } from "lodash";
 
 export interface verifyForm {
   ID_code: string;
@@ -57,7 +58,7 @@ export default function VerifyUser({ id }: { id?: number }) {
       }
     });
   };
-  console.log(methods.formState.errors);
+
   return (
     <Paper className="p-2">
       <div className="flex justify-between">
@@ -82,10 +83,11 @@ export default function VerifyUser({ id }: { id?: number }) {
                   message: "RČ musí být ve správném formátu",
                 },
               })}
-              className="w-full mt-2"
+              className="w-full"
+              style={{ margin: "8px 0 0 0" }}
               error={!!errors.ID_code}
               helperText={errors.ID_code?.message}
-              label="Číslo OP"
+              label="Rodné číslo"
             />
 
             <DateInput />
@@ -118,7 +120,7 @@ export default function VerifyUser({ id }: { id?: number }) {
               })}
               error={!!errors.post_number}
               helperText={errors.post_number?.message}
-              label="PSČ"
+              label="PSČ (bez mezer)"
             />
           </div>
           <div className="flex gap-2 md:flex-row flex-col">

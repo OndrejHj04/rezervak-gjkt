@@ -32,7 +32,7 @@ export default function CreateButton() {
     }).then((res) => {
       if (res.success) {
         toast.success("Rezervace úspěšně vytvořena");
-        ReservationListMakeRefetch("/reservation/list");
+        ReservationListMakeRefetch();
         setDefault();
       } else toast.error("Něco se nepovedlo");
     });

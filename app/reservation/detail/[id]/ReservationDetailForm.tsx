@@ -122,12 +122,8 @@ export default function ReservationDetailForm({
     fetcher(`/api/reservations/delete`, {
       method: "POST",
       body: JSON.stringify({ reservations: [reservation.id] }),
-    }).then((res) => {
-      if (res.success) {
-        toast.success("Rezervace byla odstraněna");
-      } else toast.error("Něco se nepovedlo");
     });
-    ReservationListMakeRefetch("/reservation/list");
+    push("/reservation/list");
   };
 
   const handleUpdateStatus = () => {

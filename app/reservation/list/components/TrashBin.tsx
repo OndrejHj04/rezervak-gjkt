@@ -13,14 +13,13 @@ export default function TrashBin() {
     fetcher(`/api/reservations/delete`, {
       method: "POST",
       body: JSON.stringify({ reservations: selectedReservations }),
-    })
-      .then((res) => {
-        if (res.success) toast.success("Skupiny byly úspěšně odstraněny");
-        else toast.error("Něco se pokazilo");
+    }).then((res) => {
+      if (res.success) toast.success("Skupiny byly úspěšně odstraněny");
+      else toast.error("Něco se pokazilo");
 
-        ReservationListMakeRefetch("/reservation/list");
-        setSelectedReservations([]);
-      });
+      ReservationListMakeRefetch();
+      setSelectedReservations([]);
+    });
   };
 
   return (

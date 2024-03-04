@@ -71,7 +71,7 @@ export default function ReservationModal({
       if (res.success) toast.success("Status rezervace úspěšně změněn");
       else toast.error("Něco se nepovedlo");
       reset(data);
-      ReservationListMakeRefetch("/reservation/list");
+      ReservationListMakeRefetch();
     });
   };
 

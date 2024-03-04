@@ -21,6 +21,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { toast } from "react-toastify";
 import MakeUserListRefetch from "@/app/user/list/refetch";
 import fetcher from "@/lib/fetcher";
+import Link from "next/link";
 
 const importUsersValidFormat = [
   { value: "first_name", name: "Jméno" },
@@ -192,26 +193,6 @@ export default function UsersImportForm({ roles }: { roles: any }) {
             </Typography>
           }
           {!!message.length && <Typography color="error">{message}</Typography>}
-          <Divider />
-          <Typography>Předloha pro soubor s importovanými daty</Typography>
-          <Table sx={{ width: 500 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>first_name</TableCell>
-                <TableCell>last_name</TableCell>
-                <TableCell>email</TableCell>
-                <TableCell>role</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>Vladimír</TableCell>
-                <TableCell>Zatloukal</TableCell>
-                <TableCell>dr.vladimír.zatloukal@gmail.com</TableCell>
-                <TableCell>1</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -225,6 +206,9 @@ export default function UsersImportForm({ roles }: { roles: any }) {
               onChange={(e: any) => setFile(e.target.files[0])}
             />
           </Button>
+          <Link href="/vzorovy_soubor.png">
+            <Button variant="contained">Zobrazit vzorový soubor</Button>
+          </Link>
           <Button
             variant="contained"
             color="error"

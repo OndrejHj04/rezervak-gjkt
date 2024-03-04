@@ -1,4 +1,3 @@
-import NewTemplate from "@/app/mailing/templates/create/page";
 import fetcher from "@/lib/fetcher";
 import TemplateForm from "../../TemplateForm";
 

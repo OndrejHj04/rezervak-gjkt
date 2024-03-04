@@ -192,13 +192,6 @@ export const rolesConfig = {
     name: "Maily",
     path: "/mailing",
     modules: {
-      newTemplate: {
-        name: "Nová šablona",
-        path: "/mailing/templates/create",
-        roles: [1, 2],
-        menu: [false, true],
-        icon: "mail_icon",
-      },
       mailing: {
         name: "Mailing",
         path: "/mailing",
@@ -207,6 +200,12 @@ export const rolesConfig = {
         icon: "feed_icon",
       },
     },
+  },
+  sampleTable: {
+    name: "Vzorový soubor",
+    path: "/vzorovy_soubor.png",
+    roles: [1, 2],
+    menu: [false, false],
   },
 };
 

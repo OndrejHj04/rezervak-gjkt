@@ -4,6 +4,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
   Button,
+  Divider,
   Paper,
   Table,
   TableBody,
@@ -34,16 +35,6 @@ export default function UsersImportForm({ roles }: { roles: any }) {
   const [data, setData] = useState([]);
   const [file, setFile] = useState<any>(null);
   const [message, setMessage] = useState("");
-
-  const downloadSample = () => {
-    const csv = Papa.unparse({
-      fields: importUsersValidFormat.map((item) => item.value),
-      data: ["Jan", "Pavel", "email@email.cz", "1"],
-    });
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-
-    handleExport(blob, "vzorovy_soubor.csv");
-  };
 
   const handleSubmit = (e: any) => {
     setLoading(true);
@@ -201,11 +192,31 @@ export default function UsersImportForm({ roles }: { roles: any }) {
             </Typography>
           }
           {!!message.length && <Typography color="error">{message}</Typography>}
+          <Divider />
+          <Typography>Předloha pro soubor s importovanými daty</Typography>
+          <Table sx={{ width: 500 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>first_name</TableCell>
+                <TableCell>last_name</TableCell>
+                <TableCell>email</TableCell>
+                <TableCell>role</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell>Vladimír</TableCell>
+                <TableCell>Zatloukal</TableCell>
+                <TableCell>dr.vladimír.zatloukal@gmail.com</TableCell>
+                <TableCell>1</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </div>
 
         <div className="flex flex-col gap-2">
-          <Button variant="contained" component="label">
-            Vybrat soubor
+          <Button variant="contained" component="label" className="text-center">
+            Vybrat soubor .csv
             <input
               type="file"
               ref={inputRef}
@@ -213,9 +224,6 @@ export default function UsersImportForm({ roles }: { roles: any }) {
               accept=".csv"
               onChange={(e: any) => setFile(e.target.files[0])}
             />
-          </Button>
-          <Button variant="contained" onClick={downloadSample}>
-            Stáhnout vzorový soubor
           </Button>
           <Button
             variant="contained"

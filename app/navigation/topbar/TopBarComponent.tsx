@@ -7,6 +7,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { store } from "@/store/store";
 import LoginButton from "./LoginButton";
 import DarkModeToggle from "./DarkModeToggle";
+import Link from "next/link";
 
 export default function TopBarComponent({ theme, id }: any) {
   const { setPanel } = store();
@@ -23,7 +24,13 @@ export default function TopBarComponent({ theme, id }: any) {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography
+          variant="h6"
+          component={Link}
+          sx={{ flexGrow: 1 }}
+          href="/"
+          className="text-inherit no-underline"
+        >
           Chata GJKT
         </Typography>
         <DarkModeToggle theme={theme} id={id} />

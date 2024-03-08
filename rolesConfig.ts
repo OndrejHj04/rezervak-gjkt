@@ -201,9 +201,9 @@ export const rolesConfig = {
       },
     },
   },
-  sampleTable: {
+  sampleFile: {
     name: "Vzorový soubor",
-    path: "/vzorovy_soubor.png",
+    path: "/vzorovy_soubor.csv",
     roles: [1, 2],
     menu: [false, false],
   },

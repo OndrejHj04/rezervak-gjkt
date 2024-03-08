@@ -105,7 +105,7 @@ export default function UsersImportForm({ roles }: { roles: any }) {
 
   const parseFile = (data: any) => {
     Papa.parse(data, {
-      encoding: "UTF-8",
+      encoding: "Windows-1250",
       complete: (results: any) => validateTable(results.data),
     });
   };
@@ -206,7 +206,7 @@ export default function UsersImportForm({ roles }: { roles: any }) {
               onChange={(e: any) => setFile(e.target.files[0])}
             />
           </Button>
-          <Link href="/vzorovy_soubor.png">
+          <Link href="/vzorovy_soubor.csv">
             <Button variant="contained">Zobrazit vzorový soubor</Button>
           </Link>
           <Button

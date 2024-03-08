@@ -15,9 +15,8 @@ export default function ResetPasswordEmail({
     handleSubmit,
     formState: { isValid, errors },
     setError,
+    reset,
   } = useForm();
-
-  const { push } = useRouter();
 
   const onSubmit = (data: any) => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reset-password/email`, {
@@ -37,6 +36,7 @@ export default function ResetPasswordEmail({
           toast.success(`Email na obnovení hesla byl odeslán.`);
         }
       });
+    reset();
   };
 
   return (

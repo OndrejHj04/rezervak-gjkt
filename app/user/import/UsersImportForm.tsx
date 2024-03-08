@@ -207,7 +207,7 @@ export default function UsersImportForm({ roles }: { roles: any }) {
             />
           </Button>
           <Link href="/vzorovy_soubor.csv">
-            <Button variant="contained">Zobrazit vzorový soubor</Button>
+            <Button variant="contained">Stáhnout vzorový soubor</Button>
           </Link>
           <Button
             variant="contained"

@@ -88,6 +88,7 @@ export default function VerifyUser({ id }: { id?: number }) {
               error={!!errors.ID_code}
               helperText={errors.ID_code?.message}
               label="Rodné číslo"
+              autoComplete="off"
             />
 
             <DateInput />
@@ -121,6 +122,7 @@ export default function VerifyUser({ id }: { id?: number }) {
               error={!!errors.post_number}
               helperText={errors.post_number?.message}
               label="PSČ (bez mezer)"
+              autoComplete="postal-code"
             />
           </div>
           <div className="flex gap-2 md:flex-row flex-col">

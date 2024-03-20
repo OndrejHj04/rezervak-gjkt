@@ -48,7 +48,7 @@ export default async function DisplayGroups({
         )}
       </MenuList>
       <div className="mt-auto">
-        <TableListPagination rpp={10} name="groups" count={groups.count} />
+        <TableListPagination rpp={10} name="groups" count={groups.count || 0} />
       </div>
     </Paper>
   );

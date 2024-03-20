@@ -71,7 +71,7 @@ export default async function DisplayReservations({
         {searchParams.mode !== "calendar" && (
           <TableListPagination
             rpp={5}
-            count={reservations.count}
+            count={reservations.count || 0}
             name="reservations"
           />
         )}

@@ -53,7 +53,7 @@ export default async function PastReservationsWidget({
       <div className="mt-auto">
         <TableListPagination
           rpp={5}
-          count={reservations.count}
+          count={reservations.count || 0}
           name="archive"
         />
         <MakeReservationsArchive disabled={!reservations.data.length} />

@@ -80,7 +80,11 @@ export default async function GroupList({
                 ))}
               </TableBody>
             </Table>
-            <TableListPagination name="page" rpp={10} count={groups.count} />
+            <TableListPagination
+              name="page"
+              rpp={10}
+              count={groups.count || 0}
+            />
           </Box>
         </Box>
       </Paper>

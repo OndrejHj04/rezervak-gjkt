@@ -151,7 +151,11 @@ export default function ReservationMembersRender({
                 );
               })}
             </PerfectScrollbar>
-            <TableListPagination count={groups.count} name="gpage" rpp={5} />
+            <TableListPagination
+              count={groups.count || 0}
+              name="gpage"
+              rpp={5}
+            />
           </div>
         </List>
         <List
@@ -204,7 +208,11 @@ export default function ReservationMembersRender({
                 );
               })}
             </PerfectScrollbar>
-            <TableListPagination count={users.count} name="upage" rpp={5} />
+            <TableListPagination
+              count={users.count || 0}
+              name="upage"
+              rpp={5}
+            />
           </div>
         </List>
         <div className="flex flex-col gap-2">

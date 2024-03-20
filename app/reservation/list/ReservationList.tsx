@@ -17,7 +17,7 @@ import dynamic from "next/dynamic";
 import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
 import ExportButton from "@/ui-components/ExportButton";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import ExpiredReservations from "./components/ExpiredReservations";
 
 import ReservationTableSort from "./components/Sort";
@@ -43,7 +43,6 @@ const getReservations = async (
     return [];
   }
 };
-
 
 const ReservationListItem = dynamic(
   () => import("./components/ReservationListItem")

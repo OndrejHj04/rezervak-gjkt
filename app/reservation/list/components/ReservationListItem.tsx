@@ -16,7 +16,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import { Icon } from "@mui/material";
 import Link from "next/link";
 import TableListCheckbox from "@/ui-components/TableListCheckbox";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import BedroomChildIcon from "@mui/icons-material/BedroomChild";
 import ReservationModal from "./ReservationModal";
 

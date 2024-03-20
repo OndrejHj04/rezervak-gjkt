@@ -16,7 +16,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "@/app/group/detail/[id]/refetch";
 import fetcher from "@/lib/fetcher";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import UserCard from "@/app/user/detail/UserCard";
 
 export default function GroupNewForm({

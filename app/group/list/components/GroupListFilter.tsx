@@ -1,6 +1,6 @@
 import SearchBar from "@/ui-components/SearchBar";
 import ExportButton from "@/ui-components/ExportButton";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import ResponsiveGroupsFilter from "./ResponsiveGroupsFilter";
 
 export default function GroupListFilter({ userRole }: { userRole: any }) {

@@ -1,5 +1,5 @@
 import HomepageLoading from "@/app/HomepageLoading";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
 import { authOptions } from "./api/auth/[...nextauth]/options";

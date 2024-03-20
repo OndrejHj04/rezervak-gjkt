@@ -17,7 +17,7 @@ import UserRolesSelect from "./components/RolesSelect";
 import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
 import ExportButton from "@/ui-components/ExportButton";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import fetcher from "@/lib/fetcher";
 import UserListFilter from "./components/UserListFilter";
 

@@ -35,7 +35,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useState } from "react";
 import AddGroupsModal from "./AddGroupsModal";
 import AddReservationsModal from "./AddReservationsModal";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import HotelIcon from "@mui/icons-material/Hotel";
 import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";

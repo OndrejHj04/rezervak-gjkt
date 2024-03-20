@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import GroupListItem from "./components/GroupListItem";
 import TableListPagination from "@/ui-components/TableListPagination";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import GroupsDelete from "./components/GroupsDelete";
 import fetcher from "@/lib/fetcher";
 import GroupListFilter from "./components/GroupListFilter";

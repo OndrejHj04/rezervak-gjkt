@@ -1,6 +1,6 @@
 import { query } from "@/lib/db";
 import protect from "@/lib/protect";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {

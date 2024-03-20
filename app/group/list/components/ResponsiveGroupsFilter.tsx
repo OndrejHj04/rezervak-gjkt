@@ -1,5 +1,5 @@
 "use client";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import ExportButton from "@/ui-components/ExportButton";
 import SearchBar from "@/ui-components/SearchBar";
 import { Button, Modal, Paper, Typography } from "@mui/material";

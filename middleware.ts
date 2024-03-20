@@ -1,7 +1,8 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { getRoutes, rolesConfig } from "./rolesConfig";
+import { getRoutes, rolesConfig } from "./lib/rolesConfig";
 import fetcher from "./lib/fetcher";
+import { guestSection } from "./lib/endpoints";
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req });
@@ -9,6 +10,18 @@ export default async function middleware(req: NextRequest) {
   const verified = token?.verified;
   const active = token?.active;
   const routes = getRoutes(Object.values(rolesConfig), role);
+
+  if (req.nextUrl.pathname.includes("/api")) {
+    if (
+      token?.email === guestSection.email &&
+      !guestSection.endpoints.some((item) =>
+        req.nextUrl.pathname.includes(item)
+      )
+    ) {
+      return NextResponse.json({ data: [] });
+    }
+    return;
+  }
 
   if ((!verified || !active) && req.nextUrl.pathname !== "/" && role) {
     return NextResponse.redirect(new URL("/", req.url));
@@ -153,5 +166,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: "/((?!api|_next|favicon).*)",
+  matcher: "/((?!_next|favicon).*)",
 };

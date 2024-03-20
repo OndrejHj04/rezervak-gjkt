@@ -4,7 +4,7 @@ import SpeedDialAction from "@mui/material/SpeedDialAction";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { getRoutes, rolesConfig } from "@/rolesConfig";
+import { getRoutes, rolesConfig } from "@/lib/rolesConfig";
 import { Icon } from "@mui/material";
 
 export default async function SpeedComponent() {

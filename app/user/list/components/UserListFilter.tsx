@@ -1,5 +1,5 @@
 import fetcher from "@/lib/fetcher";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import ExportButton from "@/ui-components/ExportButton";
 import UserRolesSelect from "./RolesSelect";
 import SearchBar from "@/ui-components/SearchBar";
@@ -28,7 +28,7 @@ export default async function UserListFilter({ userRole }: { userRole: any }) {
         ) && <ExportButton prop="users" translate={"uživatelé"} />}
       </div>
       <div className="sm:hidden flex justify-end">
-        <ResponsiveFilter roles={roles} userRole={userRole}/>
+        <ResponsiveFilter roles={roles} userRole={userRole} />
       </div>
     </>
   );

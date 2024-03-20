@@ -2,7 +2,7 @@ import { Tab, Tabs } from "@mui/material";
 import GroupDetailDisplay from "./GroupDetailDisplay";
 import GroupDetailForm from "./GroupDetailForm";
 import Link from "next/link";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import fetcher from "@/lib/fetcher";
 
 const getGroupDetail = async (id: string, reservations: any, users: any) => {

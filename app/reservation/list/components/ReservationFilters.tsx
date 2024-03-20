@@ -1,4 +1,4 @@
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import SearchBar from "@/ui-components/SearchBar";
 import ExpiredReservations from "./ExpiredReservations";
 import StatusSelect from "./StatusSelect";

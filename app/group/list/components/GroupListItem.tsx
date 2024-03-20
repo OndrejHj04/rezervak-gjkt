@@ -4,7 +4,7 @@ import { Button, Checkbox, TableCell, TableRow } from "@mui/material";
 
 import Link from "next/link";
 import TableListCheckbox from "@/ui-components/TableListCheckbox";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 import { store } from "@/store/store";
 import GroupItemCheckbox from "./GroupItemCheckbox";
 

@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 import HotelIcon from "@mui/icons-material/Hotel";
 import Link from "next/link";
 import TableListCheckbox from "@/ui-components/TableListCheckbox";
-import { rolesConfig } from "@/rolesConfig";
+import { rolesConfig } from "@/lib/rolesConfig";
 
 export default function UserListItem({
   user,

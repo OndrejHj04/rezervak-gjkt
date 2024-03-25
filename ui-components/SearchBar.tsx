@@ -14,7 +14,8 @@ export default function SearchBar({ label }: { label: any }) {
 
   const makeSearch = (value: any) => {
     const params = new URLSearchParams(searchParams);
-    params.set("search", value);
+    if (value) params.set("search", value);
+    else params.delete("search");
     replace(`${pathname}?${params.toString()}`);
   };
 
@@ -26,7 +27,7 @@ export default function SearchBar({ label }: { label: any }) {
     <TextField
       variant="outlined"
       label={`Hledat ${label}...`}
-      value={search}
+      defaultValue={search}
       onChange={(e) => makeSearch(e.target.value)}
       InputProps={{
         endAdornment: (

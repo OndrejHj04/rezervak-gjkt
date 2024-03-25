@@ -22,7 +22,6 @@ export default function NewUserForm({ roles }: { roles: any }) {
       method: "POST",
       body: JSON.stringify({ ...data, role: data.role.value }),
     }).then((res) => {
-      console.log(res);
       if (res.success) {
         toast.success("Uživatel úspěšně vytvořen");
         MakeUserListRefetch("/user/list", 1);

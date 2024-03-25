@@ -1,13 +1,24 @@
 import { query } from "@/lib/db";
 import dayjs from "dayjs";
 import { NextResponse } from "next/server";
-import { sign } from "jsonwebtoken";
+import { decode } from "jsonwebtoken";
 
 export async function POST(req: Request) {
   try {
-    const { password, id } = await req.json();
+    const { password, id, token } = await req.json();
+    const { exp } = decode(token) as any;
 
-    const users = (await query({
+    if (dayjs(exp).isBefore(dayjs())) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Something went wrong",
+        },
+        { status: 500 }
+      );
+    }
+
+    (await query({
       query: `UPDATE users SET password = MD5(?) WHERE id = ?`,
       values: [password, id],
     })) as any;

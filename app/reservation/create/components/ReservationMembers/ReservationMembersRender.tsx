@@ -40,7 +40,8 @@ export default function ReservationMembersRender({
   const [groupsIncluded, setGroupsIncluded] = useState<number[]>([]);
   const [members, setMembers] = useState<number[]>([]);
   const searchParams = useSearchParams();
-
+  const searchUsers = searchParams.get("users");
+  const searchGroups = searchParams.get("groups");
   const pathname = usePathname();
   const { replace } = useRouter();
 
@@ -63,15 +64,10 @@ export default function ReservationMembersRender({
     setExpanded(false);
   };
 
-  const changeUserFilter = (e: any) => {
+  const changeSearchFilter = (value: any, prop: any) => {
     const params = new URLSearchParams(searchParams);
-    params.set("users", e.target.value);
-    replace(`${pathname}?${params.toString()}`);
-  };
-
-  const changeGroupFilter = (e: any) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("groups", e.target.value);
+    if (value) params.set(prop, value);
+    else params.delete(prop);
     replace(`${pathname}?${params.toString()}`);
   };
 
@@ -103,8 +99,8 @@ export default function ReservationMembersRender({
               <Typography variant="h6">Skupiny</Typography>
               <TextField
                 sx={{ width: 200 }}
-                value={searchParams.get("groups")}
-                onChange={changeGroupFilter}
+                defaultValue={searchGroups}
+                onChange={(e) => changeSearchFilter(e.target.value, "groups")}
                 size="small"
                 label="Hledat skupinu..."
                 InputProps={{
@@ -164,8 +160,8 @@ export default function ReservationMembersRender({
               <Typography variant="h6">Uživatelé</Typography>
               <TextField
                 sx={{ width: 200 }}
-                value={searchParams.get("users")}
-                onChange={changeUserFilter}
+                defaultValue={searchUsers}
+                onChange={(e) => changeSearchFilter(e.target.value, "users")}
                 size="small"
                 label="Hledat uživatele..."
                 InputProps={{

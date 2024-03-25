@@ -40,6 +40,7 @@ export default function ResetPassword({
         body: JSON.stringify({
           password: first_password,
           id,
+          token,
         }),
       }).then(() => {
         toast.success("Heslo úspěšně změněno");

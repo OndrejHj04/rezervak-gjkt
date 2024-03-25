@@ -46,6 +46,5 @@ export default async function ReservationMembers({
 }) {
   const groupsList = await getGroups(groups, gpage);
   const usersList = await getUsers(users, upage);
-  console.log(gpage);
   return <ReservationMembersRender groups={groupsList} users={usersList} />;
 }

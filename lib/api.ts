@@ -377,3 +377,13 @@ export const usersDelete = async ({ users }: { users: any }) => {
 
   return { success: affectedRows === users.length };
 };
+
+export const getUserTheme = async () => {
+  const { user } = (await getServerSession(authOptions)) as any;
+  const [{ theme }] = (await query({
+    query: `SELECT theme FROM users WHERE id = ?`,
+    values: [user.id],
+  })) as any;
+
+  return { theme };
+};

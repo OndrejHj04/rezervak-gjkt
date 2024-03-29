@@ -50,7 +50,10 @@ export default function AddGroupsModal({
     userAddGroups({
       user: userId,
       groups: data.groups.map((group: any) => group.id),
-    }).then(() => {});
+    }).then(({ success }) => {
+      success && toast.success("Skupiny úspěšně přidány");
+      !success && toast.error("Něco se nepovedlo");
+    });
 
     MakeUserDetailRefetch(userId);
     setModal(false);

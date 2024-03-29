@@ -13,7 +13,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeUserDetailRefetch from "./refetch";
 import fetcher from "@/lib/fetcher";
-import { getReservationList } from "@/lib/api";
+import { getReservationList, userAddReservations } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -49,15 +49,12 @@ export default function AddReservationsModal({
   }, []);
 
   const onSubmit = (data: any) => {
-    fetcher(`/api/users/add-reservations`, {
-      method: "POST",
-      body: JSON.stringify({
-        user: userId,
-        reservations: data.reservations.map((res: any) => res.id),
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Rezervace úspěšně přidány");
-      else toast.error("Něco se nepovedlo");
+    userAddReservations({
+      user: userId,
+      reservations: data.reservations.map((res: any) => res.id),
+    }).then(({ success }) => {
+      success && toast.success("Rezervace úspěšně přidány");
+      !success && toast.error("Něco se nepovedlo");
     });
     MakeUserDetailRefetch(userId);
     setModal(false);

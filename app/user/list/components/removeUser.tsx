@@ -4,25 +4,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Badge, IconButton } from "@mui/material";
 import { toast } from "react-toastify";
 import MakeUserListRefetch from "../refetch";
-import fetcher from "@/lib/fetcher";
+import { usersDelete } from "@/lib/api";
 
 export default function RemoveUser() {
   const { selectedUsers, setSelectedUsers } = store();
 
   const deleteUsers = () => {
-    fetcher(`/api/users/delete`, {
-      method: "POST",
-      body: JSON.stringify({ users: selectedUsers }),
-    })
-      .then((data) => {
-        if (data.success) {
-          toast.success("Uživatelé byli úspěšně smazáni");
-        } else {
-          toast.error("Něco se pokazilo");
-        }
-        setSelectedUsers([]);
-        MakeUserListRefetch("/user/list");
-      });
+    usersDelete({ users: selectedUsers }).then(({ success }) => {
+      success && toast.success("Uživatelé úspěšně odstraněni");
+      !success && toast.error("Něco se nepovedlo");
+    });
+    setSelectedUsers([]);
+    MakeUserListRefetch("/user/list");
   };
 
   return (

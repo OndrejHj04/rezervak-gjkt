@@ -4,14 +4,7 @@ import UserDetailForm from "./UserDetailForm";
 import Link from "next/link";
 import { rolesConfig } from "@/lib/rolesConfig";
 import fetcher from "@/lib/fetcher";
-
-const getUserDetail = async (id: string, reservations: any, groups: any) => {
-  const { data } = await fetcher(
-    `/api/users/detail/${id}?reservations=${reservations}&groups=${groups}`,
-    { cache: "no-cache" }
-  );
-  return data;
-};
+import { getUserDetail } from "@/lib/api";
 
 const getRoles = async () => {
   const { data } = await fetcher(`/api/roles/list`);
@@ -29,11 +22,12 @@ export default async function UserDetail({
   userRole: any;
   userId: any;
 }) {
-  const userDetail = await getUserDetail(
-    params,
-    reservations || 1,
-    groups || 1
-  );
+  const { data } = await getUserDetail({
+    id: params,
+    rpage: reservations || 1,
+    gpage: groups || 1,
+  });
+
   const roles = await getRoles();
   const selfAccount = Number(params) === userId;
   const selfEdit =
@@ -44,7 +38,7 @@ export default async function UserDetail({
 
   return (
     <>
-      {userDetail ? (
+      {data ? (
         <>
           <div className="flex justify-between">
             <div>
@@ -77,12 +71,12 @@ export default async function UserDetail({
           </div>
           {mode === "edit" ? (
             <UserDetailForm
-              userDetail={userDetail}
+              userDetail={data}
               roles={roles}
               userRole={userRole}
             />
           ) : (
-            <UserDetailDisplay userDetail={userDetail} />
+            <UserDetailDisplay userDetail={data} />
           )}
         </>
       ) : (

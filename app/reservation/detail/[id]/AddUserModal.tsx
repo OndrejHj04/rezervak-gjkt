@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import MakeRefetch from "./refetch";
 import fetcher from "@/lib/fetcher";
 import UserCard from "@/app/user/detail/UserCard";
+import { getUserList } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -50,7 +51,7 @@ export default function AddUserModal({
   );
 
   useEffect(() => {
-    fetcher(`/api/users/list`).then(({ data }) => setUsers(data));
+    getUserList().then(({ data }) => setUsers(data));
   }, []);
 
   const onSubmit = (data: any) => {

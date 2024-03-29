@@ -2,16 +2,11 @@ import { getServerSession } from "next-auth";
 import GroupNewForm from "./GroupNewForm";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import fetcher from "@/lib/fetcher";
-
-const getAccounts = async () => {
-  const { data } = await fetcher(`/api/users/list`, {
-    cache: "no-cache",
-  });
-  return data;
-};
+import { getUserList } from "@/lib/api";
 
 export default async function CreateGroupForm() {
-  const accounts = (await getAccounts()) as any;
+  const { data } = await getUserList();
   const { user } = (await getServerSession(authOptions)) as any;
-  return <GroupNewForm users={accounts} user={user} />;
+
+  return <GroupNewForm users={data} user={user} />;
 }

@@ -20,18 +20,7 @@ import ExportButton from "@/ui-components/ExportButton";
 import { rolesConfig } from "@/lib/rolesConfig";
 import fetcher from "@/lib/fetcher";
 import UserListFilter from "./components/UserListFilter";
-
-const getUsers = async (page: any, search: any, role: any) => {
-  const data = await fetcher(
-    `/api/users/list?page=${page}&role=${role}${
-      search.length ? `&search=${search}` : ""
-    }`,
-    {
-      cache: "no-cache",
-    }
-  );
-  return data;
-};
+import { getUserList } from "@/lib/api";
 
 const columns = {
   name: "Jméno",
@@ -53,7 +42,7 @@ export default async function UserList({
   const page = searchParams["page"] || 1;
   const search = searchParams["search"] || "";
 
-  const users = await getUsers(page, search, role);
+  const users = await getUserList({ page, search, role });
   return (
     <div className="flex flex-col w-full gap-2">
       <UserListFilter userRole={userRole} />

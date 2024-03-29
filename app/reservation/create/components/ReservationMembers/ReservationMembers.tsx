@@ -1,26 +1,11 @@
 import fetcher from "@/lib/fetcher";
 import ReservationMembersRender from "./ReservationMembersRender";
+import { getUserList } from "@/lib/api";
 
 const getGroups = async (search: any, page: any) => {
   try {
     const data = await fetcher(
       `/api/group/list?limit=true&page=${page}&rpp=5${
-        search.length ? `&search=${search}` : ""
-      }`,
-      {
-        cache: "no-cache",
-      }
-    );
-    return data;
-  } catch (e) {
-    return [];
-  }
-};
-
-const getUsers = async (search: any, page: any) => {
-  try {
-    const data = await fetcher(
-      `/api/users/list?page=${page}&rpp=5${
         search.length ? `&search=${search}` : ""
       }`,
       {
@@ -45,6 +30,7 @@ export default async function ReservationMembers({
   upage: any;
 }) {
   const groupsList = await getGroups(groups, gpage);
-  const usersList = await getUsers(users, upage);
+  const usersList = await getUserList({ search: users, page: upage });
+
   return <ReservationMembersRender groups={groupsList} users={usersList} />;
 }

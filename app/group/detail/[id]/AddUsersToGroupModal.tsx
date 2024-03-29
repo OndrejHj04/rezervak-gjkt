@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "./refetch";
 import fetcher from "@/lib/fetcher";
 import UserCard from "@/app/user/detail/UserCard";
+import { getUserList } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -46,7 +47,7 @@ export default function AddUsersToGroupModal({
   } = useForm();
 
   useEffect(() => {
-    fetcher(`/api/users/list`).then((res) => setUsers(res.data));
+    getUserList().then((res) => setUsers(res.data));
   }, []);
 
   const onSubmit = (data: any) => {

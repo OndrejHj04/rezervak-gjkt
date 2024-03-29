@@ -24,6 +24,7 @@ import ReservationTableSort from "./components/Sort";
 import dayjs from "dayjs";
 import fetcher from "@/lib/fetcher";
 import ReservationFilters from "./components/ReservationFilters";
+import { getReservationList } from "@/lib/api";
 const getReservations = async (
   page: any,
   status: any,
@@ -59,18 +60,18 @@ export default async function ReservationList({
 }) {
   const page = searchParams["page"] || 1;
   const status = searchParams["status"] || 0;
-  const search = searchParams["search"] || 0;
+  const search = searchParams["search"] || "";
   const type = searchParams["type"] || "all";
-  const column = searchParams["col"];
+  const col = searchParams["col"];
   const dir = searchParams["dir"];
-  const reservations = (await getReservations(
+  const reservations = (await getReservationList({
     page,
+    type,
     status,
     search,
-    type,
-    column,
-    dir
-  )) as any;
+    col,
+    dir,
+  })) as any;
 
   return (
     <div className="flex flex-col w-full gap-2">

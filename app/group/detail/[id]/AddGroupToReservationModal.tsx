@@ -16,6 +16,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "./refetch";
 import fetcher from "@/lib/fetcher";
+import { getReservationList } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -43,7 +44,7 @@ export default function AddGroupToReservationModal({
   } = useForm();
 
   useEffect(() => {
-    fetcher(`/api/reservations/list?limit=true&not_status=1,4,5`).then((res) =>
+    getReservationList({ limit: true, notStatus: [1, 4, 5] }).then((res) =>
       setReservations(res.data)
     );
   }, []);

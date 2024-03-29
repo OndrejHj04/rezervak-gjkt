@@ -1,21 +1,11 @@
-import { User, getServerSession } from "next-auth";
 import RenderCalendar from "./RenderCalendar";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { Paper, Typography } from "@mui/material";
 import CottageIcon from "@mui/icons-material/Cottage";
-import fetcher from "@/lib/fetcher";
-const getReservations = async (id: number) => {
-  try {
-    const { data } = await fetcher(`/api/reservations/list?not_status=1,4`);
-    return data;
-  } catch (e) {
-    return [];
-  }
-};
+import { getReservationList } from "@/lib/api";
 
-export default async function HomepageCalendar({ user }: { user: any }) {
-  const data = (await getServerSession(authOptions)) as { user: User };
-  const reservations = data ? await getReservations(data.user.id) : [];
+
+export default async function HomepageCalendar() {
+  const { data } = await getReservationList({ notStatus: [1, 4] });
 
   return (
     <Paper className="p-2">
@@ -24,7 +14,7 @@ export default async function HomepageCalendar({ user }: { user: any }) {
         <Typography variant="h5">Všechny rezervace</Typography>
         <CottageIcon color="primary" />
       </div>
-      <RenderCalendar reservations={reservations} />
+      <RenderCalendar reservations={data} />
     </Paper>
   );
 }

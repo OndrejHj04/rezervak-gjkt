@@ -2,18 +2,10 @@ import { Paper, Typography } from "@mui/material";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import BlockDatesForm from "./BlockDatesForm";
 import fetcher from "@/lib/fetcher";
-
-const getReservations = async () => {
-  try {
-    const { data } = await fetcher(`/api/reservations/list`);
-    return data;
-  } catch (e) {
-    return [];
-  }
-};
+import { getReservationList } from "@/lib/api";
 
 export default async function BlockDates({ user }: { user: any }) {
-  const reservations = await getReservations();
+  const reservations = await getReservationList();
   return (
     <Paper className="p-2 flex flex-col">
       <div className="flex justify-between items-center gap-3">

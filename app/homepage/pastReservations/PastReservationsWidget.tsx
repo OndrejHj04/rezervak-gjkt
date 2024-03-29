@@ -5,27 +5,20 @@ import { useSearchParams } from "next/navigation";
 import MakeReservationsArchive from "./MakeReservationsArchive";
 import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
-
-const getReservations = async (id: any, page: any) => {
-  try {
-    const data = await fetcher(
-      `/api/reservations/list?not_status=1&limit=5&page=${page}&type=expired`
-    );
-    return data;
-  } catch (e) {
-    return [];
-  }
-};
+import { getReservationList } from "@/lib/api";
 
 export default async function PastReservationsWidget({
-  user: { user },
   searchParams,
 }: {
-  user: { user: any };
   searchParams: any;
 }) {
   const page = searchParams["archive"] || 1;
-  const reservations = await getReservations(user.id, page);
+  const reservations = await getReservationList({
+    page,
+    notStatus: [1],
+    limit: 5,
+    type: "expired",
+  });
 
   return (
     <Paper className="p-2 flex flex-col">

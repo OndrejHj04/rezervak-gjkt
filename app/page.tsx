@@ -50,10 +50,10 @@ export default async function Home({ searchParams }: { searchParams: any }) {
         ) && <DisplayReservations searchParams={searchParams} data={user} />}
         {rolesConfig.homepage.modules.allReservations.display.includes(
           user?.user.role.id
-        ) && <HomepageCalendar user={user} />}
+        ) && <HomepageCalendar />}
         {rolesConfig.homepage.modules.pastReservations.display.includes(
           user?.user.role.id
-        ) && <PastReservations user={user} searchParams={searchParams} />}
+        ) && <PastReservations searchParams={searchParams} />}
         {rolesConfig.homepage.modules.blockDates.display.includes(
           user?.user.role.id
         ) && <BlockDates user={user} />}

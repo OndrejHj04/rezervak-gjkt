@@ -3,6 +3,7 @@
 import { getServerSession } from "next-auth";
 import { query } from "./db";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { toast } from "react-toastify";
 
 export const getUserList = async ({
   page,
@@ -143,4 +144,32 @@ export const getReservationList = async ({
   }));
 
   return { data, count: count[0].total };
+};
+
+export const reservationsAddGroups = async ({
+  reservation,
+  groups,
+}: {
+  reservation: any;
+  groups: any;
+}) => {
+  const values = groups.flatMap((group: any) => [
+    reservation,
+    group,
+    [reservation, group].join(","),
+  ]);
+
+  const placeholder = groups.map(() => "(?,?,?)").join(", ");
+
+  const [result] = (await Promise.all([
+    query({
+      query: `INSERT IGNORE INTO reservations_groups (reservationId, groupId, id) VALUES ${placeholder}`,
+      values,
+    }),
+  ])) as any;
+
+  if (result.affectedRows === groups.length) {
+    return { success: true, affected: result.affectedRows };
+  }
+  return { success: false };
 };

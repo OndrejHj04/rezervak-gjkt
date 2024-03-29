@@ -1,3 +1,4 @@
+import { sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -55,23 +56,19 @@ export async function POST(req: Request) {
     const data = groupsData.map(async (group: any) => {
       group = { ...group, owner: JSON.parse(group.owner) };
 
-      await fetcher("/api/email", {
-        method: "POST",
-        body: JSON.stringify({
-          send: template.active,
-          to: userDetail[0].email,
-          template: template.template,
-          variables: [
-            { name: "group_name", value: group.name },
-            { name: "users_count", value: group.users },
-            {
-              name: "owner_name",
-              value: group.owner.first_name + " " + group.owner.last_name,
-            },
-            { name: "owner_email", value: group.owner.email },
-          ],
-        }),
-        token,
+      await sendEmail({
+        send: template.active,
+        to: userDetail[0].email,
+        template: template.template,
+        variables: [
+          { name: "group_name", value: group.name },
+          { name: "users_count", value: group.users },
+          {
+            name: "owner_name",
+            value: group.owner.first_name + " " + group.owner.last_name,
+          },
+          { name: "owner_email", value: group.owner.email },
+        ],
       });
     });
 

@@ -1,3 +1,4 @@
+import { sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -97,30 +98,26 @@ export async function POST(req: Request) {
       ]
     )) as any;
 
-    fetcher("/api/email", {
-      method: "POST",
-      body: JSON.stringify({
-        send: data.active,
-        to: membersEmail.map(({ email }: { email: any }) => email),
-        template: data.template,
-        variables: [
-          {
-            name: "reservation_start",
-            value: dayjs(from_date).format("DD.MM.YYYY"),
-          },
-          {
-            name: "reservation_end",
-            value: dayjs(to_date).format("DD.MM.YYYY"),
-          },
-          { name: "reservation_status", value: statusName[0].display_name },
-          {
-            name: "leader_name",
-            value: leaderData[0].first_name + " " + leaderData[0].last_name,
-          },
-          { name: "leader_email", value: leaderData[0].email },
-        ],
-      }),
-      token,
+    await sendEmail({
+      send: data.active,
+      to: membersEmail.map(({ email }: { email: any }) => email),
+      template: data.template,
+      variables: [
+        {
+          name: "reservation_start",
+          value: dayjs(from_date).format("DD.MM.YYYY"),
+        },
+        {
+          name: "reservation_end",
+          value: dayjs(to_date).format("DD.MM.YYYY"),
+        },
+        { name: "reservation_status", value: statusName[0].display_name },
+        {
+          name: "leader_name",
+          value: leaderData[0].first_name + " " + leaderData[0].last_name,
+        },
+        { name: "leader_email", value: leaderData[0].email },
+      ],
     });
 
     return NextResponse.json({

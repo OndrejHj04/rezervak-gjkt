@@ -1,3 +1,4 @@
+import { sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -36,15 +37,11 @@ export async function POST(req: Request) {
       token,
     })) as any;
 
-    await fetcher("/api/email", {
-      method: "POST",
-      token,
-      body: JSON.stringify({
-        send: data.active,
-        to: user[0].email,
-        template: data.template,
-        variables: [{ name: "email", value: user[0].email }],
-      }),
+    await sendEmail({
+      send: data.active,
+      to: user[0].email,
+      template: data.template,
+      variables: [{ name: "email", value: user[0].email }],
     });
 
     return NextResponse.json({

@@ -1,3 +1,4 @@
+import { sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -52,30 +53,27 @@ export async function POST(req: Request) {
 
     reservationsDetail.map(async (res: any) => {
       res = { ...res, owner: JSON.parse(res.owner) };
-      await fetcher("/api/email", {
-        method: "POST",
-        body: JSON.stringify({
-          send: data.active,
-          to: userDetail[0].email,
-          template: data.template,
-          variables: [
-            {
-              name: "reservation_start",
-              value: dayjs(res.from_date).format("DD.MM.YYYY"),
-            },
-            {
-              name: "reservation_end",
-              value: dayjs(res.to_date).format("DD.MM.YYYY"),
-            },
-            { name: "reservation_status", value: res.display_name },
-            {
-              name: "leader_name",
-              value: res.owner.first_name + " " + res.owner.last_name,
-            },
-            { name: "leader_email", value: res.owner.email },
-          ],
-        }),
-        token,
+
+      await sendEmail({
+        send: data.active,
+        to: userDetail[0].email,
+        template: data.template,
+        variables: [
+          {
+            name: "reservation_start",
+            value: dayjs(res.from_date).format("DD.MM.YYYY"),
+          },
+          {
+            name: "reservation_end",
+            value: dayjs(res.to_date).format("DD.MM.YYYY"),
+          },
+          { name: "reservation_status", value: res.display_name },
+          {
+            name: "leader_name",
+            value: res.owner.first_name + " " + res.owner.last_name,
+          },
+          { name: "leader_email", value: res.owner.email },
+        ],
       });
     });
     return NextResponse.json({

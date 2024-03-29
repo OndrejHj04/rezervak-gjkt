@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { query } from "./db";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { toast } from "react-toastify";
+import { transporter } from "./email";
 
 export const getUserList = async ({
   page,
@@ -170,6 +171,41 @@ export const reservationsAddGroups = async ({
 
   if (result.affectedRows === groups.length) {
     return { success: true, affected: result.affectedRows };
+  }
+  return { success: false };
+};
+
+export const sendEmail = async ({
+  send,
+  to,
+  template,
+  variables,
+}: {
+  send: any;
+  to: any;
+  template: any;
+  variables: any;
+}) => {
+  if (!send) {
+    return { success: false, msg: "Email sent is forbidden." };
+  }
+
+  function MakeEmailText(text: any, variables: any) {
+    variables.map((item: any) => {
+      text = text.replace("${" + item.name + "}", item.value);
+    });
+    return text;
+  }
+
+  const mail = await transporter.sendMail({
+    from: process.env.EMAIL_ADRESS,
+    to,
+    subject: template.title,
+    html: MakeEmailText(template.text, variables),
+  });
+
+  if (mail.accepted.length === to.length) {
+    return { success: true };
   }
   return { success: false };
 };

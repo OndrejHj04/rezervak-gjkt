@@ -2,6 +2,7 @@ import { query } from "@/lib/db";
 import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 import { sign } from "jsonwebtoken";
+import { sendEmail } from "@/lib/api";
 
 const eventId = 4;
 export async function POST(req: Request) {
@@ -24,20 +25,17 @@ export async function POST(req: Request) {
         `${process.env.NEXT_PUBLIC_API_URL}/api/mailing/events/detail/${eventId}`
       )) as any;
       const template = await req.json();
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/email`, {
-        method: "POST",
-        body: JSON.stringify({
-          send: template.data.active,
-          to: email,
-          template: template.data.template,
-          variables: [
-            {
-              name: "link",
-              value: `${process.env.NEXT_PUBLIC_API_URL}/password-reset/form?id=${users[0].id}&token=${tkn}`,
-            },
-          ],
-          check: false,
-        }),
+
+      await sendEmail({
+        send: template.data.active,
+        to: email,
+        template: template.data.template,
+        variables: [
+          {
+            name: "link",
+            value: `${process.env.NEXT_PUBLIC_API_URL}/password-reset/form?id=${users[0].id}&token=${tkn}`,
+          },
+        ],
       });
     } else {
       return NextResponse.json(

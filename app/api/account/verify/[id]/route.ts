@@ -1,3 +1,4 @@
+import { sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -49,15 +50,11 @@ export async function POST(
       fetcher(`/api/mailing/events/detail/${eventId}`, { token }),
     ])) as any;
 
-    fetcher("/api/email", {
-      method: "POST",
-      body: JSON.stringify({
-        send: template.data.active,
-        to: user[0].email,
-        template: template.data.template,
-        variables: [{ name: "email", value: user[0].email }],
-      }),
-      token,
+    await sendEmail({
+      send: template.data.active,
+      to: user[0].email,
+      template: template.data.template,
+      variables: [{ name: "email", value: user[0].email }],
     });
 
     return NextResponse.json({

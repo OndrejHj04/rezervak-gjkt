@@ -1,3 +1,4 @@
+import { sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -64,23 +65,19 @@ export async function POST(req: Request) {
       reservations,
     };
 
-    fetcher("/api/email", {
-      method: "POST",
-      body: JSON.stringify({
-        send: template.data.active,
-        to: users.map(({ email }: { email: any }) => email),
-        template: template.data.template,
-        variables: [
-          { name: "group_name", value: groupDetail[0].name },
-          { name: "users_count", value: users.length },
-          {
-            name: "owner_name",
-            value: owner[0].first_name + " " + owner[0].last_name,
-          },
-          { name: "owner_email", value: owner[0].email },
-        ],
-      }),
-      token,
+    await sendEmail({
+      send: template.data.active,
+      to: users.map(({ email }: { email: any }) => email),
+      template: template.data.template,
+      variables: [
+        { name: "group_name", value: groupDetail[0].name },
+        { name: "users_count", value: users.length },
+        {
+          name: "owner_name",
+          value: owner[0].first_name + " " + owner[0].last_name,
+        },
+        { name: "owner_email", value: owner[0].email },
+      ],
     });
 
     return NextResponse.json({

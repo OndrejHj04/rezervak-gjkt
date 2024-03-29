@@ -1,3 +1,4 @@
+import { sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -57,36 +58,31 @@ export async function POST(
       leader: JSON.parse(reservation[0].leader),
     };
 
-    await fetcher("/api/email", {
-      method: "POST",
-      body: JSON.stringify({
-        send: data.active,
-        to: resDetail.emails.split(","),
-        template: data.template,
-        variables: [
-          {
-            name: "reservation_name",
-            value: resDetail.name,
-          },
-          {
-            name: "reservation_start",
-            value: dayjs(resDetail.from_date).format("DD.MM.YYYY"),
-          },
-          {
-            name: "reservation_end",
-            value: dayjs(resDetail.to_date).format("DD.MM.YYYY"),
-          },
-          { name: "status_before", value: statuses[0].display_name },
-          { name: "status_new", value: statuses[1].display_name },
-          { name: "leader_email", value: resDetail.leader.email },
-          {
-            name: "leader_name",
-            value:
-              resDetail.leader.first_name + " " + resDetail.leader.last_name,
-          },
-        ],
-      }),
-      token,
+    await sendEmail({
+      send: data.active,
+      to: resDetail.emails.split(","),
+      template: data.template,
+      variables: [
+        {
+          name: "reservation_name",
+          value: resDetail.name,
+        },
+        {
+          name: "reservation_start",
+          value: dayjs(resDetail.from_date).format("DD.MM.YYYY"),
+        },
+        {
+          name: "reservation_end",
+          value: dayjs(resDetail.to_date).format("DD.MM.YYYY"),
+        },
+        { name: "status_before", value: statuses[0].display_name },
+        { name: "status_new", value: statuses[1].display_name },
+        { name: "leader_email", value: resDetail.leader.email },
+        {
+          name: "leader_name",
+          value: resDetail.leader.first_name + " " + resDetail.leader.last_name,
+        },
+      ],
     });
 
     return NextResponse.json({

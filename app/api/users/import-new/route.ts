@@ -1,3 +1,4 @@
+import { sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -39,18 +40,14 @@ export async function POST(req: Request) {
     ])) as any;
 
     emails.map(async (user: any) => {
-      await fetcher("/api/email", {
-        method: "POST",
-        body: JSON.stringify({
-          send: template.data.active,
-          to: user.email,
-          template: template.data.template,
-          variables: [
-            { name: "email", value: user.email },
-            { name: "password", value: user.password },
-          ],
-        }),
-        token,
+      await sendEmail({
+        send: template.data.active,
+        to: user.email,
+        template: template.data.template,
+        variables: [
+          { name: "email", value: user.email },
+          { name: "password", value: user.password },
+        ],
       });
     });
 

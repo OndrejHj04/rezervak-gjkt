@@ -13,6 +13,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeUserDetailRefetch from "./refetch";
 import fetcher from "@/lib/fetcher";
+import { userAddGroups } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -46,16 +47,10 @@ export default function AddGroupsModal({
   }, []);
 
   const onSubmit = (data: any) => {
-    fetcher(`/api/users/add-groups`, {
-      method: "POST",
-      body: JSON.stringify({
-        user: userId,
-        groups: data.groups.map((group: any) => group.id),
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Skupiny úspěšně přidány");
-      else toast.error("Něco se nepovedlo");
-    });
+    userAddGroups({
+      user: userId,
+      groups: data.groups.map((group: any) => group.id),
+    }).then(() => {});
 
     MakeUserDetailRefetch(userId);
     setModal(false);

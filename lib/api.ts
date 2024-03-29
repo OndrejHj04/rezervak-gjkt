@@ -228,3 +228,63 @@ export const mailEventDetail = async ({ id }: { id: any }) => {
 
   return { data };
 };
+
+export const userAddGroups = async ({
+  user,
+  groups,
+}: {
+  user: any;
+  groups: any;
+}) => {
+  const eventId = 5;
+  const values = groups.flatMap((newGroup: any) => [
+    user,
+    newGroup,
+    [user, newGroup].join(","),
+  ]);
+
+  const placeholders = groups.map(() => "(?,?,?)").join(",");
+
+  const [{ affectedRows }, userDetail, { data: template }, groupsData] =
+    (await Promise.all([
+      query({
+        query: `INSERT IGNORE INTO users_groups (userId, groupId, id) VALUES ${placeholders}`,
+        values,
+      }),
+      query({
+        query: `SELECT email FROM users WHERE id = ?`,
+        values: [user],
+      }),
+      mailEventDetail({ id: eventId }),
+      query({
+        query: `SELECT groups.name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as owner, 
+      COUNT(users_groups.groupId) as users
+      FROM groups INNER JOIN users ON groups.owner = users.id 
+      INNER JOIN users_groups ON groups.id = users_groups.groupId WHERE groups.id IN(${groups.map(
+        () => "?"
+      )}) GROUP BY groups.id`,
+        values: groups,
+      }),
+    ])) as any;
+
+  const data = groupsData.map(async (group: any) => {
+    group = { ...group, owner: JSON.parse(group.owner) };
+
+    await sendEmail({
+      send: template.active,
+      to: userDetail[0].email,
+      template: template.template,
+      variables: [
+        { name: "group_name", value: group.name },
+        { name: "users_count", value: group.users },
+        {
+          name: "owner_name",
+          value: group.owner.first_name + " " + group.owner.last_name,
+        },
+        { name: "owner_email", value: group.owner.email },
+      ],
+    });
+  });
+
+  return { success: affectedRows === groups.length };
+};

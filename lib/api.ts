@@ -461,3 +461,27 @@ export const getUserDetail = async ({
 
   return { data };
 };
+
+export const editUserDetail = async ({ id, user }: { id: any; user: any }) => {
+  let str = "";
+
+  Object.keys(user).forEach((key, i) => {
+    str += `${key} = ${user[key] ? "'" : ""}${
+      Number(user[key]) || user[key].length ? user[key] : null
+    }${user[key] ? "'" : ""}${Object.keys(user).length - 1 !== i ? ", " : ""}`;
+  });
+
+  (await query({
+    query: `UPDATE users SET ${str} WHERE id = ${id}`,
+    values: [],
+  })) as any;
+
+  const userDetail = (await query({
+    query: `SELECT * FROM users WHERE id = ?`,
+    values: [id],
+  })) as any;
+
+  userDetail.map((item: any) => (item.role = JSON.parse(item.role as any)));
+
+  return { success: true };
+};

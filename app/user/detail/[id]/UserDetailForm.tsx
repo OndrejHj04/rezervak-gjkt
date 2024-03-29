@@ -1,25 +1,20 @@
 "use client";
-
 import { Role } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Alert,
   Autocomplete,
-  Avatar,
   Button,
   Checkbox,
-  Chip,
   Divider,
   Icon,
   IconButton,
   List,
   ListItem,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
   Modal,
   Paper,
-  TablePagination,
   TextField,
   Typography,
 } from "@mui/material";
@@ -39,6 +34,7 @@ import { rolesConfig } from "@/lib/rolesConfig";
 import HotelIcon from "@mui/icons-material/Hotel";
 import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
+import { editUserDetail } from "@/lib/api";
 
 export default function UserDetailForm({
   userDetail,
@@ -53,10 +49,8 @@ export default function UserDetailForm({
     register,
     handleSubmit,
     control,
-    reset,
     formState: { isDirty },
     setValue,
-    watch,
   } = useForm();
   const { push } = useRouter();
 
@@ -77,20 +71,19 @@ export default function UserDetailForm({
   };
 
   const onSubmit = (data: any) => {
-    fetcher(`/api/users/edit/${userDetail.id}`, {
-      method: "POST",
-      body: JSON.stringify({
+    editUserDetail({
+      id: userDetail.id,
+      user: {
         ...data,
         birth_date: dayjs(data.birth_date).format("YYYY-MM-DD"),
         role: data.role.id,
-      }),
-    }).then((res) => {
-      if (res.success) {
-        toast.success("Uživatel byl upraven.");
-        MakeUserDetailRefetch(userDetail.id);
-      } else toast.error("Něco se pokazilo.");
-      setValue("birth_date", data.birth_date);
+      },
+    }).then(({ success }) => {
+      success && toast.success("Detail uživatele upraven");
+      !success && toast.error("Něco se nepovedlo");
     });
+    MakeUserDetailRefetch(userDetail.id);
+    setValue("birth_date", data.birth_date);
   };
 
   const handleCheckGroup = (id: number) => {

@@ -1,4 +1,4 @@
-import { getUserDetailByEmail } from "@/lib/api";
+import { getUserDetailByEmail, userLogin } from "@/lib/api";
 import { NextAuthOptions } from "next-auth";
 
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -56,22 +56,10 @@ export const authOptions: NextAuthOptions = {
           placeholder: "enter password",
         },
       },
-      async authorize(credentials) {
-        const userObject = {
-          email: credentials?.email,
-          password: credentials?.password,
-        } as any;
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
-          {
-            body: JSON.stringify(userObject),
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const { data } = await res.json();
+      async authorize(credentials: any) {
+        const { email, password } = credentials;
+        const { data } = await userLogin({ email, password });
+
         return data || null;
       },
     }),

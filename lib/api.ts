@@ -538,3 +538,18 @@ export const importNewUsers = async ({ users }: { users: any }) => {
 
   return { success: affectedRows === users.length, count: affectedRows };
 };
+
+export const userLogin = async ({
+  email,
+  password,
+}: {
+  email: any;
+  password: any;
+}) => {
+  const data = (await query({
+    query: `SELECT users.*, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ? AND password = MD5(?)`,
+    values: [email, password],
+  })) as any;
+
+  return { data: { ...data[0], role: JSON.parse(data[0].role) } };
+};

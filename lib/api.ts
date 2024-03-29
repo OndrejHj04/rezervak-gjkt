@@ -379,13 +379,17 @@ export const usersDelete = async ({ users }: { users: any }) => {
 };
 
 export const getUserTheme = async () => {
-  const { user } = (await getServerSession(authOptions)) as any;
-  const [{ theme }] = (await query({
-    query: `SELECT theme FROM users WHERE id = ?`,
-    values: [user.id],
-  })) as any;
+  const user = (await getServerSession(authOptions)) as any;
 
-  return { theme };
+  if (user) {
+    const [{ theme }] = (await query({
+      query: `SELECT theme FROM users WHERE id = ?`,
+      values: [user.user.id],
+    })) as any;
+
+    return { theme };
+  }
+  return { theme: 1 };
 };
 
 export const getUserDetail = async ({
@@ -484,4 +488,20 @@ export const editUserDetail = async ({ id, user }: { id: any; user: any }) => {
   userDetail.map((item: any) => (item.role = JSON.parse(item.role as any)));
 
   return { success: true };
+};
+
+export const getUserDetailByEmail = async ({ email }: { email: any }) => {
+  if (!email) {
+    return [];
+  }
+  const [data] = (await Promise.all([
+    query({
+      query: `
+        SELECT users.*, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ?
+    `,
+      values: [email],
+    }),
+  ])) as any;
+
+  return [{ ...data[0], role: JSON.parse(data[0].role) }];
 };

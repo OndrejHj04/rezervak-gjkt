@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
 import { authOptions } from "./api/auth/[...nextauth]/options";
 import fetcher from "@/lib/fetcher";
+import { getUserDetailByEmail } from "@/lib/api";
 
 const BlockDates = dynamic(
   () => import("@/app/homepage/blockDates/BlockDates")
@@ -27,14 +28,13 @@ const PastReservations = dynamic(
 const WeatherWidget = dynamic(
   () => import("@/app/homepage/weatherWidget/weatherWidget")
 );
-const getUserDetail = async (email: any) => {
-  const { data } = (await fetcher(`/api/users/email/${email}`)) as any;
-  return data[0];
-};
 
 export default async function Home({ searchParams }: { searchParams: any }) {
   const user = (await getServerSession(authOptions)) as any;
-  const data = user ? await getUserDetail(user?.user.email) : {};
+
+  const data: any = user
+    ? await getUserDetailByEmail({ email: user?.user.email })
+    : [];
 
   const homepage = (
     <div className="flex flex-col gap-2">
@@ -64,5 +64,5 @@ export default async function Home({ searchParams }: { searchParams: any }) {
     </div>
   );
 
-  return <HomepageLoading homepage={homepage} user={data} />;
+  return <HomepageLoading homepage={homepage} user={data[0]} />;
 }

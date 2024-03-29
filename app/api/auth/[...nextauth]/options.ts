@@ -1,4 +1,4 @@
-import fetcher from "@/lib/fetcher";
+import { getUserDetailByEmail } from "@/lib/api";
 import { NextAuthOptions } from "next-auth";
 
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -10,10 +10,10 @@ export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       async profile(profile: GoogleProfile) {
-        const req = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/email/${profile.email}`
-        );
-        const { data } = await req.json();
+        const data = (await getUserDetailByEmail({
+          email: profile.email,
+        })) as any;
+
         if (
           data.length &&
           profile.picture &&

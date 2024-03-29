@@ -1,4 +1,4 @@
-import { sendEmail } from "@/lib/api";
+import { mailEventDetail, sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -29,9 +29,7 @@ export async function POST(req: Request) {
         )})`,
         values: [user, ...reservations],
       }),
-      fetcher(`/api/mailing/events/detail/${eventId}`, {
-        token,
-      }),
+      mailEventDetail({ id: eventId }),
       query({
         query: `SELECT email FROM users WHERE id = ?`,
         values: [user],

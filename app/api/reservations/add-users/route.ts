@@ -1,4 +1,4 @@
-import { sendEmail } from "@/lib/api";
+import { mailEventDetail, sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -37,9 +37,7 @@ export async function POST(req: Request) {
         query: `INSERT IGNORE INTO users_reservations (userId, reservationId, id) VALUES ${placeholder}`,
         values,
       }),
-      fetcher(`/api/mailing/events/detail/${eventId}`, {
-        token,
-      }),
+      mailEventDetail({ id: eventId }),
       query({
         query: `SELECT reservations.from_date, reservations.to_date, status.display_name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as owner 
         FROM reservations INNER JOIN users ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id = ?`,

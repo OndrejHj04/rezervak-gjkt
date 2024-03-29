@@ -1,4 +1,4 @@
-import { sendEmail } from "@/lib/api";
+import { mailEventDetail, sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -53,9 +53,7 @@ export async function POST(req: Request) {
           query: `SELECT reservations.* FROM reservations INNER JOIN reservations_groups ON reservations.id = reservations_groups.reservationId`,
           values: [],
         }),
-        fetcher(`/api/mailing/events/detail/${eventId}`, {
-          token,
-        }),
+        mailEventDetail({ id: eventId }),
       ])) as any;
 
     const data = {

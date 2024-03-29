@@ -1,4 +1,4 @@
-import { sendEmail } from "@/lib/api";
+import { mailEventDetail, sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -47,9 +47,7 @@ export async function POST(req: Request) {
 
     const [{ data }, leaderData, statusName, membersEmail] = (await Promise.all(
       [
-        fetcher(`/api/mailing/events/detail/${eventId}`, {
-          token,
-        }),
+        mailEventDetail({ id: eventId }),
         query({
           query: `SELECT first_name, last_name, email FROM users WHERE id = ?`,
           values: [leader],

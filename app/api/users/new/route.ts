@@ -1,4 +1,4 @@
-import { sendEmail } from "@/lib/api";
+import { mailEventDetail, sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
         query: `INSERT INTO users(first_name, last_name, email, role, password, verified, active) VALUES(?,?,?,?, MD5(?), 0, 1)`,
         values: [first_name, last_name, email, role, password],
       }),
-      fetcher(`/api/mailing/events/detail/${eventId}`, { token }),
+      mailEventDetail({ id: eventId }),
     ])) as any;
 
     await sendEmail({

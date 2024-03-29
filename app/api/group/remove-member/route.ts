@@ -1,4 +1,4 @@
-import { sendEmail } from "@/lib/api";
+import { mailEventDetail, sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -48,9 +48,7 @@ export async function POST(req: Request) {
           )})`,
           values: [group, ...members],
         }),
-        fetcher(`/api/mailing/events/detail/${eventId}`, {
-          token,
-        }),
+        mailEventDetail({ id: eventId }),
       ])) as any;
 
     const data = { ...groupDetail[0], owner: owner[0], users, reservations };

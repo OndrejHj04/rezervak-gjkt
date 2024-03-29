@@ -2,7 +2,7 @@ import { query } from "@/lib/db";
 import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 import { sign } from "jsonwebtoken";
-import { sendEmail } from "@/lib/api";
+import { mailEventDetail, sendEmail } from "@/lib/api";
 
 const eventId = 4;
 export async function POST(req: Request) {
@@ -21,10 +21,7 @@ export async function POST(req: Request) {
         "Kraljeliman"
       );
 
-      const req = (await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/mailing/events/detail/${eventId}`
-      )) as any;
-      const template = await req.json();
+      const template = await mailEventDetail({ id: eventId });
 
       await sendEmail({
         send: template.data.active,

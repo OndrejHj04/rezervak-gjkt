@@ -209,3 +209,22 @@ export const sendEmail = async ({
   }
   return { success: false };
 };
+
+export const mailEventDetail = async ({ id }: { id: any }) => {
+  const event = (await query({
+    query: `
+      SELECT events_children.id, primary_txt, secondary_txt, active, variables,
+      JSON_OBJECT('id', templates.id, 'name', templates.name, 'title', templates.title, 'text', templates.text) as template 
+      FROM events_children LEFT JOIN templates ON templates.id = events_children.template WHERE events_children.id = ?
+  `,
+    values: [id],
+  })) as any;
+
+  const data = {
+    ...event[0],
+    template: JSON.parse(event[0].template),
+    variables: event[0].variables.split(","),
+  };
+
+  return { data };
+};

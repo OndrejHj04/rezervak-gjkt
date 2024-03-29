@@ -1,4 +1,4 @@
-import { sendEmail } from "@/lib/api";
+import { mailEventDetail, sendEmail } from "@/lib/api";
 import { query } from "@/lib/db";
 import fetcher from "@/lib/fetcher";
 import protect from "@/lib/protect";
@@ -33,9 +33,7 @@ export async function POST(req: Request) {
       }),
     ])) as any;
 
-    const { data } = (await fetcher(`/api/mailing/events/detail/${eventId}`, {
-      token,
-    })) as any;
+    const data = (await mailEventDetail({ id: eventId })) as any;
 
     await sendEmail({
       send: data.active,

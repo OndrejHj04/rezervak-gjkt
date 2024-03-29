@@ -22,6 +22,7 @@ import { toast } from "react-toastify";
 import MakeUserListRefetch from "@/app/user/list/refetch";
 import fetcher from "@/lib/fetcher";
 import Link from "next/link";
+import { importNewUsers } from "@/lib/api";
 
 const importUsersValidFormat = [
   { value: "first_name", name: "Jméno" },
@@ -50,21 +51,11 @@ export default function UsersImportForm({ roles }: { roles: any }) {
         newData.push(obj);
       }
     });
-
-    fetcher(`/api/users/import-new`, {
-      method: "POST",
-      body: JSON.stringify(newData),
-    })
-      .then((res) => {
-        if (res.success) {
-          toast.success(res.message);
-        } else {
-          toast.error(res.message);
-        }
-      })
-      .finally(() => {
-        MakeUserListRefetch("/user/list", 1);
-      });
+    importNewUsers({ users: newData }).then(({ success, count }) => {
+      success && toast.success(`${count} uživatelů úspěšně importováno`);
+      !success && toast.error(`Něco se nepovedlo`);
+    });
+    MakeUserListRefetch("/user/list", 1);
   };
 
   const clearFile = () => {

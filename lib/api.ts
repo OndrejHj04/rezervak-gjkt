@@ -505,3 +505,36 @@ export const getUserDetailByEmail = async ({ email }: { email: any }) => {
 
   return [{ ...data[0], role: JSON.parse(data[0].role) }];
 };
+
+export const importNewUsers = async ({ users }: { users: any }) => {
+  const eventId = 1;
+  const template = (await mailEventDetail({ id: eventId })) as any;
+
+  const emails = [] as any;
+  const [{ affectedRows }] = (await Promise.all([
+    query({
+      query: `INSERT INTO users (first_name, last_name, email, role, password, verified, active) VALUES ${users.map(
+        (user: any) => {
+          user.password = Math.random().toString(36).slice(-9);
+          emails.push({ email: user.email, password: user.password });
+          return `("${user.first_name}", "${user.last_name}", "${user.email}", "${user.role}", MD5("${user.password}"), 0, 1)`;
+        }
+      )}`,
+      values: [],
+    }),
+  ])) as any;
+
+  emails.map(async (user: any) => {
+    await sendEmail({
+      send: template.data.active,
+      to: user.email,
+      template: template.data.template,
+      variables: [
+        { name: "email", value: user.email },
+        { name: "password", value: user.password },
+      ],
+    });
+  });
+
+  return { success: affectedRows === users.length, count: affectedRows };
+};

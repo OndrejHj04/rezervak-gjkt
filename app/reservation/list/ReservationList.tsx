@@ -67,7 +67,7 @@ export default async function ReservationList({
   const reservations = (await getReservationList({
     page,
     type,
-    status,
+    status: Number(status),
     search,
     col,
     dir,

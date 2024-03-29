@@ -1,12 +1,11 @@
 "use client";
-import { IconButton, InputAdornment, TextField } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import { TextField } from "@mui/material";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import CancelIcon from "@mui/icons-material/Cancel";
+import { useRef, useState } from "react";
 
 export default function SearchBar({ label }: { label: any }) {
+  const input = useRef(null) as any;
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { replace } = useRouter();
@@ -19,25 +18,13 @@ export default function SearchBar({ label }: { label: any }) {
     replace(`${pathname}?${params.toString()}`);
   };
 
-  const removeFilter = () => {
-    replace(`${pathname}`);
-  };
-
   return (
     <TextField
+      ref={input}
       variant="outlined"
       label={`Hledat ${label}...`}
       defaultValue={search}
       onChange={(e) => makeSearch(e.target.value)}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position="end">
-            <IconButton color="error" disabled={!search} onClick={removeFilter}>
-              <CancelIcon />
-            </IconButton>
-          </InputAdornment>
-        ),
-      }}
     />
   );
 }

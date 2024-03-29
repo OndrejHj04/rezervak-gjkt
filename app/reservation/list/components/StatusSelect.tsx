@@ -33,7 +33,7 @@ export default function StatusSelect({ statuses }: { statuses: any }) {
           const name = statuses.find((status: any) => status.id === data);
           return <div>{name?.display_name || "Všechny"}</div>;
         }}
-        value={status}
+        defaultValue={status}
         onChange={handleChange}
       >
         <MenuItem value={0}>Všechny</MenuItem>

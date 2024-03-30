@@ -7,6 +7,7 @@ import { decode } from "jsonwebtoken";
 import { useEffect } from "react";
 import dayjs from "dayjs";
 import fetcher from "@/lib/fetcher";
+import { resetUserPassword } from "@/lib/api";
 export default function ResetPassword({
   searchParams: { id, token },
 }: {
@@ -35,17 +36,16 @@ export default function ResetPassword({
   const onSubmit = (data: any) => {
     const { first_password, second_password } = data;
     if (first_password === second_password) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reset-password`, {
-        method: "POST",
-        body: JSON.stringify({
-          password: first_password,
-          id,
-          token,
-        }),
-      }).then(() => {
-        toast.success("Heslo úspěšně změněno");
-        push("/");
-      });
+      resetUserPassword({ password: first_password, id, token }).then(
+        ({ success }) => {
+          if (success) {
+            toast.success("Heslo úspěšně změněno");
+            push("/");
+          } else {
+            toast.error("Něco se nepovedlo");
+          }
+        }
+      );
     } else {
       setError("second_password", {
         type: "custom",

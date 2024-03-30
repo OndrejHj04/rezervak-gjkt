@@ -6,6 +6,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { transporter } from "./email";
 import dayjs from "dayjs";
 import { rolesConfig } from "./rolesConfig";
+import { decode, sign } from "jsonwebtoken";
 
 export const getUserList = async ({
   page,
@@ -794,4 +795,62 @@ export const getRolesList = async ({ filter }: { filter: any }) => {
     values: [...thisRoles],
   });
   return { data };
+};
+
+export const resetUserPassword = async ({
+  password,
+  id,
+  token,
+}: {
+  password: any;
+  id: any;
+  token: any;
+}) => {
+  const { exp } = decode(token) as any;
+
+  if (dayjs(exp).isBefore(dayjs())) {
+    return { success: false };
+  }
+
+  const [{ affectedRows }] = (await query({
+    query: `UPDATE users SET password = MD5(?) WHERE id = ?`,
+    values: [password, id],
+  })) as any;
+
+  return { success: affectedRows === 1 };
+};
+
+export const sendResetPasswordEmail = async ({ email }: { email: any }) => {
+  const eventId = 4;
+
+  const users = (await query({
+    query: `SELECT  id, email FROM users WHERE email = ?`,
+    values: [email],
+  })) as any;
+  if (users.length) {
+    const tkn = sign(
+      {
+        exp: dayjs().add(1, "day").unix() * 1000,
+        id: users[0].id,
+      },
+      "Kraljeliman"
+    );
+
+    const template = await mailEventDetail({ id: eventId });
+
+    await sendEmail({
+      send: template.data.active,
+      to: email,
+      template: template.data.template,
+      variables: [
+        {
+          name: "link",
+          value: `${process.env.NEXT_PUBLIC_API_URL}/password-reset/form?id=${users[0].id}&token=${tkn}`,
+        },
+      ],
+    });
+
+    return { success: true };
+  }
+  return { success: false };
 };

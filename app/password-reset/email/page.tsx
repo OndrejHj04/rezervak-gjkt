@@ -2,14 +2,9 @@
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import fetcher from "@/lib/fetcher";
+import { sendResetPasswordEmail } from "@/lib/api";
 
-export default function ResetPasswordEmail({
-  searchParams: { id, token },
-}: {
-  searchParams: { id: any; token: any };
-}) {
+export default function ResetPasswordEmail() {
   const {
     register,
     handleSubmit,
@@ -19,23 +14,16 @@ export default function ResetPasswordEmail({
   } = useForm();
 
   const onSubmit = (data: any) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reset-password/email`, {
-      method: "POST",
-      body: JSON.stringify({
-        email: data.email,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.email) {
-          setError("email", {
-            type: "custom",
-            message: "Účet s tímto emailem nebyl nalezen",
-          });
-        } else {
-          toast.success(`Email na obnovení hesla byl odeslán.`);
-        }
-      });
+    sendResetPasswordEmail({ email: data.email }).then(({ success }) => {
+      if (!success) {
+        setError("email", {
+          type: "custom",
+          message: "Účet s tímto emailem nebyl nalezen",
+        });
+      } else {
+        toast.success(`Email na obnovení hesla byl odeslán.`);
+      }
+    });
     reset();
   };
 

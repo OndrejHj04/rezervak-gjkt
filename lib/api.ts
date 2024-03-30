@@ -553,3 +553,47 @@ export const userLogin = async ({
 
   return { data: { ...data[0], role: JSON.parse(data[0].role) } };
 };
+
+export const createUserAccount = async ({
+  first_name,
+  last_name,
+  email,
+  role,
+}: {
+  first_name: any;
+  last_name: any;
+  email: any;
+  role: any;
+}) => {
+  const eventId = 1;
+  const password = Math.random().toString(36).slice(-9) as any;
+
+  const check = (await query({
+    query: `SELECT * FROM users WHERE email = ?`,
+    values: [email],
+  })) as any;
+
+  if (check.length) {
+    return { success: false, msg: "Uživatel s tímto emailem už existuje" };
+  }
+
+  const [{ affectedRows }, { data }] = (await Promise.all([
+    query({
+      query: `INSERT INTO users(first_name, last_name, email, role, password, verified, active) VALUES(?,?,?,?, MD5(?), 0, 1)`,
+      values: [first_name, last_name, email, role, password],
+    }),
+    mailEventDetail({ id: eventId }),
+  ])) as any;
+
+  await sendEmail({
+    send: data.active,
+    to: email,
+    template: data.template,
+    variables: [
+      { name: "email", value: email },
+      { name: "password", value: password },
+    ],
+  });
+
+  return { success: affectedRows === 1 };
+};

@@ -1,5 +1,6 @@
 "use client";
 import MakeUserListRefetch from "@/app/user/list/refetch";
+import { createUserAccount } from "@/lib/api";
 import fetcher from "@/lib/fetcher";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Autocomplete, Paper, TextField, Typography } from "@mui/material";
@@ -18,21 +19,17 @@ export default function NewUserForm({ roles }: { roles: any }) {
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-    fetcher(`/api/users/new`, {
-      method: "POST",
-      body: JSON.stringify({ ...data, role: data.role.value }),
-    }).then((res) => {
-      if (res.success) {
-        toast.success("Uživatel úspěšně vytvořen");
-        MakeUserListRefetch("/user/list", 1);
-      } else if (res.duplicate) {
+    createUserAccount({ ...data, role: data.role.value }).then(
+      ({ success, msg }) => {
+        if (success) {
+          toast.success("Uživatel úspěšně vytvořen");
+          MakeUserListRefetch("/user/list", 1); 
+        } else {
+          toast.error(msg || "Něco se nepovedlo");
+        }
         setLoading(false);
-        toast.error("Uživatel s tímto emailem už existuje");
-      } else {
-        setLoading(false);
-        toast.error("Něco se nepovedlo");
       }
-    });
+    );
   };
 
   return (

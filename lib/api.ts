@@ -1059,3 +1059,38 @@ export const createNewReservation = async ({
 
   return { success: true };
 };
+
+export const reservationsDelete = async ({
+  reservations,
+}: {
+  reservations: any;
+}) => {
+  const [{ affectedRows }] = (await Promise.all([
+    query({
+      query: `DELETE FROM reservations WHERE id IN(${reservations.map(
+        () => "?"
+      )})`,
+      values: [...reservations],
+    }),
+    query({
+      query: `DELETE FROM reservations_groups WHERE reservationId IN(${reservations.map(
+        () => "?"
+      )})`,
+      values: [...reservations],
+    }),
+    query({
+      query: `DELETE FROM users_reservations WHERE reservationId IN(${reservations.map(
+        () => "?"
+      )})`,
+      values: [...reservations],
+    }),
+    query({
+      query: `DELETE FROM reservations_rooms WHERE reservationId IN(${reservations.map(
+        () => "?"
+      )})`,
+      values: [...reservations],
+    }),
+  ])) as any;
+
+  return { success: affectedRows === reservations.length };
+};

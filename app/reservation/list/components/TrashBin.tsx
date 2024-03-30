@@ -4,22 +4,17 @@ import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { store } from "@/store/store";
 import ReservationListMakeRefetch from "../refetch";
-import fetcher from "@/lib/fetcher";
+import { reservationsDelete } from "@/lib/api";
 
 export default function TrashBin() {
   const { selectedReservations, setSelectedReservations } = store();
-
   const handleRemove = () => {
-    fetcher(`/api/reservations/delete`, {
-      method: "POST",
-      body: JSON.stringify({ reservations: selectedReservations }),
-    }).then((res) => {
-      if (res.success) toast.success("Skupiny byly úspěšně odstraněny");
+    reservationsDelete({ reservations: selectedReservations }).then((res) => {
+      if (res.success) toast.success("Rezervace úspěšně odstraněny");
       else toast.error("Něco se pokazilo");
-
-      ReservationListMakeRefetch();
-      setSelectedReservations([]);
     });
+    ReservationListMakeRefetch();
+    setSelectedReservations([]);
   };
 
   return (

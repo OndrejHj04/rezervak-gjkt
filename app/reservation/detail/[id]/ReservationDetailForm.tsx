@@ -35,6 +35,7 @@ import ReservationListMakeRefetch from "../../list/refetch";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
+import { reservationsDelete } from "@/lib/api";
 
 export default function ReservationDetailForm({
   reservation,
@@ -119,10 +120,12 @@ export default function ReservationDetailForm({
   };
 
   const handleDeleteReservation = () => {
-    fetcher(`/api/reservations/delete`, {
-      method: "POST",
-      body: JSON.stringify({ reservations: [reservation.id] }),
-    });
+    reservationsDelete({ reservations: [reservation.id] }).then(
+      ({ success }) => {
+        success && toast.success("Rezervaci odstraněna");
+        !success && toast.error("Něco se nepovedlo");
+      }
+    );
     push("/reservation/list");
   };
 

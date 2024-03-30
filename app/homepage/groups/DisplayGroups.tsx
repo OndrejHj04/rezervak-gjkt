@@ -5,6 +5,7 @@ import { User, getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
+import { userSpecifiedGroups } from "@/lib/api";
 
 const getGroups = async (id: number, page: any) => {
   try {
@@ -25,9 +26,10 @@ export default async function DisplayGroups({
   searchParams: any;
   data: any;
 }) {
-  const groups = data
-    ? await getGroups(data.user.id, searchParams.groups || "1")
-    : [];
+  const groups = await userSpecifiedGroups({
+    id: data.user.id,
+    page: Number(searchParams.groups) || 1,
+  });
 
   return (
     <Paper className="p-2 flex flex-col">

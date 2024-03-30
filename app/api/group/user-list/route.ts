@@ -7,20 +7,6 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const id = Number(url.searchParams.get("id"));
     const page = Number(url.searchParams.get("page"));
-
-    const isAuthorized = (await protect(
-      req.headers.get("Authorization")
-    )) as any;
-
-    if (!isAuthorized) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Auth failed",
-        },
-        { status: 500 }
-      );
-    }
      
     const [groups, count] = (await Promise.all([
       query({

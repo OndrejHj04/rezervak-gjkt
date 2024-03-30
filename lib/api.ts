@@ -1786,6 +1786,36 @@ export const groupRemoveReservations = async ({
     )})`,
     values: [group, ...reservations],
   })) as any;
-  
+
   return { success: affectedRows === reservations.length };
+};
+
+export const userSpecifiedGroups = async ({
+  id,
+  page,
+}: {
+  id: any;
+  page: any;
+}) => {
+  const [groups, count] = (await Promise.all([
+    query({
+      query: `SELECT groups.id, name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner 
+      FROM groups INNER JOIN users_groups ON groups.id = users_groups.groupId INNER JOIN users ON groups.owner = users.id 
+      WHERE users_groups.userId = ? LIMIT 5 OFFSET ?`,
+      values: [id, page * 5 - 5],
+    }),
+    query({
+      query: `SELECT COUNT(*) as total FROM users_groups WHERE users_groups.userId = ?`,
+      values: [id],
+    }),
+  ])) as any;
+
+  const data = groups.map((group: any) => {
+    return {
+      ...group,
+      owner: JSON.parse(group.owner),
+    };
+  });
+
+  return { data, count: count[0].total };
 };

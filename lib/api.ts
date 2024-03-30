@@ -1169,3 +1169,22 @@ export const getReservationDetail = async ({
 
   return { data };
 };
+
+export const editReservationDetail = async ({
+  id,
+  purpouse,
+  instructions,
+  name,
+}: {
+  id: any;
+  purpouse: any;
+  instructions: any;
+  name: any;
+}) => {
+  const { affectedRows } = (await query({
+    query: `UPDATE reservations SET purpouse = ?, name = ?, instructions = ? WHERE id = ?`,
+    values: [purpouse, name, instructions, id],
+  })) as any;
+
+  return { success: affectedRows === 1 };
+};

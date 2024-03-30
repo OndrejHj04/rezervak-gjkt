@@ -23,10 +23,7 @@ export async function POST(
       );
     }
 
-    const data = (await query({
-      query: `UPDATE reservations SET purpouse = "${purpouse}", name = "${name}", instructions = "${instructions}" WHERE id = ${id}`,
-      values: [],
-    })) as any;
+
 
     return NextResponse.json({
       success: true,

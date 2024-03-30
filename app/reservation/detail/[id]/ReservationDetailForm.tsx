@@ -35,7 +35,7 @@ import ReservationListMakeRefetch from "../../list/refetch";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
-import { reservationsDelete } from "@/lib/api";
+import { editReservationDetail, reservationsDelete } from "@/lib/api";
 
 export default function ReservationDetailForm({
   reservation,
@@ -49,18 +49,16 @@ export default function ReservationDetailForm({
     handleSubmit,
     reset,
     formState: { isDirty },
-    getValues,
   } = useForm();
 
   const onSubmit = (data: any) => {
-    fetcher(`/api/reservations/edit-reservation/${reservation.id}`, {
-      method: "POST",
-      body: JSON.stringify({ ...data }),
-    }).then((res) => {
-      if (res.success) toast.success("Rezervace byla upravena");
-      else toast.error("Něco se nepovedlo");
-      reset(data);
-    });
+    editReservationDetail({ ...data, id: reservation.id }).then(
+      ({ success }) => {
+        success && toast.success("Rezervace byla upravena");
+        !success && toast.error("Něco se nepovedlo");
+        reset(data);
+      }
+    );
   };
 
   const { push } = useRouter();

@@ -5,7 +5,8 @@ import fetcher from "@/lib/fetcher";
 import { getReservationList } from "@/lib/api";
 
 export default async function BlockDates({ user }: { user: any }) {
-  const reservations = await getReservationList();
+  const { data: reservations } = await getReservationList();
+
   return (
     <Paper className="p-2 flex flex-col">
       <div className="flex justify-between items-center gap-3">

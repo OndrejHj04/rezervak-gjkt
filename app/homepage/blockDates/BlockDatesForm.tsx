@@ -1,5 +1,4 @@
 "use client";
-
 import {
   DatePicker,
   LocalizationProvider,
@@ -14,9 +13,8 @@ import { Badge, Box, Button, Tooltip, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import SingleReservation from "../reservations/SingleReservation";
 import { toast } from "react-toastify";
-import { revalidatePath } from "next/cache";
 import HomepageRefetch from "../refetch";
-import fetcher from "@/lib/fetcher";
+import { setBlockedDates } from "@/lib/api";
 
 export default function BlockDatesForm({
   reservations,
@@ -29,7 +27,6 @@ export default function BlockDatesForm({
     handleSubmit,
     reset,
     control,
-    watch,
     formState: { isValid },
   } = useForm({
     defaultValues: {
@@ -38,19 +35,18 @@ export default function BlockDatesForm({
     },
   });
   const onSubmit = (data: any) => {
-    fetcher(`/api/reservations/block`, {
-      method: "POST",
-      body: JSON.stringify({
-        from_date: data.from_date,
-        to_date: data.to_date,
-        userId: userId,
-      }),
-    }).then(({ data }: any) => {
-      toast.success(
-        `Termín od ${dayjs(data.from_date).format("DD. MM. YYYY")} do ${dayjs(
-          data.to_date
-        ).format("DD. MM. YYYY")} je blokován.`
-      );
+    setBlockedDates({
+      from_date: data.from_date,
+      to_date: data.to_date,
+      userId: userId,
+    }).then(({ success, from_date, to_date }) => {
+      success &&
+        toast.success(
+          `Termín od ${dayjs(from_date).format("DD. MM. YYYY")} do ${dayjs(
+            to_date
+          ).format("DD. MM. YYYY")} je blokován.`
+        );
+      !success && toast.error("Něco se nepovedlo");
       reset();
       HomepageRefetch();
     });

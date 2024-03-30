@@ -919,3 +919,36 @@ export const reservationAddUsers = async ({
 
   return { success: affectedRows === users.length };
 };
+
+export const setBlockedDates = async ({
+  from_date,
+  to_date,
+  userId,
+}: {
+  from_date: any;
+  to_date: any;
+  userId: any;
+}) => {
+  const fromDate = dayjs(from_date).format("YYYY-MM-DD");
+  const toDate = dayjs(to_date).format("YYYY-MM-DD");
+
+  const [_, { affectedRows: affectedRows }] = (await Promise.all([
+    query({
+      query: `UPDATE reservations SET status = 4 WHERE ((from_date BETWEEN '${fromDate}' AND '${toDate}') OR (to_date BETWEEN '${fromDate}' AND '${toDate}')) AND status <> 5 AND status <> 1`,
+      values: [],
+    }),
+    query({
+      query: `INSERT INTO reservations (from_date, to_date, name, status, leader, purpouse, instructions, creation_date) 
+      VALUES ("${fromDate}", "${toDate}", "Blokace", 5, ${userId}, "blokace", "", ${dayjs().format(
+        "YYYY-MM-DD"
+      )})`,
+      values: [],
+    }),
+  ])) as any;
+
+  return {
+    success: affectedRows === 1,
+    from_date,
+    to_date,
+  };
+};

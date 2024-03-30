@@ -5,6 +5,7 @@ import { Tab, Tabs } from "@mui/material";
 import Link from "next/link";
 import { rolesConfig } from "@/lib/rolesConfig";
 import fetcher from "@/lib/fetcher";
+import { getReservationDetail } from "@/lib/api";
 
 const getReservation = async (id: string, users: any, groups: any) => {
   const { data } = await fetcher(
@@ -32,11 +33,12 @@ export default async function ReservationDetail({
   userId: any;
   userRole: any;
 }) {
-  const reservation = (await getReservation(
-    params,
-    users || 1,
-    groups || 1
-  )) as Reservation;
+  const { data: reservation } = (await getReservationDetail({
+    id: params,
+    upage: users || 1,
+    gpage: groups || 1,
+  })) as any;
+
   const reservationStatus =
     (await getReservationStatus()) as ReservationStatus[];
 

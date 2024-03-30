@@ -1468,3 +1468,25 @@ export const groupAddMembers = async ({
 
   return { success: affectedRows === newMembers.length };
 };
+
+export const groupAddReservation = async ({
+  group,
+  reservations,
+}: {
+  group: any;
+  reservations: any;
+}) => {
+  const placeholder = reservations.map(() => "(?,?,?)");
+  const values = reservations.flatMap((res: any) => [
+    res,
+    group,
+    [res, group].join(","),
+  ]);
+
+  const { affectedRows } = (await query({
+    query: `INSERT IGNORE INTO reservations_groups (reservationId, groupId, id) VALUES ${placeholder}`,
+    values,
+  })) as any;
+
+  return { success: affectedRows === reservations.length };
+};

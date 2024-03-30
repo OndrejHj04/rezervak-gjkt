@@ -16,7 +16,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "./refetch";
 import fetcher from "@/lib/fetcher";
-import { getReservationList } from "@/lib/api";
+import { getReservationList, groupAddReservation } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -50,15 +50,12 @@ export default function AddGroupToReservationModal({
   }, []);
 
   const onSubmit = (data: any) => {
-    fetcher(`/api/group/add-reservations`, {
-      method: "POST",
-      body: JSON.stringify({
-        group: groupId,
-        reservations: data.reservations.map((group: any) => group.id),
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Rezervace úspěšně přidány");
-      else toast.error("Něco se nepovedlo");
+    groupAddReservation({
+      group: groupId,
+      reservations: data.reservations.map((group: any) => group.id),
+    }).then(({ success }) => {
+      success && toast.success("Rezervace úspěšně přidány");
+      !success && toast.error("Něco se nepovedlo");
     });
     MakeGroupDetailRefetch(groupId);
     setModal(false);

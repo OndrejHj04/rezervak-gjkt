@@ -6,19 +6,6 @@ export async function POST(req: Request) {
   try {
     const { group, reservations } = await req.json();
 
-    const isAuthorized = (await protect(
-      req.headers.get("Authorization")
-    )) as any;
-
-    if (!isAuthorized) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Auth failed",
-        },
-        { status: 500 }
-      );
-    }
     const placeholder = reservations.map(() => "(?,?,?)");
     const values = reservations.flatMap((res: any) => [
       res,

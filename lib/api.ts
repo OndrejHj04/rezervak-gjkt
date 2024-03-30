@@ -5,6 +5,7 @@ import { query } from "./db";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { transporter } from "./email";
 import dayjs from "dayjs";
+import { rolesConfig } from "./rolesConfig";
 
 export const getUserList = async ({
   page,
@@ -764,4 +765,33 @@ export const validateImport = async ({ data }: { data: any }) => {
   return {
     data: validData.map((valid: any) => [...valid, !set.has(valid[2])]),
   };
+};
+
+export const getRolesList = async ({ filter }: { filter: any }) => {
+  const {
+    user: { role },
+  } = (await getServerSession(authOptions)) as any;
+
+  if (!filter) {
+    const data = await query({
+      query: `SELECT * FROM roles`,
+    });
+    return { data };
+  }
+
+  const thisRoles = rolesConfig.users.modules.userCreate.options[
+    role.id as never
+  ] as any;
+
+  if (thisRoles.length === 0) {
+    return { data: [] };
+  }
+
+  const data = await query({
+    query: `
+    SELECT * FROM roles WHERE id IN(${thisRoles.map(() => "?")})
+  `,
+    values: [...thisRoles],
+  });
+  return { data };
 };

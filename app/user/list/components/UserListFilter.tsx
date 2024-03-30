@@ -4,15 +4,10 @@ import ExportButton from "@/ui-components/ExportButton";
 import UserRolesSelect from "./RolesSelect";
 import SearchBar from "@/ui-components/SearchBar";
 import ResponsiveFilter from "./ResponsiveFilter";
-
-const getRoles = async () => {
-  const { data } = await fetcher(`/api/roles/list`);
-
-  return data as any;
-};
+import { getRolesList } from "@/lib/api";
 
 export default async function UserListFilter({ userRole }: { userRole: any }) {
-  const roles = await getRoles();
+  const { data: roles } = await getRolesList({ filter: false });
 
   return (
     <>

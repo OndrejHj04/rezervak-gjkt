@@ -26,7 +26,7 @@ export default function RolesSelect({ roles }: { roles: any }) {
           const name = roles.find((status: any) => status.id === data);
           return <div>{name?.name || "Všechny"}</div>;
         }}
-        value={status}
+        defaultValue={status}
         onChange={handleChange}
       >
         <MenuItem value={0}>Všechny</MenuItem>

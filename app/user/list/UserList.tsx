@@ -42,7 +42,7 @@ export default async function UserList({
   const page = searchParams["page"] || 1;
   const search = searchParams["search"] || "";
 
-  const users = await getUserList({ page, search, role });
+  const users = await getUserList({ page, search, role: Number(role) });
   return (
     <div className="flex flex-col w-full gap-2">
       <UserListFilter userRole={userRole} />

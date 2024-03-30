@@ -1,16 +1,8 @@
-import fetcher from "@/lib/fetcher";
 import UsersImportForm from "./UsersImportForm";
-
-const getRoles = async () => {
-  const { data } = await fetcher(`/api/roles/list`, {
-    cache: "no-cache",
-  });
-
-  return data;
-};
+import { getRolesList } from "@/lib/api";
 
 export default async function ImportUsersForm() {
-  const roles = await getRoles();
+  const { data: roles } = await getRolesList({ filter: false });
 
   return <UsersImportForm roles={roles} />;
 }

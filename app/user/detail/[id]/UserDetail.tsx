@@ -4,12 +4,7 @@ import UserDetailForm from "./UserDetailForm";
 import Link from "next/link";
 import { rolesConfig } from "@/lib/rolesConfig";
 import fetcher from "@/lib/fetcher";
-import { getUserDetail } from "@/lib/api";
-
-const getRoles = async () => {
-  const { data } = await fetcher(`/api/roles/list`);
-  return data;
-};
+import { getRolesList, getUserDetail } from "@/lib/api";
 
 export default async function UserDetail({
   params,
@@ -28,7 +23,7 @@ export default async function UserDetail({
     gpage: groups || 1,
   });
 
-  const roles = await getRoles();
+  const { data: roles } = (await getRolesList({ filter: true })) as any;
   const selfAccount = Number(params) === userId;
   const selfEdit =
     rolesConfig.users.modules.userDetail.selfEdit.includes(userRole);

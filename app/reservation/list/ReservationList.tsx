@@ -9,41 +9,14 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import CheckboxComponent from "./components/CheckboxComponent";
-import { Reservation } from "@/types";
 import TrashBin from "./components/TrashBin";
-import StatusSelect from "./components/StatusSelect";
 import dynamic from "next/dynamic";
-import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
-import ExportButton from "@/ui-components/ExportButton";
 import { rolesConfig } from "@/lib/rolesConfig";
-import ExpiredReservations from "./components/ExpiredReservations";
 
 import ReservationTableSort from "./components/Sort";
-import dayjs from "dayjs";
-import fetcher from "@/lib/fetcher";
 import ReservationFilters from "./components/ReservationFilters";
 import { getReservationList } from "@/lib/api";
-const getReservations = async (
-  page: any,
-  status: any,
-  search: any,
-  type: any,
-  column: any,
-  dir: any
-) => {
-  try {
-    const data = await fetcher(
-      `/api/reservations/list?page=${page}&type=${type}&status=${status}${
-        search ? `&search=${search}` : ""
-      }${column ? `&col=${column}` : ""}${dir ? `&dir=${dir}` : ""}`
-    );
-    return data;
-  } catch (e) {
-    return [];
-  }
-};
 
 const ReservationListItem = dynamic(
   () => import("./components/ReservationListItem")

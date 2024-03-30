@@ -597,3 +597,149 @@ export const createUserAccount = async ({
 
   return { success: affectedRows === 1 };
 };
+
+export const userRemoveGroups = async ({
+  user,
+  groups,
+}: {
+  user: any;
+  groups: any;
+}) => {
+  const eventId = 6;
+
+  const [{ affectedRows }, { data }, groupsDetail, userDetail] =
+    (await Promise.all([
+      query({
+        query: `DELETE FROM users_groups WHERE userId = ? AND groupId IN (${groups.map(
+          () => "?"
+        )})`,
+        values: [user, ...groups],
+      }),
+      mailEventDetail({ id: eventId }),
+      query({
+        query: `SELECT groups.name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as owner
+      FROM groups INNER JOIN users ON users.id = groups.owner WHERE groups.id IN(${groups.map(
+        () => "?"
+      )})`,
+        values: [...groups],
+      }),
+      query({
+        query: `SELECT email FROM users WHERE id = ?`,
+        values: [user],
+      }),
+    ])) as any;
+
+  groupsDetail.map(async (detail: any) => {
+    detail = { ...detail, owner: JSON.parse(detail.owner) };
+
+    await sendEmail({
+      send: data.active,
+      to: userDetail[0].email,
+      template: data.template,
+      variables: [
+        { name: "group_name", value: detail.name },
+        {
+          name: "owner_name",
+          value: detail.owner.first_name + " " + detail.owner.last_name,
+        },
+        { name: "owner_email", value: detail.owner.email },
+      ],
+    });
+  });
+
+  return { success: affectedRows === groups.length };
+};
+
+export const userRemoveReservations = async ({
+  user,
+  reservations,
+}: {
+  user: any;
+  reservations: any;
+}) => {
+  const eventId = 9;
+
+  const [{ affectedRows }, { data }, userDetail, reservationsDetails] =
+    (await Promise.all([
+      query({
+        query: `DELETE FROM users_reservations WHERE userId = ? AND reservationId  IN(${reservations.map(
+          () => "?"
+        )})`,
+        values: [user, ...reservations],
+      }),
+      mailEventDetail({ id: eventId }),
+      query({
+        query: `SELECT email FROM users WHERE id = ?`,
+        values: [user],
+      }),
+      query({
+        query: `SELECT reservations.from_date, reservations.to_date, status.display_name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as owner 
+      FROM reservations INNER JOIN users ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id IN(${reservations.map(
+        () => "?"
+      )})`,
+        values: [...reservations],
+      }),
+    ])) as any;
+
+  reservationsDetails.map(async (res: any) => {
+    res = { ...res, owner: JSON.parse(res.owner) };
+    await sendEmail({
+      send: data.active,
+      to: userDetail[0].email,
+      template: data.template,
+      variables: [
+        {
+          name: "reservation_start",
+          value: dayjs(res.from_date).format("DD.MM.YYYY"),
+        },
+        {
+          name: "reservation_end",
+          value: dayjs(res.to_date).format("DD.MM.YYYY"),
+        },
+        { name: "reservation_status", value: res.display_name },
+        {
+          name: "leader_name",
+          value: res.owner.first_name + " " + res.owner.last_name,
+        },
+        { name: "leader_email", value: res.owner.email },
+      ],
+    });
+  });
+
+  return { success: affectedRows === reservations.length };
+};
+
+export const makeUserSleep = async ({
+  id,
+  active,
+}: {
+  id: any;
+  active: any;
+}) => {
+  const eventId = 3;
+
+  const [{ affectedRows }, user] = (await Promise.all([
+    query({
+      query: `UPDATE users SET active = ? WHERE id = ?`,
+      values: [!active, id],
+    }),
+    query({
+      query: `SELECT email FROM users WHERE id = ?`,
+      values: [id],
+    }),
+  ])) as any;
+
+  const data = (await mailEventDetail({ id: eventId })) as any;
+
+  await sendEmail({
+    send: data.active,
+    to: user[0].email,
+    template: data.template,
+    variables: [{ name: "email", value: user[0].email }],
+  });
+
+  return {
+    success: affectedRows === 1,
+    msg: active === 0 ? "Uživatel byl probuzen" : "Uživatel byl uspán",
+  };
+};

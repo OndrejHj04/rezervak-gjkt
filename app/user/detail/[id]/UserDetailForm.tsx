@@ -34,7 +34,12 @@ import { rolesConfig } from "@/lib/rolesConfig";
 import HotelIcon from "@mui/icons-material/Hotel";
 import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
-import { editUserDetail } from "@/lib/api";
+import {
+  editUserDetail,
+  makeUserSleep,
+  userRemoveGroups,
+  userRemoveReservations,
+} from "@/lib/api";
 
 export default function UserDetailForm({
   userDetail,
@@ -60,14 +65,12 @@ export default function UserDetailForm({
   const [reservationsModal, setReservationsModal] = useState(false);
   const makeEdit = rolesConfig.users.modules.userDetail.edit.includes(userRole);
 
-  const makeUserSleep = (id: any, active: any) => {
-    fetcher(`/api/users/sleep`, {
-      method: "POST",
-      body: JSON.stringify({ id, active }),
-    }).then(() => {
-      MakeUserDetailRefetch(userDetail.id);
-      toast.success("Uživatel byl upraven");
+  const handleUserSleep = (id: any, active: any) => {
+    makeUserSleep({ id, active }).then(({ success, msg }) => {
+      success && toast.success(msg);
+      !success && toast.error("Něco se nepovedlo");
     });
+    MakeUserDetailRefetch(userDetail.id);
   };
 
   const onSubmit = (data: any) => {
@@ -95,19 +98,14 @@ export default function UserDetailForm({
   };
 
   const removeGroups = () => {
-    fetcher(`/api/users/remove-groups`, {
-      method: "POST",
-      body: JSON.stringify({
-        user: userDetail.id,
-        groups: selectGroups,
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Skupiny úspěšně odebrány");
-      else toast.error("Něco se nepovedlo");
-
-      setSelectGroups([]);
-      MakeUserDetailRefetch(userDetail.id);
-    });
+    userRemoveGroups({ user: userDetail.id, groups: selectGroups }).then(
+      ({ success }) => {
+        success && toast.success("Skupiny úspěšně odebrány");
+        !success && toast.error("Něco se nepovedlo");
+      }
+    );
+    setSelectGroups([]);
+    MakeUserDetailRefetch(userDetail.id);
   };
 
   const handleCheckReservation = (id: number) => {
@@ -121,19 +119,15 @@ export default function UserDetailForm({
   };
 
   const removeReservations = () => {
-    fetcher(`/api/users/remove-reservations`, {
-      method: "POST",
-      body: JSON.stringify({
-        user: userDetail.id,
-        reservations: selectReservations,
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Rezervace úspěšně odebrány");
-      else toast.error("Něco se nepovedlo");
-
-      setSelectReservation([]);
-      MakeUserDetailRefetch(userDetail.id);
+    userRemoveReservations({
+      user: userDetail.id,
+      reservations: selectReservations,
+    }).then(({ success }) => {
+      success && toast.success("Rezervace úspěšně odebrány");
+      !success && toast.error("Něco se nepovedlo");
     });
+    setSelectReservation([]);
+    MakeUserDetailRefetch(userDetail.id);
   };
 
   return (
@@ -267,7 +261,7 @@ export default function UserDetailForm({
                   variant="outlined"
                   color="error"
                   onClick={() =>
-                    makeUserSleep(userDetail.id, userDetail.active)
+                    handleUserSleep(userDetail.id, userDetail.active)
                   }
                 >
                   {userDetail.active ? "Uspat uživatele" : "Probudit uživatele"}

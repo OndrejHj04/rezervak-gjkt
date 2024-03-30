@@ -16,6 +16,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import fetcher from "@/lib/fetcher";
 import { method } from "lodash";
+import { verifyUser } from "@/lib/api";
 
 export interface verifyForm {
   ID_code: string;
@@ -41,16 +42,12 @@ export default function VerifyUser({ id }: { id?: number }) {
       adress: `${data.street}, ${data.town}, ${data.post_number}`,
       password: data.password,
       newPassword: data.newPassword,
-    };
-
-    fetcher(`/api/account/verify/${id}`, {
-      method: "POST",
-      body: JSON.stringify(body),
-    }).then((res) => {
-      if (res.success) {
+    } as any;
+    verifyUser({ ...body, id: id }).then(({ success, email }) => {
+      if (success) {
         signIn("credentials", {
           password: data.newPassword,
-          email: res.data.email,
+          email,
         });
       } else {
         methods.setError("password", { message: "Nesprávné heslo" });

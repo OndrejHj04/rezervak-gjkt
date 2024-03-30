@@ -813,7 +813,7 @@ export const resetUserPassword = async ({
     return { success: false };
   }
 
-  const [{ affectedRows }] = (await query({
+  const { affectedRows } = (await query({
     query: `UPDATE users SET password = MD5(?) WHERE id = ?`,
     values: [password, id],
   })) as any;
@@ -1945,4 +1945,48 @@ export const userUploadPic = async ({
   })) as any;
 
   return { success: affectedRows === 1 };
+};
+
+export const verifyUser = async ({
+  ID_code,
+  birth_date,
+  newPassword,
+  password,
+  adress,
+  id,
+}: {
+  ID_code: any;
+  birth_date: any;
+  newPassword: any;
+  password: any;
+  adress: any;
+  id: any;
+}) => {
+  const eventId = 2;
+  console.log(id);
+  const data = (await query({
+    query: `UPDATE users SET password = MD5("${newPassword}"), ID_code = "${ID_code}", verified = 1, birth_date = "${birth_date}", adress = "${adress}" WHERE id = ${id} AND password = MD5("${password}")`, // verified = 1!! pak přidat
+    values: [],
+  })) as any;
+
+  if (data.affectedRows === 0) {
+    return { success: false };
+  }
+
+  const [user, template] = (await Promise.all([
+    query({
+      query: `SELECT * FROM users WHERE id = ?`,
+      values: [id],
+    }),
+    mailEventDetail({ id: eventId }),
+  ])) as any;
+
+  await sendEmail({
+    send: template.data.active,
+    to: user[0].email,
+    template: template.data.template,
+    variables: [{ name: "email", value: user[0].email }],
+  });
+
+  return { success: true, email: user[0].email };
 };

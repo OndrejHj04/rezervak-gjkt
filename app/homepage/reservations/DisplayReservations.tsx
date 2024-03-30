@@ -15,19 +15,7 @@ import ReservationsSwitch from "./ReservationsSwitch";
 import RenderCalendar from "../calendar/RenderCalendar";
 import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
-
-const getReservations = async (id: number, page: string) => {
-  try {
-    const data = await fetcher(
-      `/api/reservations/user-list?id=${id}&page=${page}`,
-      { cache: "no-cache" }
-    );
-
-    return data;
-  } catch (e) {
-    return [];
-  }
-};
+import { userSpecifiedReservations } from "@/lib/api";
 
 export default async function DisplayReservations({
   searchParams,
@@ -36,12 +24,10 @@ export default async function DisplayReservations({
   searchParams: any;
   data: any;
 }) {
-  const reservations = data
-    ? ((await getReservations(
-        data.user.id,
-        searchParams.reservations || "1"
-      )) as any)
-    : [];
+  const reservations = await userSpecifiedReservations({
+    userId: data.user.id,
+    page: Number(searchParams.reservations) || 1,
+  });
 
   return (
     <Paper className="p-2 flex-col flex">

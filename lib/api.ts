@@ -1931,3 +1931,18 @@ export const mailingEventsList = async () => {
   });
   return data;
 };
+
+export const userUploadPic = async ({
+  picture,
+  id,
+}: {
+  picture: any;
+  id: any;
+}) => {
+  const { affectedRows } = (await query({
+    query: `UPDATE users SET image = ? WHERE id = ?`,
+    values: [picture, id],
+  })) as any;
+
+  return { success: affectedRows === 1 };
+};

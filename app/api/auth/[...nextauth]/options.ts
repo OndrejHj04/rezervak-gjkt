@@ -1,4 +1,4 @@
-import { getUserDetailByEmail, userLogin } from "@/lib/api";
+import { getUserDetailByEmail, userLogin, userUploadPic } from "@/lib/api";
 import { NextAuthOptions } from "next-auth";
 
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -19,16 +19,7 @@ export const authOptions: NextAuthOptions = {
           profile.picture &&
           data[0].image !== profile.picture
         ) {
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/login/upload-pic`,
-            {
-              method: "POST",
-              body: JSON.stringify({
-                picture: profile.picture,
-                id: data[0].id,
-              }),
-            }
-          );
+          await userUploadPic({ picture: profile.picture, id: data[0].id });
         }
         if (data.length) {
           return {

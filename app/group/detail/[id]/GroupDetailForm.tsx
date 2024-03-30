@@ -32,6 +32,7 @@ import AddGroupToReservationModal from "./AddGroupToReservationModal";
 import fetcher from "@/lib/fetcher";
 import _ from "lodash";
 import TableListPagination from "@/ui-components/TableListPagination";
+import { groupDetailEdit } from "@/lib/api";
 
 interface selecteUser {
   label: string;
@@ -60,13 +61,11 @@ export default function GroupDetailForm({ group }: { group: any }) {
   });
 
   const onSubmit = (data: any) => {
-    fetcher(`/api/group/edit/${group.id}`, {
-      method: "POST",
-      body: JSON.stringify({
-        ...data,
-      }),
-    }).then((res) => {
-      if (res.success) {
+    groupDetailEdit({
+      id: group.id,
+      ...data,
+    }).then(({ success }) => {
+      if (success) {
         toast.success("Skupina upravena");
         reset({ ...data });
       } else {

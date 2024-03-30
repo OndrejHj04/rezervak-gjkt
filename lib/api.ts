@@ -1513,3 +1513,69 @@ export const createNewGroup = async ({
 
   return { success: affectedRows === 1, id: insertId };
 };
+
+export const getGroupDetail = async ({
+  id,
+  upage,
+  rpage,
+}: {
+  id: any;
+  upage: any;
+  rpage: any;
+}) => {
+  const [group, reservations, resCount, users, usersCount] = (await Promise.all(
+    [
+      query({
+        query: `SELECT groups.id, name, description, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as owner FROM groups INNER JOIN users ON users.id = groups.owner WHERE groups.id = ?`,
+        values: [id],
+      }),
+      query({
+        query: `SELECT reservations.id, from_date, to_date, name, status FROM reservations 
+    INNER JOIN reservations_groups ON reservations.id = reservations_groups.reservationId 
+    WHERE reservations_groups.groupId = ? LIMIT 5 OFFSET ?`,
+        values: [id, rpage * 5 - 5],
+      }),
+      query({
+        query: `SELECT COUNT(*) AS total FROM reservations_groups WHERE reservations_groups.groupId = ?`,
+        values: [id],
+      }),
+      query({
+        query: `SELECT users.id, first_name, last_name, email, image FROM users 
+    INNER JOIN users_groups ON users.id = users_groups.userId 
+    WHERE users_groups.groupId = ? LIMIT 5 OFFSET ?`,
+        values: [id, upage * 5 - 5],
+      }),
+      query({
+        query: `SELECT COUNT(*) AS total FROM users_groups WHERE users_groups.groupId = ?`,
+        values: [id],
+      }),
+    ]
+  )) as any;
+
+  const data = {
+    ...group[0],
+    owner: JSON.parse(group[0].owner),
+    reservations: { data: reservations, count: resCount[0].total },
+    users: { data: users, count: usersCount[0].total },
+  };
+
+  return { data };
+};
+
+export const groupDetailEdit = async ({
+  name,
+  description,
+  id,
+}: {
+  name: any;
+  description: any;
+  id: any;
+}) => {
+  const { affectedRows } = (await query({
+    query: `
+      UPDATE ${"`groups`"} SET name = ?, description = ? WHERE id = ?`,
+    values: [name, description, id],
+  })) as any;
+
+  return { success: affectedRows === 1 };
+};

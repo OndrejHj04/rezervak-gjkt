@@ -4,14 +4,7 @@ import GroupDetailForm from "./GroupDetailForm";
 import Link from "next/link";
 import { rolesConfig } from "@/lib/rolesConfig";
 import fetcher from "@/lib/fetcher";
-
-const getGroupDetail = async (id: string, reservations: any, users: any) => {
-  const { data } = await fetcher(
-    `/api/group/detail/${id}?reservations=${reservations}&users=${users}`,
-    { cache: "no-cache" }
-  );
-  return data;
-};
+import { getGroupDetail } from "@/lib/api";
 
 export default async function GroupDetail({
   params,
@@ -24,7 +17,11 @@ export default async function GroupDetail({
   userRole: any;
   userId: any;
 }) {
-  const group = await getGroupDetail(params, reservations || 1, users || 1);
+  const { data: group } = (await getGroupDetail({
+    id: params,
+    rpage: reservations || 1,
+    upage: users || 1,
+  })) as any;
   const isOwner = group.owner.id === userId;
 
   return (

@@ -90,6 +90,7 @@ export default async function middleware(req: NextRequest) {
         }),
       }
     );
+    console.log(request);
     const { data } = await request.json();
     const { isMember, isOwner, exist } = data;
 

@@ -940,9 +940,9 @@ export const setBlockedDates = async ({
     }),
     query({
       query: `INSERT INTO reservations (from_date, to_date, name, status, leader, purpouse, instructions, creation_date) 
-      VALUES ("${fromDate}", "${toDate}", "Blokace", 5, ${userId}, "blokace", "", ${dayjs().format(
-        "YYYY-MM-DD"
-      )})`,
+      VALUES ("${fromDate}", "${toDate}", "Blokace", 5, ${userId}, "blokace", "", "${dayjs(
+        new Date()
+      ).format("YYYY-MM-DD")}")`,
       values: [],
     }),
   ])) as any;
@@ -1192,7 +1192,7 @@ export const editReservationDetail = async ({
 
 export const setReservationsArchive = async () => {
   const { affectedRows } = (await query({
-    query: `UPDATE reservations SET status = 1 WHERE status <> 1 AND to_date < CURDATE()`,
+    query: `UPDATE reservations SET status = 1 WHERE status <> 1 AND status <> 5 AND to_date < CURDATE()`,
     values: [],
   })) as any;
 

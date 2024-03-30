@@ -13,7 +13,7 @@ export default async function PastReservationsWidget({
   const page = searchParams["archive"] || 1;
   const reservations = await getReservationList({
     page,
-    notStatus: [1],
+    notStatus: [1, 5],
     limit: 5,
     type: "expired",
   });

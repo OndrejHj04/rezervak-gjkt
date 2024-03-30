@@ -22,7 +22,6 @@ export default async function GroupDetail({
     upage: users || 1,
   })) as any;
   const isOwner = group.owner.id === userId;
-
   return (
     <>
       <div className="flex justify-between">

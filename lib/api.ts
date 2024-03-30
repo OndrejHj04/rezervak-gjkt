@@ -952,3 +952,110 @@ export const setBlockedDates = async ({
     to_date,
   };
 };
+
+export const createNewReservation = async ({
+  from_date,
+  to_date,
+  leader,
+  rooms,
+  groups,
+  purpouse,
+  members,
+  instructions,
+  name,
+}: {
+  from_date: any;
+  to_date: any;
+  leader: any;
+  rooms: any;
+  groups: any;
+  purpouse: any;
+  members: any;
+  instructions: any;
+  name: any;
+}) => {
+  const eventId = 8;
+
+  const reservation = (await query({
+    query: `INSERT INTO reservations (from_date, to_date, purpouse, leader, instructions, name, status, creation_date)
+    VALUES ("${dayjs(from_date).format("YYYY-MM-DD")}", "${dayjs(
+      to_date
+    ).format(
+      "YYYY-MM-DD"
+    )}", "${purpouse}", "${leader}", "${instructions}", "${name}", 2, "${dayjs(
+      new Date()
+    ).format("YYYY-MM-DD")}")`,
+    values: [],
+  })) as any;
+
+  const [{ data }, leaderData, statusName, membersEmail] = (await Promise.all([
+    mailEventDetail({ id: eventId }),
+    query({
+      query: `SELECT first_name, last_name, email FROM users WHERE id = ?`,
+      values: [leader],
+    }),
+    query({
+      query: `SELECT display_name FROM status WHERE id = 2`,
+    }),
+    query({
+      query: `SELECT email FROM users WHERE id IN(${members.map(() => "?")})`,
+      values: [...members],
+    }),
+    query({
+      query: `INSERT INTO reservations_rooms (reservationId, roomId, id) VALUES ${rooms.map(
+        () => "(?,?,?)"
+      )}`,
+      values: rooms.flatMap((room: any) => [
+        reservation.insertId,
+        room,
+        [room, reservation.insertId].join(","),
+      ]),
+    }),
+    members.length &&
+      query({
+        query: `INSERT INTO users_reservations (userId, reservationId, id) VALUES ${members
+          .map(() => "(?,?,?)")
+          .join(", ")}`,
+        values: members.flatMap((member: any) => [
+          member,
+          reservation.insertId,
+          [member, reservation.insertId].join(","),
+        ]),
+      }),
+    groups.length &&
+      query({
+        query: `INSERT INTO reservations_groups (reservationId, groupId, id) VALUES ${groups
+          .map(() => "(?,?,?)")
+          .join(", ")}`,
+        values: groups.flatMap((group: any) => [
+          reservation.insertId,
+          group,
+          [group, reservation.insertId].join(","),
+        ]),
+      }),
+  ])) as any;
+
+  await sendEmail({
+    send: data.active,
+    to: membersEmail.map(({ email }: { email: any }) => email),
+    template: data.template,
+    variables: [
+      {
+        name: "reservation_start",
+        value: dayjs(from_date).format("DD.MM.YYYY"),
+      },
+      {
+        name: "reservation_end",
+        value: dayjs(to_date).format("DD.MM.YYYY"),
+      },
+      { name: "reservation_status", value: statusName[0].display_name },
+      {
+        name: "leader_name",
+        value: leaderData[0].first_name + " " + leaderData[0].last_name,
+      },
+      { name: "leader_email", value: leaderData[0].email },
+    ],
+  });
+
+  return { success: true };
+};

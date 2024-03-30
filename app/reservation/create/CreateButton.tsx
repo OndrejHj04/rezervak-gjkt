@@ -7,6 +7,7 @@ import ReservationListMakeRefetch from "../list/refetch";
 import { NewReservation } from "@/types";
 import fetcher from "@/lib/fetcher";
 import { useState } from "react";
+import { createNewReservation } from "@/lib/api";
 
 export default function CreateButton() {
   const { createReservation, setCreateReservation } = store();
@@ -26,11 +27,8 @@ export default function CreateButton() {
   };
   const handleSubmit = () => {
     setLoading(true);
-    fetcher(`/api/reservations/create`, {
-      method: "POST",
-      body: JSON.stringify(createReservation),
-    }).then((res) => {
-      if (res.success) {
+    createNewReservation({ ...createReservation }).then(({ success }) => {
+      if (success) {
         toast.success("Rezervace úspěšně vytvořena");
         ReservationListMakeRefetch();
         setDefault();

@@ -31,9 +31,7 @@ import { toast } from "react-toastify";
 import AddUserModal from "./AddUserModal";
 import AddGroupsModal from "./AddGroupsModal";
 import MakeReservationDetailRefetch from "./refetch";
-import ReservationListMakeRefetch from "../../list/refetch";
 import PerfectScrollbar from "react-perfect-scrollbar";
-import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
 import {
   editReservationDetail,

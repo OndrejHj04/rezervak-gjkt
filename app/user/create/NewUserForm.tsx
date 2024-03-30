@@ -1,7 +1,6 @@
 "use client";
 import MakeUserListRefetch from "@/app/user/list/refetch";
 import { createUserAccount } from "@/lib/api";
-import fetcher from "@/lib/fetcher";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Autocomplete, Paper, TextField, Typography } from "@mui/material";
 import { useState } from "react";

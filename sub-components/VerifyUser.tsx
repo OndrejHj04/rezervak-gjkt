@@ -14,8 +14,6 @@ import DateInput from "./DateInput";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
-import fetcher from "@/lib/fetcher";
-import { method } from "lodash";
 import { verifyUser } from "@/lib/api";
 
 export interface verifyForm {

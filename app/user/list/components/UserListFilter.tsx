@@ -1,4 +1,3 @@
-import fetcher from "@/lib/fetcher";
 import { rolesConfig } from "@/lib/rolesConfig";
 import ExportButton from "@/ui-components/ExportButton";
 import UserRolesSelect from "./RolesSelect";

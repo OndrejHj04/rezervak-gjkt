@@ -17,7 +17,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import fetcher from "@/lib/fetcher";
 import { toast } from "react-toastify";
 import ReservationListMakeRefetch from "../refetch";
 import { getReservationsStatus, reservationUpdateStatus } from "@/lib/api";

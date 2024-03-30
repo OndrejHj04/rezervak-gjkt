@@ -3,7 +3,6 @@ import UserDetailDisplay from "./UserDetailDisplay";
 import UserDetailForm from "./UserDetailForm";
 import Link from "next/link";
 import { rolesConfig } from "@/lib/rolesConfig";
-import fetcher from "@/lib/fetcher";
 import { getRolesList, getUserDetail } from "@/lib/api";
 
 export default async function UserDetail({

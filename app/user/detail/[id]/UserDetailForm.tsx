@@ -32,7 +32,6 @@ import AddGroupsModal from "./AddGroupsModal";
 import AddReservationsModal from "./AddReservationsModal";
 import { rolesConfig } from "@/lib/rolesConfig";
 import HotelIcon from "@mui/icons-material/Hotel";
-import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
 import {
   editUserDetail,

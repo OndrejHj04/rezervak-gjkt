@@ -1,8 +1,7 @@
 "use client";
 import { Button, Paper, Typography } from "@mui/material";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import EventsAccordion from "./EventsAccordion";
-import fetcher from "@/lib/fetcher";
 import { toast } from "react-toastify";
 import { mailingEventsEdit } from "@/lib/api";
 

@@ -3,7 +3,6 @@ import GroupDetailDisplay from "./GroupDetailDisplay";
 import GroupDetailForm from "./GroupDetailForm";
 import Link from "next/link";
 import { rolesConfig } from "@/lib/rolesConfig";
-import fetcher from "@/lib/fetcher";
 import { getGroupDetail } from "@/lib/api";
 
 export default async function GroupDetail({

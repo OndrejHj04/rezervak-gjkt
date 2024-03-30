@@ -1,9 +1,7 @@
-import { Button, MenuList, Paper, Typography } from "@mui/material";
+import { MenuList, Paper, Typography } from "@mui/material";
 import ElderlyIcon from "@mui/icons-material/Elderly";
 import SingleReservation from "../reservations/SingleReservation";
-import { useSearchParams } from "next/navigation";
 import MakeReservationsArchive from "./MakeReservationsArchive";
-import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { getReservationList } from "@/lib/api";
 

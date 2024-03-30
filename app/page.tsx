@@ -3,7 +3,6 @@ import { rolesConfig } from "@/lib/rolesConfig";
 import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
 import { authOptions } from "./api/auth/[...nextauth]/options";
-import fetcher from "@/lib/fetcher";
 import { getUserDetailByEmail } from "@/lib/api";
 
 const BlockDates = dynamic(

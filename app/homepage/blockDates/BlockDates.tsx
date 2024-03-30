@@ -1,7 +1,6 @@
 import { Paper, Typography } from "@mui/material";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import BlockDatesForm from "./BlockDatesForm";
-import fetcher from "@/lib/fetcher";
 import { getReservationList } from "@/lib/api";
 
 export default async function BlockDates({ user }: { user: any }) {

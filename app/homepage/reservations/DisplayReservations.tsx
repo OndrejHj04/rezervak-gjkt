@@ -1,19 +1,8 @@
-import {
-  MenuItem,
-  MenuList,
-  Paper,
-  TablePagination,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
-import { User, getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { MenuList, Paper, Typography } from "@mui/material";
 import SingleReservation from "./SingleReservation";
 import EventIcon from "@mui/icons-material/Event";
 import ReservationsSwitch from "./ReservationsSwitch";
 import RenderCalendar from "../calendar/RenderCalendar";
-import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { userSpecifiedReservations } from "@/lib/api";
 

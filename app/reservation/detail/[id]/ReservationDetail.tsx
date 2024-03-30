@@ -1,10 +1,8 @@
 import ReservationDetailForm from "./ReservationDetailForm";
-import { Reservation, ReservationStatus } from "@/types";
 import ReservationDetailDisplay from "./ReservationDetailDisplay";
 import { Tab, Tabs } from "@mui/material";
 import Link from "next/link";
 import { rolesConfig } from "@/lib/rolesConfig";
-import fetcher from "@/lib/fetcher";
 import { getReservationDetail, getReservationsStatus } from "@/lib/api";
 
 export default async function ReservationDetail({

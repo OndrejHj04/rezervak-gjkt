@@ -3,12 +3,8 @@
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Autocomplete,
-  Box,
   Button,
   CircularProgress,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Paper,
   TextField,
   Typography,
@@ -17,7 +13,6 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "./refetch";
-import fetcher from "@/lib/fetcher";
 import UserCard from "@/app/user/detail/UserCard";
 import { getUserList, groupAddMembers } from "@/lib/api";
 

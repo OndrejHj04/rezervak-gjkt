@@ -1,4 +1,3 @@
-import fetcher from "@/lib/fetcher";
 import ReservationDatesRender from "./ReservationDatesRender";
 import { getReservationList } from "@/lib/api";
 

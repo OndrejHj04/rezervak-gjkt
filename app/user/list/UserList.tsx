@@ -9,16 +9,10 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { User as NextAuthUser } from "next-auth";
 
 import RemoveUser from "./components/removeUser";
-import CheckboxComponent from "./components/checkboxComponent";
-import UserRolesSelect from "./components/RolesSelect";
-import SearchBar from "@/ui-components/SearchBar";
 import TableListPagination from "@/ui-components/TableListPagination";
-import ExportButton from "@/ui-components/ExportButton";
 import { rolesConfig } from "@/lib/rolesConfig";
-import fetcher from "@/lib/fetcher";
 import UserListFilter from "./components/UserListFilter";
 import { getUserList } from "@/lib/api";
 

@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { decode } from "jsonwebtoken";
 import { useEffect } from "react";
 import dayjs from "dayjs";
-import fetcher from "@/lib/fetcher";
 import { resetUserPassword } from "@/lib/api";
+
 export default function ResetPassword({
   searchParams: { id, token },
 }: {

@@ -10,7 +10,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "react-toastify";
 import { Controller, useForm } from "react-hook-form";
 import MakeRefetch from "./refetch";
-import fetcher from "@/lib/fetcher";
 import { getGroupList, reservationsAddGroups } from "@/lib/api";
 
 const style = {

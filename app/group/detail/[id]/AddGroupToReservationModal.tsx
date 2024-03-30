@@ -15,7 +15,6 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "./refetch";
-import fetcher from "@/lib/fetcher";
 import { getReservationList, groupAddReservation } from "@/lib/api";
 
 const style = {

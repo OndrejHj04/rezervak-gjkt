@@ -29,7 +29,6 @@ import { redirect, useRouter } from "next/navigation";
 import MakeGroupDetailRefetch from "./refetch";
 import AddUsersToGroupModal from "./AddUsersToGroupModal";
 import AddGroupToReservationModal from "./AddGroupToReservationModal";
-import fetcher from "@/lib/fetcher";
 import _ from "lodash";
 import TableListPagination from "@/ui-components/TableListPagination";
 import {

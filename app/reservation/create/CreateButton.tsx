@@ -5,7 +5,6 @@ import { Button } from "@mui/material";
 import { toast } from "react-toastify";
 import ReservationListMakeRefetch from "../list/refetch";
 import { NewReservation } from "@/types";
-import fetcher from "@/lib/fetcher";
 import { useState } from "react";
 import { createNewReservation } from "@/lib/api";
 

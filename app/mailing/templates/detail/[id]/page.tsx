@@ -1,4 +1,3 @@
-import fetcher from "@/lib/fetcher";
 import TemplateForm from "../../TemplateForm";
 import { malingTemplateDetail } from "@/lib/api";
 

@@ -4,16 +4,13 @@ import MailingEvents from "./events/MailingEvents";
 import fetcher from "@/lib/fetcher";
 import MailingTemplates from "./templates/MailingTemplates";
 import Link from "next/link";
+import { malingTemplatesList } from "@/lib/api";
 
 const getEvents = async () => {
   const { data } = await fetcher("/api/mailing/events/list");
   return data;
 };
 
-const getTemplates = async () => {
-  const { data } = await fetcher("/api/mailing/templates/list");
-  return data;
-};
 
 export default async function Mailing({
   searchParams: { mode },
@@ -21,7 +18,7 @@ export default async function Mailing({
   searchParams: { mode: any };
 }) {
   const events = await getEvents();
-  const templates = await getTemplates();
+  const templates = await malingTemplatesList();
 
   return (
     <div>

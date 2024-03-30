@@ -1840,3 +1840,55 @@ export const mailingTemplateEdit = async ({
 
   return { success: affectedRows === 1 };
 };
+
+export const malingTemplatesList = async () => {
+  const templates = (await query({
+    query: `
+    SELECT * FROM templates
+  `,
+    values: [],
+  })) as any;
+
+  const data = templates.map((temp: any) => ({
+    ...temp,
+    text: temp.text,
+  }));
+
+  return data;
+};
+
+export const malingTemplateDetail = async ({ id }: { id: any }) => {
+  const templates = (await query({
+    query: `
+        SELECT templates.id, templates.name, templates.title, templates.text, events_children.variables 
+        FROM templates 
+        INNER JOIN events_children ON events_children.template = templates.id
+        WHERE templates.id = ?
+  `,
+    values: [id],
+  })) as any;
+
+  const data = {
+    ...templates[0],
+    variables: templates[0].variables.split(","),
+  };
+
+  return data;
+};
+
+export const mailingEventsEdit = async ({ data }: { data: any }) => {
+  const array = Object.entries(data);
+  const { affectedRows } = (await query({
+    query: `
+            INSERT INTO events_children (id, active)
+            VALUES ${array.map(
+              (item) => `(${item[0].split(" ")[1]}, ${item[1]})`
+            )}
+            ON DUPLICATE KEY UPDATE id=VALUES(id),
+            active=VALUES(active)
+    `,
+    values: [],
+  })) as any;
+
+  return { succes: affectedRows === array.length };
+};

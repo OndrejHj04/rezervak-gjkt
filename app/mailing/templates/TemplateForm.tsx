@@ -18,7 +18,6 @@ export default function TemplateForm({ template }: { template?: any }) {
   });
 
   const onSubmit = (data: any) => {
-    console.log(data);
     mailingTemplateEdit({
       ...data,
     }).then(({ success }) => {

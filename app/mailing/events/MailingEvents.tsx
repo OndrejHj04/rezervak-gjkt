@@ -4,6 +4,7 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import EventsAccordion from "./EventsAccordion";
 import fetcher from "@/lib/fetcher";
 import { toast } from "react-toastify";
+import { mailingEventsEdit } from "@/lib/api";
 
 export default function MailingEvents({ events }: { events: any }) {
   const defaultValues = events
@@ -16,10 +17,7 @@ export default function MailingEvents({ events }: { events: any }) {
   const methods = useForm({ defaultValues });
 
   const onSubmit = (data: any) => {
-    fetcher(`/api/mailing/events/edit`, {
-      method: "POST",
-      body: JSON.stringify(data),
-    }).then(() => {
+    mailingEventsEdit({ data }).then(() => {
       toast.success("Události úspěšně upraveny");
       methods.reset(data);
     });

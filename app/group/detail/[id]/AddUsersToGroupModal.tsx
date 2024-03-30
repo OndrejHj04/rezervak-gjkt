@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "./refetch";
 import fetcher from "@/lib/fetcher";
 import UserCard from "@/app/user/detail/UserCard";
-import { getUserList } from "@/lib/api";
+import { getUserList, groupAddMembers } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -51,15 +51,12 @@ export default function AddUsersToGroupModal({
   }, []);
 
   const onSubmit = (data: any) => {
-    fetcher(`/api/group/add-member`, {
-      method: "POST",
-      body: JSON.stringify({
-        group: group.id,
-        newMembers: data.users.map((group: any) => group.id),
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Uživatelé úspěšně přidány");
-      else toast.error("Něco se nepovedlo");
+    groupAddMembers({
+      group: group.id,
+      newMembers: data.users.map((group: any) => group.id),
+    }).then(({ success }) => {
+      success && toast.success("Uživatelé úspěšně přidáni");
+      !success && toast.error("Něco se nepovedlo");
     });
 
     setModal(false);

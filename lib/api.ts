@@ -1400,3 +1400,71 @@ export const userSpecifiedReservations = async ({
 
   return { data, count: count[0].total };
 };
+
+export const groupAddMembers = async ({
+  group,
+  newMembers,
+}: {
+  group: any;
+  newMembers: any;
+}) => {
+  const eventId = 5;
+  const values = newMembers.flatMap((newMember: any) => [
+    newMember,
+    group,
+    [newMember, group].join(","),
+  ]);
+
+  const placeholders = newMembers.map(() => "(?,?,?)").join(", ");
+
+  const [{ affectedRows }, groupDetail, owner, users, reservations, template] =
+    (await Promise.all([
+      query({
+        query: `INSERT IGNORE INTO users_groups (userId, groupId, id) VALUES ${placeholders}`,
+        values,
+      }),
+      query({
+        query: `SELECT groups.* FROM groups WHERE groups.id = ?`,
+        values: [group],
+      }),
+      query({
+        query: `SELECT first_name, last_name, email FROM users INNER JOIN groups ON groups.owner = users.id WHERE groups.id = ?`,
+        values: [group],
+      }),
+      query({
+        query: `SELECT first_name, last_name, email FROM users WHERE id IN(${newMembers.map(
+          () => "?"
+        )})`,
+        values: [...newMembers],
+      }),
+      query({
+        query: `SELECT reservations.* FROM reservations INNER JOIN reservations_groups ON reservations.id = reservations_groups.reservationId`,
+        values: [],
+      }),
+      mailEventDetail({ id: eventId }),
+    ])) as any;
+
+  const data = {
+    ...groupDetail[0],
+    owner: owner[0],
+    users,
+    reservations,
+  };
+
+  await sendEmail({
+    send: template.data.active,
+    to: users.map(({ email }: { email: any }) => email),
+    template: template.data.template,
+    variables: [
+      { name: "group_name", value: groupDetail[0].name },
+      { name: "users_count", value: users.length },
+      {
+        name: "owner_name",
+        value: owner[0].first_name + " " + owner[0].last_name,
+      },
+      { name: "owner_email", value: owner[0].email },
+    ],
+  });
+
+  return { success: affectedRows === newMembers.length };
+};

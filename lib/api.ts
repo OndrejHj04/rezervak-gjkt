@@ -1772,3 +1772,20 @@ export const groupRemoveUsers = async ({
 
   return { success: affectedRows === users.length };
 };
+
+export const groupRemoveReservations = async ({
+  group,
+  reservations,
+}: {
+  group: any;
+  reservations: any;
+}) => {
+  const { affectedRows } = (await query({
+    query: `DELETE FROM reservations_groups WHERE groupId = ? AND reservationId IN (${reservations.map(
+      () => "?"
+    )})`,
+    values: [group, ...reservations],
+  })) as any;
+  
+  return { success: affectedRows === reservations.length };
+};

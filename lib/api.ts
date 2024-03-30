@@ -1892,3 +1892,42 @@ export const mailingEventsEdit = async ({ data }: { data: any }) => {
 
   return { succes: affectedRows === array.length };
 };
+
+export const mailingEventsList = async () => {
+  const events = (await query({
+    query: `
+      SELECT events.id, events.name,
+      GROUP_CONCAT(
+        JSON_OBJECT('id', events_children.id, 'primary_txt', events_children.primary_txt,
+        'secondary_txt', events_children.secondary_txt, 'variables', events_children.variables, 'template', 
+        IF(templates.id IS NULL, NULL, JSON_OBJECT('id', templates.id, 'name', templates.name, 'title', templates.title, 'text', templates.text)),
+        'active', events_children.active)
+      ) as children
+      FROM events INNER JOIN events_children ON events_children.event = events.id
+      LEFT JOIN templates ON templates.id = events_children.template
+      GROUP BY events.id
+  `,
+    values: [],
+  })) as any;
+
+  const data = events.map((item: any) => {
+    let children = Array.isArray(item.children)
+      ? item.children
+      : JSON.parse(`[${item.children}]`);
+    return {
+      ...item,
+      children: children.map((child: any) => {
+        let template =
+          typeof child.template === "object"
+            ? child.template
+            : JSON.parse(`[${child.template}]`)[0];
+        return {
+          ...child,
+          variables: child.variables.split(","),
+          template: template,
+        };
+      }),
+    };
+  });
+  return data;
+};

@@ -1,23 +1,16 @@
 "use server";
 import { Tab, Tabs } from "@mui/material";
 import MailingEvents from "./events/MailingEvents";
-import fetcher from "@/lib/fetcher";
 import MailingTemplates from "./templates/MailingTemplates";
 import Link from "next/link";
-import { malingTemplatesList } from "@/lib/api";
-
-const getEvents = async () => {
-  const { data } = await fetcher("/api/mailing/events/list");
-  return data;
-};
-
+import { mailingEventsList, malingTemplatesList } from "@/lib/api";
 
 export default async function Mailing({
   searchParams: { mode },
 }: {
   searchParams: { mode: any };
 }) {
-  const events = await getEvents();
+  const events = await mailingEventsList();
   const templates = await malingTemplatesList();
 
   return (

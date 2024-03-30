@@ -2,7 +2,7 @@
 import { Button } from "@mui/material";
 import { toast } from "react-toastify";
 import HomepageRefetch from "../refetch";
-import fetcher from "@/lib/fetcher";
+import { setReservationsArchive } from "@/lib/api";
 
 export default function MakeReservationsArchive({
   disabled,
@@ -10,15 +10,9 @@ export default function MakeReservationsArchive({
   disabled: any;
 }) {
   const handleClick = () => {
-    fetcher(
-      `/api/reservations/make-archive`,
-      {
-        method: "POST",
-      }
-    )
-      .then((data) => {
-        toast.success("Rezervace úspěšně archivovány");
-      });
+    setReservationsArchive().then(({ count }) => {
+      toast.success(`${count} rezervací úspěšně archivováno`);
+    });
     HomepageRefetch();
   };
   return (

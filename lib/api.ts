@@ -1188,3 +1188,12 @@ export const editReservationDetail = async ({
 
   return { success: affectedRows === 1 };
 };
+
+export const setReservationsArchive = async () => {
+  const { affectedRows } = (await query({
+    query: `UPDATE reservations SET status = 1 WHERE status <> 1 AND to_date < CURDATE()`,
+    values: [],
+  })) as any;
+
+  return { count: affectedRows };
+};

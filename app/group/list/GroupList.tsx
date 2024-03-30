@@ -12,16 +12,8 @@ import GroupListItem from "./components/GroupListItem";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { rolesConfig } from "@/lib/rolesConfig";
 import GroupsDelete from "./components/GroupsDelete";
-import fetcher from "@/lib/fetcher";
 import GroupListFilter from "./components/GroupListFilter";
-
-const getGroups = async (page: any, search: any) => {
-  const data = await fetcher(
-    `/api/group/list?page=${page}${search ? `&search=${search}` : ""}`,
-    { cache: "no-cache" }
-  );
-  return data;
-};
+import { getGroupList } from "@/lib/api";
 
 export default async function GroupList({
   searchParams,
@@ -35,7 +27,12 @@ export default async function GroupList({
   const page = searchParams["page"] || 1;
   const search = searchParams["search"] || "";
 
-  const groups = (await getGroups(page, search)) as any;
+  const groups = (await getGroupList({
+    page,
+    search,
+    rpp: 10,
+    limit: false,
+  })) as any;
 
   if (!groups) return <div>loading...</div>;
   return (

@@ -13,7 +13,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeUserDetailRefetch from "./refetch";
 import fetcher from "@/lib/fetcher";
-import { userAddGroups } from "@/lib/api";
+import { getGroupList, userAddGroups } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -43,7 +43,7 @@ export default function AddGroupsModal({
   const [groups, setGroups] = useState(null);
 
   useEffect(() => {
-    fetcher(`/api/group/list?limit=true`).then((res) => setGroups(res.data));
+    getGroupList({ limit: true }).then((res) => setGroups(res.data));
   }, []);
 
   const onSubmit = (data: any) => {

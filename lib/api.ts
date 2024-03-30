@@ -7,6 +7,7 @@ import { transporter } from "./email";
 import dayjs from "dayjs";
 import { rolesConfig } from "./rolesConfig";
 import { decode, sign } from "jsonwebtoken";
+import { redirect } from "next/navigation";
 
 export const getUserList = async ({
   page,
@@ -1578,4 +1579,133 @@ export const groupDetailEdit = async ({
   })) as any;
 
   return { success: affectedRows === 1 };
+};
+
+export const getGroupList = async ({
+  page,
+  search,
+  limit,
+  rpp,
+}: {
+  page?: any;
+  search?: any;
+  limit?: any;
+  rpp?: any;
+}) => {
+  const {
+    user: { role, id },
+  } = (await getServerSession(authOptions)) as any;
+  const isLimited = role.id > 2;
+
+  const [groups, reservations, users, count] = (await Promise.all([
+    query({
+      query: `
+        SELECT groups.id, groups.name, description, 
+        JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner, 
+        GROUP_CONCAT(DISTINCT reservationId) AS reservations, GROUP_CONCAT(DISTINCT userId) AS users 
+        FROM groups 
+        LEFT JOIN users ON users.id = owner 
+        LEFT JOIN users_groups ON users_groups.groupId = groups.id 
+        LEFT JOIN reservations_groups ON reservations_groups.groupId = groups.id 
+        LEFT JOIN reservations ON reservations.id = reservations_groups.groupId
+        WHERE 1=1
+        ${search ? `AND groups.name LIKE "%${search}%"` : ""}
+        ${limit && isLimited ? `AND groups.owner = ${id}` : ""}
+        GROUP BY 
+            groups.id
+        ${page ? `LIMIT ${rpp} OFFSET ${page * rpp - rpp}` : ""}
+      `,
+      values: [],
+    }),
+    query({
+      query: `SELECT id, from_date, to_date, name FROM reservations`,
+      values: [],
+    }),
+    query({
+      query: `SELECT first_name, last_name, email, id FROM users`,
+      values: [],
+    }),
+    query({
+      query: `
+        SELECT COUNT(*) as total FROM groups
+        WHERE 1=1
+        ${search ? `AND groups.name LIKE "%${search}%"` : ""}
+        ${limit && isLimited ? `AND groups.owner = ${id}` : ""}
+      `,
+      values: [],
+    }),
+  ])) as any;
+
+  const data = groups.map((group: any) => {
+    return {
+      ...group,
+      owner: JSON.parse(group.owner),
+      reservations: group.reservations
+        ? group.reservations
+            .split(",")
+            .map((res: any) =>
+              reservations.find((r: any) => r.id === Number(res))
+            )
+        : [],
+      users: group.users ? group.users.split(",").map(Number) : [],
+    };
+  });
+
+  return { data, count: count[0].total };
+};
+
+export const removeGroups = async ({ groups }: { groups: any }) => {
+  const eventId = 7;
+
+  const [allGroups, { data }] = (await Promise.all([
+    query({
+      query: `SELECT groups.name, groups.description, JSON_OBJECT('first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner, GROUP_CONCAT(users.email) as users 
+      FROM groups 
+      LEFT JOIN users_groups ON users_groups.groupId = groups.id 
+      INNER JOIN users ON users.id = users_groups.userId 
+      INNER JOIN users AS owner ON owner.id = groups.owner 
+      WHERE groups.id IN(${groups.map(() => "?")}) 
+      GROUP BY groups.id`,
+      values: [...groups],
+    }),
+    mailEventDetail({ id: eventId }),
+  ])) as any;
+
+  const [{ affectedRows }] = (await Promise.all([
+    query({
+      query: `DELETE FROM groups WHERE id IN(${groups.map(() => "?")})`,
+      values: [...groups],
+    }),
+    query({
+      query: `DELETE FROM users_groups WHERE groupId IN(${groups.map(
+        () => "?"
+      )})`,
+      values: [...groups],
+    }),
+    query({
+      query: `DELETE FROM reservations_groups WHERE groupId IN(${groups.map(
+        () => "?"
+      )})`,
+      values: [...groups],
+    }),
+  ])) as any;
+
+  allGroups.map(async (grp: any) => {
+    grp = { ...grp, owner: JSON.parse(grp.owner) };
+    await sendEmail({
+      send: data.active,
+      to: grp.users.split(","),
+      template: data.template,
+      variables: [
+        { name: "group_name", value: grp.name },
+        {
+          name: "owner_name",
+          value: grp.owner.first_name + " " + grp.owner.last_name,
+        },
+        { name: "owner_email", value: grp.owner.email },
+      ],
+    });
+  });
+
+  return { success: affectedRows === groups.length };
 };

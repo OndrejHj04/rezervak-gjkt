@@ -9,19 +9,6 @@ export async function POST(req: Request) {
   try {
     const { groups } = await req.json();
 
-    const token = req.headers.get("Authorization");
-    const isAuthorized = (await protect(token)) as any;
-
-    if (!isAuthorized) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Auth failed",
-        },
-        { status: 500 }
-      );
-    }
-
     const [allGroups, { data }] = (await Promise.all([
       query({
         query: `SELECT groups.name, groups.description, JSON_OBJECT('first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner, GROUP_CONCAT(users.email) as users 

@@ -32,15 +32,7 @@ import AddGroupToReservationModal from "./AddGroupToReservationModal";
 import fetcher from "@/lib/fetcher";
 import _ from "lodash";
 import TableListPagination from "@/ui-components/TableListPagination";
-import { groupDetailEdit } from "@/lib/api";
-
-interface selecteUser {
-  label: string;
-  value: number;
-  image: string;
-  first_name: string;
-  last_name: string;
-}
+import { groupDetailEdit, removeGroups } from "@/lib/api";
 
 export default function GroupDetailForm({ group }: { group: any }) {
   const { push } = useRouter();
@@ -75,16 +67,11 @@ export default function GroupDetailForm({ group }: { group: any }) {
   };
 
   const handleRemoveGroup = () => {
-    fetcher(`/api/group/remove`, {
-      method: "POST",
-      body: JSON.stringify({
-        groups: [group.id],
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Skupina úspěšně odstraněna");
-      else toast.error("Něco se nepovedlo");
-      MakeGroupRefetch();
+    removeGroups({ groups: [group.id] }).then(({ success }) => {
+      success && toast.success("Skupina úspěšně odstraněna");
+      !success && toast.error("Něco se nepovedlo");
     });
+    //MakeGroupRefetch()
   };
 
   const handleDeleteMembers = () => {

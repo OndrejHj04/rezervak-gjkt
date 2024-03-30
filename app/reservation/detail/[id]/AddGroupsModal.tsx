@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import { Controller, useForm } from "react-hook-form";
 import MakeRefetch from "./refetch";
 import fetcher from "@/lib/fetcher";
-import { reservationsAddGroups } from "@/lib/api";
+import { getGroupList, reservationsAddGroups } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -38,7 +38,7 @@ export default function AddGroupsModal({
     formState: { isValid },
   } = useForm();
   useEffect(() => {
-    fetcher(`/api/group/list?limit=true`).then((res) => setGroups(res.data));
+    getGroupList({ limit: true }).then((res) => setGroups(res.data));
   }, []);
 
   const onSubmit = (data: any) => {

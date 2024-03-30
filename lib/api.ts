@@ -1197,3 +1197,82 @@ export const setReservationsArchive = async () => {
 
   return { count: affectedRows };
 };
+
+export const reservationRemoveGroups = async ({
+  reservation,
+  groups,
+}: {
+  reservation: any;
+  groups: any;
+}) => {
+  const { affectedRows } = (await query({
+    query: `DELETE FROM reservations_groups WHERE reservationId = ? AND groupId IN(${groups.map(
+      () => "?"
+    )})`,
+    values: [reservation, ...groups],
+  })) as any;
+
+  return { success: affectedRows === groups.length };
+};
+
+export const reservationRemoveUsers = async ({
+  reservation,
+  users,
+}: {
+  reservation: any;
+  users: any;
+}) => {
+  const eventId = 9;
+
+  const [{ affectedRows }, { data }, usersEmails, reservationDetail] =
+    (await Promise.all([
+      query({
+        query: `DELETE FROM users_reservations WHERE reservationId = ? AND userId IN(${users.map(
+          () => "?"
+        )})`,
+        values: [reservation, ...users],
+      }),
+      mailEventDetail({ id: eventId }),
+      query({
+        query: `SELECT email FROM users WHERE id IN(${users.map(() => "?")})`,
+        values: [...users],
+      }),
+      query({
+        query: `SELECT reservations.from_date, reservations.to_date, status.display_name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader 
+      FROM reservations INNER JOIN users ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id = ?`,
+        values: [reservation],
+      }),
+    ])) as any;
+
+  const res = {
+    ...reservationDetail[0],
+    leader: JSON.parse(reservationDetail[0].leader),
+  };
+
+  await sendEmail({
+    send: data.active,
+    to: usersEmails.map(({ email }: { email: any }) => email),
+    template: data.template,
+    variables: [
+      {
+        name: "reservation_start",
+        value: dayjs(res.from_date).format("DD.MM.YYYY"),
+      },
+      {
+        name: "reservation_end",
+        value: dayjs(res.to_date).format("DD.MM.YYYY"),
+      },
+      {
+        name: "reservation_status",
+        value: res.display_name,
+      },
+      {
+        name: "leader_name",
+        value: res.leader.first_name + " " + res.leader.last_name,
+      },
+      { name: "leader_email", value: res.leader.email },
+    ],
+  });
+
+  return { success: affectedRows === users.length };
+};

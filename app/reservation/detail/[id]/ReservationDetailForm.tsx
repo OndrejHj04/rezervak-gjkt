@@ -35,7 +35,12 @@ import ReservationListMakeRefetch from "../../list/refetch";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
-import { editReservationDetail, reservationsDelete } from "@/lib/api";
+import {
+  editReservationDetail,
+  reservationRemoveGroups,
+  reservationRemoveUsers,
+  reservationsDelete,
+} from "@/lib/api";
 
 export default function ReservationDetailForm({
   reservation,
@@ -87,34 +92,27 @@ export default function ReservationDetailForm({
   };
 
   const handleRemoveUsers = () => {
-    fetcher(`/api/reservations/remove-users`, {
-      method: "POST",
-      body: JSON.stringify({
-        reservation: reservation.id,
-        users: selectedUsers,
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Uživatelé byli odebráni z rezervace");
-      else toast.error("Něco se nepovedlo");
-
-      MakeReservationDetailRefetch(reservation.id);
-      setSelecetedUsers([]);
+    reservationRemoveUsers({
+      reservation: reservation.id,
+      users: selectedUsers,
+    }).then(({ success }) => {
+      success && toast.success("Uživatelé byli odebráni z rezervace");
+      !success && toast.error("Něco se nepovedlo");
     });
+    MakeReservationDetailRefetch(reservation.id);
+    setSelecetedUsers([]);
   };
 
   const handleRemoveGroups = () => {
-    fetcher(`/api/reservations/remove-groups`, {
-      method: "POST",
-      body: JSON.stringify({
-        reservation: reservation.id,
-        groups: selectedGroups,
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Skupiny byly odebrány z rezervace");
-      else toast.error("Něco se nepovedlo");
-      MakeReservationDetailRefetch(reservation.id);
-      setSelectedGroups([]);
+    reservationRemoveGroups({
+      reservation: reservation.id,
+      groups: selectedGroups,
+    }).then(({ success }) => {
+      success && toast.success("Skupiny byly odebrány z rezervace");
+      !success && toast.error("Něco se nepovedlo");
     });
+    MakeReservationDetailRefetch(reservation.id);
+    setSelectedGroups([]);
   };
 
   const handleDeleteReservation = () => {

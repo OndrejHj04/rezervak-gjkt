@@ -7,20 +7,6 @@ export async function POST(req: Request) {
     const { groupId, userId } = await req.json();
     let result = { isMember: false, isOwner: false, exist: false };
 
-    const isAuthorized = (await protect(
-      req.headers.get("Authorization")
-    )) as any;
-
-    if (!isAuthorized) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Auth failed",
-        },
-        { status: 500 }
-      );
-    }
-
     const [group, users] = (await Promise.all([
       query({
         query: `SELECT * FROM groups WHERE id = ?`,

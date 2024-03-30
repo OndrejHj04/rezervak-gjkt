@@ -6,20 +6,6 @@ export async function POST(req: Request) {
   try {
     const { reservationId, userId } = await req.json();
 
-    const isAuthorized = (await protect(
-      req.headers.get("Authorization")
-    )) as any;
-
-    if (!isAuthorized) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Auth failed",
-        },
-        { status: 500 }
-      );
-    }
-
     let result = {
       isMember: false,
       isLeader: false,

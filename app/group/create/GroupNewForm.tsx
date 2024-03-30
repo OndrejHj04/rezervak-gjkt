@@ -18,6 +18,7 @@ import MakeGroupDetailRefetch from "@/app/group/detail/[id]/refetch";
 import fetcher from "@/lib/fetcher";
 import { rolesConfig } from "@/lib/rolesConfig";
 import UserCard from "@/app/user/detail/UserCard";
+import { createNewGroup } from "@/lib/api";
 
 export default function GroupNewForm({
   users,
@@ -38,17 +39,14 @@ export default function GroupNewForm({
 
   const onSubmit = async (formData: any) => {
     setLoading(true);
-    await fetcher(`/api/group/create`, {
-      method: "POST",
-      body: JSON.stringify({ ...formData, owner: formData.owner.id }),
-    }).then((res) => {
-      if (res.success) {
-        toast.success(`Skupina ${res.data.name} byla vytvořena`);
-        MakeGroupDetailRefetch(res.data.newGroupId, 1);
-      } else {
-        toast.error("Něco se pokazilo");
-        setLoading(false);
-      }
+    createNewGroup({
+      ...formData,
+      owner: formData.owner.id,
+    }).then(({ success, id }) => {
+      success && toast.success(`Skupina  úspěšně vytvořena`);
+      !success && toast.error("Něco se pokazilo");
+      setLoading(false);
+      MakeGroupDetailRefetch(id, 1);
     });
   };
 

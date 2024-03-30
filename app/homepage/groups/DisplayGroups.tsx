@@ -1,23 +1,8 @@
 import { MenuList, Paper, Typography } from "@mui/material";
 import SingleGroup from "./SingleGroup";
 import GroupIcon from "@mui/icons-material/Group";
-import { User, getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import fetcher from "@/lib/fetcher";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { userSpecifiedGroups } from "@/lib/api";
-
-const getGroups = async (id: number, page: any) => {
-  try {
-    const data = await fetcher(`/api/group/user-list?id=${id}&page=${page}`, {
-      cache: "no-cache",
-    });
-
-    return data;
-  } catch (e) {
-    return [];
-  }
-};
 
 export default async function DisplayGroups({
   searchParams,

@@ -5,6 +5,7 @@ import { Chip, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MailingRefetch from "../mailingRefetch";
+import { mailingTemplateEdit } from "@/lib/api";
 
 export default function TemplateForm({ template }: { template?: any }) {
   const {
@@ -17,23 +18,14 @@ export default function TemplateForm({ template }: { template?: any }) {
   });
 
   const onSubmit = (data: any) => {
-    if (template) {
-      fetcher(`/api/mailing/templates/edit/${template.id}`, {
-        body: JSON.stringify({ ...data }),
-        method: "POST",
-      }).then(() => {
-        toast.success(`Emailová šablona upravena`);
-        MailingRefetch("templates");
-      });
-    } else {
-      fetcher("/api/mailing/templates/create", {
-        body: JSON.stringify({ ...data }),
-        method: "POST",
-      }).then((data) => {
-        toast.success(`Emailová šablona vytvořena`);
-        MailingRefetch("templates");
-      });
-    }
+    console.log(data);
+    mailingTemplateEdit({
+      ...data,
+    }).then(({ success }) => {
+      success && toast.success(`Emailová šablona upravena`);
+      !success && toast.error("Něco se nepovedlo");
+    });
+    MailingRefetch("templates");
     reset();
   };
 

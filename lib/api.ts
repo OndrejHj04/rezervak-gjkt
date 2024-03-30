@@ -1819,3 +1819,24 @@ export const userSpecifiedGroups = async ({
 
   return { data, count: count[0].total };
 };
+
+export const mailingTemplateEdit = async ({
+  name,
+  text,
+  title,
+  id,
+}: {
+  name: any;
+  text: any;
+  title: any;
+  id: any;
+}) => {
+  const { affectedRows } = (await query({
+    query: `
+    UPDATE templates SET name = ?, title = ?, text = ? WHERE id = ?
+  `,
+    values: [name, title, text, id],
+  })) as any;
+
+  return { success: affectedRows === 1 };
+};

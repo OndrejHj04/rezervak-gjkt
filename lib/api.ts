@@ -743,3 +743,25 @@ export const makeUserSleep = async ({
     msg: active === 0 ? "Uživatel byl probuzen" : "Uživatel byl uspán",
   };
 };
+
+export const validateImport = async ({ data }: { data: any }) => {
+  const validData = data.filter((item: any) =>
+    item.every((row: any) => row.length)
+  );
+
+  const value = (await query({
+    query: `SELECT email FROM users WHERE email IN (${validData
+      .map((item: any) => `"${item[2]}"`)
+      .join(",")})`,
+  })) as any;
+
+  const set = new Set();
+
+  value.map((item: any) => {
+    set.add(item.email);
+  });
+
+  return {
+    data: validData.map((valid: any) => [...valid, !set.has(valid[2])]),
+  };
+};

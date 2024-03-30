@@ -22,7 +22,7 @@ import { toast } from "react-toastify";
 import MakeUserListRefetch from "@/app/user/list/refetch";
 import fetcher from "@/lib/fetcher";
 import Link from "next/link";
-import { importNewUsers } from "@/lib/api";
+import { importNewUsers, validateImport } from "@/lib/api";
 
 const importUsersValidFormat = [
   { value: "first_name", name: "Jméno" },
@@ -74,10 +74,7 @@ export default function UsersImportForm({ roles }: { roles: any }) {
       JSON.stringify(data[0]) ===
       JSON.stringify(importUsersValidFormat.map((item) => item.value))
     ) {
-      fetcher(`/api/users/valid-import`, {
-        method: "POST",
-        body: JSON.stringify({ data: data.slice(1) }),
-      }).then(({ data }) => {
+      validateImport({ data: data.slice(1) }).then(({ data }) => {
         setData(
           data.map((item: any) => {
             return [

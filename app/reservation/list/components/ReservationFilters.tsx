@@ -3,23 +3,15 @@ import SearchBar from "@/ui-components/SearchBar";
 import ExpiredReservations from "./ExpiredReservations";
 import StatusSelect from "./StatusSelect";
 import ExportButton from "@/ui-components/ExportButton";
-import fetcher from "@/lib/fetcher";
 import ResponsiveReservationFilters from "./ResponsiveReservationFilters";
+import { getReservationsStatus } from "@/lib/api";
 
-const getStatuses = async () => {
-  try {
-    const { data } = await fetcher(`/api/reservations/status?type=all`);
-    return data;
-  } catch (e) {
-    return [];
-  }
-};
 export default async function ReservationFilters({
   userRole,
 }: {
   userRole: any;
 }) {
-  const statuses = await getStatuses();
+  const statuses  = await getReservationsStatus({ filter: false });
   return (
     <>
       <div className="sm:flex gap-3 justify-end hidden">

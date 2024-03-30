@@ -5,22 +5,7 @@ import { Tab, Tabs } from "@mui/material";
 import Link from "next/link";
 import { rolesConfig } from "@/lib/rolesConfig";
 import fetcher from "@/lib/fetcher";
-import { getReservationDetail } from "@/lib/api";
-
-const getReservation = async (id: string, users: any, groups: any) => {
-  const { data } = await fetcher(
-    `/api/reservations/detail/${id}?users=${users}&groups=${groups}`,
-    { cache: "no-cache" }
-  );
-
-  return data;
-};
-
-const getReservationStatus = async () => {
-  const { data } = await fetcher(`/api/reservations/status?type=limit`);
-
-  return data;
-};
+import { getReservationDetail, getReservationsStatus } from "@/lib/api";
 
 export default async function ReservationDetail({
   params,
@@ -39,8 +24,9 @@ export default async function ReservationDetail({
     gpage: groups || 1,
   })) as any;
 
-  const reservationStatus =
-    (await getReservationStatus()) as ReservationStatus[];
+  const reservationStatus = (await getReservationsStatus({
+    filter: true,
+  })) as any;
 
   const isLeader = reservation.leader.id === userId;
   const archived = reservation.status.id === 1;

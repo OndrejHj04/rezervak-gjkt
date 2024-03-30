@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import fetcher from "@/lib/fetcher";
 import { toast } from "react-toastify";
 import ReservationListMakeRefetch from "../refetch";
+import { getReservationsStatus } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -53,10 +54,9 @@ export default function ReservationModal({
   const isActive = Number(params.get("reservation_id")) === reservation.id;
   useEffect(() => {
     setLoading(false);
-    if (isActive)
-      fetcher("/api/reservations/status?type=limit").then(({ data }) =>
-        setStatuses(data)
-      );
+    if (isActive) {
+      getReservationsStatus({ filter: true }).then((data) => setStatuses(data));
+    }
   }, [isActive]);
 
   const onSubmit = (data: any) => {

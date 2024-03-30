@@ -1276,3 +1276,12 @@ export const reservationRemoveUsers = async ({
 
   return { success: affectedRows === users.length };
 };
+
+export const getReservationsStatus = async ({ filter }: { filter: any }) => {
+  const data = (await query({
+    query: `SELECT * FROM status ${filter ? "WHERE id <> 5" : ""}`,
+    values: [],
+  })) as any;
+
+  return data;
+};

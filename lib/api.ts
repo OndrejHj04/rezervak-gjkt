@@ -1709,3 +1709,66 @@ export const removeGroups = async ({ groups }: { groups: any }) => {
 
   return { success: affectedRows === groups.length };
 };
+
+export const groupRemoveUsers = async ({
+  group,
+  users,
+}: {
+  group: any;
+  users: any;
+}) => {
+  const eventId = 6;
+
+  const [
+    groupDetail,
+    groupUsers,
+    owner,
+    reservations,
+    { affectedRows },
+    template,
+  ] = (await Promise.all([
+    query({
+      query: `SELECT * FROM groups WHERE id = ?`,
+      values: [group],
+    }),
+    query({
+      query: `SELECT first_name, last_name, email FROM users WHERE id IN(${users.map(
+        () => "?"
+      )})`,
+      values: [...users],
+    }),
+    query({
+      query: `SELECT first_name, last_name, email FROM users INNER JOIN groups ON groups.owner = users.id WHERE groups.id = ?`,
+      values: [group],
+    }),
+    query({
+      query: `SELECT * FROM reservations INNER JOIN reservations_groups ON reservations.id = reservations_groups.groupId WHERE reservations_groups.groupId = ?`,
+      values: [group],
+    }),
+    query({
+      query: `DELETE FROM users_groups WHERE groupId = ? AND userId IN (${users.map(
+        () => "?"
+      )})`,
+      values: [group, ...users],
+    }),
+    mailEventDetail({ id: eventId }),
+  ])) as any;
+
+  const data = { ...groupDetail[0], owner: owner[0], groupUsers, reservations };
+
+  await sendEmail({
+    send: template.data.active,
+    to: groupUsers.map(({ email }: { email: any }) => email),
+    template: template.data.template,
+    variables: [
+      { name: "group_name", value: groupDetail[0].name },
+      {
+        name: "owner_name",
+        value: owner[0].first_name + " " + owner[0].last_name,
+      },
+      { name: "owner_email", value: owner[0].email },
+    ],
+  });
+
+  return { success: affectedRows === users.length };
+};

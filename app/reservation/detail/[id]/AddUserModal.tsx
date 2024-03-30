@@ -1,22 +1,17 @@
 import {
   Autocomplete,
-  Box,
   Button,
-  ListItem,
-  ListItemIcon,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeRefetch from "./refetch";
-import fetcher from "@/lib/fetcher";
 import UserCard from "@/app/user/detail/UserCard";
-import { getUserList } from "@/lib/api";
+import { getUserList, reservationAddUsers } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -37,33 +32,19 @@ export default function AddUserModal({
 }) {
   const [users, setUsers] = useState(null);
 
-  const {
-    handleSubmit,
-    control,
-    register,
-    formState: { isValid },
-    watch,
-  } = useForm();
-
-  const userReduction = reservation.rooms.reduce(
-    (a: any, b: any) => a + b.people,
-    0
-  );
+  const { handleSubmit, control, register } = useForm();
 
   useEffect(() => {
     getUserList().then(({ data }) => setUsers(data));
   }, []);
 
   const onSubmit = (data: any) => {
-    fetcher(`/api/reservations/add-users`, {
-      method: "POST",
-      body: JSON.stringify({
-        reservation: reservation.id,
-        users: data.users.map((user: any) => user.id),
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Uživatelé úspěšně přidáni");
-      else toast.error("Něco se nepovedlo");
+    reservationAddUsers({
+      reservation: reservation.id,
+      users: data.users.map((user: any) => user.id),
+    }).then(({ success }) => {
+      success && toast.success("Uživatelé úspěšně přidáni");
+      !success && toast.error("Něco se nepovedlo");
     });
     MakeRefetch(reservation.id);
     setModal(false);

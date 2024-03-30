@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import fetcher from "@/lib/fetcher";
 import { toast } from "react-toastify";
 import ReservationListMakeRefetch from "../refetch";
-import { getReservationsStatus } from "@/lib/api";
+import { getReservationsStatus, reservationUpdateStatus } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -61,18 +61,16 @@ export default function ReservationModal({
 
   const onSubmit = (data: any) => {
     setLoading(true);
-    fetcher(`/api/reservations/update-status/${reservation.id}`, {
-      method: "POST",
-      body: JSON.stringify({
-        newStatus: data.status.id,
-        oldStatus: reservation.status.id,
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Status rezervace úspěšně změněn");
-      else toast.error("Něco se nepovedlo");
+    reservationUpdateStatus({
+      id: reservation.id,
+      newStatus: data.status.id,
+      oldStatus: reservation.status.id,
+    }).then(({ success }) => {
+      success && toast.success("Status rezervace úspěšně změněn");
+      !success && toast.error("Něco se nepovedlo");
       reset(data);
-      ReservationListMakeRefetch();
     });
+    ReservationListMakeRefetch();
   };
 
   return (

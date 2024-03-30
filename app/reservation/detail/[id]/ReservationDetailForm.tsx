@@ -40,6 +40,7 @@ import {
   reservationRemoveGroups,
   reservationRemoveUsers,
   reservationsDelete,
+  reservationUpdateStatus,
 } from "@/lib/api";
 
 export default function ReservationDetailForm({
@@ -126,20 +127,18 @@ export default function ReservationDetailForm({
   };
 
   const handleUpdateStatus = () => {
-    fetcher(`/api/reservations/update-status/${reservation.id}`, {
-      method: "POST",
-      body: JSON.stringify({
-        newStatus: selectedStatus,
-        oldStatus: reservation.status.id,
-      }),
-    }).then((res) => {
-      if (res.success) toast.success("Status rezervace byl změněn");
-      else toast.error("Něco se nepovedlo");
-      selectedStatus !== 1
-        ? MakeReservationDetailRefetch(reservation.id)
-        : window.location.reload();
-      reset();
+    reservationUpdateStatus({
+      id: reservation.id,
+      newStatus: selectedStatus,
+      oldStatus: reservation.status.id,
+    }).then(({ success }) => {
+      success && toast.success("Status rezervace byl změněn");
+      !success && toast.error("Něco se nepovedlo");
     });
+    selectedStatus !== 1
+      ? MakeReservationDetailRefetch(reservation.id)
+      : window.location.reload();
+    reset();
   };
 
   const maxMembers = reservation.rooms.reduce(

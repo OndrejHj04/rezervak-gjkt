@@ -37,7 +37,9 @@ export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
         </MenuList>
 
         <MenuList>
-          <MenuItem onClick={() => signOut()}>
+          <MenuItem
+            onClick={() => signOut({ callbackUrl: "/", redirect: true })}
+          >
             <LogoutIcon fontSize="large" color="error" />
             <Typography variant="h6" style={{ margin: "0 0 0 10px" }}>
               Odhlásit se

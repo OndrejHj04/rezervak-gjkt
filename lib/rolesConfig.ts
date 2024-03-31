@@ -199,6 +199,12 @@ export const rolesConfig = {
         menu: [true, false],
         icon: "feed_icon",
       },
+      templates: {
+        name: "Templates",
+        path: "/mailing/templates",
+        roles: [1, 2],
+        menu: [false, false],
+      },
     },
   },
   sampleFile: {

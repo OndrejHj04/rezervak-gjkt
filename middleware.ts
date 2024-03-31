@@ -160,6 +160,12 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/", req.url));
     }
   }
+
+  if (role && req.nextUrl.pathname.startsWith("/mailing/templates")) {
+    if (!rolesConfig.emails.modules.templates.roles.includes(role.id)) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+  }
 }
 
 export const config = {

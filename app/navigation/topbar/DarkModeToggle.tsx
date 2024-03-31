@@ -1,5 +1,5 @@
 "use client";
-import { setTheme } from "@/app/admin/actions/actionts";
+import { setTheme } from "@/lib/api";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import { IconButton } from "@mui/material";

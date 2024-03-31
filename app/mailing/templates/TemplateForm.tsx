@@ -11,7 +11,6 @@ export default function TemplateForm({ template }: { template?: any }) {
     register,
     handleSubmit,
     formState: { isValid, isDirty },
-    reset,
   } = useForm({
     defaultValues: template || null,
   });
@@ -22,9 +21,8 @@ export default function TemplateForm({ template }: { template?: any }) {
     }).then(({ success }) => {
       success && toast.success(`Emailová šablona upravena`);
       !success && toast.error("Něco se nepovedlo");
+      MailingRefetch("templates");
     });
-    MailingRefetch("templates");
-    reset();
   };
 
   return (

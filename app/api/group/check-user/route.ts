@@ -4,16 +4,17 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { groupId, userId } = await req.json();
+    const { groupId, userId, email } = await req.json();
     let result = { isMember: false, isOwner: false, exist: false };
+    const guest = email === "host@nemazat.cz";
 
     const [group, users] = (await Promise.all([
       query({
-        query: `SELECT * FROM groups WHERE id = ?`,
+        query: `SELECT * FROM groups${guest ? "_mock" : ""} WHERE id = ?`,
         values: [groupId],
       }),
       query({
-        query: `SELECT * FROM users_groups WHERE users_groups.groupId = ? AND users_groups.userId = ?`,
+        query: `SELECT * FROM users_groups${guest ? "_mock as users_groups" : ""} WHERE users_groups.groupId = ? AND users_groups.userId = ?`,
         values: [groupId, userId],
       }),
     ])) as any;

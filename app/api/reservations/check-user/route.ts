@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { reservationId, userId } = await req.json();
+    const { reservationId, userId, email } = await req.json();
+    const guest = email === "host@nemazat.cz";
 
     let result = {
       isMember: false,
@@ -16,11 +17,11 @@ export async function POST(req: Request) {
 
     const [reservation, users] = (await Promise.all([
       query({
-        query: `SELECT leader, status FROM reservations WHERE id = ${reservationId}`,
+        query: `SELECT leader, status FROM reservations${guest ? "_mock" : ""} WHERE id = ${reservationId}`,
         values: [],
       }),
       query({
-        query: `SELECT * FROM users_reservations WHERE reservationId = ? AND userId = ?`,
+        query: `SELECT * FROM users_reservations${guest ? "_mock" : ""} WHERE reservationId = ? AND userId = ?`,
         values: [reservationId, userId],
       }),
     ])) as any;

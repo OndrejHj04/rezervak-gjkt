@@ -7,7 +7,11 @@ import { transporter } from "./email";
 import dayjs from "dayjs";
 import { rolesConfig } from "./rolesConfig";
 import { decode, sign } from "jsonwebtoken";
-import { redirect } from "next/navigation";
+
+const checkUserSession = async () => {
+  const user = (await getServerSession(authOptions)) as any;
+  return user?.user.email === "host@nemazat.cz";
+};
 
 export const getUserList = async ({
   page,
@@ -20,10 +24,14 @@ export const getUserList = async ({
   role?: any;
   rpp?: any;
 } = {}) => {
+  const guest = await checkUserSession();
+
   const [users, count] = (await Promise.all([
     query({
       query: `SELECT users.id, first_name, last_name, email, image, verified, birth_date, active, JSON_OBJECT('id', roles.id, 'name', roles.name) as role
-            FROM users INNER JOIN roles ON roles.id = users.role WHERE 1=1
+            FROM users${
+              guest ? "_mock as users" : ""
+            } INNER JOIN roles ON roles.id = users.role WHERE 1=1
           ${
             search
               ? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`
@@ -79,6 +87,7 @@ export const getReservationList = async ({
     user: { role, id },
   } = (await getServerSession(authOptions)) as any;
   const isLimited = role.id > 2;
+  const guest = await checkUserSession();
 
   const [reservations, count] = (await Promise.all([
     query({
@@ -93,14 +102,24 @@ export const getReservationList = async ({
         GROUP_CONCAT(
           DISTINCT JSON_OBJECT('id', rooms.id, 'people', rooms.people)
         ) as rooms
-        FROM reservations
+        FROM reservations${guest ? "_mock as reservations" : ""}
         INNER JOIN status ON status.id = reservations.status
-        INNER JOIN users ON users.id = reservations.leader
-        LEFT JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
+        INNER JOIN users${
+          guest ? "_mock as users" : ""
+        } ON users.id = reservations.leader
+        LEFT JOIN reservations_rooms${
+          guest ? "_mock as reservations_rooms" : ""
+        } ON reservations_rooms.reservationId = reservations.id
         LEFT JOIN rooms ON rooms.id = reservations_rooms.roomId
-        LEFT JOIN reservations_groups ON reservations_groups.reservationId = reservations.id
-        LEFT JOIN groups ON reservations_groups.groupId = groups.id 
-        LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id
+        LEFT JOIN reservations_groups${
+          guest ? "_mock as reservations_groups" : ""
+        } ON reservations_groups.reservationId = reservations.id
+        LEFT JOIN groups${
+          guest ? "_mock as groups" : ""
+        } ON reservations_groups.groupId = groups.id 
+        LEFT JOIN users_reservations${
+          guest ? "_mock as users_reservations" : ""
+        } ON users_reservations.reservationId = reservations.id
         WHERE 1=1
         ${status ? `AND status.id = ${status}` : ""}
         ${limited && isLimited ? `AND reservations.leader = ${id}` : ""}
@@ -119,7 +138,9 @@ export const getReservationList = async ({
     }),
     query({
       query: `
-      SELECT COUNT(*) as total FROM reservations
+      SELECT COUNT(*) as total FROM reservations${
+        guest ? "_mock as reservations" : ""
+      }
       INNER JOIN status ON reservations.status = status.id
       WHERE 1=1
       ${status ? `AND status.id = ${status}` : ""}
@@ -157,6 +178,7 @@ export const reservationsAddGroups = async ({
   reservation: any;
   groups: any;
 }) => {
+  const guest = await checkUserSession();
   const values = groups.flatMap((group: any) => [
     reservation,
     group,
@@ -167,7 +189,9 @@ export const reservationsAddGroups = async ({
 
   const [result] = (await Promise.all([
     query({
-      query: `INSERT IGNORE INTO reservations_groups (reservationId, groupId, id) VALUES ${placeholder}`,
+      query: `INSERT IGNORE INTO reservations_groups${
+        guest ? "_mock as reservations_groups" : ""
+      } (reservationId, groupId, id) VALUES ${placeholder}`,
       values,
     }),
   ])) as any;
@@ -189,7 +213,9 @@ export const sendEmail = async ({
   template: any;
   variables: any;
 }) => {
-  if (!send) {
+  const guest = await checkUserSession();
+
+  if (!send || guest) {
     return { success: false, msg: "Email sent is forbidden." };
   }
 
@@ -214,11 +240,15 @@ export const sendEmail = async ({
 };
 
 export const mailEventDetail = async ({ id }: { id: any }) => {
+  const guest = await checkUserSession();
+
   const event = (await query({
     query: `
       SELECT events_children.id, primary_txt, secondary_txt, active, variables,
       JSON_OBJECT('id', templates.id, 'name', templates.name, 'title', templates.title, 'text', templates.text) as template 
-      FROM events_children LEFT JOIN templates ON templates.id = events_children.template WHERE events_children.id = ?
+      FROM events_children LEFT JOIN templates${
+        guest ? "_mock as templates" : ""
+      } ON templates.id = events_children.template WHERE events_children.id = ?
   `,
     values: [id],
   })) as any;
@@ -245,27 +275,35 @@ export const userAddGroups = async ({
     newGroup,
     [user, newGroup].join(","),
   ]);
-
+  const guest = await checkUserSession();
   const placeholders = groups.map(() => "(?,?,?)").join(",");
 
   const [{ affectedRows }, userDetail, { data: template }, groupsData] =
     (await Promise.all([
       query({
-        query: `INSERT IGNORE INTO users_groups (userId, groupId, id) VALUES ${placeholders}`,
+        query: `INSERT IGNORE INTO users_groups${
+          guest ? "_mock as users_groups" : ""
+        } (userId, groupId, id) VALUES ${placeholders}`,
         values,
       }),
       query({
-        query: `SELECT email FROM users WHERE id = ?`,
+        query: `SELECT email FROM users${
+          guest ? "_mock as users" : ""
+        } WHERE id = ?`,
         values: [user],
       }),
       mailEventDetail({ id: eventId }),
       query({
         query: `SELECT groups.name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as owner, 
       COUNT(users_groups.groupId) as users
-      FROM groups INNER JOIN users ON groups.owner = users.id 
-      INNER JOIN users_groups ON groups.id = users_groups.groupId WHERE groups.id IN(${groups.map(
-        () => "?"
-      )}) GROUP BY groups.id`,
+      FROM groups${guest ? "_mock as groups" : ""} INNER JOIN users${
+          guest ? "_mock as users" : ""
+        } ON groups.owner = users.id 
+      INNER JOIN users_groups${
+        guest ? "_mock as users_groups" : ""
+      } ON groups.id = users_groups.groupId WHERE groups.id IN(${groups.map(
+          () => "?"
+        )}) GROUP BY groups.id`,
         values: groups,
       }),
     ])) as any;
@@ -300,7 +338,7 @@ export const userAddReservations = async ({
   reservations: any;
 }) => {
   const eventId = 8;
-
+  const guest = await checkUserSession();
   const values = reservations.flatMap((newReservation: any) => [
     user,
     newReservation,
@@ -312,19 +350,27 @@ export const userAddReservations = async ({
   const [{ affectedRows }, { data }, userDetail, reservationsDetail] =
     (await Promise.all([
       query({
-        query: `INSERT IGNORE INTO users_reservations (userId, reservationId, id) VALUES ${placeholders}`,
+        query: `INSERT IGNORE INTO users_reservations${
+          guest ? "_mock as users_reservations" : ""
+        } (userId, reservationId, id) VALUES ${placeholders}`,
         values,
       }),
       mailEventDetail({ id: eventId }),
       query({
-        query: `SELECT email FROM users WHERE id = ?`,
+        query: `SELECT email FROM users${
+          guest ? "_mock as users" : ""
+        } WHERE id = ?`,
         values: [user],
       }),
       query({
         query: `SELECT reservations.from_date, reservations.to_date, status.display_name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as owner 
-      FROM reservations INNER JOIN users ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id IN(${reservations.map(
-        () => "?"
-      )})`,
+      FROM reservations${
+        guest ? "_mock as reservations" : ""
+      } INNER JOIN users${
+          guest ? "_mock as users" : ""
+        } ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id IN(${reservations.map(
+          () => "?"
+        )})`,
         values: [...reservations],
       }),
     ])) as any;
@@ -359,21 +405,24 @@ export const userAddReservations = async ({
 };
 
 export const usersDelete = async ({ users }: { users: any }) => {
+  const guest = await checkUserSession();
   const [{ affectedRows }] = (await Promise.all([
     query({
-      query: `DELETE FROM users WHERE id IN(${users.map(() => "?")})`,
-      values: [...users],
-    }),
-    query({
-      query: `DELETE FROM users_groups WHERE userId IN(${users.map(
+      query: `DELETE FROM users${guest ? "_mock" : ""} WHERE id IN(${users.map(
         () => "?"
       )})`,
       values: [...users],
     }),
     query({
-      query: `DELETE FROM users_reservations WHERE userId IN(${users.map(
-        () => "?"
-      )})`,
+      query: `DELETE FROM users_groups${
+        guest ? "_mock" : ""
+      } WHERE userId IN(${users.map(() => "?")})`,
+      values: [...users],
+    }),
+    query({
+      query: `DELETE FROM users_reservations${
+        guest ? "_mock" : ""
+      } WHERE userId IN(${users.map(() => "?")})`,
       values: [...users],
     }),
   ])) as any;
@@ -383,10 +432,13 @@ export const usersDelete = async ({ users }: { users: any }) => {
 
 export const getUserTheme = async () => {
   const user = (await getServerSession(authOptions)) as any;
+  const guest = await checkUserSession();
 
   if (user) {
-    const [{ theme }] = (await query({
-      query: `SELECT theme FROM users WHERE id = ?`,
+    const { theme } = (await query({
+      query: `SELECT theme FROM users${
+        guest ? "_mock as users" : ""
+      } WHERE id = ?`,
       values: [user.user.id],
     })) as any;
 
@@ -404,10 +456,15 @@ export const getUserDetail = async ({
   gpage: any;
   rpage: any;
 }) => {
+  const guest = await checkUserSession();
+
   const [user, groups, groupsCount, reservations, reservationsCount] =
     (await Promise.all([
       query({
-        query: `SELECT users.id, first_name, image, last_name, email, active, verified, adress, ID_code, birth_date, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE users.id = ?`,
+        query: `SELECT users.id, first_name, image, last_name, email, active, verified, adress, ID_code, birth_date, JSON_OBJECT('id', roles.id, 'name', roles.name) as role 
+        FROM users${
+          guest ? "_mock as users" : ""
+        } INNER JOIN roles ON roles.id = users.role WHERE users.id = ?`,
         values: [id],
       }),
       query({
@@ -415,9 +472,13 @@ export const getUserDetail = async ({
       SELECT groups.id, groups.name, groups.description, 
       JSON_OBJECT('id', owner.id, 'first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner,
       GROUP_CONCAT(users_groups.userId) as users
-      FROM users_groups
-      INNER JOIN groups ON users_groups.groupId = groups.id 
-      INNER JOIN users AS owner ON owner.id = groups.owner
+      FROM users_groups${guest ? "_mock as users_groups" : ""}
+      INNER JOIN groups${
+        guest ? "_mock as groups" : ""
+      } ON users_groups.groupId = groups.id 
+      INNER JOIN users${
+        guest ? "_mock as owner" : ""
+      } ON owner.id = groups.owner
       WHERE groups.id IN (
         SELECT groupId FROM users_groups WHERE userId = ?
       )
@@ -427,20 +488,28 @@ export const getUserDetail = async ({
         values: [id, gpage * 5 - 5],
       }),
       query({
-        query: `SELECT COUNT(*) as total FROM users_groups WHERE userId = ?`,
+        query: `SELECT COUNT(*) as total FROM users_groups${
+          guest ? "_mock as users_groups" : ""
+        } WHERE userId = ?`,
         values: [id],
       }),
       query({
         query: `SELECT reservations.id, from_date, to_date, reservations.name, JSON_OBJECT('id', users.id, 'first_name', first_name, 'last_name', last_name, 'email', email, 'image', image) as leader, JSON_OBJECT('name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status
-      FROM users_reservations
-      INNER JOIN reservations ON reservations.id = users_reservations.reservationId
-      INNER JOIN users ON users.id = reservations.leader
+      FROM users_reservations${guest ? "_mock as users_reservations" : ""}
+      INNER JOIN reservations${
+        guest ? "_mock as reservations" : ""
+      } ON reservations.id = users_reservations.reservationId
+      INNER JOIN users${
+        guest ? "_mock as users" : ""
+      } ON users.id = reservations.leader
       INNER JOIN status ON status.id = reservations.status
       WHERE userId = ? LIMIT 5 OFFSET ?`,
         values: [id, rpage * 5 - 5],
       }),
       query({
-        query: `SELECT COUNT(*) as total FROM users_reservations WHERE userId = ?`,
+        query: `SELECT COUNT(*) as total FROM users_reservations${
+          guest ? "_mock as users_reservations" : ""
+        } WHERE userId = ?`,
         values: [id],
       }),
     ])) as any;
@@ -471,6 +540,7 @@ export const getUserDetail = async ({
 
 export const editUserDetail = async ({ id, user }: { id: any; user: any }) => {
   let str = "";
+  const guest = await checkUserSession();
 
   Object.keys(user).forEach((key, i) => {
     str += `${key} = ${user[key] ? "'" : ""}${
@@ -479,12 +549,14 @@ export const editUserDetail = async ({ id, user }: { id: any; user: any }) => {
   });
 
   (await query({
-    query: `UPDATE users SET ${str} WHERE id = ${id}`,
+    query: `UPDATE users${
+      guest ? "_mock as users" : ""
+    } SET ${str} WHERE id = ${id}`,
     values: [],
   })) as any;
 
   const userDetail = (await query({
-    query: `SELECT * FROM users WHERE id = ?`,
+    query: `SELECT * FROM users${guest ? "_mock as users" : ""} WHERE id = ?`,
     values: [id],
   })) as any;
 
@@ -497,10 +569,14 @@ export const getUserDetailByEmail = async ({ email }: { email: any }) => {
   if (!email) {
     return [];
   }
+  const guest = await checkUserSession();
+
   const [data] = (await Promise.all([
     query({
       query: `
-        SELECT users.*, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ?
+        SELECT users.*, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users${
+          guest ? "_mock as users" : ""
+        } INNER JOIN roles ON roles.id = users.role WHERE email = ?
     `,
       values: [email],
     }),
@@ -512,11 +588,14 @@ export const getUserDetailByEmail = async ({ email }: { email: any }) => {
 export const importNewUsers = async ({ users }: { users: any }) => {
   const eventId = 1;
   const template = (await mailEventDetail({ id: eventId })) as any;
+  const guest = await checkUserSession();
 
   const emails = [] as any;
   const [{ affectedRows }] = (await Promise.all([
     query({
-      query: `INSERT INTO users (first_name, last_name, email, role, password, verified, active) VALUES ${users.map(
+      query: `INSERT INTO users${
+        guest ? "_mock" : ""
+      } (first_name, last_name, email, role, password, verified, active) VALUES ${users.map(
         (user: any) => {
           user.password = Math.random().toString(36).slice(-9);
           emails.push({ email: user.email, password: user.password });
@@ -549,6 +628,14 @@ export const userLogin = async ({
   email: any;
   password: any;
 }) => {
+  if (email === "host@nemazat.cz") {
+    const data = (await query({
+      query: `SELECT users.*, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users_mock as users INNER JOIN roles ON roles.id = users.role WHERE email = ?`,
+      values: [email],
+    })) as any;
+
+    return { data: { ...data[0], role: JSON.parse(data[0].role) } };
+  }
   const data = (await query({
     query: `SELECT users.*, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ? AND password = MD5(?)`,
     values: [email, password],
@@ -570,9 +657,12 @@ export const createUserAccount = async ({
 }) => {
   const eventId = 1;
   const password = Math.random().toString(36).slice(-9) as any;
+  const guest = await checkUserSession();
 
   const check = (await query({
-    query: `SELECT * FROM users WHERE email = ?`,
+    query: `SELECT * FROM users${
+      guest ? "_mock as users" : ""
+    } WHERE email = ?`,
     values: [email],
   })) as any;
 
@@ -582,7 +672,9 @@ export const createUserAccount = async ({
 
   const [{ affectedRows }, { data }] = (await Promise.all([
     query({
-      query: `INSERT INTO users(first_name, last_name, email, role, password, verified, active) VALUES(?,?,?,?, MD5(?), 0, 1)`,
+      query: `INSERT INTO users${
+        guest ? "_mock" : ""
+      }(first_name, last_name, email, role, password, verified, active) VALUES(?,?,?,?, MD5(?), 0, 1)`,
       values: [first_name, last_name, email, role, password],
     }),
     mailEventDetail({ id: eventId }),
@@ -609,25 +701,28 @@ export const userRemoveGroups = async ({
   groups: any;
 }) => {
   const eventId = 6;
+  const guest = await checkUserSession();
 
   const [{ affectedRows }, { data }, groupsDetail, userDetail] =
     (await Promise.all([
       query({
-        query: `DELETE FROM users_groups WHERE userId = ? AND groupId IN (${groups.map(
-          () => "?"
-        )})`,
+        query: `DELETE FROM users_groups${
+          guest ? "_mock" : ""
+        } WHERE userId = ? AND groupId IN (${groups.map(() => "?")})`,
         values: [user, ...groups],
       }),
       mailEventDetail({ id: eventId }),
       query({
         query: `SELECT groups.name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as owner
-      FROM groups INNER JOIN users ON users.id = groups.owner WHERE groups.id IN(${groups.map(
-        () => "?"
-      )})`,
+      FROM groups${guest ? "_mock as groups" : ""} INNER JOIN users${
+          guest ? "_mock as users" : ""
+        } ON users.id = groups.owner WHERE groups.id IN(${groups.map(
+          () => "?"
+        )})`,
         values: [...groups],
       }),
       query({
-        query: `SELECT email FROM users WHERE id = ?`,
+        query: `SELECT email FROM users${guest ? "_mock" : ""} WHERE id = ?`,
         values: [user],
       }),
     ])) as any;
@@ -661,25 +756,32 @@ export const userRemoveReservations = async ({
   reservations: any;
 }) => {
   const eventId = 9;
+  const guest = await checkUserSession();
 
   const [{ affectedRows }, { data }, userDetail, reservationsDetails] =
     (await Promise.all([
       query({
-        query: `DELETE FROM users_reservations WHERE userId = ? AND reservationId  IN(${reservations.map(
+        query: `DELETE FROM users_reservations${
+          guest ? "_mock" : ""
+        } WHERE userId = ? AND reservationId  IN(${reservations.map(
           () => "?"
         )})`,
         values: [user, ...reservations],
       }),
       mailEventDetail({ id: eventId }),
       query({
-        query: `SELECT email FROM users WHERE id = ?`,
+        query: `SELECT email FROM users${guest ? "_mock" : ""} WHERE id = ?`,
         values: [user],
       }),
       query({
         query: `SELECT reservations.from_date, reservations.to_date, status.display_name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as owner 
-      FROM reservations INNER JOIN users ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id IN(${reservations.map(
-        () => "?"
-      )})`,
+      FROM reservations${
+        guest ? "_mock as reservations" : ""
+      } INNER JOIN users${
+          guest ? "_mock as users" : ""
+        } ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id IN(${reservations.map(
+          () => "?"
+        )})`,
         values: [...reservations],
       }),
     ])) as any;
@@ -720,14 +822,15 @@ export const makeUserSleep = async ({
   active: any;
 }) => {
   const eventId = 3;
+  const guest = await checkUserSession();
 
   const [{ affectedRows }, user] = (await Promise.all([
     query({
-      query: `UPDATE users SET active = ? WHERE id = ?`,
+      query: `UPDATE users${guest ? "_mock" : ""} SET active = ? WHERE id = ?`,
       values: [!active, id],
     }),
     query({
-      query: `SELECT email FROM users WHERE id = ?`,
+      query: `SELECT email FROM users${guest ? "_mock" : ""} WHERE id = ?`,
       values: [id],
     }),
   ])) as any;
@@ -751,9 +854,12 @@ export const validateImport = async ({ data }: { data: any }) => {
   const validData = data.filter((item: any) =>
     item.every((row: any) => row.length)
   );
+  const guest = await checkUserSession();
 
   const value = (await query({
-    query: `SELECT email FROM users WHERE email IN (${validData
+    query: `SELECT email FROM users${
+      guest ? "_mock" : ""
+    } WHERE email IN (${validData
       .map((item: any) => `"${item[2]}"`)
       .join(",")})`,
   })) as any;
@@ -864,6 +970,7 @@ export const reservationAddUsers = async ({
   users: any;
 }) => {
   const eventId = 8;
+  const guest = await checkUserSession();
 
   const values = users.flatMap((user: any) => [
     user,
@@ -876,17 +983,25 @@ export const reservationAddUsers = async ({
   const [{ affectedRows }, { data }, reservationDetail, usersEmails] =
     (await Promise.all([
       query({
-        query: `INSERT IGNORE INTO users_reservations (userId, reservationId, id) VALUES ${placeholder}`,
+        query: `INSERT IGNORE INTO users_reservations${
+          guest ? "_mock" : ""
+        } (userId, reservationId, id) VALUES ${placeholder}`,
         values,
       }),
       mailEventDetail({ id: eventId }),
       query({
         query: `SELECT reservations.from_date, reservations.to_date, status.display_name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as owner 
-      FROM reservations INNER JOIN users ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id = ?`,
+      FROM reservations${
+        guest ? "_mock as reservations" : ""
+      } INNER JOIN users${
+          guest ? "_mock as users" : ""
+        } ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id = ?`,
         values: [reservation],
       }),
       query({
-        query: `SELECT email FROM users WHERE id IN(${users.map(() => "?")})`,
+        query: `SELECT email FROM users${
+          guest ? "_mock" : ""
+        } WHERE id IN(${users.map(() => "?")})`,
         values: [...users],
       }),
     ])) as any;
@@ -932,14 +1047,19 @@ export const setBlockedDates = async ({
 }) => {
   const fromDate = dayjs(from_date).format("YYYY-MM-DD");
   const toDate = dayjs(to_date).format("YYYY-MM-DD");
+  const guest = await checkUserSession();
 
   const [_, { affectedRows: affectedRows }] = (await Promise.all([
     query({
-      query: `UPDATE reservations SET status = 4 WHERE ((from_date BETWEEN '${fromDate}' AND '${toDate}') OR (to_date BETWEEN '${fromDate}' AND '${toDate}')) AND status <> 5 AND status <> 1`,
+      query: `UPDATE reservations${
+        guest ? "_mock" : ""
+      } SET status = 4 WHERE ((from_date BETWEEN '${fromDate}' AND '${toDate}') OR (to_date BETWEEN '${fromDate}' AND '${toDate}')) AND status <> 5 AND status <> 1`,
       values: [],
     }),
     query({
-      query: `INSERT INTO reservations (from_date, to_date, name, status, leader, purpouse, instructions, creation_date) 
+      query: `INSERT INTO reservations${
+        guest ? "_mock" : ""
+      } (from_date, to_date, name, status, leader, purpouse, instructions, creation_date) 
       VALUES ("${fromDate}", "${toDate}", "Blokace", 5, ${userId}, "blokace", "", "${dayjs(
         new Date()
       ).format("YYYY-MM-DD")}")`,
@@ -976,9 +1096,12 @@ export const createNewReservation = async ({
   name: any;
 }) => {
   const eventId = 8;
+  const guest = await checkUserSession();
 
   const reservation = (await query({
-    query: `INSERT INTO reservations (from_date, to_date, purpouse, leader, instructions, name, status, creation_date)
+    query: `INSERT INTO reservations${
+      guest ? "_mock" : ""
+    } (from_date, to_date, purpouse, leader, instructions, name, status, creation_date)
     VALUES ("${dayjs(from_date).format("YYYY-MM-DD")}", "${dayjs(
       to_date
     ).format(
@@ -992,20 +1115,24 @@ export const createNewReservation = async ({
   const [{ data }, leaderData, statusName, membersEmail] = (await Promise.all([
     mailEventDetail({ id: eventId }),
     query({
-      query: `SELECT first_name, last_name, email FROM users WHERE id = ?`,
+      query: `SELECT first_name, last_name, email FROM users${
+        guest ? "_mock" : ""
+      } WHERE id = ?`,
       values: [leader],
     }),
     query({
       query: `SELECT display_name FROM status WHERE id = 2`,
     }),
     query({
-      query: `SELECT email FROM users WHERE id IN(${members.map(() => "?")})`,
+      query: `SELECT email FROM users${
+        guest ? "_mock" : ""
+      } WHERE id IN(${members.map(() => "?")})`,
       values: [...members],
     }),
     query({
-      query: `INSERT INTO reservations_rooms (reservationId, roomId, id) VALUES ${rooms.map(
-        () => "(?,?,?)"
-      )}`,
+      query: `INSERT INTO reservations_rooms${
+        guest ? "_mock" : ""
+      } (reservationId, roomId, id) VALUES ${rooms.map(() => "(?,?,?)")}`,
       values: rooms.flatMap((room: any) => [
         reservation.insertId,
         room,
@@ -1014,7 +1141,9 @@ export const createNewReservation = async ({
     }),
     members.length &&
       query({
-        query: `INSERT INTO users_reservations (userId, reservationId, id) VALUES ${members
+        query: `INSERT INTO users_reservations${
+          guest ? "_mock" : ""
+        } (userId, reservationId, id) VALUES ${members
           .map(() => "(?,?,?)")
           .join(", ")}`,
         values: members.flatMap((member: any) => [
@@ -1025,7 +1154,9 @@ export const createNewReservation = async ({
       }),
     groups.length &&
       query({
-        query: `INSERT INTO reservations_groups (reservationId, groupId, id) VALUES ${groups
+        query: `INSERT INTO reservations_groups${
+          guest ? "_mock" : ""
+        } (reservationId, groupId, id) VALUES ${groups
           .map(() => "(?,?,?)")
           .join(", ")}`,
         values: groups.flatMap((group: any) => [
@@ -1066,29 +1197,31 @@ export const reservationsDelete = async ({
 }: {
   reservations: any;
 }) => {
+  const guest = await checkUserSession();
+
   const [{ affectedRows }] = (await Promise.all([
     query({
-      query: `DELETE FROM reservations WHERE id IN(${reservations.map(
-        () => "?"
-      )})`,
+      query: `DELETE FROM reservations${
+        guest ? "_mock" : ""
+      } WHERE id IN(${reservations.map(() => "?")})`,
       values: [...reservations],
     }),
     query({
-      query: `DELETE FROM reservations_groups WHERE reservationId IN(${reservations.map(
-        () => "?"
-      )})`,
+      query: `DELETE FROM reservations_groups${
+        guest ? "_mock" : ""
+      } WHERE reservationId IN(${reservations.map(() => "?")})`,
       values: [...reservations],
     }),
     query({
-      query: `DELETE FROM users_reservations WHERE reservationId IN(${reservations.map(
-        () => "?"
-      )})`,
+      query: `DELETE FROM users_reservations${
+        guest ? "_mock" : ""
+      } WHERE reservationId IN(${reservations.map(() => "?")})`,
       values: [...reservations],
     }),
     query({
-      query: `DELETE FROM reservations_rooms WHERE reservationId IN(${reservations.map(
-        () => "?"
-      )})`,
+      query: `DELETE FROM reservations_rooms${
+        guest ? "_mock" : ""
+      } WHERE reservationId IN(${reservations.map(() => "?")})`,
       values: [...reservations],
     }),
   ])) as any;
@@ -1105,6 +1238,8 @@ export const getReservationDetail = async ({
   upage: any;
   gpage: any;
 }) => {
+  const guest = await checkUserSession();
+
   const [reservations, users, usersCount, groups, groupsCount] =
     (await Promise.all([
       query({
@@ -1114,10 +1249,14 @@ export const getReservationDetail = async ({
     GROUP_CONCAT(
       JSON_OBJECT('id', rooms.id, 'people', rooms.people)
     ) as rooms
-    FROM reservations
-    INNER JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
+    FROM reservations${guest ? "_mock as reservations" : ""}
+    INNER JOIN reservations_rooms${
+      guest ? "_mock as reservations_rooms" : ""
+    } ON reservations_rooms.reservationId = reservations.id
     INNER JOIN status ON reservations.status = status.id
-    INNER JOIN users ON users.id = reservations.leader
+    INNER JOIN users${
+      guest ? "_mock as users" : ""
+    } ON users.id = reservations.leader
     INNER JOIN rooms ON roomId = rooms.id
     WHERE reservations.id = ?
     GROUP BY reservations.id
@@ -1125,19 +1264,29 @@ export const getReservationDetail = async ({
         values: [id],
       }),
       query({
-        query: `SELECT users.id, first_name, last_name, image, email FROM users_reservations INNER JOIN users ON users.id = userId WHERE reservationId = ? LIMIT 5 OFFSET ?`,
+        query: `SELECT users.id, first_name, last_name, image, email FROM users_reservations${
+          guest ? "_mock" : ""
+        } INNER JOIN users${
+          guest ? "_mock as users" : ""
+        } ON users.id = userId WHERE reservationId = ? LIMIT 5 OFFSET ?`,
         values: [id, upage * 5 - 5],
       }),
       query({
-        query: `SELECT COUNT(*) as total FROM users_reservations WHERE reservationId = ?`,
+        query: `SELECT COUNT(*) as total FROM users_reservations${
+          guest ? "_mock" : ""
+        } WHERE reservationId = ?`,
         values: [id],
       }),
       query({
         query: `
         SELECT groups.id, groups.name, description, GROUP_CONCAT(DISTINCT userId) as users
-        FROM reservations_groups
-        INNER JOIN groups ON reservations_groups.groupId = groups.id
-        LEFT JOIN users_groups ON groups.id = users_groups.groupId
+        FROM reservations_groups${guest ? "_mock as reservations_groups" : ""}
+        INNER JOIN groups${
+          guest ? "_mock as groups" : ""
+        } ON reservations_groups.groupId = groups.id
+        LEFT JOIN users_groups${
+          guest ? "_mock as users_groups" : ""
+        } ON groups.id = users_groups.groupId
         WHERE reservationId = ?
         GROUP BY groups.id
         LIMIT 5 OFFSET ?
@@ -1145,7 +1294,9 @@ export const getReservationDetail = async ({
         values: [id, gpage * 5 - 5],
       }),
       query({
-        query: `SELECT COUNT(*) as total FROM reservations_groups WHERE reservationId = ?`,
+        query: `SELECT COUNT(*) as total FROM reservations_groups${
+          guest ? "_mock" : ""
+        } WHERE reservationId = ?`,
         values: [id],
       }),
     ])) as any;
@@ -1182,8 +1333,12 @@ export const editReservationDetail = async ({
   instructions: any;
   name: any;
 }) => {
+  const guest = await checkUserSession();
+
   const { affectedRows } = (await query({
-    query: `UPDATE reservations SET purpouse = ?, name = ?, instructions = ? WHERE id = ?`,
+    query: `UPDATE reservations${
+      guest ? "_mock" : ""
+    } SET purpouse = ?, name = ?, instructions = ? WHERE id = ?`,
     values: [purpouse, name, instructions, id],
   })) as any;
 
@@ -1191,8 +1346,12 @@ export const editReservationDetail = async ({
 };
 
 export const setReservationsArchive = async () => {
+  const guest = await checkUserSession();
+
   const { affectedRows } = (await query({
-    query: `UPDATE reservations SET status = 1 WHERE status <> 1 AND status <> 5 AND to_date < CURDATE()`,
+    query: `UPDATE reservations${
+      guest ? "_mock" : ""
+    } SET status = 1 WHERE status <> 1 AND status <> 5 AND to_date < CURDATE()`,
     values: [],
   })) as any;
 
@@ -1206,10 +1365,12 @@ export const reservationRemoveGroups = async ({
   reservation: any;
   groups: any;
 }) => {
+  const guest = await checkUserSession();
+
   const { affectedRows } = (await query({
-    query: `DELETE FROM reservations_groups WHERE reservationId = ? AND groupId IN(${groups.map(
-      () => "?"
-    )})`,
+    query: `DELETE FROM reservations_groups${
+      guest ? "_mock" : ""
+    } WHERE reservationId = ? AND groupId IN(${groups.map(() => "?")})`,
     values: [reservation, ...groups],
   })) as any;
 
@@ -1224,23 +1385,30 @@ export const reservationRemoveUsers = async ({
   users: any;
 }) => {
   const eventId = 9;
+  const guest = await checkUserSession();
 
   const [{ affectedRows }, { data }, usersEmails, reservationDetail] =
     (await Promise.all([
       query({
-        query: `DELETE FROM users_reservations WHERE reservationId = ? AND userId IN(${users.map(
-          () => "?"
-        )})`,
+        query: `DELETE FROM users_reservations${
+          guest ? "_mock" : ""
+        } WHERE reservationId = ? AND userId IN(${users.map(() => "?")})`,
         values: [reservation, ...users],
       }),
       mailEventDetail({ id: eventId }),
       query({
-        query: `SELECT email FROM users WHERE id IN(${users.map(() => "?")})`,
+        query: `SELECT email FROM users${
+          guest ? "_mock" : ""
+        } WHERE id IN(${users.map(() => "?")})`,
         values: [...users],
       }),
       query({
         query: `SELECT reservations.from_date, reservations.to_date, status.display_name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader 
-      FROM reservations INNER JOIN users ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id = ?`,
+      FROM reservations${
+        guest ? "_mock as reservations" : ""
+      } INNER JOIN users${
+          guest ? "_mock as users" : ""
+        } ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id = ?`,
         values: [reservation],
       }),
     ])) as any;
@@ -1297,19 +1465,30 @@ export const reservationUpdateStatus = async ({
   newStatus: any;
 }) => {
   const eventId = 10;
+  const guest = await checkUserSession();
 
   const [reservation, { affectedRows }, { data }] = (await Promise.all([
     query({
       query: `SELECT reservations.from_date, reservations.status, reservations.name, reservations.to_date, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader,
-      GROUP_CONCAT(distinct users.email) as emails FROM reservations LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id 
+      GROUP_CONCAT(distinct users.email) as emails FROM reservations${
+        guest ? "_mock as reservations" : ""
+      } LEFT JOIN users_reservations${
+        guest ? "_mock as users_reservations" : ""
+      } ON users_reservations.reservationId = reservations.id 
         INNER JOIN status ON status.id = reservations.status
-        INNER JOIN users ON users_reservations.userId = users.id
-        INNER JOIN users as leader ON leader.id = reservations.leader
+        INNER JOIN users${
+          guest ? "_mock as users" : ""
+        } ON users_reservations.userId = users.id
+        INNER JOIN users${
+          guest ? "_mock as leader" : ""
+        } as leader ON leader.id = reservations.leader
        WHERE reservations.id = ? GROUP BY reservations.id`,
       values: [id],
     }),
     query({
-      query: `UPDATE reservations SET status = ${newStatus} WHERE id = ${id}`,
+      query: `UPDATE reservations${
+        guest ? "_mock" : ""
+      } SET status = ${newStatus} WHERE id = ${id}`,
       values: [],
     }),
     mailEventDetail({ id: eventId }),
@@ -1366,6 +1545,8 @@ export const userSpecifiedReservations = async ({
   userId: any;
   page: any;
 }) => {
+  const guest = await checkUserSession();
+
   const [reservations, count] = (await Promise.all([
     query({
       query: `SELECT reservations.id, from_date, to_date, status, reservations.name, leader, 
@@ -1374,12 +1555,18 @@ export const userSpecifiedReservations = async ({
       GROUP_CONCAT(
         DISTINCT JSON_OBJECT('id', rooms.id, 'people', rooms.people)
       ) as rooms
-      FROM users_reservations 
-      INNER JOIN reservations ON users_reservations.reservationId = reservations.id 
+      FROM users_reservations${guest ? "_mock as users_reservations" : ""}
+      INNER JOIN reservations${
+        guest ? "_mock as reservations" : ""
+      } ON users_reservations.reservationId = reservations.id 
       INNER JOIN status ON status.id = reservations.status
-      INNER JOIN reservations_rooms ON reservations.id = reservations_rooms.reservationId
+      INNER JOIN reservations_rooms${
+        guest ? "_mock as reservations_rooms" : ""
+      } ON reservations.id = reservations_rooms.reservationId
       INNER JOIN rooms ON reservations_rooms.roomId = rooms.id
-      INNER JOIN users ON users.id = reservations.leader
+      INNER JOIN users${
+        guest ? "_mock as users" : ""
+      } ON users.id = reservations.leader
       WHERE userId = ?
       GROUP BY reservations.id
       LIMIT 5 OFFSET ${page * 5 - 5}
@@ -1387,7 +1574,9 @@ export const userSpecifiedReservations = async ({
       values: [userId],
     }),
     query({
-      query: `SELECT COUNT(*) as total FROM users_reservations WHERE userId = ?`,
+      query: `SELECT COUNT(*) as total FROM users_reservations${
+        guest ? "_mock" : ""
+      } WHERE userId = ?`,
       values: [userId],
     }),
   ])) as any;
@@ -1415,42 +1604,47 @@ export const groupAddMembers = async ({
     group,
     [newMember, group].join(","),
   ]);
-
+  const guest = await checkUserSession();
   const placeholders = newMembers.map(() => "(?,?,?)").join(", ");
 
   const [{ affectedRows }, groupDetail, owner, users, reservations, template] =
     (await Promise.all([
       query({
-        query: `INSERT IGNORE INTO users_groups (userId, groupId, id) VALUES ${placeholders}`,
+        query: `INSERT IGNORE INTO users_groups${
+          guest ? "_mock" : ""
+        } (userId, groupId, id) VALUES ${placeholders}`,
         values,
       }),
       query({
-        query: `SELECT groups.* FROM groups WHERE groups.id = ?`,
+        query: `SELECT groups.* FROM groups${
+          guest ? "_mock as groups" : ""
+        } WHERE groups.id = ?`,
         values: [group],
       }),
       query({
-        query: `SELECT first_name, last_name, email FROM users INNER JOIN groups ON groups.owner = users.id WHERE groups.id = ?`,
+        query: `SELECT first_name, last_name, email FROM users${
+          guest ? "_mock" : ""
+        } INNER JOIN groups${
+          guest ? "_mock as groups" : ""
+        } ON groups.owner = users.id WHERE groups.id = ?`,
         values: [group],
       }),
       query({
-        query: `SELECT first_name, last_name, email FROM users WHERE id IN(${newMembers.map(
-          () => "?"
-        )})`,
+        query: `SELECT first_name, last_name, email FROM users${
+          guest ? "_mock" : ""
+        } WHERE id IN(${newMembers.map(() => "?")})`,
         values: [...newMembers],
       }),
       query({
-        query: `SELECT reservations.* FROM reservations INNER JOIN reservations_groups ON reservations.id = reservations_groups.reservationId`,
+        query: `SELECT reservations.* FROM reservations${
+          guest ? "_mock" : ""
+        } INNER JOIN reservations_groups${
+          guest ? "_mock as reservations_groups" : ""
+        } ON reservations.id = reservations_groups.reservationId`,
         values: [],
       }),
       mailEventDetail({ id: eventId }),
     ])) as any;
-
-  const data = {
-    ...groupDetail[0],
-    owner: owner[0],
-    users,
-    reservations,
-  };
 
   await sendEmail({
     send: template.data.active,
@@ -1483,9 +1677,12 @@ export const groupAddReservation = async ({
     group,
     [res, group].join(","),
   ]);
+  const guest = await checkUserSession();
 
   const { affectedRows } = (await query({
-    query: `INSERT IGNORE INTO reservations_groups (reservationId, groupId, id) VALUES ${placeholder}`,
+    query: `INSERT IGNORE INTO reservations_groups${
+      guest ? "_mock" : ""
+    } (reservationId, groupId, id) VALUES ${placeholder}`,
     values,
   })) as any;
 
@@ -1501,13 +1698,19 @@ export const createNewGroup = async ({
   description: any;
   owner: any;
 }) => {
+  const guest = await checkUserSession();
+
   const { insertId, affectedRows } = (await query({
-    query: `INSERT INTO groups (name, description, owner) VALUES (?,?,?)`,
+    query: `INSERT INTO groups${
+      guest ? "_mock" : ""
+    } (name, description, owner) VALUES (?,?,?)`,
     values: [name, description, owner],
   })) as any;
 
   await query({
-    query: `INSERT IGNORE INTO users_groups (userId, groupId, id) VALUES ("${owner}", "${insertId}", ${JSON.stringify(
+    query: `INSERT IGNORE INTO users_groups${
+      guest ? "_mock" : ""
+    } (userId, groupId, id) VALUES ("${owner}", "${insertId}", ${JSON.stringify(
       `${owner},${insertId}`
     )})`,
   });
@@ -1524,30 +1727,49 @@ export const getGroupDetail = async ({
   upage: any;
   rpage: any;
 }) => {
+  const guest = await checkUserSession();
+
   const [group, reservations, resCount, users, usersCount] = (await Promise.all(
     [
       query({
-        query: `SELECT groups.id, name, description, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as owner FROM groups INNER JOIN users ON users.id = groups.owner WHERE groups.id = ?`,
+        query: `SELECT groups.id, name, description, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image)
+         as owner FROM groups${
+           guest ? "_mock as groups" : ""
+         } INNER JOIN users${
+          guest ? "_users as users" : ""
+        } ON users.id = groups.owner WHERE groups.id = ?`,
         values: [id],
       }),
       query({
-        query: `SELECT reservations.id, from_date, to_date, name, status FROM reservations 
-    INNER JOIN reservations_groups ON reservations.id = reservations_groups.reservationId 
+        query: `SELECT reservations.id, from_date, to_date, name, status FROM reservations${
+          guest ? "_mock as reservations" : ""
+        } 
+    INNER JOIN reservations_groups${
+      guest ? "_mock as reservations_groups" : ""
+    } ON reservations.id = reservations_groups.reservationId 
     WHERE reservations_groups.groupId = ? LIMIT 5 OFFSET ?`,
         values: [id, rpage * 5 - 5],
       }),
       query({
-        query: `SELECT COUNT(*) AS total FROM reservations_groups WHERE reservations_groups.groupId = ?`,
+        query: `SELECT COUNT(*) AS total FROM reservations_groups${
+          guest ? "_mock" : ""
+        } WHERE reservations_groups.groupId = ?`,
         values: [id],
       }),
       query({
-        query: `SELECT users.id, first_name, last_name, email, image FROM users 
-    INNER JOIN users_groups ON users.id = users_groups.userId 
+        query: `SELECT users.id, first_name, last_name, email, image FROM users${
+          guest ? "_mock as users" : ""
+        } 
+    INNER JOIN users_groups${
+      guest ? "_mock as users_groups" : ""
+    } ON users.id = users_groups.userId 
     WHERE users_groups.groupId = ? LIMIT 5 OFFSET ?`,
         values: [id, upage * 5 - 5],
       }),
       query({
-        query: `SELECT COUNT(*) AS total FROM users_groups WHERE users_groups.groupId = ?`,
+        query: `SELECT COUNT(*) AS total FROM users_groups${
+          guest ? "_mock as users_groups" : ""
+        } WHERE users_groups.groupId = ?`,
         values: [id],
       }),
     ]
@@ -1572,9 +1794,13 @@ export const groupDetailEdit = async ({
   description: any;
   id: any;
 }) => {
+  const guest = await checkUserSession();
+
   const { affectedRows } = (await query({
     query: `
-      UPDATE ${"`groups`"} SET name = ?, description = ? WHERE id = ?`,
+      UPDATE groups${
+        guest ? "_mock" : ""
+      } SET name = ?, description = ? WHERE id = ?`,
     values: [name, description, id],
   })) as any;
 
@@ -1596,6 +1822,7 @@ export const getGroupList = async ({
     user: { role, id },
   } = (await getServerSession(authOptions)) as any;
   const isLimited = role.id > 2;
+  const guest = await checkUserSession();
 
   const [groups, reservations, users, count] = (await Promise.all([
     query({
@@ -1603,11 +1830,17 @@ export const getGroupList = async ({
         SELECT groups.id, groups.name, description, 
         JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner, 
         GROUP_CONCAT(DISTINCT reservationId) AS reservations, GROUP_CONCAT(DISTINCT userId) AS users 
-        FROM groups 
-        LEFT JOIN users ON users.id = owner 
-        LEFT JOIN users_groups ON users_groups.groupId = groups.id 
-        LEFT JOIN reservations_groups ON reservations_groups.groupId = groups.id 
-        LEFT JOIN reservations ON reservations.id = reservations_groups.groupId
+        FROM groups${guest ? "_mock as groups" : ""} 
+        LEFT JOIN users${guest ? "_mock as users" : ""} ON users.id = owner 
+        LEFT JOIN users_groups${
+          guest ? "_mock as users_groups" : ""
+        } ON users_groups.groupId = groups.id 
+        LEFT JOIN reservations_groups${
+          guest ? "_mock as reservations_groups" : ""
+        } ON reservations_groups.groupId = groups.id 
+        LEFT JOIN reservations${
+          guest ? "_mock as reservations" : ""
+        } ON reservations.id = reservations_groups.groupId
         WHERE 1=1
         ${search ? `AND groups.name LIKE "%${search}%"` : ""}
         ${limit && isLimited ? `AND groups.owner = ${id}` : ""}
@@ -1618,16 +1851,20 @@ export const getGroupList = async ({
       values: [],
     }),
     query({
-      query: `SELECT id, from_date, to_date, name FROM reservations`,
+      query: `SELECT id, from_date, to_date, name FROM reservations${
+        guest ? "_mock" : ""
+      }`,
       values: [],
     }),
     query({
-      query: `SELECT first_name, last_name, email, id FROM users`,
+      query: `SELECT first_name, last_name, email, id FROM users${
+        guest ? "_mock" : ""
+      }`,
       values: [],
     }),
     query({
       query: `
-        SELECT COUNT(*) as total FROM groups
+        SELECT COUNT(*) as total FROM groups${guest ? "_mock" : ""}
         WHERE 1=1
         ${search ? `AND groups.name LIKE "%${search}%"` : ""}
         ${limit && isLimited ? `AND groups.owner = ${id}` : ""}
@@ -1656,14 +1893,21 @@ export const getGroupList = async ({
 
 export const removeGroups = async ({ groups }: { groups: any }) => {
   const eventId = 7;
+  const guest = await checkUserSession();
 
   const [allGroups, { data }] = (await Promise.all([
     query({
       query: `SELECT groups.name, groups.description, JSON_OBJECT('first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner, GROUP_CONCAT(users.email) as users 
-      FROM groups 
-      LEFT JOIN users_groups ON users_groups.groupId = groups.id 
-      INNER JOIN users ON users.id = users_groups.userId 
-      INNER JOIN users AS owner ON owner.id = groups.owner 
+      FROM groups${guest ? "_mock as groups" : ""}
+      LEFT JOIN users_groups${
+        guest ? "_mock as users_groups" : ""
+      } ON users_groups.groupId = groups.id 
+      INNER JOIN users${
+        guest ? "_mock as users" : ""
+      } ON users.id = users_groups.userId 
+      INNER JOIN users${
+        guest ? "_mock as owner" : ""
+      }  ON owner.id = groups.owner 
       WHERE groups.id IN(${groups.map(() => "?")}) 
       GROUP BY groups.id`,
       values: [...groups],
@@ -1673,19 +1917,21 @@ export const removeGroups = async ({ groups }: { groups: any }) => {
 
   const [{ affectedRows }] = (await Promise.all([
     query({
-      query: `DELETE FROM groups WHERE id IN(${groups.map(() => "?")})`,
+      query: `DELETE FROM groups${
+        guest ? "_mock" : ""
+      } WHERE id IN(${groups.map(() => "?")})`,
       values: [...groups],
     }),
     query({
-      query: `DELETE FROM users_groups WHERE groupId IN(${groups.map(
-        () => "?"
-      )})`,
+      query: `DELETE FROM users_groups${
+        guest ? "_mock" : ""
+      } WHERE groupId IN(${groups.map(() => "?")})`,
       values: [...groups],
     }),
     query({
-      query: `DELETE FROM reservations_groups WHERE groupId IN(${groups.map(
-        () => "?"
-      )})`,
+      query: `DELETE FROM reservations_groups${
+        guest ? "_mock" : ""
+      } WHERE groupId IN(${groups.map(() => "?")})`,
       values: [...groups],
     }),
   ])) as any;
@@ -1718,6 +1964,7 @@ export const groupRemoveUsers = async ({
   users: any;
 }) => {
   const eventId = 6;
+  const guest = await checkUserSession();
 
   const [
     groupDetail,
@@ -1728,27 +1975,35 @@ export const groupRemoveUsers = async ({
     template,
   ] = (await Promise.all([
     query({
-      query: `SELECT * FROM groups WHERE id = ?`,
+      query: `SELECT * FROM groups${guest ? "_mock" : ""} WHERE id = ?`,
       values: [group],
     }),
     query({
-      query: `SELECT first_name, last_name, email FROM users WHERE id IN(${users.map(
-        () => "?"
-      )})`,
+      query: `SELECT first_name, last_name, email FROM users${
+        guest ? "_mock" : ""
+      } WHERE id IN(${users.map(() => "?")})`,
       values: [...users],
     }),
     query({
-      query: `SELECT first_name, last_name, email FROM users INNER JOIN groups ON groups.owner = users.id WHERE groups.id = ?`,
+      query: `SELECT first_name, last_name, email FROM users${
+        guest ? "_mock as users" : ""
+      } INNER JOIN groups${
+        guest ? "_mock as groups" : ""
+      } ON groups.owner = users.id WHERE groups.id = ?`,
       values: [group],
     }),
     query({
-      query: `SELECT * FROM reservations INNER JOIN reservations_groups ON reservations.id = reservations_groups.groupId WHERE reservations_groups.groupId = ?`,
+      query: `SELECT * FROM reservations${
+        guest ? "_mock as reservations" : ""
+      } INNER JOIN reservations_groups${
+        guest ? "_mock as reservations_groups" : ""
+      } ON reservations.id = reservations_groups.groupId WHERE reservations_groups.groupId = ?`,
       values: [group],
     }),
     query({
-      query: `DELETE FROM users_groups WHERE groupId = ? AND userId IN (${users.map(
-        () => "?"
-      )})`,
+      query: `DELETE FROM users_groups${
+        guest ? "_mock" : ""
+      } WHERE groupId = ? AND userId IN (${users.map(() => "?")})`,
       values: [group, ...users],
     }),
     mailEventDetail({ id: eventId }),
@@ -1780,10 +2035,12 @@ export const groupRemoveReservations = async ({
   group: any;
   reservations: any;
 }) => {
+  const guest = await checkUserSession();
+
   const { affectedRows } = (await query({
-    query: `DELETE FROM reservations_groups WHERE groupId = ? AND reservationId IN (${reservations.map(
-      () => "?"
-    )})`,
+    query: `DELETE FROM reservations_groups${
+      guest ? "_mock" : ""
+    } WHERE groupId = ? AND reservationId IN (${reservations.map(() => "?")})`,
     values: [group, ...reservations],
   })) as any;
 
@@ -1797,15 +2054,23 @@ export const userSpecifiedGroups = async ({
   id: any;
   page: any;
 }) => {
+  const guest = await checkUserSession();
+
   const [groups, count] = (await Promise.all([
     query({
       query: `SELECT groups.id, name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner 
-      FROM groups INNER JOIN users_groups ON groups.id = users_groups.groupId INNER JOIN users ON groups.owner = users.id 
+      FROM groups${guest ? "_mock as groups" : ""} INNER JOIN users_groups${
+        guest ? "_mock as users_groups" : ""
+      } ON groups.id = users_groups.groupId INNER JOIN users${
+        guest ? "_mock as users" : ""
+      } ON groups.owner = users.id 
       WHERE users_groups.userId = ? LIMIT 5 OFFSET ?`,
       values: [id, page * 5 - 5],
     }),
     query({
-      query: `SELECT COUNT(*) as total FROM users_groups WHERE users_groups.userId = ?`,
+      query: `SELECT COUNT(*) as total FROM users_groups${
+        guest ? "_mock as users_groups" : ""
+      } WHERE users_groups.userId = ?`,
       values: [id],
     }),
   ])) as any;
@@ -1831,9 +2096,13 @@ export const mailingTemplateEdit = async ({
   title: any;
   id: any;
 }) => {
+  const guest = await checkUserSession();
+
   const { affectedRows } = (await query({
     query: `
-    UPDATE templates SET name = ?, title = ?, text = ? WHERE id = ?
+    UPDATE templates${
+      guest ? "_mock" : ""
+    } SET name = ?, title = ?, text = ? WHERE id = ?
   `,
     values: [name, title, text, id],
   })) as any;
@@ -1842,9 +2111,11 @@ export const mailingTemplateEdit = async ({
 };
 
 export const malingTemplatesList = async () => {
+  const guest = await checkUserSession();
+
   const templates = (await query({
     query: `
-    SELECT * FROM templates
+    SELECT * FROM templates${guest ? "_mock" : ""}
   `,
     values: [],
   })) as any;
@@ -1858,10 +2129,12 @@ export const malingTemplatesList = async () => {
 };
 
 export const malingTemplateDetail = async ({ id }: { id: any }) => {
+  const guest = await checkUserSession();
+
   const templates = (await query({
     query: `
         SELECT templates.id, templates.name, templates.title, templates.text, events_children.variables 
-        FROM templates 
+        FROM templates${guest ? "_mock as templates" : ""}
         INNER JOIN events_children ON events_children.template = templates.id
         WHERE templates.id = ?
   `,
@@ -1894,6 +2167,8 @@ export const mailingEventsEdit = async ({ data }: { data: any }) => {
 };
 
 export const mailingEventsList = async () => {
+  const guest = await checkUserSession();
+
   const events = (await query({
     query: `
       SELECT events.id, events.name,
@@ -1904,7 +2179,9 @@ export const mailingEventsList = async () => {
         'active', events_children.active)
       ) as children
       FROM events INNER JOIN events_children ON events_children.event = events.id
-      LEFT JOIN templates ON templates.id = events_children.template
+      LEFT JOIN templates${
+        guest ? "_mock as templates" : ""
+      } ON templates.id = events_children.template
       GROUP BY events.id
   `,
     values: [],
@@ -1962,10 +2239,13 @@ export const verifyUser = async ({
   adress: any;
   id: any;
 }) => {
+  const guest = await checkUserSession();
   const eventId = 2;
-  console.log(id);
+
   const data = (await query({
-    query: `UPDATE users SET password = MD5("${newPassword}"), ID_code = "${ID_code}", verified = 1, birth_date = "${birth_date}", adress = "${adress}" WHERE id = ${id} AND password = MD5("${password}")`, // verified = 1!! pak přidat
+    query: `UPDATE users${
+      guest ? "_mock" : ""
+    } SET password = MD5("${newPassword}"), ID_code = "${ID_code}", verified = 1, birth_date = "${birth_date}", adress = "${adress}" WHERE id = ${id} AND password = MD5("${password}")`, // verified = 1!! pak přidat
     values: [],
   })) as any;
 
@@ -1975,7 +2255,7 @@ export const verifyUser = async ({
 
   const [user, template] = (await Promise.all([
     query({
-      query: `SELECT * FROM users WHERE id = ?`,
+      query: `SELECT * FROM users${guest ? "_mock" : ""} WHERE id = ?`,
       values: [id],
     }),
     mailEventDetail({ id: eventId }),

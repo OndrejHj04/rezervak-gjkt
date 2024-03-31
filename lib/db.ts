@@ -19,6 +19,7 @@ export async function query({
     dbconnection.end();
     return results;
   } catch (error: any) {
+    console.log(query, values, "xdd");
     throw Error(error.message);
   }
 }

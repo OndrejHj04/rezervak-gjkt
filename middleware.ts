@@ -1,7 +1,6 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { getRoutes, rolesConfig } from "./lib/rolesConfig";
-import { guestSection } from "./lib/endpoints";
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req });
@@ -9,18 +8,6 @@ export default async function middleware(req: NextRequest) {
   const verified = token?.verified;
   const active = token?.active;
   const routes = getRoutes(Object.values(rolesConfig), role);
-
-  if (req.nextUrl.pathname.includes("/api")) {
-    if (
-      token?.email === guestSection.email &&
-      !guestSection.endpoints.some((item) =>
-        req.nextUrl.pathname.includes(item)
-      )
-    ) {
-      return NextResponse.json({ data: [] });
-    }
-    return;
-  }
 
   if ((!verified || !active) && req.nextUrl.pathname !== "/" && role) {
     return NextResponse.redirect(new URL("/", req.url));
@@ -79,6 +66,7 @@ export default async function middleware(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith("/group/detail") && role) {
     const group = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
+    const email = token?.email;
 
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/group/check-user`,
@@ -87,10 +75,11 @@ export default async function middleware(req: NextRequest) {
         body: JSON.stringify({
           groupId: Number(group),
           userId: Number(userId),
+          email,
         }),
       }
     );
-    console.log(request);
+
     const { data } = await request.json();
     const { isMember, isOwner, exist } = data;
 
@@ -123,6 +112,7 @@ export default async function middleware(req: NextRequest) {
   if (role && req.nextUrl.pathname.startsWith("/reservation/detail")) {
     const reservation = req.nextUrl.pathname.split("/")[3];
     const userId = token?.id.toString();
+    const email = token?.email;
 
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/check-user`,
@@ -131,6 +121,7 @@ export default async function middleware(req: NextRequest) {
         body: JSON.stringify({
           reservationId: Number(reservation),
           userId: Number(userId),
+          email,
         }),
       }
     );
@@ -172,5 +163,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: "/((?!_next|favicon).*)",
+  matcher: "/((?!api|_next|favicon).*)",
 };

@@ -42,9 +42,12 @@ export default function GroupNewForm({
       ...formData,
       owner: formData.owner.id,
     }).then(({ success, id }) => {
-      success && toast.success(`Skupina  úspěšně vytvořena`);
-      !success && toast.error("Něco se pokazilo");
-      setLoading(false);
+      if (success) {
+        toast.success(`Skupina  úspěšně vytvořena`);
+      } else {
+        setLoading(false);
+        toast.error("Něco se pokazilo");
+      }
       MakeGroupDetailRefetch(id, 1);
     });
   };

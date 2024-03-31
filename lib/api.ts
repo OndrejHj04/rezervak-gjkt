@@ -2278,7 +2278,6 @@ export const verifyUser = async ({
 
 export const setTheme = async (theme: any, id: any) => {
   const guest = await checkUserSession();
-  console.log(theme);
   const req = (await query({
     query: `UPDATE users${
       guest ? "_mock" : ""

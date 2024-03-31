@@ -68,6 +68,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
         toast.error("Něco se nepovedlo");
       }
     });
+    MakeGroupDetailRefetch(group.id);
   };
 
   const handleRemoveGroup = () => {
@@ -75,7 +76,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
       success && toast.success("Skupina úspěšně odstraněna");
       !success && toast.error("Něco se nepovedlo");
     });
-    //MakeGroupRefetch()
+    push("/group/list");
   };
 
   const handleDeleteMembers = () => {

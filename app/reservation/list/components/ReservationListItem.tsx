@@ -19,6 +19,8 @@ import TableListCheckbox from "@/ui-components/TableListCheckbox";
 import { rolesConfig } from "@/lib/rolesConfig";
 import BedroomChildIcon from "@mui/icons-material/BedroomChild";
 import ReservationModal from "./ReservationModal";
+import NightShelterIcon from "@mui/icons-material/NightShelter";
+import HotelIcon from "@mui/icons-material/Hotel";
 
 export default function ReservationListItem({
   reservation,
@@ -74,21 +76,20 @@ export default function ReservationListItem({
                 />
               ))}
             >
-              <Badge badgeContent={reservation.rooms.length} color="primary">
+              <div className="flex justify-around">
+                <Badge badgeContent={reservation.rooms.length} color="primary">
+                  <NightShelterIcon color="primary" fontSize="large" />
+                </Badge>
                 <Badge
                   badgeContent={reservation.rooms.reduce(
                     (a: any, b: any) => a + b.people,
                     0
                   )}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  color="error"
+                  color="primary"
                 >
-                  <BedroomChildIcon color="primary" />
+                  <HotelIcon color="primary" fontSize="large" />
                 </Badge>
-              </Badge>
+              </div>
             </Tooltip>
           )}
         </TableCell>

@@ -7,3 +7,9 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+@media (max-width: 400px) {
+  .layout {
+    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr)) !important;
+  }
+}

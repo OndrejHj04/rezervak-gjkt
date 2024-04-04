@@ -2058,7 +2058,10 @@ export const userSpecifiedGroups = async ({
 
   const [groups, count] = (await Promise.all([
     query({
-      query: `SELECT groups.id, name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner 
+      query: `SELECT groups.id, name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner,
+      (SELECT COUNT(*) FROM users_groups${
+        guest ? "_mock" : ""
+      } WHERE groupId = groups.id) AS userCount 
       FROM groups${guest ? "_mock as groups" : ""} INNER JOIN users_groups${
         guest ? "_mock as users_groups" : ""
       } ON groups.id = users_groups.groupId INNER JOIN users${

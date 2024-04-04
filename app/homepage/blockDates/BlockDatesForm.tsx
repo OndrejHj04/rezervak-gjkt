@@ -87,7 +87,7 @@ export default function BlockDatesForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col justify-between h-full"
+      className="flex flex-col justify-between h-full gap-3"
     >
       <LocalizationProvider
         dateAdapter={AdapterDayjs}
@@ -97,7 +97,7 @@ export default function BlockDatesForm({
         }
       >
         <DemoContainer components={["DatePicker"]}>
-          <div className="flex flex-col gap-4 w-full">
+          <div className="flex flex-col gap-3 w-full">
             <Controller
               control={control}
               name="from_date"

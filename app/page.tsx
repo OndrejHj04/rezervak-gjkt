@@ -38,8 +38,8 @@ export default async function Home({ searchParams }: { searchParams: any }) {
   const homepage = (
     <div className="flex flex-col gap-2">
       <div
-        className="grid gap-2 h-auto"
-        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}
+        className="grid gap-2 h-auto layout"
+        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))" }}
       >
         {rolesConfig.homepage.modules.personalGroups.display.includes(
           user?.user.role.id

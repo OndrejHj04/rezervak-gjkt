@@ -1,6 +1,5 @@
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { Button, Skeleton, Typography } from "@mui/material";
-import { stat } from "fs";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -24,7 +23,7 @@ export default function LoginButton() {
       <Link href={`/user/detail/${data.user.id}`}>
         <Button>
           <div className="flex-col mx-4 items-end normal-case text-white sm:flex hidden">
-            <Typography className="font-semibold capitalize" variant="body1">
+            <Typography className="!font-semibold capitalize" variant="body1">
               {data.user.first_name} {data.user.last_name}
             </Typography>
             <div className="flex gap-1 items-center">

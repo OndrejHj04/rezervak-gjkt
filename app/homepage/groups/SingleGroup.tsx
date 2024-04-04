@@ -2,7 +2,7 @@ import { Group } from "@/types";
 import { Avatar, CardHeader, MenuItem, Typography } from "@mui/material";
 import Link from "next/link";
 
-export default function SingleGroup({ group }: { group: Group }) {
+export default function SingleGroup({ group }: { group: any }) {
   return (
     <Link
       href={`/group/detail/${group.id}`}
@@ -10,6 +10,7 @@ export default function SingleGroup({ group }: { group: Group }) {
     >
       <MenuItem className="flex justify-between gap-2 px-1">
         <Typography noWrap>{group.name}</Typography>
+        <Typography noWrap>{group.userCount} členů</Typography>
         <Typography
           color="text.secondary"
           sx={{ fontSize: 14 }}

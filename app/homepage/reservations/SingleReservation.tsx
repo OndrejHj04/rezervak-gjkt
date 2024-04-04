@@ -44,7 +44,7 @@ export default function SingleReservation({
             {reservations.status.icon}
           </Icon>
         )}
-        <Typography>{reservations.rooms.length} pok.</Typography>
+        <Typography>{reservations.rooms.length} pokojů</Typography>
         <Typography color="text.secondary" sx={{ fontSize: 14 }}>{`${dayjs(
           reservations.from_date
         ).format("DD.MM.")} - ${dayjs(reservations.to_date).format(

@@ -13,7 +13,7 @@ import TableListPagination from "@/ui-components/TableListPagination";
 
 export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
   return (
-    <Paper className="md:p-4 p-2 flex md:flex-row flex-col gap-4">
+    <Paper className="md:p-4 p-2 flex md:flex-row flex-col gap-3">
       <div className="flex flex-col">
         <CardHeader
           className="p-0 mb-2"
@@ -25,7 +25,6 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
           }
           subheader={userDetail.email}
         />
-
         <Typography variant="h6">
           Datum narození:{" "}
           {userDetail.birth_date &&
@@ -35,7 +34,7 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
         <Typography>Role: {userDetail.role.name}</Typography>
         <Typography>Adresa: {userDetail.adress}</Typography>
       </div>
-
+      <Divider orientation="vertical" flexItem />
       <div className="flex md:flex-row flex-col gap-3">
         <div className="flex flex-col">
           <Typography variant="h5">Skupiny uživatele </Typography>
@@ -57,9 +56,14 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
             )}
           </List>
           <div className="mt-auto">
-            <TableListPagination name="groups" rpp={5} count={userDetail.groups.count} />
+            <TableListPagination
+              name="groups"
+              rpp={5}
+              count={userDetail.groups.count}
+            />
           </div>
         </div>
+        <Divider orientation="vertical" flexItem />
         <div className="flex flex-col">
           <Typography variant="h5">Rezervace uživatele</Typography>
           <Divider />

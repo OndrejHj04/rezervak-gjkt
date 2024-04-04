@@ -1,6 +1,7 @@
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Avatar,
+  CardHeader,
   Divider,
   List,
   ListItem,
@@ -14,23 +15,26 @@ import TableListPagination from "@/ui-components/TableListPagination";
 
 export default async function GroupDetailDisplay({ group }: { group: any }) {
   return (
-    <Paper className="md:p-4 p-2 flex md:flex-row flex-col gap-4">
+    <Paper className="md:p-4 p-2 flex md:flex-row flex-col gap-3">
       <div>
         <Typography variant="h5">Jméno: {group.name}</Typography>
+        <Divider />
         <Typography variant="h6">Popis skupiny: {group.description}</Typography>
         <div>
-          <Typography variant="h6">Vedoucí skupiny</Typography>
-          <div className="flex gap-2">
-            <AvatarWrapper size={56} data={group.owner as any} />
-            <div className="flex flex-col">
-              <Typography variant="h6" className="font-semibold">
+          <Typography variant="h6">Vedoucí skupiny:</Typography>
+          <CardHeader
+            className="p-0 mb-2"
+            avatar={<AvatarWrapper data={group.owner} size={56} />}
+            title={
+              <Typography variant="h5">
                 {group.owner.first_name} {group.owner.last_name}
               </Typography>
-              <Typography>{group.owner.email}</Typography>
-            </div>
-          </div>
+            }
+            subheader={group.owner.email}
+          />
         </div>
       </div>
+      <Divider orientation="vertical" flexItem />
       <div className="flex md:flex-row flex-col gap-3">
         <div className="flex flex-col">
           <Typography variant="h5">Uživatelé ve skupině </Typography>
@@ -66,6 +70,7 @@ export default async function GroupDetailDisplay({ group }: { group: any }) {
             />
           </div>
         </div>
+        <Divider orientation="vertical" flexItem />
         <div className="flex flex-col">
           <Typography variant="h5">Rezervace skupiny </Typography>
           <Divider />

@@ -43,6 +43,7 @@ export default function UserListItem({
           {user.first_name} {user.last_name}
         </TableCell>
       )}
+      {/* */}
       {cells.includes("email") && <TableCell>{user.email}</TableCell>}
       {cells.includes("role") && (
         <TableCell>

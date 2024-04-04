@@ -63,6 +63,7 @@ export default function ReservationDetailForm({
         reset(data);
       }
     );
+    MakeReservationDetailRefetch(reservation.id);
   };
 
   const { push } = useRouter();

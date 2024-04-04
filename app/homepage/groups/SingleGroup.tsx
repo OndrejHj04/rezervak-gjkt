@@ -8,8 +8,8 @@ export default function SingleGroup({ group }: { group: Group }) {
       href={`/group/detail/${group.id}`}
       className="no-underline text-inherit"
     >
-      <MenuItem className="flex justify-between gap-2">
-        <Typography>{group.name}</Typography>
+      <MenuItem className="flex justify-between gap-2 px-1">
+        <Typography noWrap>{group.name}</Typography>
         <Typography
           color="text.secondary"
           sx={{ fontSize: 14 }}

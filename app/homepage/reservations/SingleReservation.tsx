@@ -4,6 +4,7 @@ import {
   CardHeader,
   Chip,
   Icon,
+  ListItemText,
   MenuItem,
   Typography,
 } from "@mui/material";
@@ -27,8 +28,8 @@ export default function SingleReservation({
         pointerEvents: link === "no-link" ? "none" : "auto",
       }}
     >
-      <MenuItem className="flex justify-between gap-2">
-        <Typography>{reservations.name}</Typography>
+      <MenuItem className="flex justify-between gap-1 px-1">
+        <Typography noWrap>{reservations.name}</Typography>
         {display === "long" ? (
           <Chip
             icon={
@@ -43,7 +44,7 @@ export default function SingleReservation({
             {reservations.status.icon}
           </Icon>
         )}
-        <Typography>{reservations.rooms.length} pokojů</Typography>
+        <Typography>{reservations.rooms.length} pok.</Typography>
         <Typography color="text.secondary" sx={{ fontSize: 14 }}>{`${dayjs(
           reservations.from_date
         ).format("DD.MM.")} - ${dayjs(reservations.to_date).format(

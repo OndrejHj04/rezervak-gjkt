@@ -10,11 +10,13 @@ export default function SingleGroup({ group }: { group: any }) {
     >
       <MenuItem className="flex justify-between gap-2 px-1">
         <Typography noWrap>{group.name}</Typography>
-        <Typography noWrap>{group.userCount} členů</Typography>
-        <Typography
-          color="text.secondary"
-          sx={{ fontSize: 14 }}
-        >{`Majitel: ${group.owner.first_name} ${group.owner.last_name}`}</Typography>
+        <div className="flex items-center gap-2">
+          <Typography noWrap>{group.userCount} členů</Typography>
+          <Typography
+            color="text.secondary"
+            sx={{ fontSize: 14 }}
+          >{`Majitel: ${group.owner.first_name} ${group.owner.last_name}`}</Typography>
+        </div>
       </MenuItem>
     </Link>
   );

@@ -35,11 +35,10 @@ export default function VerifyUser({ id }: { id?: number }) {
   const errors = methods.formState.errors;
   const [loading, setLoading] = useState(false);
 
-  const underFifteen =
-    methods.watch("birth_date") &&
+  const underFifteen = (methods.watch("birth_date") &&
     dayjs()
       .subtract(15, "years")
-      .isSameOrBefore(dayjs(methods.watch("birth_date")));
+      .isSameOrBefore(dayjs(methods.watch("birth_date")))) as any;
 
   const onSubmit = (data: verifyForm) => {
     setLoading(true);
@@ -81,7 +80,7 @@ export default function VerifyUser({ id }: { id?: number }) {
           <div className="flex gap-2 md:flex-row flex-col">
             <DateInput />
             <TextField
-              disabled={!methods.watch("birth_date")}
+              disabled={!methods.watch("birth_date") || underFifteen}
               {...methods.register("ID_code", {
                 required: underFifteen ? false : "Toto pole je povinné",
                 pattern: {

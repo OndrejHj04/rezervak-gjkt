@@ -8,7 +8,7 @@ export default function SingleGroup({ group }: { group: any }) {
       href={`/group/detail/${group.id}`}
       className="no-underline text-inherit"
     >
-      <MenuItem className="flex justify-between gap-2 px-1">
+      <MenuItem className="flex !justify-between gap-2 px-1">
         <Typography noWrap>{group.name}</Typography>
         <div className="flex items-center gap-2">
           <Typography noWrap>{group.userCount} členů</Typography>

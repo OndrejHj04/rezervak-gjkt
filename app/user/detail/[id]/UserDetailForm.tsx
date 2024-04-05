@@ -213,7 +213,7 @@ export default function UserDetailForm({
                 </LocalizationProvider>
 
                 <TextField
-                  label="Rodné číslo"
+                  label="Číslo OP"
                   {...register("ID_code")}
                   defaultValue={userDetail.ID_code}
                 />

@@ -30,7 +30,7 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
           {userDetail.birth_date &&
             dayjs(userDetail.birth_date).format("DD. MM. YYYY")}
         </Typography>
-        <Typography>Rodné číslo: {userDetail.ID_code}</Typography>
+        <Typography>Číslo OP: {userDetail.ID_code}</Typography>
         <Typography>Role: {userDetail.role.name}</Typography>
         <Typography>Adresa: {userDetail.adress}</Typography>
       </div>

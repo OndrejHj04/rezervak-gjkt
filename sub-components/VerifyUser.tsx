@@ -15,6 +15,9 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import { verifyUser } from "@/lib/api";
+import dayjs from "dayjs";
+import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+dayjs.extend(isSameOrBefore as any);
 
 export interface verifyForm {
   ID_code: string;
@@ -31,6 +34,12 @@ export default function VerifyUser({ id }: { id?: number }) {
   const [hidePassword, setHidePassword] = useState(true);
   const errors = methods.formState.errors;
   const [loading, setLoading] = useState(false);
+
+  const underFifteen =
+    methods.watch("birth_date") &&
+    dayjs()
+      .subtract(15, "years")
+      .isSameOrBefore(dayjs(methods.watch("birth_date")));
 
   const onSubmit = (data: verifyForm) => {
     setLoading(true);
@@ -70,23 +79,23 @@ export default function VerifyUser({ id }: { id?: number }) {
           className="flex flex-col gap-2"
         >
           <div className="flex gap-2 md:flex-row flex-col">
+            <DateInput />
             <TextField
+              disabled={!methods.watch("birth_date")}
               {...methods.register("ID_code", {
-                required: "Toto pole je povinné",
+                required: underFifteen ? false : "Toto pole je povinné",
                 pattern: {
-                  value: /^(\d{6})\/(\d{4})$/,
+                  value: /^\d{9}$/,
                   message: "RČ musí být ve správném formátu",
                 },
               })}
               className="w-full"
               style={{ margin: "8px 0 0 0" }}
+              helperText="Pro děti do 15 let nepovinné"
               error={!!errors.ID_code}
-              helperText={errors.ID_code?.message}
-              label="Rodné číslo"
+              label="Číslo OP"
               autoComplete="off"
             />
-
-            <DateInput />
           </div>
           <div className="flex gap-2 md:flex-row flex-col">
             <TextField

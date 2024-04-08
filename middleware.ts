@@ -9,6 +9,13 @@ export default async function middleware(req: NextRequest) {
   const active = token?.active;
   const routes = getRoutes(Object.values(rolesConfig), role);
 
+  if (
+    !role &&
+    !routes.some((item: any) => item.path === req.nextUrl.pathname)
+  ) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
   if ((!verified || !active) && req.nextUrl.pathname !== "/" && role) {
     return NextResponse.redirect(new URL("/", req.url));
   }

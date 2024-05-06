@@ -1,6 +1,8 @@
 "use client";
 import {
   Button,
+  Checkbox,
+  FormControlLabel,
   IconButton,
   InputAdornment,
   Paper,
@@ -17,6 +19,7 @@ import { useState } from "react";
 import { verifyUser } from "@/lib/api";
 import dayjs from "dayjs";
 import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import Link from "next/link";
 dayjs.extend(isSameOrBefore as any);
 
 export interface verifyForm {
@@ -34,6 +37,7 @@ export default function VerifyUser({ id }: { id?: number }) {
   const [hidePassword, setHidePassword] = useState(true);
   const errors = methods.formState.errors;
   const [loading, setLoading] = useState(false);
+  const [checkbox, setCheckbox] = useState(false);
 
   const underFifteen = (methods.watch("birth_date") &&
     dayjs()
@@ -103,6 +107,7 @@ export default function VerifyUser({ id }: { id?: number }) {
                 required: "Toto pole je povinné",
               })}
               error={!!errors.street}
+              className="w-full"
               helperText={errors.street?.message}
             />
             <TextField
@@ -110,6 +115,7 @@ export default function VerifyUser({ id }: { id?: number }) {
               {...methods.register("town", {
                 required: "Toto pole je povinné",
               })}
+              className="w-full"
               error={!!errors.town}
               helperText={errors.town?.message}
             />
@@ -122,6 +128,7 @@ export default function VerifyUser({ id }: { id?: number }) {
                   message: "PSČ musí mít 5 číslic",
                 },
               })}
+              className="w-full"
               error={!!errors.post_number}
               helperText={errors.post_number?.message}
               label="PSČ (bez mezer)"
@@ -184,9 +191,22 @@ export default function VerifyUser({ id }: { id?: number }) {
               }}
             />
           </div>
-
+          <FormControlLabel
+            control={
+              <Checkbox
+                onChange={() => setCheckbox((c) => !c)}
+                checked={checkbox}
+              />
+            }
+            label={
+              <Typography variant="caption">
+                Seznámil jsem se s <Link href="/podminky.pdf">podmínkami zpracování osobních údajů</Link> a
+                uděluji k tomu organizaci ZO Gymnázium J. K. Tyla souhlas
+              </Typography>
+            }
+          />
           <Button
-            disabled={loading || !methods.formState.isValid}
+            disabled={loading || !methods.formState.isValid || !checkbox}
             variant="contained"
             type="submit"
           >

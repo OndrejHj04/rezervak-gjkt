@@ -213,6 +213,12 @@ export const rolesConfig = {
     roles: [1, 2],
     menu: [false, false],
   },
+  approvalFile: {
+    name: "Podmínky",
+    path: "/podminky.pdf",
+    roles: [],
+    menu: [false, false],
+  },
 };
 
 export const getRoutes = (config: any, role: any, result: any = []) => {

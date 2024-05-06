@@ -15,8 +15,12 @@ export default async function middleware(req: NextRequest) {
   ) {
     return NextResponse.redirect(new URL("/", req.url));
   }
-
-  if ((!verified || !active) && req.nextUrl.pathname !== "/" && role) {
+  if (
+    (!verified || !active) &&
+    req.nextUrl.pathname !== "/" &&
+    role &&
+    req.nextUrl.pathname !== "/podminky.pdf"
+  ) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 

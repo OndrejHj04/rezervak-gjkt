@@ -12,6 +12,8 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
+  const { status } = useSession();
+
   const { panel, setPanel } = store();
   return (
     <Drawer anchor="left" open={panel} onClose={() => setPanel(false)}>
@@ -36,18 +38,23 @@ export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
           ))}
         </MenuList>
 
-        <MenuList>
-          <MenuItem
-            onClick={() => signOut({ callbackUrl: "/", redirect: true })}
-          >
-            <LogoutIcon fontSize="large" color="error" />
-            <Typography variant="h6" style={{ margin: "0 0 0 10px" }}>
-              Odhlásit se
-            </Typography>
-          </MenuItem>
-        </MenuList>
+        <MenuItem
+          disabled={status === "unauthenticated"}
+          onClick={() => signOut({ callbackUrl: "/", redirect: true })}
+        >
+          <LogoutIcon fontSize="large" color="error" />
+          <Typography variant="h6" style={{ margin: "0 0 0 10px" }}>
+            Odhlásit se
+          </Typography>
+        </MenuItem>
       </div>
-      <Typography className="text-center"></Typography>
+      <Link
+        className="text-xs text-center"
+        target="_blank"
+        href="https://github.com/OndrejHj04"
+      >
+        Ondřej Hájek
+      </Link>
     </Drawer>
   );
 }

@@ -2,6 +2,7 @@ import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Box,
   Button,
+  Checkbox,
   Chip,
   TableCell,
   TableRow,
@@ -32,7 +33,12 @@ export default function UserListItem({
 
   return (
     <TableRow key={user.id}>
-      {rolesConfig.users.modules.userTable.config.delete.includes(userRole) && (
+      {rolesConfig.users.modules.userTable.config.delete.includes(userRole) &&
+      user.id === userId ? (
+        <TableCell>
+          <Checkbox disabled />
+        </TableCell>
+      ) : (
         <TableListCheckbox prop="users" id={user.id} />
       )}
       <TableCell>

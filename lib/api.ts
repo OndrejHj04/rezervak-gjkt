@@ -17,27 +17,32 @@ export const getUserList = async ({
   page,
   search,
   role,
+  organization,
   rpp = 10,
 }: {
   page?: any;
   search?: any;
   role?: any;
+  organization?: any;
   rpp?: any;
 } = {}) => {
   const guest = await checkUserSession();
 
   const [users, count] = (await Promise.all([
     query({
-      query: `SELECT users.id, first_name, last_name, email, image, verified, birth_date, active, JSON_OBJECT('id', roles.id, 'name', roles.name) as role
+      query: `SELECT users.id, first_name, last_name, email, image, verified, birth_date, active, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role
             FROM users${
               guest ? "_mock as users" : ""
-            } INNER JOIN roles ON roles.id = users.role WHERE 1=1
+            } INNER JOIN roles ON roles.id = users.role
+             LEFT JOIN organization ON organization.id = users.organization
+            WHERE 1=1
           ${
             search
               ? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`
               : ""
           }
           ${role ? `AND users.role = ${role}` : ""}
+          ${organization ? `AND users.organization = ${organization}` : ""}
           ${page ? `LIMIT ${rpp} OFFSET ${page * rpp - rpp}` : ""}`,
       values: [],
     }),
@@ -53,10 +58,12 @@ export const getUserList = async ({
       values: [],
     }),
   ])) as any;
-
   const data = users.map((user: any) => ({
     ...user,
     role: JSON.parse(user.role),
+    organization: JSON.parse(user.organization).id
+      ? JSON.parse(user.organization)
+      : null,
   }));
 
   return { data, count: count[0].total };
@@ -461,10 +468,12 @@ export const getUserDetail = async ({
   const [user, groups, groupsCount, reservations, reservationsCount] =
     (await Promise.all([
       query({
-        query: `SELECT users.id, first_name, image, last_name, email, active, verified, adress, ID_code, birth_date, JSON_OBJECT('id', roles.id, 'name', roles.name) as role 
+        query: `SELECT users.id, first_name, image, last_name, email, active, verified, adress, ID_code, birth_date, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role 
         FROM users${
           guest ? "_mock as users" : ""
-        } INNER JOIN roles ON roles.id = users.role WHERE users.id = ?`,
+        } INNER JOIN roles ON roles.id = users.role
+        LEFT JOIN organization ON  organization.id = users.organization
+        WHERE users.id = ?`,
         values: [id],
       }),
       query({
@@ -517,6 +526,9 @@ export const getUserDetail = async ({
   const data = {
     ...user[0],
     role: JSON.parse(user[0].role),
+    organization: JSON.parse(user[0].organization).id
+      ? JSON.parse(user[0].organization)
+      : null,
     reservations: {
       data: reservations.map((res: any) => ({
         ...res,
@@ -900,6 +912,15 @@ export const getRolesList = async ({ filter }: { filter: any }) => {
     SELECT * FROM roles WHERE id IN(${thisRoles.map(() => "?")})
   `,
     values: [...thisRoles],
+  });
+  return { data };
+};
+
+export const getOrganizationsList = async () => {
+  const data = await query({
+    query: `
+    SELECT * FROM organization
+  `,
   });
   return { data };
 };

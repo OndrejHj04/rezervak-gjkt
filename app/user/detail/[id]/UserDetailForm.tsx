@@ -79,6 +79,7 @@ export default function UserDetailForm({
         ...data,
         birth_date: dayjs(data.birth_date).format("YYYY-MM-DD"),
         role: data.role.id,
+        organization: data.organization.id,
       },
     }).then(({ success }) => {
       success && toast.success("Detail uživatele upraven");
@@ -241,6 +242,39 @@ export default function UserDetailForm({
                           {...params}
                           label="Role"
                           className="lg:w-40 w-full"
+                        />
+                      )}
+                    />
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="organization"
+                  defaultValue={userDetail.organization}
+                  render={({ field: { value, onChange } }) => (
+                    <Autocomplete
+                      value={value}
+                      disabled={!makeEdit}
+                      isOptionEqualToValue={(option, value) =>
+                        option.id === value.id
+                      }
+                      options={[
+                        { id: 1, name: "ZO" },
+                        { id: 2, name: "Zaměstnanec" },
+                        { id: 3, name: "Veřejnost" },
+                      ]}
+                      onChange={(e, value) => {
+                        onChange(value);
+                      }}
+                      renderOption={(props: any, option: any) => (
+                        <div {...props}>{option.name}</div>
+                      )}
+                      getOptionLabel={(option: any) => option.name}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Vztah k organizaci"
+                          className="lg:w-48 w-full"
                         />
                       )}
                     />

@@ -23,7 +23,7 @@ export default function UserListItem({
   userRole,
   userId,
 }: {
-  user: User;
+  user: any;
   userRole: any;
   userId: any;
 }) {
@@ -68,6 +68,13 @@ export default function UserListItem({
           ) : (
             <CancelIcon color="error" sx={{ width: 32, height: 32 }} />
           )}
+        </TableCell>
+      )}
+      {cells.includes("organization") && (
+        <TableCell>
+          <Typography variant="subtitle2">
+            {user.organization && user.organization.name}
+          </Typography>
         </TableCell>
       )}
       {rolesConfig.users.modules.userDetail.visit.includes(userRole) ||

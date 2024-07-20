@@ -22,6 +22,7 @@ const columns = {
   role: "Role",
   birth_date: "Datum narození",
   verified: "Ověřený účet",
+  organization: "Organizace",
 };
 export default async function UserList({
   searchParams,
@@ -33,10 +34,16 @@ export default async function UserList({
   userId: any;
 }) {
   const role = searchParams["role"] || 0;
+  const organization = searchParams["organization"] || 0;
   const page = searchParams["page"] || 1;
   const search = searchParams["search"] || "";
 
-  const users = await getUserList({ page, search, role: Number(role) });
+  const users = await getUserList({
+    page,
+    search,
+    role: Number(role),
+    organization: Number(organization),
+  });
   return (
     <div className="flex flex-col w-full gap-2">
       <UserListFilter userRole={userRole} />

@@ -6,6 +6,7 @@ import { Button, Modal, Paper, Typography } from "@mui/material";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import UserRolesSelect from "./RolesSelect";
+import OrganizationSelect from "./OrganizationSelect";
 
 const style = {
   position: "absolute" as "absolute",
@@ -19,9 +20,11 @@ const style = {
 export default function ResponsiveFilter({
   roles,
   userRole,
+  organizations,
 }: {
   roles: any;
   userRole: any;
+  organizations: any;
 }) {
   const searchParams = useSearchParams();
   const filter = searchParams.get("filter") === "true";
@@ -48,7 +51,12 @@ export default function ResponsiveFilter({
           ) && <SearchBar label="uživatele" />}
           {rolesConfig.users.modules.userTable.config.topbar.filter.includes(
             userRole
-          ) && <UserRolesSelect roles={roles} />}
+          ) && (
+            <>
+              <UserRolesSelect roles={roles} />
+              <OrganizationSelect organizations={organizations} />
+            </>
+          )}
           {rolesConfig.users.modules.userTable.config.topbar.export.includes(
             userRole
           ) && <ExportButton prop="users" translate={"uživatelé"} />}

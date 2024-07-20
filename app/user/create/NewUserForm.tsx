@@ -6,8 +6,15 @@ import { Autocomplete, Paper, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import UserCard from "../detail/UserCard";
 
-export default function NewUserForm({ roles }: { roles: any }) {
+export default function NewUserForm({
+  roles,
+  users,
+}: {
+  roles: any;
+  users: any;
+}) {
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -18,17 +25,19 @@ export default function NewUserForm({ roles }: { roles: any }) {
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-    createUserAccount({ ...data, role: data.role.value }).then(
-      ({ success, msg }) => {
-        if (success) {
-          toast.success("Uživatel úspěšně vytvořen");
-          MakeUserListRefetch("/user/list", 1); 
-        } else {
-          toast.error(msg || "Něco se nepovedlo");
-        }
-        setLoading(false);
+    createUserAccount({
+      ...data,
+      role: data.role.value,
+      parent: data.parent?.id,
+    }).then(({ success, msg }) => {
+      if (success) {
+        toast.success("Uživatel úspěšně vytvořen");
+        MakeUserListRefetch("/user/list", 1);
+      } else {
+        toast.error(msg || "Něco se nepovedlo");
       }
-    );
+      setLoading(false);
+    });
   };
 
   return (
@@ -78,6 +87,30 @@ export default function NewUserForm({ roles }: { roles: any }) {
                 value: role.id,
               }))}
               renderInput={(params) => <TextField {...params} label="Role" />}
+            />
+          )}
+        />
+        <Controller
+          control={control}
+          {...register("parent")}
+          render={({ field: { value, onChange } }) => (
+            <Autocomplete
+              sx={{ width: 300 }}
+              value={value}
+              onChange={(e, value) => {
+                onChange(value);
+              }}
+              filterSelectedOptions
+              options={users}
+              getOptionLabel={(option: any) =>
+                `${option.first_name} ${option.last_name}`
+              }
+              renderOption={(props: any, option: any) => (
+                <UserCard {...props} user={option} />
+              )}
+              renderInput={(params) => (
+                <TextField {...params} label="Rodičovský účet" />
+              )}
             />
           )}
         />

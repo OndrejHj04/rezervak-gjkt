@@ -1,8 +1,9 @@
 import NewUserForm from "./NewUserForm";
-import { getRolesList } from "@/lib/api";
+import { getRolesList, getUserList } from "@/lib/api";
 
 export default async function CreateUserForm() {
   const { data } = await getRolesList({ filter: true });
+  const { data: users } = await getUserList();
 
-  return <NewUserForm roles={data} />;
+  return <NewUserForm roles={data} users={users} />;
 }

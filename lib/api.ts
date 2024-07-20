@@ -661,11 +661,13 @@ export const createUserAccount = async ({
   last_name,
   email,
   role,
+  parent,
 }: {
   first_name: any;
   last_name: any;
   email: any;
   role: any;
+  parent: any;
 }) => {
   const eventId = 1;
   const password = Math.random().toString(36).slice(-9) as any;
@@ -682,7 +684,7 @@ export const createUserAccount = async ({
     return { success: false, msg: "Uživatel s tímto emailem už existuje" };
   }
 
-  const [{ affectedRows }, { data }] = (await Promise.all([
+  const [{ affectedRows, insertId }, { data }] = (await Promise.all([
     query({
       query: `INSERT INTO users${
         guest ? "_mock" : ""
@@ -691,6 +693,15 @@ export const createUserAccount = async ({
     }),
     mailEventDetail({ id: eventId }),
   ])) as any;
+
+  if (parent) {
+    await query({
+      query: `INSERT INTO children_accounts${
+        guest ? "_mock" : ""
+      }(childrenId, parentId, id) VALUES(?,?,?)`,
+      values: [insertId, parent, `${insertId},${parent}`],
+    });
+  }
 
   await sendEmail({
     send: data.active,

@@ -28,13 +28,39 @@ export const getUserList = async ({
 } = {}) => {
   const guest = await checkUserSession();
 
-  const [users, count] = (await Promise.all([
+  const [users, count, children] = (await Promise.all([
     query({
-      query: `SELECT users.id, first_name, last_name, email, image, verified, birth_date, active, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role
+      query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.verified, users.birth_date, users.active, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role, 
+      
+      GROUP_CONCAT(DISTINCT JSON_OBJECT(
+        'id', children_detail.id, 
+        'first_name', children_detail.first_name, 
+        'last_name', children_detail.last_name, 
+        'email', children_detail.email, 
+        'image', children_detail.image, 
+        'verified', children_detail.verified, 
+        'birth_date', users.birth_date, 
+        'active', users.active,
+        'organization', JSON_OBJECT(
+            'id', children_organization.id, 
+            'name', children_organization.name
+        ), 
+        'role', JSON_OBJECT(
+            'id', children_roles.id, 
+            'name', children_roles.name
+        )
+    )
+) AS children
+
+
             FROM users${
               guest ? "_mock as users" : ""
             } INNER JOIN roles ON roles.id = users.role
              LEFT JOIN organization ON organization.id = users.organization
+             LEFT JOIN children_accounts ON children_accounts.parentId = users.id
+             LEFT JOIN users as children_detail ON children_detail.id = children_accounts.childrenId
+             LEFT JOIN roles as children_roles ON children_roles.id = children_detail.role
+             LEFT JOIN organization as children_organization ON children_organization.id = children_detail.organization
             WHERE 1=1
           ${
             search
@@ -43,6 +69,7 @@ export const getUserList = async ({
           }
           ${role ? `AND users.role = ${role}` : ""}
           ${organization ? `AND users.organization = ${organization}` : ""}
+          GROUP BY users.id
           ${page ? `LIMIT ${rpp} OFFSET ${page * rpp - rpp}` : ""}`,
       values: [],
     }),
@@ -57,6 +84,9 @@ export const getUserList = async ({
           `,
       values: [],
     }),
+    query({
+      query: `SELECT id, first_name, last_name FROM users`,
+    }),
   ])) as any;
   const data = users.map((user: any) => ({
     ...user,
@@ -64,8 +94,10 @@ export const getUserList = async ({
     organization: JSON.parse(user.organization).id
       ? JSON.parse(user.organization)
       : null,
+    children: JSON.parse(`[${user.children}]`)[0].id
+      ? JSON.parse(`[${user.children}]`)
+      : null,
   }));
-
   return { data, count: count[0].total };
 };
 

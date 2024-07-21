@@ -44,6 +44,7 @@ export default async function UserList({
     role: Number(role),
     organization: Number(organization),
   });
+
   return (
     <div className="flex flex-col w-full gap-2">
       <UserListFilter userRole={userRole} />
@@ -53,6 +54,7 @@ export default async function UserList({
             <Table size="small">
               <TableHead>
                 <TableRow>
+                  <TableCell />
                   {rolesConfig.users.modules.userTable.config.delete.includes(
                     userRole
                   ) && (
@@ -62,7 +64,7 @@ export default async function UserList({
                       </TableCell>
                     </>
                   )}
-                  <TableCell></TableCell>
+                  <TableCell />
                   {(
                     rolesConfig.users.modules.userTable.columns[
                       userRole as never

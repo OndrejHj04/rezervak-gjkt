@@ -26,15 +26,19 @@ import { rolesConfig } from "@/lib/rolesConfig";
 import React, { useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { isNull } from "lodash";
+import UserListHeader from "../UserListHeader";
 
 export default function UserListItem({
   user,
   userRole,
   userId,
+  childrenData,
 }: {
   user: any;
   userRole: any;
   userId: any;
+  childrenData: any;
 }) {
   const cells = rolesConfig.users.modules.userTable.columns[
     userRole as never
@@ -45,11 +49,15 @@ export default function UserListItem({
   return (
     <React.Fragment key={user.id}>
       <TableRow>
-        <TableCell>
-          <IconButton size="small" onClick={() => setOpen((o) => !o)}>
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
+        {childrenData && (
+          <TableCell>
+            {!!childrenData.length && (
+              <IconButton size="small" onClick={() => setOpen((o) => !o)}>
+                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              </IconButton>
+            )}
+          </TableCell>
+        )}
         {rolesConfig.users.modules.userTable.config.delete.includes(userRole) &&
         user.id === userId ? (
           <TableCell>
@@ -107,7 +115,34 @@ export default function UserListItem({
           <TableCell />
         )}
       </TableRow>
-      {open && <div></div>}
+      {open && (
+        <React.Fragment>
+          {childrenData && childrenData.length && (
+            <TableRow>
+              <TableCell colSpan={10}>
+                <div className="m-3">
+                  <Typography variant="h6">
+                    Dětské účty uživatele {user.first_name} {user.last_name}
+                  </Typography>
+                  <Table size="small">
+                    <TableBody>
+                      {childrenData.map((child: any) => (
+                        <UserListItem
+                          key={child.id}
+                          user={child}
+                          childrenData={null}
+                          userId={userId}
+                          userRole={userRole}
+                        />
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+        </React.Fragment>
+      )}
     </React.Fragment>
   );
 }

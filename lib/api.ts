@@ -19,20 +19,24 @@ export const getUserList = async ({
   role,
   organization,
   rpp = 10,
+  withChildrenCollapsed = false,
 }: {
   page?: any;
   search?: any;
   role?: any;
   organization?: any;
   rpp?: any;
+  withChildrenCollapsed?: any;
 } = {}) => {
   const guest = await checkUserSession();
 
-  const [users, count, children] = (await Promise.all([
+  const [users, count] = (await Promise.all([
     query({
-      query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.verified, users.birth_date, users.active, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role, 
+      query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.verified, users.birth_date, users.active, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role
       
-      GROUP_CONCAT(DISTINCT JSON_OBJECT(
+${
+  withChildrenCollapsed
+    ? `      ,GROUP_CONCAT(DISTINCT JSON_OBJECT(
         'id', children_detail.id, 
         'first_name', children_detail.first_name, 
         'last_name', children_detail.last_name, 
@@ -50,18 +54,29 @@ export const getUserList = async ({
             'name', children_roles.name
         )
     )
-) AS children
+) AS children`
+    : ""
+}
 
 
             FROM users${
               guest ? "_mock as users" : ""
             } INNER JOIN roles ON roles.id = users.role
              LEFT JOIN organization ON organization.id = users.organization
-             LEFT JOIN children_accounts ON children_accounts.parentId = users.id
+${
+  withChildrenCollapsed
+    ? `             LEFT JOIN children_accounts ON children_accounts.parentId = users.id
              LEFT JOIN users as children_detail ON children_detail.id = children_accounts.childrenId
              LEFT JOIN roles as children_roles ON children_roles.id = children_detail.role
-             LEFT JOIN organization as children_organization ON children_organization.id = children_detail.organization
+             LEFT JOIN organization as children_organization ON children_organization.id = children_detail.organization`
+    : ""
+}
             WHERE 1=1
+                  ${
+                    withChildrenCollapsed
+                      ? `AND NOT EXISTS (SELECT 1 FROM children_accounts WHERE children_accounts.childrenId = users.id)`
+                      : ""
+                  }
           ${
             search
               ? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`
@@ -75,6 +90,11 @@ export const getUserList = async ({
     }),
     query({
       query: `SELECT COUNT(*) as total FROM users WHERE 1=1 
+      ${
+        withChildrenCollapsed
+          ? `AND NOT EXISTS (SELECT 1 FROM children_accounts WHERE children_accounts.childrenId = users.id)`
+          : ""
+      }
           ${
             search
               ? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`
@@ -84,19 +104,18 @@ export const getUserList = async ({
           `,
       values: [],
     }),
-    query({
-      query: `SELECT id, first_name, last_name FROM users`,
-    }),
   ])) as any;
+
   const data = users.map((user: any) => ({
     ...user,
     role: JSON.parse(user.role),
     organization: JSON.parse(user.organization).id
       ? JSON.parse(user.organization)
       : null,
-    children: JSON.parse(`[${user.children}]`)[0].id
-      ? JSON.parse(`[${user.children}]`)
-      : null,
+    children:
+      user.children && JSON.parse(`[${user.children}]`)[0].id
+        ? JSON.parse(`[${user.children}]`)
+        : [],
   }));
   return { data, count: count[0].total };
 };
@@ -466,6 +485,12 @@ export const usersDelete = async ({ users }: { users: any }) => {
       } WHERE userId IN(${users.map(() => "?")})`,
       values: [...users],
     }),
+    query({
+      query: `DELETE FROM children_accounts${
+        guest ? "_mock" : ""
+      } WHERE childrenId IN(${users.map(() => "?")})`,
+      values: [...users],
+    }),
   ])) as any;
 
   return { success: affectedRows === users.length };
@@ -497,19 +522,26 @@ export const getUserDetail = async ({
 }) => {
   const guest = await checkUserSession();
 
-  const [user, groups, groupsCount, reservations, reservationsCount] =
-    (await Promise.all([
-      query({
-        query: `SELECT users.id, first_name, image, last_name, email, active, verified, adress, ID_code, birth_date, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role 
+  const [
+    user,
+    groups,
+    userChildren,
+    userChildrenCount,
+    groupsCount,
+    reservations,
+    reservationsCount,
+  ] = (await Promise.all([
+    query({
+      query: `SELECT users.id, first_name, image, last_name, email, active, verified, adress, ID_code, birth_date, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role 
         FROM users${
           guest ? "_mock as users" : ""
         } INNER JOIN roles ON roles.id = users.role
         LEFT JOIN organization ON  organization.id = users.organization
         WHERE users.id = ?`,
-        values: [id],
-      }),
-      query({
-        query: `
+      values: [id],
+    }),
+    query({
+      query: `
       SELECT groups.id, groups.name, groups.description, 
       JSON_OBJECT('id', owner.id, 'first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner,
       GROUP_CONCAT(users_groups.userId) as users
@@ -526,16 +558,42 @@ export const getUserDetail = async ({
       GROUP BY groups.id
       LIMIT 5 OFFSET ?
     `,
-        values: [id, gpage * 5 - 5],
-      }),
-      query({
-        query: `SELECT COUNT(*) as total FROM users_groups${
-          guest ? "_mock as users_groups" : ""
-        } WHERE userId = ?`,
-        values: [id],
-      }),
-      query({
-        query: `SELECT reservations.id, from_date, to_date, reservations.name, JSON_OBJECT('id', users.id, 'first_name', first_name, 'last_name', last_name, 'email', email, 'image', image) as leader, JSON_OBJECT('name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status
+      values: [id, gpage * 5 - 5],
+    }),
+    query({
+      query: `SELECT 
+   users.id, 
+    users.first_name, 
+    users.last_name, 
+    users.image, 
+    users.email
+  FROM 
+    children_accounts 
+  LEFT JOIN 
+    users ON users.id = children_accounts.childrenId 
+  WHERE 
+    children_accounts.parentId = ?;`,
+      values: [id],
+    }),
+    query({
+      query: `SELECT 
+      COUNT(*) as total
+  FROM 
+    children_accounts 
+  LEFT JOIN 
+    users ON users.id = children_accounts.childrenId 
+  WHERE 
+    children_accounts.parentId = ?;`,
+      values: [id],
+    }),
+    query({
+      query: `SELECT COUNT(*) as total FROM users_groups${
+        guest ? "_mock as users_groups" : ""
+      } WHERE userId = ?`,
+      values: [id],
+    }),
+    query({
+      query: `SELECT reservations.id, from_date, to_date, reservations.name, JSON_OBJECT('id', users.id, 'first_name', first_name, 'last_name', last_name, 'email', email, 'image', image) as leader, JSON_OBJECT('name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status
       FROM users_reservations${guest ? "_mock as users_reservations" : ""}
       INNER JOIN reservations${
         guest ? "_mock as reservations" : ""
@@ -545,18 +603,19 @@ export const getUserDetail = async ({
       } ON users.id = reservations.leader
       INNER JOIN status ON status.id = reservations.status
       WHERE userId = ? LIMIT 5 OFFSET ?`,
-        values: [id, rpage * 5 - 5],
-      }),
-      query({
-        query: `SELECT COUNT(*) as total FROM users_reservations${
-          guest ? "_mock as users_reservations" : ""
-        } WHERE userId = ?`,
-        values: [id],
-      }),
-    ])) as any;
+      values: [id, rpage * 5 - 5],
+    }),
+    query({
+      query: `SELECT COUNT(*) as total FROM users_reservations${
+        guest ? "_mock as users_reservations" : ""
+      } WHERE userId = ?`,
+      values: [id],
+    }),
+  ])) as any;
 
   const data = {
     ...user[0],
+    children: { total: userChildrenCount[0].total, data: userChildren },
     role: JSON.parse(user[0].role),
     organization: JSON.parse(user[0].organization).id
       ? JSON.parse(user[0].organization)

@@ -15,15 +15,8 @@ import TableListPagination from "@/ui-components/TableListPagination";
 import { rolesConfig } from "@/lib/rolesConfig";
 import UserListFilter from "./components/UserListFilter";
 import { getUserList } from "@/lib/api";
+import UserListHeader from "./UserListHeader";
 
-const columns = {
-  name: "Jméno",
-  email: "Email",
-  role: "Role",
-  birth_date: "Datum narození",
-  verified: "Ověřený účet",
-  organization: "Organizace",
-};
 export default async function UserList({
   searchParams,
   userRole,
@@ -43,6 +36,7 @@ export default async function UserList({
     search,
     role: Number(role),
     organization: Number(organization),
+    withChildrenCollapsed: true,
   });
 
   return (
@@ -52,34 +46,7 @@ export default async function UserList({
         <Box sx={{ overflow: "auto" }}>
           <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
             <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell />
-                  {rolesConfig.users.modules.userTable.config.delete.includes(
-                    userRole
-                  ) && (
-                    <>
-                      <TableCell>
-                        <RemoveUser />
-                      </TableCell>
-                    </>
-                  )}
-                  <TableCell />
-                  {(
-                    rolesConfig.users.modules.userTable.columns[
-                      userRole as never
-                    ] as any
-                  ).map((item: any) => (
-                    <TableCell
-                      sx={{ padding: 1.5 }}
-                      key={columns[item as never]}
-                    >
-                      <Chip label={columns[item as never]} />
-                    </TableCell>
-                  ))}
-                  <TableCell />
-                </TableRow>
-              </TableHead>
+              <UserListHeader userRole={userRole} />
               <TableBody>
                 {users.data.map((user: any) => (
                   <UserListItem
@@ -87,6 +54,7 @@ export default async function UserList({
                     user={user}
                     userRole={userRole}
                     userId={userId}
+                    childrenData={user.children}
                   />
                 ))}
               </TableBody>

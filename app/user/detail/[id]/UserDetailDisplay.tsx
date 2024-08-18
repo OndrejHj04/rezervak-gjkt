@@ -1,5 +1,6 @@
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
+  Alert,
   CardHeader,
   Divider,
   List,
@@ -10,9 +11,11 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import TableListPagination from "@/ui-components/TableListPagination";
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import HotelIcon from "@mui/icons-material/Hotel";
 
 export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
-  console.log(userDetail.children);
+  console.log(userDetail.reservations);
   return (
     <Paper className="md:p-4 p-2 flex md:flex-row flex-col gap-3">
       <div className="flex flex-col">
@@ -34,6 +37,36 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
         <Typography>Číslo OP: {userDetail.ID_code}</Typography>
         <Typography>Role: {userDetail.role.name}</Typography>
         <Typography>Adresa: {userDetail.adress}</Typography>
+
+        <div className="flex flex-col gap-2">
+          {!userDetail.active ? (
+            <Alert variant="outlined" severity="info" icon={<HotelIcon />}>
+              Účet byl uspán
+            </Alert>
+          ) : (
+            <>
+              {!userDetail.verified ? (
+                <Alert variant="outlined" severity="error">
+                  Neověřený uživatel
+                </Alert>
+              ) : (
+                <Alert variant="outlined" severity="success">
+                  Ověřený uživatel
+                </Alert>
+              )}
+            </>
+          )}
+          {userDetail.parrentAccount && (
+            <Alert
+              variant="outlined"
+              severity="info"
+              icon={<SupervisedUserCircleIcon />}
+            >
+              Dětský účet pod správou: {userDetail.first_name}{" "}
+              {userDetail.last_name}
+            </Alert>
+          )}
+        </div>
       </div>
       <Divider orientation="vertical" flexItem />
       <div className="flex md:flex-row flex-col gap-3">

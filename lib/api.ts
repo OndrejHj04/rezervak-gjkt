@@ -559,6 +559,7 @@ export const getUserDetail = async ({
     groupsCount,
     reservations,
     reservationsCount,
+    isChildrenAccount,
   ] = (await Promise.all([
     query({
       query: `SELECT users.id, users.first_name, users.image, users.last_name, users.email, users.active, users.verified, users.adress, users.ID_code, users.birth_date, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role, GROUP_CONCAT(DISTINCT JSON_OBJECT('id', children_detail.id, 'first_name', children_detail.first_name, 'last_name', children_detail.last_name)) as children
@@ -643,6 +644,14 @@ export const getUserDetail = async ({
       } WHERE userId = ?`,
       values: [id],
     }),
+    query({
+      query: `SELECT users.first_name, users.last_name as count FROM children_accounts ${
+        guest ? "_mock as users_reservations" : ""
+      } 
+      INNER JOIN users ON children_accounts.parentId = users.id  
+      WHERE childrenId = ?`,
+      values: [id],
+    }),
   ])) as any;
 
   const data = {
@@ -668,6 +677,7 @@ export const getUserDetail = async ({
       })),
       count: groupsCount[0].total,
     },
+    parrentAccount: isChildrenAccount.length ? isChildrenAccount[0] : null
   };
 
   return { data };

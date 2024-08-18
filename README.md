@@ -7,6 +7,6 @@ BTW you can try it live <a href="https://chata.gjkt.cz/">here</a>. Give it a try
 
 ### Verze:
 
-#### 1.1, 18.8. 2024
-🚀 Novinka: Dětské účty. Tato funkce dovoluje označit účet jako dětský a spárovat ho s jedním účtem rodičovským. Rodičovský účet nemůže být zároveň dětský. Funkce má zatím pouze informativní charakter a nepřináší žádné změny při vytváření rezervací, skupin atd.
-🚀 Novinka: Vztah k organizaci: Nastavení vztahu uživatele k organizaci: ZO, zaměstnanec, veřejnost.
+#### Verze 1.1, 18.8. 2024
+🚀 <b>Novinka</b>: Dětské účty. Tato funkce dovoluje označit účet jako dětský a spárovat ho s jedním účtem rodičovským. Rodičovský účet nemůže být zároveň dětský. Funkce má zatím pouze informativní charakter a nepřináší žádné změny při vytváření rezervací, skupin atd. </br>
+🚀 <b>Novinka</b>: Vztah k organizaci: Nastavení vztahu uživatele k organizaci: ZO, zaměstnanec, veřejnost. Nastavení probíhá v detailním formuláři uživatele.

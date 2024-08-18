@@ -11,7 +11,13 @@ import { Icon, Typography } from "@mui/material";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
-export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
+export default function SlidingMenu({
+  menuConfig,
+  version,
+}: {
+  menuConfig: any;
+  version: any;
+}) {
   const { status } = useSession();
 
   const { panel, setPanel } = store();
@@ -49,11 +55,10 @@ export default function SlidingMenu({ menuConfig }: { menuConfig: any }) {
         </MenuItem>
       </div>
       <Link
-        className="text-xs text-center"
-        target="_blank"
-        href="https://github.com/OndrejHj04"
+        className="text-xs text-center no-underline text-inherit"
+        href="/verzovnik"
       >
-        Ondřej Hájek
+        {version}
       </Link>
     </Drawer>
   );

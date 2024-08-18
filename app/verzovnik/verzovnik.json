@@ -1,0 +1,24 @@
+{
+  "versions": [
+    {
+      "title": "Verze 1.1 | 18.8. 2024",
+      "features": [
+        {
+          "icon": "🚀",
+          "name": "Novinka",
+          "content": " Dětské účty. Možnost přidat si pod svůj účet několik účtů zobrazených jako dětské. V tabulce uživatelů jsou dětské účty zobrazeny v rozklikávací tabulce pod rodičovským účtem. V detailu uživatele mají dětské účty oznámení o svém rodičovském účtu a rodičovské tabullku se svými dětskými účty. Propojení dětských a rodičovských účtů je zatím pouze informativní a nemá na účty žádný vliv."
+        },
+        {
+          "icon": "🚀",
+          "name": "Novinka",
+          "content": "Vztah k organizaci. Nepovinná informace o vztahu uživatele k organizaci: ZO, zaměstnanec, veřejnost. Nastavení probíhá v detailu uživatele v záložce upravit."
+        },
+        {
+          "icon": "🚀",
+          "name": "Novinka",
+          "content": "Verzovnik. Na adrese /verzovnik lze nyní nalézt seznam změn v nové verzi. Přibylo také zobrazení verze v postraním panelu."
+        }
+      ]
+    }
+  ]
+}

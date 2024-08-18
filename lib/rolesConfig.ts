@@ -233,6 +233,12 @@ export const rolesConfig = {
     roles: [],
     menu: [false, false],
   },
+  verzovnik: {
+    name: "Verzovnik",
+    path: "/verzovnik",
+    roles: [],
+    menu: [false, false],
+  },
 };
 
 export const getRoutes = (config: any, role: any, result: any = []) => {

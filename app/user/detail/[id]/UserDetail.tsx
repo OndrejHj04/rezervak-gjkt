@@ -7,12 +7,12 @@ import { getRolesList, getUserDetail } from "@/lib/api";
 
 export default async function UserDetail({
   params,
-  searchParams: { mode, reservations, groups },
+  searchParams: { mode, reservations, groups, children },
   userRole,
   userId,
 }: {
   params: any;
-  searchParams: { mode: any; reservations: any; groups: any };
+  searchParams: { mode: any; reservations: any; groups: any; children: any };
   userRole: any;
   userId: any;
 }) {
@@ -20,6 +20,7 @@ export default async function UserDetail({
     id: params,
     rpage: reservations || 1,
     gpage: groups || 1,
+    chpage: children || 1,
   });
 
   const { data: roles } = (await getRolesList({ filter: true })) as any;

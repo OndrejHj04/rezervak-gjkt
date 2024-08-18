@@ -36,9 +36,11 @@ import TableListPagination from "@/ui-components/TableListPagination";
 import {
   editUserDetail,
   makeUserSleep,
+  userRemoveChildren,
   userRemoveGroups,
   userRemoveReservations,
 } from "@/lib/api";
+import AddChildrenModal from "./AddChildrenModal";
 
 export default function UserDetailForm({
   userDetail,
@@ -60,8 +62,10 @@ export default function UserDetailForm({
 
   const [selectGroups, setSelectGroups] = useState<number[]>([]);
   const [selectReservations, setSelectReservation] = useState<number[]>([]);
+  const [selectChildren, setSelectChildren] = useState<number[]>([]);
   const [groupsModal, setGroupsModal] = useState(false);
   const [reservationsModal, setReservationsModal] = useState(false);
+  const [childrenModal, setChildrenModal] = useState(false);
   const makeEdit = rolesConfig.users.modules.userDetail.edit.includes(userRole);
 
   const handleUserSleep = (id: any, active: any) => {
@@ -118,6 +122,16 @@ export default function UserDetailForm({
     }
   };
 
+  const handleCheckChildren = (id: number) => {
+    if (selectChildren.includes(id)) {
+      setSelectChildren(
+        selectChildren.filter((reservation) => reservation !== id)
+      );
+    } else {
+      setSelectChildren([...selectChildren, id]);
+    }
+  };
+
   const removeReservations = () => {
     userRemoveReservations({
       user: userDetail.id,
@@ -127,6 +141,18 @@ export default function UserDetailForm({
       !success && toast.error("Něco se nepovedlo");
     });
     setSelectReservation([]);
+    MakeUserDetailRefetch(userDetail.id);
+  };
+
+  const removeChildren = () => {
+    userRemoveChildren({
+      user: userDetail.id,
+      children: selectChildren,
+    }).then(({ success }) => {
+      success && toast.success("Dětské účty úspěšně odpojeny");
+      !success && toast.error("Něco se nepovedlo");
+    });
+    setSelectChildren([]);
     MakeUserDetailRefetch(userDetail.id);
   };
 
@@ -161,6 +187,15 @@ export default function UserDetailForm({
               setModal={setReservationsModal}
             />
           )}
+        </Modal>
+      )}
+      {childrenModal && (
+        <Modal open={childrenModal} onClose={() => setChildrenModal(false)}>
+          <AddChildrenModal
+            currentChildren={userDetail.children.data}
+            setModal={setChildrenModal}
+            userId={userDetail.id}
+          />
         </Modal>
       )}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
@@ -345,31 +380,33 @@ export default function UserDetailForm({
                   </>
                 )}
               </List>
-              <TableListPagination
-                name="groups"
-                rpp={5}
-                count={userDetail.groups.count}
-              />
-              {makeEdit && (
-                <div className="flex flex-col gap-2">
-                  <Button
-                    variant="contained"
-                    color="error"
-                    endIcon={<DeleteForeverIcon />}
-                    disabled={!selectGroups.length}
-                    onClick={removeGroups}
-                  >
-                    Odebrat uživatele z vybraných skupin
-                  </Button>
-                  <Button
-                    variant="contained"
-                    endIcon={<AddToPhotosIcon />}
-                    onClick={() => setGroupsModal(true)}
-                  >
-                    Přidat uživatele do skupiny
-                  </Button>
-                </div>
-              )}
+              <div className="mt-auto">
+                <TableListPagination
+                  name="groups"
+                  rpp={5}
+                  count={userDetail.groups.count}
+                />
+                {makeEdit && (
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      variant="contained"
+                      color="error"
+                      endIcon={<DeleteForeverIcon />}
+                      disabled={!selectGroups.length}
+                      onClick={removeGroups}
+                    >
+                      Odebrat uživatele z vybraných skupin
+                    </Button>
+                    <Button
+                      variant="contained"
+                      endIcon={<AddToPhotosIcon />}
+                      onClick={() => setGroupsModal(true)}
+                    >
+                      Přidat uživatele do skupiny
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="flex flex-col">
               <Typography variant="h5">Rezervace uživatele</Typography>
@@ -439,6 +476,75 @@ export default function UserDetailForm({
                       onClick={() => setReservationsModal(true)}
                     >
                       Přidat uživatele do rezervace
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col">
+              <Typography variant="h5">Dětské účty uživatele</Typography>
+              <Divider />
+              <List>
+                {userDetail.children.count ? (
+                  userDetail.children.data.map((child: any) => (
+                    <ListItem disablePadding key={child.id}>
+                      <ListItemButton
+                        sx={{ padding: 1 }}
+                        onClick={() => handleCheckChildren(child.id)}
+                      >
+                        <ListItemText
+                          primary={
+                            <Typography>
+                              {child.first_name} {child.last_name}
+                            </Typography>
+                          }
+                          secondary={child.email}
+                        />
+                        <Checkbox
+                          disableRipple
+                          checked={selectChildren.includes(child.id)}
+                        />
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            push(`/user/detail/${child.id}`);
+                          }}
+                        >
+                          <Icon>info_icon</Icon>
+                        </IconButton>
+                      </ListItemButton>
+                    </ListItem>
+                  ))
+                ) : (
+                  <>
+                    <Typography>Žádné dětské účty uživatele</Typography>
+                  </>
+                )}
+              </List>
+              <div className="mt-auto">
+                <TableListPagination
+                  name="children"
+                  rpp={5}
+                  count={userDetail.children.count}
+                />
+                {makeEdit && (
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      variant="contained"
+                      color="error"
+                      endIcon={<DeleteForeverIcon />}
+                      disabled={!selectChildren.length}
+                      onClick={removeChildren}
+                    >
+                      Odpojit vybrané dětské účty
+                    </Button>
+                    <Button
+                      variant="contained"
+                      endIcon={<AddToPhotosIcon />}
+                      onClick={() => setChildrenModal(true)}
+                    >
+                      Přidat uživateli dětské účty
                     </Button>
                   </div>
                 )}

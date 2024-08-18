@@ -390,6 +390,33 @@ export const userAddGroups = async ({
   return { success: affectedRows === groups.length };
 };
 
+export const userAddChildren = async ({
+  user,
+  children,
+}: {
+  user: any;
+  children: any;
+}) => {
+  const guest = await checkUserSession();
+  const values = children.flatMap((child: any) => [
+    child,
+    user,
+    [child, user].join(","),
+  ]);
+  const placeholders = children.map(() => "(?,?,?)").join(",");
+
+  const [{ affectedRows }] = (await Promise.all([
+    query({
+      query: `INSERT IGNORE INTO children_accounts${
+        guest ? "_mock" : ""
+      } (childrenId, parentId, id) VALUES ${placeholders}`,
+      values,
+    }),
+  ])) as any;
+
+  return { success: affectedRows === children.length };
+};
+
 export const userAddReservations = async ({
   user,
   reservations,
@@ -515,10 +542,12 @@ export const getUserDetail = async ({
   id,
   gpage,
   rpage,
+  chpage,
 }: {
   id: any;
   gpage: any;
   rpage: any;
+  chpage: any;
 }) => {
   const guest = await checkUserSession();
 
@@ -532,11 +561,13 @@ export const getUserDetail = async ({
     reservationsCount,
   ] = (await Promise.all([
     query({
-      query: `SELECT users.id, first_name, image, last_name, email, active, verified, adress, ID_code, birth_date, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role 
+      query: `SELECT users.id, users.first_name, users.image, users.last_name, users.email, users.active, users.verified, users.adress, users.ID_code, users.birth_date, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role, GROUP_CONCAT(DISTINCT JSON_OBJECT('id', children_detail.id, 'first_name', children_detail.first_name, 'last_name', children_detail.last_name)) as children
         FROM users${
           guest ? "_mock as users" : ""
         } INNER JOIN roles ON roles.id = users.role
         LEFT JOIN organization ON  organization.id = users.organization
+        LEFT JOIN children_accounts ON children_accounts.parentId = users.id
+        LEFT JOIN users as children_detail ON children_accounts.childrenId = children_detail.id
         WHERE users.id = ?`,
       values: [id],
     }),
@@ -572,8 +603,9 @@ export const getUserDetail = async ({
   LEFT JOIN 
     users ON users.id = children_accounts.childrenId 
   WHERE 
-    children_accounts.parentId = ?;`,
-      values: [id],
+    children_accounts.parentId = ?
+   LIMIT 5 OFFSET ?`,
+      values: [id, chpage * 5 - 5],
     }),
     query({
       query: `SELECT 
@@ -583,7 +615,7 @@ export const getUserDetail = async ({
   LEFT JOIN 
     users ON users.id = children_accounts.childrenId 
   WHERE 
-    children_accounts.parentId = ?;`,
+    children_accounts.parentId = ?`,
       values: [id],
     }),
     query({
@@ -615,7 +647,7 @@ export const getUserDetail = async ({
 
   const data = {
     ...user[0],
-    children: { total: userChildrenCount[0].total, data: userChildren },
+    children: { count: userChildrenCount[0].total, data: userChildren },
     role: JSON.parse(user[0].role),
     organization: JSON.parse(user[0].organization).id
       ? JSON.parse(user[0].organization)
@@ -860,6 +892,27 @@ export const userRemoveGroups = async ({
   });
 
   return { success: affectedRows === groups.length };
+};
+
+export const userRemoveChildren = async ({
+  user,
+  children,
+}: {
+  user: any;
+  children: any;
+}) => {
+  const guest = await checkUserSession();
+
+  const [{ affectedRows }] = (await Promise.all([
+    query({
+      query: `DELETE FROM children_accounts${
+        guest ? "_mock" : ""
+      } WHERE parentId = ? AND childrenId  IN(${children.map(() => "?")})`,
+      values: [user, ...children],
+    }),
+  ])) as any;
+
+  return { success: affectedRows === children.length };
 };
 
 export const userRemoveReservations = async ({

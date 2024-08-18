@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import TableListPagination from "@/ui-components/TableListPagination";
 
 export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
+  console.log(userDetail.children);
   return (
     <Paper className="md:p-4 p-2 flex md:flex-row flex-col gap-3">
       <div className="flex flex-col">
@@ -90,6 +91,38 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
               name="reservations"
               rpp={5}
               count={userDetail.reservations.count}
+            />
+          </div>
+        </div>
+        <Divider orientation="vertical" flexItem />
+        <div className="flex flex-col">
+          <Typography variant="h5">Dětské účty uživatele</Typography>
+          <Divider />
+          <List>
+            {userDetail.children.count ? (
+              userDetail.children.data.map((child: any) => (
+                <ListItem disablePadding key={child.id}>
+                  <ListItemText
+                    primary={
+                      <Typography>
+                        {child.first_name} {child.last_name}
+                      </Typography>
+                    }
+                    secondary={child.email}
+                  />
+                </ListItem>
+              ))
+            ) : (
+              <>
+                <Typography>Žádné dětské uživatele</Typography>
+              </>
+            )}
+          </List>
+          <div className="mt-auto">
+            <TableListPagination
+              name="children"
+              rpp={5}
+              count={userDetail.children.count}
             />
           </div>
         </div>

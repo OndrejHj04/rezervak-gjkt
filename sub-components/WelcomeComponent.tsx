@@ -1,4 +1,4 @@
-import { Box, Button, Paper, Typography } from "@mui/material";
+import { Tooltip, Box, Button, Paper, Typography } from "@mui/material";
 import { signIn } from "next-auth/react";
 
 export default function WelcomeComponent() {
@@ -19,9 +19,15 @@ export default function WelcomeComponent() {
           Pro používání aplikace je nutné se přihlásit.
         </Typography>
         <div className="flex justify-center mt-2">
-          <Button variant="contained" onClick={handleClick}>
-            Pokračovat jako host
-          </Button>
+          <Tooltip title={<Typography variant="subtitle1" className="text-center">
+            Z důvodu probíhajících releasů aplikace je tato možnost dočasně vypnuta.
+            </Typography>}>
+            <div>
+              <Button disabled variant="contained" onClick={handleClick}>
+                Pokračovat bez přihlášení
+              </Button>
+            </div>
+          </Tooltip>
         </div>
       </Box>
     </Paper>

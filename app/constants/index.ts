@@ -6,7 +6,7 @@ export class BaseEnum<K, L> {
   }
 
   get list(): L[] {
-    return Object.values(this)
+    return Object.values(this.enum)
   }
 
 }

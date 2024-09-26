@@ -3,7 +3,8 @@ import { BaseEnum } from "@/app/constants/index"
 enum ChangeType {
   feature = "feature",
   fix = "fix",
-  chore = "chore"
+  chore = "chore",
+  refactoring = "refactoring"
 }
 
 type ChangeTypeProperites = {
@@ -25,10 +26,14 @@ class ChangeTypeEnum extends BaseEnum<typeof ChangeType, ChangeTypeProperites> {
       [ChangeType.chore]: {
         icon: "👷",
         label: "Údržba"
+      },
+      [ChangeType.refactoring]:{
+        icon: "🛠️",
+        label: "Refactoring"
       }
     })
   }
 }
 
 const changeTypeEnum = new ChangeTypeEnum()
-export { changeTypeEnum }
+export { changeTypeEnum, type ChangeTypeProperites }

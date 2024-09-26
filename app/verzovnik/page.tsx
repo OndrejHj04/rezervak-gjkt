@@ -11,13 +11,21 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React from "react";
 import versionsData from "./verzovnik.data"
+import { changeTypeEnum } from "./verzovnik.types";
+import ChangeTypeSelect from "./ChangeTypeSelect"
 
-export default function ChangelogPage() {
+export default function ChangelogPage({ searchParams: { changeTypeId = ""} }: { searchParams: { changeTypeId: string } }) {
+
+  const filter = changeTypeId.split(",")
+
   return (
     <React.Fragment>
-      <Typography className="mb-3" variant="h5">
-        Verzovnik
-      </Typography>
+      <div className="flex justify-between sm:flex-row flex-col gap-2 items-center">
+        <Typography variant="h5">
+          Verzovnik
+        </Typography>
+        <ChangeTypeSelect changeTypes={changeTypeEnum.list} />
+      </div>
       {versionsData.versions.map(({ title, features }, i) => (
         <Accordion key={i} defaultExpanded={i === 0}>
           <AccordionSummary
@@ -30,12 +38,14 @@ export default function ChangelogPage() {
           <AccordionDetails>
             <List>
               {features.map((feat, x) => {
-                return (
-                  <ListItem key={x}>
-                    <ListItemIcon>{feat.icon}</ListItemIcon>
-                    <ListItemText primary={feat.content} secondary={feat.name} />
-                  </ListItem>
-                )
+                if (filter.includes(feat.name)) {
+                  return (
+                    <ListItem key={x}>
+                      <ListItemIcon>{feat.icon}</ListItemIcon>
+                      <ListItemText primary={feat.content} secondary={feat.name} />
+                    </ListItem>
+                  )
+                }
               })}
             </List>
           </AccordionDetails>

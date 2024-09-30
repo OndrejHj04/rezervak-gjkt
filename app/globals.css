@@ -13,3 +13,12 @@
     grid-template-columns: repeat(auto-fit, minmax(100%, 1fr)) !important;
   }
 }
+
+.fc .fc-header-toolbar {
+  display: none;
+  margin: 0;
+}
+
+.fc .fc-col-header-cell {
+  height: 26px
+}

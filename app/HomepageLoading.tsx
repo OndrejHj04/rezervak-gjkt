@@ -1,10 +1,8 @@
 "use client";
-import { store } from "@/store/store";
-import { Box, CircularProgress, Skeleton, Typography } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import WelcomeComponent from "../sub-components/WelcomeComponent";
 import SleepingUserInfo from "../sub-components/SleepingUserInfo";
 import VerifyUser from "../sub-components/VerifyUser";
-import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 

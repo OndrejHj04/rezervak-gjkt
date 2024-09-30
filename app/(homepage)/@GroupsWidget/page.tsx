@@ -3,16 +3,18 @@ import SingleGroup from "./SingleGroup";
 import GroupIcon from "@mui/icons-material/Group";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { userSpecifiedGroups } from "@/lib/api";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { getServerSession } from "next-auth";
 
 export default async function DisplayGroups({
   searchParams,
-  data,
 }: {
   searchParams: any;
-  data: any;
 }) {
+  const user = (await getServerSession(authOptions)) as any;
+
   const groups = await userSpecifiedGroups({
-    id: data.user.id,
+    id: user.user.id,
     page: Number(searchParams.groups) || 1,
   });
 

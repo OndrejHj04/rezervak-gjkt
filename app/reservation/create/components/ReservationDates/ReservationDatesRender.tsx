@@ -26,7 +26,7 @@ import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
 import { Controller, useForm } from "react-hook-form";
 import { store } from "@/store/store";
-import SingleReservation from "@/app/homepage/reservations/SingleReservation";
+import SingleReservation from "@/app/(homepage)/@ReservationsWidget/SingleReservation";
 
 dayjs.extend(isBetween as any);
 dayjs.extend(isSameOrAfter as any);

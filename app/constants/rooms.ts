@@ -14,7 +14,7 @@ type RoomsProperties = {
   label: string;
 }
 
-class RoomsEnum extends BaseEnum<typeof Rooms, RoomsProperties> {
+class RoomsEnum extends BaseEnum<any, any> {
   constructor() {
     super({
       [Rooms[1]]: {

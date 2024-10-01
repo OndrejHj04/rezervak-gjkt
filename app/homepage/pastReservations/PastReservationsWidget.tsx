@@ -1,9 +1,9 @@
 import { MenuList, Paper, Typography } from "@mui/material";
 import ElderlyIcon from "@mui/icons-material/Elderly";
-import SingleReservation from "../reservations/SingleReservation";
 import MakeReservationsArchive from "./MakeReservationsArchive";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { getReservationList } from "@/lib/api";
+import SingleReservation from "@/app/(homepage)/@ReservationsWidget/SingleReservation";
 
 export default async function PastReservationsWidget({
   searchParams,

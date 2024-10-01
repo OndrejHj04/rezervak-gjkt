@@ -11,10 +11,10 @@ import { Controller, useForm } from "react-hook-form";
 import CzechLocale from "dayjs/locale/cs";
 import { Badge, Box, Button, Tooltip, Typography } from "@mui/material";
 import dayjs from "dayjs";
-import SingleReservation from "../reservations/SingleReservation";
 import { toast } from "react-toastify";
 import HomepageRefetch from "../refetch";
 import { setBlockedDates } from "@/lib/api";
+import SingleReservation from "@/app/(homepage)/@ReservationsWidget/SingleReservation";
 
 export default function BlockDatesForm({
   reservations,

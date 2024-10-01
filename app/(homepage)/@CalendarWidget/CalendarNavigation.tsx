@@ -25,7 +25,7 @@ export default function FullcalendarWidget({ searchParams, data }: { searchParam
     icon: event.status.icon,
     display_name: event.status.display_name
   }))
-  console.log(calendarEventData)
+
   const calendarRef = useRef(null)
   const pathname = usePathname();
   const { replace } = useRouter()
@@ -67,49 +67,49 @@ export default function FullcalendarWidget({ searchParams, data }: { searchParam
     const { leader, rooms, display_name, icon } = event.event.extendedProps
 
     return <Tooltip title={<List className='p-0'>
-      <ListItem className="p-0">
+      <ListItem className="!p-0">
         <ListItemText>Název: {event.event.title}</ListItemText>
       </ListItem>
-      <ListItem className="p-0">
+      <ListItem className="!p-0">
         <ListItemText>Pokoje: {rooms.map((item: any) => item.id).join(",")}</ListItemText>
       </ListItem>
-      <ListItem className='p-0'>
+      <ListItem className='!p-0'>
         <ListItemText>Vedoucí: {getFullName(leader)}</ListItemText>
       </ListItem>
-      <ListItem className="p-0">
+      <ListItem className="!p-0">
         <ListItemText>Status: {display_name}</ListItemText>
         <ListItemIcon className='min-w-0 ml-2'>
           {<Icon sx={{ color: event.event.backgroundColor }}>{icon}</Icon>}    </ListItemIcon>      </ListItem>
-      </List>}>
-      <React.Fragment>
-        <p>{event.event.title}</p>
-      </React.Fragment>
+    </List>}>
+      <p>{event.event.title}</p>
     </Tooltip>
   }
 
   return (
-    <Paper className="flex w-full h-full" style={{ minHeight: "420px" }}>
-      <div className='flex flex-col gap-2 mx-2' style={{ width: "120px" }}>
-        <Typography variant="h6" className='font-semibold text-center'>
-          {calendarTitle}
-        </Typography>
-        <ButtonGroup fullWidth>
-          <Button onClick={() => mutateCalendar("prev")}>
-            <NavigateBefore />
-          </Button>
-          <Button onClick={() => mutateCalendar("next")}>
-            <NavigateNext />
-          </Button>
-        </ButtonGroup>
-        <Button variant="outlined" onClick={() => mutateCalendar("today")}>Dnes</Button>
-        <ToggleButtonGroup orientation="vertical" onChange={handleRoomsFilterChange} value={roomsFilter}>
+    <Paper className="flex w-full h-full sm:flex-row flex-col">
+      <div className='flex flex-col sm:m-2'>
+        <div className="flex sm:flex-col flex-row gap-2">
+          <Typography variant="h6" className='!font-semibold text-center w-full'>
+            {calendarTitle}
+          </Typography>
+          <ButtonGroup size="small" fullWidth>
+            <Button onClick={() => mutateCalendar("prev")}>
+              <NavigateBefore />
+            </Button>
+            <Button onClick={() => mutateCalendar("next")}>
+              <NavigateNext />
+            </Button>
+          </ButtonGroup>
+          <Button variant="outlined" size="small" onClick={() => mutateCalendar("today")}>Dnes</Button>
+        </div>
+        <ToggleButtonGroup orientation='vertical' className='sm:flex-col flex-row' size='small' onChange={handleRoomsFilterChange} value={roomsFilter}>
           <ToggleButton value="all" selected={roomsEnum.list.length === roomsFilter.length}>Celá chata</ToggleButton>
           {roomsEnum.list.map(rooms => (
-            <ToggleButton value={rooms.id}>{rooms.label}</ToggleButton>
+            <ToggleButton key={rooms.id} value={rooms.id}>{rooms.label}</ToggleButton>
           ))}
         </ToggleButtonGroup>
       </div>
-      <div className='flex-1'>
+      <div className='flex-1' style={{minHeight: 400}}>
         <FullCalendar ref={calendarRef} height="100%" locale={csLocale} headerToolbar={{ right: "", left: "" }} plugins={[dayGridPlugin]} initialView="dayGridMonth" events={calendarEventData} eventContent={eventContentInjection} />
       </div>
     </Paper>

@@ -1,10 +1,30 @@
 import { changeTypeEnum } from "./verzovnik.types"
 
-const { feature, chore, fix } = changeTypeEnum.enum
+const { feature, chore, fix, refactoring } = changeTypeEnum.enum
 
 const versionsChanges =
 {
   "versions": [
+    {
+      title: "Verze 1.2 | 1. 10. 2024",
+      features: [
+        {
+          name: feature.label,
+          icon: feature.icon,
+          content: "Kompletní přepracování domovské stránky. Vytvoření nového přehledného kalendáře a schování administrátorských widgetů. Domovská stránka by se měla zobrazovat všem uživatelů se stejným obsahem."
+        },
+        {
+          "name": feature.label,
+          "icon": feature.icon,
+          "content": "Na stránce se soupisem změn v jednotlivých verzích přidáno filtrování na zobrazení pouze některých druhů změn. Nově je panel s nejnovějším releasem defaultně otevřený."
+        },
+        {
+        "name": chore.label,
+        "icon": chore.icon,
+        "content": "Vytvoření procesu na automatický deployment aplikace."
+      }
+      ]
+    },
     {
       "title": "Verze 1.1 | 18.8. 2024",
       "features": [

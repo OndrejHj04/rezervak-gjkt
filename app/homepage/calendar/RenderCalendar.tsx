@@ -1,4 +1,5 @@
 "use client";
+import SingleReservation from "@/app/(homepage)/@ReservationsWidget/SingleReservation";
 import { Reservation } from "@/types";
 import { Badge, Box, Tooltip, Typography } from "@mui/material";
 import {
@@ -10,7 +11,6 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import CzechLocale from "dayjs/locale/cs";
-import SingleReservation from "../reservations/SingleReservation";
 
 const renderDay = (props: any) => {
   const { day, outsideCurrentMonth, reservations, ...other } = props;

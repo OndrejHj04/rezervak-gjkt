@@ -10,6 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 import "react-perfect-scrollbar/dist/css/styles.css";
 import SlidingMenuConfig from "./navigation/sidebar/SlidingMenuConfig";
 import { getUserTheme } from "@/lib/api";
+import { store } from "@/store/store";
 
 export const metadata: Metadata = {
   title: "Chata GJKT",
@@ -31,7 +32,7 @@ export default async function RootLayout({
             <TopBar />
             <SlidingMenuConfig />
             <SpeedComponent />
-            <div className="sm:p-5 p-2 overflow-auto flex-grow">{children}</div>
+            <div className="p-2 overflow-auto flex-grow">{children}</div>
           </ClientProvider>
           <ToastContainer />
         </div>

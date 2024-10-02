@@ -2,7 +2,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import SlidingMenu from "./SlidingMenu";
 import { getRoutes, rolesConfig } from "@/lib/rolesConfig";
-import changelog from "@/app/verzovnik/verzovnik.data"
+import changelog from "@/app/changelog/changelog.data"
 
 export default async function SlidingMenuConfig() {
   const data = (await getServerSession(authOptions)) as any;

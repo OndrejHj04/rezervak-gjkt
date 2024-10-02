@@ -2,7 +2,7 @@
 import { FormControl, FormHelperText, Checkbox, ListItemText, MenuItem, Select } from "@mui/material";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { ChangeTypeProperites } from "./verzovnik.types";
+import { ChangeTypeProperites } from "./changelog.types";
 import { useEffect, useState } from "react";
 
 export default function ChangeTypeSelect({ changeTypes }: { changeTypes: ChangeTypeProperites[] }) {

@@ -10,8 +10,8 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React from "react";
-import versionsData from "./verzovnik.data"
-import { changeTypeEnum } from "./verzovnik.types";
+import versionsData from "./changelog.data"
+import { changeTypeEnum } from "./changelog.types";
 import ChangeTypeSelect from "./ChangeTypeSelect"
 
 export default function ChangelogPage({ searchParams: { changeTypeId = ""} }: { searchParams: { changeTypeId: string } }) {
@@ -22,7 +22,7 @@ export default function ChangelogPage({ searchParams: { changeTypeId = ""} }: { 
     <React.Fragment>
       <div className="flex justify-between sm:flex-row flex-col gap-2 items-center">
         <Typography variant="h5">
-          Verzovnik
+          Changelog
         </Typography>
         <ChangeTypeSelect changeTypes={changeTypeEnum.list} />
       </div>

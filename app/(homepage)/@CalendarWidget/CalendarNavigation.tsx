@@ -86,8 +86,8 @@ export default function FullcalendarWidget({ searchParams, data }: { searchParam
   }
 
   return (
-    <Paper className="flex w-full h-full sm:flex-row flex-col">
-      <div className='flex flex-col sm:m-2'>
+    <Paper className="flex w-full h-full sm:flex-row flex-col p-2">
+      <div className='flex flex-col mr-2'>
         <div className="flex sm:flex-col flex-row gap-2">
           <Typography variant="h6" className='!font-semibold text-center w-full'>
             {calendarTitle}

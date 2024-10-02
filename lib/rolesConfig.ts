@@ -233,9 +233,9 @@ export const rolesConfig = {
     roles: [],
     menu: [false, false],
   },
-  verzovnik: {
-    name: "Verzovnik",
-    path: "/verzovnik",
+  changelog: {
+    name: "Changelog",
+    path: "/changelog",
     roles: [],
     menu: [false, false],
   },

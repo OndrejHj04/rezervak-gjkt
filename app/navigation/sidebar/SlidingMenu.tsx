@@ -56,7 +56,7 @@ export default function SlidingMenu({
       </div>
       <Link
         className="text-xs text-center no-underline text-inherit"
-        href="/verzovnik"
+        href="/changelog"
       >
         {version}
       </Link>

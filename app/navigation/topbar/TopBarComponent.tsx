@@ -13,28 +13,30 @@ export default function TopBarComponent({ theme, id }: any) {
   const { setPanel } = store();
   return (
     <AppBar position="static">
-      <Toolbar className="sm:px-5 px-2">
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{ mr: 2 }}
-          onClick={() => setPanel(true)}
-        >
-          <MenuIcon />
-        </IconButton>
-        <Typography
-          variant="h6"
-          component={Link}
-          sx={{ flexGrow: 1 }}
-          href="/"
-          className="text-inherit no-underline"
-        >
-          Chata GJKT
-        </Typography>
-        <DarkModeToggle theme={theme} id={id} />
-        <LoginButton />
+      <Toolbar className="!min-h-0 !p-0 !pl-2 flex">
+        <div className="flex-1 flex justify-start items-center">
+          <IconButton
+            onClick={() => setPanel(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          <Typography
+            variant="h6"
+            component={Link}
+            href="/"
+            className="text-inherit no-underline"
+          >
+            Chata GJKT
+          </Typography>
+        </div>
+        <div className="flex flex-col">
+{          /* <Typography variant="body2">V Krkonoších teď prší a je  10 °C</Typography> */}
+        </div>
+        <div className="flex-1 flex justify-end">
+          <DarkModeToggle theme={theme} id={id} />
+          <LoginButton />
+        </div>
       </Toolbar>
     </AppBar>
   );

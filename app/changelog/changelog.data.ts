@@ -1,4 +1,4 @@
-import { changeTypeEnum } from "./verzovnik.types"
+import { changeTypeEnum } from "./changelog.types"
 
 const { feature, chore, fix, refactoring } = changeTypeEnum.enum
 
@@ -41,7 +41,7 @@ const versionsChanges =
         {
           "name": feature.label,
           "icon": feature.icon,
-          "content": "Verzovnik. Na adrese /verzovnik lze nyní nalézt seznam změn v nové verzi. Přibylo také zobrazení verze v postraním panelu."
+          "content": "Changelog. Na adrese /changelog lze nyní nalézt seznam změn v nové verzi. Přibylo také zobrazení verze v postraním panelu."
         }
       ]
     }

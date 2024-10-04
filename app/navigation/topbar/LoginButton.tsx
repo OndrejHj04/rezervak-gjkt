@@ -1,9 +1,13 @@
-import AvatarWrapper from "@/ui-components/AvatarWrapper";
-import { Button, Skeleton, Typography } from "@mui/material";
+"use client"
+import React from "react"
+import { Button, ButtonBase, ButtonGroup, Divider, IconButton, Skeleton, Typography } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import UserMenuCard from "./UserCardMenu";
+import { getTestUsers } from "@/lib/api";
 
-export default function LoginButton() {
+
+export default function LoginButton({ children }: { children: React.ReactNode }) {
   const { status, data } = useSession();
 
   if (status === "loading") {
@@ -19,21 +23,9 @@ export default function LoginButton() {
   }
 
   if (data?.user) {
-    return (
-      <Link href={`/user/detail/${data.user.id}`}>
-        <Button>
-          <div className="flex-col mx-4 items-end normal-case text-white sm:flex hidden">
-            <Typography className="!font-semibold capitalize" variant="body1">
-              {data.user.first_name} {data.user.last_name}
-            </Typography>
-            <div className="flex gap-1 items-center">
-              <Typography variant="body2">{data.user.role.name}</Typography>
-            </div>
-          </div>
-          <AvatarWrapper data={data.user} />
-        </Button>
-      </Link>
-    );
+    return children
   }
   return null;
 }
+
+

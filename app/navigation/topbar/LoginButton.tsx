@@ -4,8 +4,6 @@ import { Button, ButtonBase, ButtonGroup, Divider, IconButton, Skeleton, Typogra
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import UserMenuCard from "./UserCardMenu";
-import { getTestUsers } from "@/lib/api";
-
 
 export default function LoginButton({ children }: { children: React.ReactNode }) {
   const { status, data } = useSession();

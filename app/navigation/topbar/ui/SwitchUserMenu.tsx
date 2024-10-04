@@ -9,11 +9,9 @@ export default function SwitchUserMenu() {
 
   return (
     <React.Fragment>
-
       <IconButton disabled onClick={(e) => setAnchorElement(e.currentTarget)} className="w-min rounded-none">
         <ArrowDropDown />
       </IconButton>
-
       <Menu className="!p-0" MenuListProps={{ className: "!p-0" }} anchorEl={anchorElement} transformOrigin={{ horizontal: "right", vertical: "top" }} open={Boolean(anchorElement)} onClose={() => setAnchorElement(null)} >
 
       </Menu>

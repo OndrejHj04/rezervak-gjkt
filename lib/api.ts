@@ -1489,18 +1489,6 @@ export const editReservationDetail = async ({
   return { success: affectedRows === 1 };
 };
 
-export const setReservationsArchive = async () => {
-  const guest = await checkUserSession();
-
-  const { affectedRows } = (await query({
-    query: `UPDATE reservations${guest ? "_mock" : ""
-      } SET status = 1 WHERE status <> 1 AND status <> 5 AND to_date < CURDATE()`,
-    values: [],
-  })) as any;
-
-  return { count: affectedRows };
-};
-
 export const reservationRemoveGroups = async ({
   reservation,
   groups,

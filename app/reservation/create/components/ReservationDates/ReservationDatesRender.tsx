@@ -64,7 +64,7 @@ const renderDay = (props: any) => {
           {...other}
           day={day}
           disabled={
-            isBlocked.length || dayjs(dayjs(day).add(1, "day")).isBefore()
+            isBlocked.length
           }
           outsideCurrentMonth={outsideCurrentMonth}
         />

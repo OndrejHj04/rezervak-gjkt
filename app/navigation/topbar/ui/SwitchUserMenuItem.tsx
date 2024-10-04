@@ -14,7 +14,7 @@ export default function SwitchUserMenuItem({ user, type }: SwitchUserMenuItemTyp
       password: ""
     }) */
   }
-  console.log(user)
+
   const content = (
     <Button {...(type === "sign-in" ? { onClick: handleSignIn } : {})}>
       <div className="flex-col mx-4 items-end normal-case text-white sm:flex hidden">

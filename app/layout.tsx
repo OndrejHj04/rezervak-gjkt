@@ -27,7 +27,8 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex flex-col h-screen">
+        {/* OMG 100dvh works like a charms!  f*/}
+        <div className="flex flex-col" style={{ height: "100dvh" }}>
           <ClientProvider theme={theme}>
             <TopBar />
             <SlidingMenuConfig />

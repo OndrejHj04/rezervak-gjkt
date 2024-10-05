@@ -87,7 +87,7 @@ export default function FullcalendarWidget({ searchParams, data }: { searchParam
 
   return (
     <Paper className="flex w-full h-full sm:flex-row flex-col p-2">
-      <div className='flex flex-col mr-2'>
+      <div className='flex flex-col sm:mr-2 mb-2 gap-2'>
         <div className="flex sm:flex-col flex-row gap-2">
           <Typography variant="h6" className='!font-semibold text-center w-full'>
             {calendarTitle}
@@ -109,7 +109,7 @@ export default function FullcalendarWidget({ searchParams, data }: { searchParam
           ))}
         </ToggleButtonGroup>
       </div>
-      <div className='flex-1' style={{minHeight: 400}}>
+      <div className='flex-1' style={{ minHeight: 450 }}>
         <FullCalendar ref={calendarRef} height="100%" locale={csLocale} headerToolbar={{ right: "", left: "" }} plugins={[dayGridPlugin]} initialView="dayGridMonth" events={calendarEventData} eventContent={eventContentInjection} />
       </div>
     </Paper>

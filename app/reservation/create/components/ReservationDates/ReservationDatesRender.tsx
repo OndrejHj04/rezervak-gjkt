@@ -231,8 +231,6 @@ export default function ReservationDatesRender({
                 {res && res.length ? (
                   res.map((res: any) => (
                     <SingleReservation
-                      display="long"
-                      link={false}
                       key={res.id}
                       reservations={res}
                     />

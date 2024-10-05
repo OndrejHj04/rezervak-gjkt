@@ -12,10 +12,10 @@ export default async function Layout({ WelcomeWidget, GroupsWidget, CalendarWidg
 
   const homepage = (
     <div className="w-full h-full flex flex-col">
-{      /* {WelcomeWidget} */}
+      {      /* {WelcomeWidget} */}
       <div className="flex-1 flex sm:flex-row flex-col gap-2">
         <div
-          className="grid grid-rows-2 grid-cols-1 gap-2"
+          className="grid grid-rows-2 gap-2"
         >
           {GroupsWidget}
           {ReservationsWidget}

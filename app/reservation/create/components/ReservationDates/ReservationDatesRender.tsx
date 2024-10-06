@@ -3,75 +3,30 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Badge,
   Button,
+  ButtonGroup,
+  Icon,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useEffect, useState } from "react";
-import { Reservation } from "@/types";
-import {
-  LocalizationProvider,
-  PickersDay,
-  StaticDatePicker,
-  csCZ,
-} from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import CzechLocale from "dayjs/locale/cs";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
-import * as isBetween from "dayjs/plugin/isBetween";
-import * as isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
 import { Controller, useForm } from "react-hook-form";
 import { store } from "@/store/store";
-import SingleReservation from "@/app/(homepage)/@ReservationsWidget/SingleReservation";
+import FullCalendar from "@fullcalendar/react";
+import resourceTimelineWeek from "@fullcalendar/resource-timeline"
 
-dayjs.extend(isBetween as any);
-dayjs.extend(isSameOrAfter as any);
-dayjs.extend(isSameOrBefore as any);
-
-const renderDay = (props: any) => {
-  const { day, outsideCurrentMonth, reservations, ...other } = props;
-
-  const isReservation = reservations?.filter((r: any) =>
-    dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
-  );
-  const isBlocked = isReservation.filter((r: any) => r.status.id === 5);
-  const thisDayRooms = isReservation.reduce(
-    (a: any, b: any) => a + b.rooms.length,
-    0
-  );
-  const isFull = thisDayRooms >= 6;
-  return (
-    <Badge
-      sx={{ "& .MuiBadge-badge": { transform: "translate(5px, -5px)" } }}
-      color={isFull ? "error" : "success"}
-      badgeContent={
-        isReservation.length && !outsideCurrentMonth ? thisDayRooms : 0
-      }
-    >
-      <Badge
-        color="error"
-        sx={{ "& .MuiBadge-badge": { transform: "translate(0px, -5px)" } }}
-        variant="dot"
-        invisible={!isBlocked.length}
-        badgeContent={outsideCurrentMonth ? 0 : ""}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <PickersDay
-          {...other}
-          day={day}
-          disabled={
-            isBlocked.length
-          }
-          outsideCurrentMonth={outsideCurrentMonth}
-        />
-      </Badge>
-    </Badge>
-  );
-};
+import csLocale from "@fullcalendar/core/locales/cs"
+import { NavigateBefore, NavigateNext } from "@mui/icons-material";
+import { roomsEnum } from "@/app/constants/rooms";
+import { getFullName } from "@/app/constants/fullName";
 
 export default function ReservationDatesRender({
   reservations,
@@ -81,9 +36,9 @@ export default function ReservationDatesRender({
   const { createReservation, setCreateReservation } = store();
   const [expanded, setExpanded] = useState(false);
   const isValid = createReservation.from_date && createReservation.to_date;
-  const [afterReservation, setAfterReservation] = useState(Infinity);
-  const [beforeReservation, setBeforeReservation] = useState(Infinity);
   const [finalDate, setFinalDate] = useState("");
+  const calendarRef = useRef(null)
+  const [calendarTitle, setCalendarTitle] = useState("")
   const { handleSubmit, control, watch, formState, reset } = useForm({
     defaultValues: { from_date: null, to_date: null },
   });
@@ -106,51 +61,61 @@ export default function ReservationDatesRender({
   };
 
   useEffect(() => {
-    if (watch("from_date")) {
-      const lowestDiff = reservations.reduce((lowest, r) => {
-        if (dayjs(watch("from_date")).isBefore(r.from_date, "day")) {
-          const diff = dayjs(r.from_date).diff(watch("from_date"), "day");
-          return diff < lowest ? diff : lowest;
-        }
-        return lowest;
-      }, Infinity);
-      setAfterReservation(lowestDiff);
+    const calendarApi = (calendarRef.current as any).getApi()
+    setCalendarTitle(calendarApi.currentData.viewTitle)
+  }, [])
+
+  const calendarEventData = useMemo(() => {
+    return reservations.map(reservation => ({
+      id: reservation.id,
+      title: reservation.name,
+      start: reservation.from_date,
+      end: dayjs(reservation.to_date).add(1, "day").toDate(),
+      allDay: true,
+      resourceIds: reservation.rooms.map(({ id }: any) => id),
+      leader: reservation.leader,
+      color: reservation.status.color,
+      icon: reservation.status.icon,
+      display_name: reservation.status.display_name
+    }))
+  }, [])
+
+  const calendarResources = useMemo(() => {
+    return roomsEnum.list.map((room) => ({ id: room.id, title: room.label }))
+  }, [])
+
+  console.log(calendarEventData, calendarResources)
+
+  const mutateCalendar = (action: "next" | "prev" | "today") => {
+    const calendarApi = (calendarRef.current as any).getApi()
+    switch (action) {
+      case "next":
+        calendarApi.next()
+        break
+      case "prev":
+        calendarApi.prev()
+        break;
+      case "today":
+        calendarApi.today()
     }
+    setCalendarTitle(calendarApi.currentData.viewTitle)
+  }
 
-    if (watch("to_date")) {
-      const lowestDiff = reservations.reduce((lowest, r) => {
-        if (dayjs(watch("to_date")).isAfter(r.to_date, "day")) {
-          const diff = dayjs(watch("to_date")).diff(r.to_date, "day");
-          return diff < lowest ? diff : lowest;
-        }
-        return lowest;
-      }, Infinity);
-      setBeforeReservation(lowestDiff);
-    }
-  }, [watch(), reservations]);
+  const eventContentInjection = (event: any) => {
+    const { leader, rooms, display_name, icon } = event.event.extendedProps
 
-  const toDateDisabled = (date: any) => {
-    return (
-      dayjs().isAfter(date) ||
-      dayjs(date).isSameOrBefore(watch("from_date"), "day")
-    );
-  };
-
-  const afterDateDisabled = (date: any) => {
-    return (
-      dayjs().isAfter(date) ||
-      dayjs(date).isSameOrAfter(watch("to_date"), "day")
-    );
-  };
-
-  const res: any =
-    from_date &&
-    to_date &&
-    (reservations.filter(
-      (res: any) =>
-        dayjs(res.from_date).isBetween(from_date, to_date, "day", "[]") ||
-        dayjs(res.to_date).isBetween(from_date, to_date, "day", "[]")
-    ) as any);
+    return <Tooltip title={<List className='p-0'>
+      <ListItem className='!p-0'>
+        <ListItemText>Vedoucí: {getFullName(leader)}</ListItemText>
+      </ListItem>
+      <ListItem className="!p-0">
+        <ListItemText>Status: {display_name}</ListItemText>
+        <ListItemIcon className='min-w-0 ml-2'>
+          {<Icon sx={{ color: event.event.backgroundColor }}>{icon}</Icon>}    </ListItemIcon>      </ListItem>
+    </List>}>
+      <p>{event.event.title}</p>
+    </Tooltip>
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit as any)}>
@@ -170,106 +135,24 @@ export default function ReservationDatesRender({
             {finalDate && <Typography>{finalDate}</Typography>}
           </div>
         </AccordionSummary>
-        <AccordionDetails className="md:p-4 p-1">
-          <LocalizationProvider
-            dateAdapter={AdapterDayjs}
-            adapterLocale={CzechLocale as any}
-            localeText={
-              csCZ.components.MuiLocalizationProvider.defaultProps.localeText
-            }
-          >
-            <div className="flex gap-2 items-start md:flex-row flex-col">
-              <Controller
-                control={control}
-                rules={{ required: true }}
-                name="from_date"
-                render={({ field: { onChange, value } }) => (
-                  <div className="sm:w-80 w-threehundred overflow-auto sm:overflow-visible">
-                    <StaticDatePicker
-                      value={value}
-                      orientation="portrait"
-                      slots={{
-                        day: renderDay,
-                      }}
-                      onChange={(date) => onChange(date)}
-                      shouldDisableDate={(date) => afterDateDisabled(date)}
-                      slotProps={{
-                        actionBar: { actions: [] },
-                        day: { reservations: reservations } as any,
-                      }}
-                    />
-                  </div>
-                )}
-              />
-
-              <Controller
-                name="to_date"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <div className="sm:w-80 w-threehundred overflow-auto sm:overflow-visible">
-                    <StaticDatePicker
-                      value={value}
-                      orientation="portrait"
-                      slots={{
-                        day: renderDay,
-                      }}
-                      shouldDisableDate={(date) => toDateDisabled(date)}
-                      onChange={(date) => onChange(date)}
-                      slotProps={{
-                        actionBar: { actions: [] },
-                        day: { reservations } as any,
-                      }}
-                    />
-                  </div>
-                )}
-              />
-              <div>
-                <Typography>
-                  Ve zvoleném termínu se nacházejí také tyto rezervace:
-                </Typography>
-                {res && res.length ? (
-                  res.map((res: any) => (
-                    <SingleReservation
-                      key={res.id}
-                      reservations={res}
-                    />
-                  ))
-                ) : (
-                  <>
-                    {from_date && to_date && (
-                      <Typography>žádné rezervace</Typography>
-                    )}
-                  </>
-                )}
-              </div>
-              <div className="flex flex-col gap-2">
-                <Button
-                  variant="contained"
-                  type="submit"
-                  disabled={!formState.isValid}
-                >
-                  Uložit
+        <AccordionDetails className="md:p-4 p-1 flex">
+          <div className="w-full">
+            <div className="flex gap-2 mb-2">
+              <ButtonGroup size="small">
+                <Button onClick={() => mutateCalendar("prev")}>
+                  <NavigateBefore />
                 </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  disabled={!formState.isDirty}
-                  onClick={() => {
-                    reset();
-                    setFinalDate("");
-                    setCreateReservation({
-                      ...createReservation,
-                      from_date: "",
-                      to_date: "",
-                    });
-                  }}
-                >
-                  zrušit
+                <Button onClick={() => mutateCalendar("next")}>
+                  <NavigateNext />
                 </Button>
-              </div>
+              </ButtonGroup>
+              <Button variant="outlined" size="small" onClick={() => mutateCalendar("today")}>Dnes</Button>
+              <Typography variant="h6" className='!font-semibold'>
+                {calendarTitle}
+              </Typography>
             </div>
-          </LocalizationProvider>
+            <FullCalendar ref={calendarRef} height="300px" locale={csLocale} plugins={[resourceTimelineWeek]} initialView="resourceTimelineWeek" events={calendarEventData} slotDuration={{ days: 1 }} slotLabelFormat={{ weekday: "short", day: "numeric", month: "numeric" }} resources={calendarResources} resourceAreaHeaderContent="Pokoje" eventContent={eventContentInjection} />
+          </div>
         </AccordionDetails>
       </Accordion>
     </form>

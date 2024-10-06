@@ -22,3 +22,8 @@
 .fc .fc-col-header-cell {
   height: 26px
 }
+
+/* sorry, Fullcalendar guys :( */
+.fc .fc-license-message {
+  display: none;
+}

@@ -25,7 +25,7 @@ class RoomsEnum extends BaseEnum<any, any> {
       [Rooms[2]]: {
         id: 2,
         label: "Pokoj 2",
-        capacity: 4
+        capacity: 2
       },
       [Rooms[3]]: {
         id: 3,
@@ -40,11 +40,11 @@ class RoomsEnum extends BaseEnum<any, any> {
       [Rooms[5]]: {
         id: 5,
         label: "Pokoj 5",
-        capacity: 4
+        capacity: 6
       },
     })
   }
 }
 
 const roomsEnum = new RoomsEnum()
-export { roomsEnum, type RoomsProperties, Rooms}
+export { roomsEnum, type RoomsProperties, Rooms }

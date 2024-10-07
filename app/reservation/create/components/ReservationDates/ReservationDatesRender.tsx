@@ -5,17 +5,25 @@ import {
   AccordionSummary,
   Button,
   ButtonGroup,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
   Icon,
+  InputLabel,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  MenuItem,
+  Select,
   Tooltip,
   Typography,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 import { Controller, useForm } from "react-hook-form";
@@ -27,6 +35,7 @@ import csLocale from "@fullcalendar/core/locales/cs"
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { roomsEnum } from "@/app/constants/rooms";
 import { getFullName } from "@/app/constants/fullName";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 
 export default function ReservationDatesRender({
   reservations,
@@ -39,11 +48,12 @@ export default function ReservationDatesRender({
   const [finalDate, setFinalDate] = useState("");
   const calendarRef = useRef(null)
   const [calendarTitle, setCalendarTitle] = useState("")
-  const { handleSubmit, control, watch, formState, reset } = useForm({
-    defaultValues: { from_date: null, to_date: null },
+  const { handleSubmit, control, watch, formState, reset, register } = useForm({
+    defaultValues: { from_date: null, to_date: null, rooms: [] },
   });
 
-  const { from_date, to_date } = watch();
+  const { from_date, to_date, rooms } = watch();
+  console.log(from_date, to_date, rooms)
   const onSubmit = ({
     from_date,
     to_date,
@@ -84,7 +94,14 @@ export default function ReservationDatesRender({
     return roomsEnum.list.map((room) => ({ id: room.id, title: room.label }))
   }, [])
 
-  console.log(calendarEventData, calendarResources)
+  const bedsCount = useMemo(() => {
+    return roomsEnum.list.reduce((a, b) => {
+      if (rooms.includes(b.id as never)) {
+        a += b.capacity
+      }
+      return a
+    }, 0)
+  }, [rooms])
 
   const mutateCalendar = (action: "next" | "prev" | "today") => {
     const calendarApi = (calendarRef.current as any).getApi()
@@ -135,8 +152,8 @@ export default function ReservationDatesRender({
             {finalDate && <Typography>{finalDate}</Typography>}
           </div>
         </AccordionSummary>
-        <AccordionDetails className="md:p-4 p-1 flex">
-          <div className="w-full">
+        <AccordionDetails className="md:p-4 p-1 flex gap-2">
+          <div className="w-[810px]">
             <div className="flex gap-2 mb-2">
               <ButtonGroup size="small">
                 <Button onClick={() => mutateCalendar("prev")}>
@@ -151,7 +168,34 @@ export default function ReservationDatesRender({
                 {calendarTitle}
               </Typography>
             </div>
-            <FullCalendar ref={calendarRef} height="300px" locale={csLocale} plugins={[resourceTimelineWeek]} initialView="resourceTimelineWeek" events={calendarEventData} slotDuration={{ days: 1 }} slotLabelFormat={{ weekday: "short", day: "numeric", month: "numeric" }} resources={calendarResources} resourceAreaHeaderContent="Pokoje" eventContent={eventContentInjection} />
+            <FullCalendar ref={calendarRef} contentHeight="auto" locale={csLocale} plugins={[resourceTimelineWeek]} initialView="resourceTimelineWeek" events={calendarEventData} slotDuration={{ days: 1 }} slotLabelFormat={{ weekday: "short", day: "numeric", month: "numeric" }} resources={calendarResources} resourceAreaHeaderContent="Pokoje" slotMinWidth={100} resourceAreaWidth="101px" eventContent={eventContentInjection} />
+          </div>
+          <div className="flex flex-col mt-[33.5px] gap-3">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Controller control={control} name="from_date" render={({ field }) => (
+                <DatePicker label="Začátek rezervace" {...field} />
+              )} />
+              <Controller control={control} name="to_date" render={({ field }) => (
+                <DatePicker label="Konec rezervace" {...field} />
+              )} />
+            </LocalizationProvider>
+            <Controller control={control} name="rooms" render={({ field }) => (
+              <FormControl>
+                <InputLabel id="rooms-label">Pokoje</InputLabel>
+                <Select {...field} multiple label="Label" id="rooms" labelId="rooms-label">
+                  {roomsEnum.list.map((room) => (
+                    <MenuItem key={room.id} value={room.id}>
+                      {room.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )} />
+            <Typography>Celkem vybráno lůžek {bedsCount}</Typography>
+            <div>
+              <Button variant="outlined" className="mr-2">Uložit</Button>
+              <Button variant="outlined" color="error">Zrušit</Button>
+            </div>
           </div>
         </AccordionDetails>
       </Accordion>

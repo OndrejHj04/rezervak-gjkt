@@ -53,7 +53,9 @@ export default function ReservationDatesRender({
   });
 
   const { from_date, to_date, rooms } = watch();
-  console.log(from_date, to_date, rooms)
+
+  console.log(from_date, to_date, rooms, formState.isValid)
+
   const onSubmit = ({
     from_date,
     to_date,
@@ -76,7 +78,7 @@ export default function ReservationDatesRender({
   }, [])
 
   const calendarEventData = useMemo(() => {
-    return reservations.map(reservation => ({
+    const reservationData = reservations.map(reservation => ({
       id: reservation.id,
       title: reservation.name,
       start: reservation.from_date,
@@ -88,7 +90,13 @@ export default function ReservationDatesRender({
       icon: reservation.status.icon,
       display_name: reservation.status.display_name
     }))
-  }, [])
+
+    if (from_date && to_date) {
+      reservationData.push({ id: "custom", title: "Nová rezervace", start: dayjs(from_date).toDate(), end: dayjs(to_date).add(1, "day").toDate(), allDay: true, resourceIds: rooms, leader: {} } as any)
+    }
+
+    return reservationData
+  }, [from_date, to_date, rooms])
 
   const calendarResources = useMemo(() => {
     return roomsEnum.list.map((room) => ({ id: room.id, title: room.label }))
@@ -102,6 +110,14 @@ export default function ReservationDatesRender({
       return a
     }, 0)
   }, [rooms])
+
+  useEffect(() => {
+    if (dayjs(from_date).isValid() && dayjs(to_date).isValid()) {
+      const calendarApi = (calendarRef.current as any).getApi()
+      calendarApi.gotoDate(dayjs(from_date).toISOString())
+      setCalendarTitle(calendarApi.currentData.viewTitle)
+    }
+  }, [from_date, to_date])
 
   const mutateCalendar = (action: "next" | "prev" | "today") => {
     const calendarApi = (calendarRef.current as any).getApi()
@@ -172,14 +188,14 @@ export default function ReservationDatesRender({
           </div>
           <div className="flex flex-col mt-[33.5px] gap-3">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Controller control={control} name="from_date" render={({ field }) => (
-                <DatePicker label="Začátek rezervace" {...field} />
+              <Controller control={control} name="from_date" rules={{ required: true }} render={({ field }) => (
+                <DatePicker label="Začátek rezervace" minDate={dayjs()} maxDate={dayjs(to_date).subtract(1, "day")} {...field} />
               )} />
-              <Controller control={control} name="to_date" render={({ field }) => (
-                <DatePicker label="Konec rezervace" {...field} />
+              <Controller control={control} name="to_date" rules={{ required: true }} render={({ field }) => (
+                <DatePicker label="Konec rezervace" {...field} minDate={dayjs(from_date).isValid() ? dayjs(from_date).add(1, "day") : dayjs()} />
               )} />
             </LocalizationProvider>
-            <Controller control={control} name="rooms" render={({ field }) => (
+            <Controller control={control} name="rooms" rules={{ required: true }} render={({ field }) => (
               <FormControl>
                 <InputLabel id="rooms-label">Pokoje</InputLabel>
                 <Select {...field} multiple label="Label" id="rooms" labelId="rooms-label">
@@ -193,12 +209,15 @@ export default function ReservationDatesRender({
             )} />
             <Typography>Celkem vybráno lůžek {bedsCount}</Typography>
             <div>
-              <Button variant="outlined" className="mr-2">Uložit</Button>
-              <Button variant="outlined" color="error">Zrušit</Button>
+              <Button variant="outlined" className="mr-2" disabled={!formState.isValid}>Uložit</Button>
+              <Button variant="outlined" color="error" onClick={() => {
+                reset()
+                mutateCalendar("today")
+              }}>Zrušit</Button>
             </div>
           </div>
         </AccordionDetails>
       </Accordion>
-    </form>
+    </form >
   );
 }

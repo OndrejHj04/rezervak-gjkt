@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import CzechLocale from "dayjs/locale/cs";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
@@ -35,7 +36,8 @@ import csLocale from "@fullcalendar/core/locales/cs"
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { roomsEnum } from "@/app/constants/rooms";
 import { getFullName } from "@/app/constants/fullName";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DatePicker, LocalizationProvider, csCZ } from "@mui/x-date-pickers";
+import { create } from "zustand";
 
 export default function ReservationDatesRender({
   reservations,
@@ -44,8 +46,7 @@ export default function ReservationDatesRender({
 }) {
   const { createReservation, setCreateReservation } = store();
   const [expanded, setExpanded] = useState(false);
-  const isValid = createReservation.from_date && createReservation.to_date;
-  const [finalDate, setFinalDate] = useState("");
+  const isValid = createReservation.from_date && createReservation.to_date
   const calendarRef = useRef(null)
   const [calendarTitle, setCalendarTitle] = useState("")
   const { handleSubmit, control, watch, formState, reset, register } = useForm({
@@ -54,8 +55,6 @@ export default function ReservationDatesRender({
 
   const { from_date, to_date, rooms } = watch();
 
-  console.log(from_date, to_date, rooms, formState.isValid)
-
   const onSubmit = ({
     from_date,
     to_date,
@@ -63,13 +62,8 @@ export default function ReservationDatesRender({
     from_date: string;
     to_date: string;
   }) => {
-    setFinalDate(
-      `${dayjs(from_date).format("DD.MM.YYYY")} - ${dayjs(to_date).format(
-        "DD.MM.YYYY"
-      )}`
-    );
     setExpanded(false);
-    setCreateReservation({ ...createReservation, from_date, to_date });
+    setCreateReservation({ ...createReservation, from_date, to_date, rooms });
   };
 
   useEffect(() => {
@@ -150,6 +144,12 @@ export default function ReservationDatesRender({
     </Tooltip>
   }
 
+  const resetSection = () => {
+    reset()
+    mutateCalendar("today")
+    setCreateReservation({ ...createReservation, from_date: "", to_date: "", rooms: [] });
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit as any)}>
       <Accordion expanded={expanded}>
@@ -164,12 +164,12 @@ export default function ReservationDatesRender({
           }
         >
           <div className="flex gap-5 items-center">
-            <Typography variant="h6">Termín rezervace</Typography>
-            {finalDate && <Typography>{finalDate}</Typography>}
+            <Typography variant="h6">Termín a pokoje rezervace</Typography>
+            <Typography>{(dayjs(createReservation.from_date).isValid() && dayjs(createReservation.to_date).isValid() && createReservation.rooms.length) && `${dayjs(createReservation.from_date).format("DD. MM. YYYY")} - ${dayjs(createReservation.to_date).format("DD. MM. YYYY")}, ${createReservation.rooms} pokojů`}</Typography>
           </div>
         </AccordionSummary>
-        <AccordionDetails className="md:p-4 p-1 flex gap-2">
-          <div className="w-[810px]">
+        <AccordionDetails className="md:p-4 p-1 flex md:flex-row flex-col gap-2">
+          <div className="md:w-[810px] w-auto">
             <div className="flex gap-2 mb-2">
               <ButtonGroup size="small">
                 <Button onClick={() => mutateCalendar("prev")}>
@@ -186,8 +186,13 @@ export default function ReservationDatesRender({
             </div>
             <FullCalendar ref={calendarRef} contentHeight="auto" locale={csLocale} plugins={[resourceTimelineWeek]} initialView="resourceTimelineWeek" events={calendarEventData} slotDuration={{ days: 1 }} slotLabelFormat={{ weekday: "short", day: "numeric", month: "numeric" }} resources={calendarResources} resourceAreaHeaderContent="Pokoje" slotMinWidth={100} resourceAreaWidth="101px" eventContent={eventContentInjection} />
           </div>
-          <div className="flex flex-col mt-[33.5px] gap-3">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <div className="flex flex-col md:mt-[33.5px] mt-0 gap-3">
+            <LocalizationProvider dateAdapter={AdapterDayjs}
+              adapterLocale={CzechLocale as any}
+              localeText={
+                csCZ.components.MuiLocalizationProvider.defaultProps.localeText
+              }
+            >
               <Controller control={control} name="from_date" rules={{ required: true }} render={({ field }) => (
                 <DatePicker label="Začátek rezervace" minDate={dayjs()} maxDate={dayjs(to_date).subtract(1, "day")} {...field} />
               )} />
@@ -209,11 +214,8 @@ export default function ReservationDatesRender({
             )} />
             <Typography>Celkem vybráno lůžek {bedsCount}</Typography>
             <div>
-              <Button variant="outlined" className="mr-2" disabled={!formState.isValid}>Uložit</Button>
-              <Button variant="outlined" color="error" onClick={() => {
-                reset()
-                mutateCalendar("today")
-              }}>Zrušit</Button>
+              <Button variant="contained" type="submit" className="!mr-2" disabled={!formState.isValid}>Uložit</Button>
+              <Button variant="contained" color="error" onClick={resetSection} disabled={!isValid && !formState.isDirty}>Smazat</Button>
             </div>
           </div>
         </AccordionDetails>

@@ -55,7 +55,7 @@ export default function BlockDatesForm({
   const renderDay = (props: any) => {
     const { outsideCurrentMonth, day, ...other } = props;
     const isReservation = reservations?.filter((r: any) =>
-      dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
+      (dayjs(day) as any).isBetween(r.from_date, r.to_date, "day", "[]")
     );
     return (
       <Tooltip

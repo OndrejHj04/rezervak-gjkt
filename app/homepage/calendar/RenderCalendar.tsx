@@ -16,7 +16,7 @@ const renderDay = (props: any) => {
   const { day, outsideCurrentMonth, reservations, ...other } = props;
 
   const isReservation = reservations?.filter((r: any) =>
-    dayjs(day).isBetween(r.from_date, r.to_date, "day", "[]")
+    (dayjs(day) as any).isBetween(r.from_date, r.to_date, "day", "[]")
   );
   const isBlocation = isReservation.filter((r: any) => r.status.id === 5);
   const thisDayRooms = isReservation.reduce(

@@ -231,7 +231,7 @@ export const getReservationCalendarData = async ({ rooms = [] }: { rooms: any })
         LEFT JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
         LEFT JOIN rooms ON reservations_rooms.roomId = rooms.id
         WHERE 1=1
-        ${rooms.length ? `AND ${rooms.map((item:any, index:any)=>index === rooms.length - 1 ? `rooms.id = ${item}`: `rooms.id = ${item} OR`).join(" ")}` : ''}
+        ${rooms.length ? `AND ${rooms.map((item: any, index: any) => index === rooms.length - 1 ? `rooms.id = ${item}` : `rooms.id = ${item} OR`).join(" ")}` : ''}
         GROUP BY reservations.id
         `
     })
@@ -1585,12 +1585,22 @@ export const reservationUpdateStatus = async ({
   id,
   oldStatus,
   newStatus,
+  reason
 }: {
   id: any;
   oldStatus: any;
   newStatus: any;
+  reason?: any
 }) => {
-  const eventId = 10;
+  let eventId = 10;
+  switch (newStatus) {
+    case 3:
+      eventId = 10
+      break;
+    case 4:
+      eventId = 11
+      break;
+  }
   const guest = await checkUserSession();
 
   const [reservation, { affectedRows }, { data }] = (await Promise.all([
@@ -1653,6 +1663,10 @@ export const reservationUpdateStatus = async ({
         name: "leader_name",
         value: resDetail.leader.first_name + " " + resDetail.leader.last_name,
       },
+      (eventId === 11 && reason && {
+        name: "reason",
+        value: reason
+      })
     ],
   });
 

@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import ReservationListMakeRefetch from "../refetch";
 import { getReservationsStatus, reservationUpdateStatus } from "@/lib/api";
+import { rule } from "postcss";
 
 const style = {
   position: "absolute" as "absolute",
@@ -45,9 +46,10 @@ export default function ReservationModal({
     control,
     register,
     reset,
-    formState: { isDirty, isValid },
+    watch,
+    formState: { isDirty, isValid, dirtyFields },
   } = useForm({
-    defaultValues: { status: reservation.status },
+    defaultValues: { status: reservation.status, reason: "" },
   });
 
   const isActive = Number(params.get("reservation_id")) === reservation.id;
@@ -64,12 +66,14 @@ export default function ReservationModal({
       id: reservation.id,
       newStatus: data.status.id,
       oldStatus: reservation.status.id,
+      ...(data.reason.length && { reason: data.reason })
     }).then(({ success }) => {
       success && toast.success("Status rezervace úspěšně změněn");
       !success && toast.error("Něco se nepovedlo");
       reset(data);
     });
     ReservationListMakeRefetch();
+    reset()
   };
 
   return (
@@ -113,10 +117,11 @@ export default function ReservationModal({
               />
             )}
           />
+          {watch("status")?.id === 4 && <TextField fullWidth className="mb-2" {...register("reason", { required: true })} label="Důvod zamítnutí" />}
           <Button
             className="w-full"
             variant="contained"
-            disabled={!isDirty || !isValid || loading}
+            disabled={!dirtyFields?.status || !isValid || loading}
             type="submit"
           >
             Uložit

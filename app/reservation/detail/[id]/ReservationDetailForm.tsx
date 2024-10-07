@@ -18,7 +18,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -74,6 +74,7 @@ export default function ReservationDetailForm({
   const [selectedStatus, setSelectedStatus] = useState<number>(
     reservation.status.id
   );
+  const [rejectedReason, setRejectedReason] = useState("")
 
   const handleCheckUser = (id: number) => {
     if (selectedUsers.includes(id)) {
@@ -130,6 +131,7 @@ export default function ReservationDetailForm({
       id: reservation.id,
       newStatus: selectedStatus,
       oldStatus: reservation.status.id,
+      ...(rejectedReason.length && { reason: rejectedReason })
     }).then(({ success }) => {
       success && toast.success("Status rezervace byl změněn");
       !success && toast.error("Něco se nepovedlo");
@@ -138,7 +140,12 @@ export default function ReservationDetailForm({
       ? MakeReservationDetailRefetch(reservation.id)
       : window.location.reload();
     reset();
+    setRejectedReason("")
   };
+
+  useEffect(() => {
+    setRejectedReason("")
+  }, [selectedStatus])
 
   const maxMembers = reservation.rooms.reduce(
     (a: any, b: any) => a + b.people,
@@ -434,11 +441,13 @@ export default function ReservationDetailForm({
                   </ListItem>
                 ))}
               </List>
+              {selectedStatus === 4 && <TextField className="mb-2" fullWidth label="Důvod zamítnutí" size="small" value={rejectedReason} onChange={(e) => setRejectedReason(e.target.value)} />
+              }
               <div className="flex flex-col gap-2 mt-auto">
                 <Button
                   variant="contained"
                   endIcon={<AddToPhotosIcon />}
-                  disabled={selectedStatus === reservation.status.id}
+                  disabled={selectedStatus === reservation.status.id || (selectedStatus === 4 && !rejectedReason.length)}
                   onClick={handleUpdateStatus}
                 >
                   Uložit stav

@@ -302,13 +302,18 @@ export const sendEmail = async ({
     });
     return text;
   }
-
+  const mailContent = MakeEmailText(template.text, variables)
   const mail = await transporter.sendMail({
     from: process.env.EMAIL_ADRESS,
     to,
     subject: template.title,
-    html: MakeEmailText(template.text, variables),
+    html: mailContent
   });
+
+  await query({
+    query: `INSERT IGNORE INTO emails (recipients, date, subject, content) VALUES (?,CURRENT_TIMESTAMP(),?,?)`,
+    values: [mail.accepted.toString(), template.title, mailContent]
+  })
 
   if (mail.accepted.length === to.length) {
     return { success: true };

@@ -2377,3 +2377,25 @@ export const setTheme = async (theme: any, id: any) => {
     values: [],
   })) as any;
 };
+
+export const getSendMails = async ({ page = 1, rpp = 10 }: any) => {
+  const [data, count] = await Promise.all([query({
+    query: `SELECT emails.id, emails.recipients, emails.subject, emails.content, emails.date FROM emails 
+    ${page ? `LIMIT ${rpp} OFFSET ${page * rpp - rpp}` : ""}`,
+    values: []
+  }), query({
+    query: `SELECT COUNT(*) as count FROM emails`,
+    values: []
+  })]) as any
+
+  return { data, count: count[0].count }
+}
+
+
+export const getSendMailDetail = async (id: any) => {
+  const data = await query({
+    query: `SELECT emails.id, emails.recipients, emails.subject, emails.content, emails.date FROM emails WHERE emails.id = ?`,
+    values: [id]
+  }) as any
+  return { data: data[0] }
+}

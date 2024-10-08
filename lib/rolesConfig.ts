@@ -206,9 +206,9 @@ export const rolesConfig = {
     name: "Maily",
     path: "/mailing",
     modules: {
-      mailing: {
+      send: {
         name: "Mailing",
-        path: "/mailing",
+        path: "/mailing/send",
         roles: [1, 2],
         menu: [true, false],
         icon: "feed_icon",
@@ -219,6 +219,12 @@ export const rolesConfig = {
         roles: [1, 2],
         menu: [false, false],
       },
+      events: {
+        name: "Events",
+        path: "/mailing/events",
+        roles: [1, 2],
+        menu: [false, false]
+      }
     },
   },
   sampleFile: {

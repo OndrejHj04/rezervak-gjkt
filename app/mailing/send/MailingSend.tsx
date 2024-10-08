@@ -21,7 +21,7 @@ export default async function MailingSend() {
                   return (
                     <TableRow key={mail.id}>
                       <TableCell className="w-1 whitespace-nowrap">
-                        {dayjs(mail.date).format("DD. MM. YYYY hh:mm")}
+                        {dayjs(mail.date).format("DD. MM. YYYY HH:mm")}
                       </TableCell>
                       <TableCell className="w-1 whitespace-nowrap">
                         <Typography>

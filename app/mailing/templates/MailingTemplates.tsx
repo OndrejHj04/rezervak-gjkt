@@ -1,3 +1,4 @@
+import { malingTemplatesList } from "@/lib/api";
 import {
   Box,
   Button,
@@ -12,7 +13,9 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 
-export default function MailingTemplates({ templates }: { templates: any }) {
+export default async function MailingTemplates() {
+  const templates = await malingTemplatesList()
+
   return (
     <Paper className="w-full p-2">
       <Box sx={{ overflow: "auto" }}>

@@ -311,7 +311,7 @@ export const sendEmail = async ({
   });
 
   await query({
-    query: `INSERT IGNORE INTO emails (recipients, date, subject, content) VALUES (?,CURRENT_TIMESTAMP(),?,?)`,
+    query: `INSERT IGNORE INTO emails (recipients, subject, content) VALUES (?,?,?)`,
     values: [mail.accepted.toString(), template.title, mailContent]
   })
 
@@ -2257,8 +2257,7 @@ export const mailingEventsEdit = async ({ data }: { data: any }) => {
       (item) => `(${item[0].split(" ")[1]}, ${item[1]})`
     )}
             ON DUPLICATE KEY UPDATE id=VALUES(id),
-            active=VALUES(active)
-    `,
+            active=VALUES(active), primary_txt = primary_txt, secondary_txt = secondary_txt, template = template, event = event, variables = variables`,
     values: [],
   })) as any;
 
@@ -2380,7 +2379,7 @@ export const setTheme = async (theme: any, id: any) => {
 
 export const getSendMails = async ({ page = 1, rpp = 10 }: any) => {
   const [data, count] = await Promise.all([query({
-    query: `SELECT emails.id, emails.recipients, emails.subject, emails.content, emails.date FROM emails 
+    query: `SELECT emails.id, emails.recipients, emails.subject, emails.content, emails.date FROM emails ORDER BY emails.date DESC
     ${page ? `LIMIT ${rpp} OFFSET ${page * rpp - rpp}` : ""}`,
     values: []
   }), query({

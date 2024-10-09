@@ -16,10 +16,15 @@ import {
   TablePagination,
   Typography,
 } from "@mui/material";
+import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot, TimelineOppositeContent } from "@mui/lab"
+import FiberNewIcon from '@mui/icons-material/FiberNew';
+import FolderDeleteIcon from '@mui/icons-material/FolderDelete';
 import dayjs from "dayjs";
 import TableListPagination from "@/ui-components/TableListPagination";
+import { getReservationTimeline } from "@/lib/api";
+import React from "react";
 
-export default function ReservationDetailDisplay({
+export default async function ReservationDetailDisplay({
   reservation,
   users,
   groups,
@@ -28,6 +33,9 @@ export default function ReservationDetailDisplay({
   users: any;
   groups: any;
 }) {
+
+  const { data: timelineData } = await getReservationTimeline(reservation.id)
+
   return (
     <Paper className="md:p-4 p-2 flex gap-3 md:flex-row flex-col">
       <div>
@@ -144,7 +152,36 @@ export default function ReservationDetailDisplay({
             />
           </div>
         </div>
+        <Divider flexItem orientation="vertical" />
+        <div>
+          <Typography variant="h5">Timeline rezervace</Typography>
+          <Divider />
+
+          <Timeline>
+            {timelineData.map((action: any, i) => (
+              <TimelineItem key={i} className="before:[&]:hidden">
+                <TimelineOppositeContent color="text.secondary">
+                  {action.timestamp && <Typography noWrap>{dayjs(action.timestamp).format("DD. MM. YYYY")}</Typography>}
+                  {action.range && <React.Fragment>
+                    <Typography noWrap>
+                      {dayjs(action.range[0]).format("DD. MM. YYYY")}
+                    </Typography>
+                    <Typography noWrap>
+                      {dayjs(action.range[1]).format("DD. MM. YYYY")}
+                    </Typography>
+                  </React.Fragment>}
+                </TimelineOppositeContent>
+                <TimelineSeparator>
+                  <TimelineDot />
+                  {timelineData.length - 1 !== i && <TimelineConnector />}
+                </TimelineSeparator>
+                <TimelineContent>
+                  {action.action}
+                </TimelineContent>
+              </TimelineItem>
+            ))}
+          </Timeline>        </div>
       </div>
-    </Paper>
+    </Paper >
   );
 }

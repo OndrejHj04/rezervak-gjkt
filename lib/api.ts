@@ -1268,14 +1268,12 @@ export const createNewReservation = async ({
 
   const reservation = (await query({
     query: `INSERT INTO reservations${guest ? "_mock" : ""
-      } (from_date, to_date, purpouse, leader, instructions, name, status, creation_date)
+      } (from_date, to_date, purpouse, leader, instructions, name, status)
     VALUES ("${dayjs(from_date).format("YYYY-MM-DD")}", "${dayjs(
         to_date
       ).format(
         "YYYY-MM-DD"
-      )}", "${purpouse}", "${leader}", "${instructions}", "${name}", 2, "${dayjs(
-        new Date()
-      ).format("YYYY-MM-DD")}")`,
+      )}", "${purpouse}", "${leader}", "${instructions}", "${name}", 2)`,
     values: [],
   })) as any;
 
@@ -1485,11 +1483,13 @@ export const editReservationDetail = async ({
 }) => {
   const guest = await checkUserSession();
 
-  const { affectedRows } = (await query({
-    query: `UPDATE reservations${guest ? "_mock" : ""
-      } SET purpouse = ?, name = ?, instructions = ? WHERE id = ?`,
-    values: [purpouse, name, instructions, id],
-  })) as any;
+  const [{ affectedRows }] = await Promise.all([
+    query({
+      query: `UPDATE reservations${guest ? "_mock" : ""
+        } SET purpouse = ?, name = ?, instructions = ? WHERE id = ?`,
+      values: [purpouse, name, instructions, id],
+    }),
+  ]) as any
 
   return { success: affectedRows === 1 };
 };
@@ -1607,7 +1607,7 @@ export const reservationUpdateStatus = async ({
       break;
   }
   const guest = await checkUserSession();
-
+  const { user } = await getServerSession(authOptions) as any
   const [reservation, { affectedRows }, { data }] = (await Promise.all([
     query({
       query: `SELECT reservations.from_date, reservations.status, reservations.name, reservations.to_date, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader,
@@ -1628,6 +1628,10 @@ export const reservationUpdateStatus = async ({
       values: [],
     }),
     mailEventDetail({ id: eventId }),
+    query({
+      query: `INSERT INTO reservation_status_changes (user_id, from_status, to_status, reservation_id) VALUES (?,?,?,?)`,
+      values: [user.id, oldStatus, newStatus, id]
+    })
   ])) as any;
 
   const statuses = (await query({
@@ -2397,4 +2401,28 @@ export const getSendMailDetail = async (id: any) => {
     values: [id]
   }) as any
   return { data: data[0] }
+}
+
+export const getReservationTimeline = async (id: any) => {
+  const [data] = await Promise.all([
+    query({
+      query: `SELECT 
+        JSON_OBJECT("timestamp", reservations.creation_date, "action", "Vytvoření") as creation,
+        JSON_OBJECT("timestamp", reservations.from_date, 'action', "Začátek") as start,
+        JSON_OBJECT("timestamp", reservations.to_date, 'action', "Konec") as end,
+        JSON_OBJECT("timestamp", reservations.to_date, "action", "Archivace") as archive,
+        Array(
+          DISTINCT JSON_OBJECT('id', status_change.reservation_id, 'timestamp', status_change.timestamp, 'from_status', status_change.from_status, 'to_status', status_change.to_status, 'user', status_change.user_id)
+        ) as status_change
+        FROM reservations
+        INNER JOIN reservation_status_changes as status_change ON status_change.reservation_id = reservations.id 
+        WHERE reservations.id = ?
+        GROUP BY reservations.id
+        `,
+      values: [id]
+    })
+  ]) as any
+
+  console.log(data)
+  return { data: data }
 }

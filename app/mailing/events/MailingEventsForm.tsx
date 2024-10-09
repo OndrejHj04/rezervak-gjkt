@@ -16,7 +16,6 @@ export default function MailingEvents({ events }: { events: any }) {
   const methods = useForm({ defaultValues });
 
   const onSubmit = (data: any) => {
-    console.log(data)
     mailingEventsEdit({ data }).then(() => {
       toast.success("Události úspěšně upraveny");
       methods.reset(data);

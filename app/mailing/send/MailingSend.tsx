@@ -6,9 +6,8 @@ import Link from "next/link"
 
 export default async function MailingSend() {
   const { data, count } = await getSendMails({})
-  console.log(data, count)
-
   return (
+
     <div className="flex flex-col w-full gap-2">
       <Paper>
         <Box sx={{ overflow: "auto" }}>

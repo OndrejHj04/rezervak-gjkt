@@ -4,7 +4,7 @@ import { Editor } from '@tinymce/tinymce-react';
 
 export default function CustomEditor(props: any) {
   const editorRef = useRef<any>(null);
-  const { init, ...rest } = props
+  const { init, variables, onChange, ...rest } = props
 
   return (
     <React.Fragment>
@@ -16,7 +16,21 @@ export default function CustomEditor(props: any) {
           content_css: "dark",
           menubar: false,
           plugins: ["lists", "link"],
-          toolbar: "bold italic | alignleft aligncenter alignright | outdent indent | bullist numlist | link",
+          toolbar: "bold italic | alignleft aligncenter alignright | outdent indent | bullist numlist | link | mySelectPicker",
+          setup(editor) {
+            editor.ui.registry.addMenuButton('mySelectPicker', {
+
+              text: 'Proměnné',
+              fetch: (callback) => {
+                const items = variables.map((variable: any) => ({
+                  type: 'menuitem',
+                  text: variable,
+                  onAction: () => editor.insertContent(`\${${variable}}`)
+                }))
+                callback(items as any);
+              }
+            })
+          },
           ...init
         }}
       />

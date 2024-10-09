@@ -11,7 +11,7 @@ export default function ChangeTypeSelect({ changeTypes }: { changeTypes: ChangeT
   const { replace } = useRouter();
   const pathname = usePathname();
 
-  const [values, setValues] = useState(status.length ? status.split(",") : changeTypes.map(({label})=>label))
+  const [values, setValues] = useState(status.length ? status.split(",") : changeTypes.map(({ label }) => label))
 
   const handleChange = (label: ChangeTypeProperites["label"]) => {
     if (values.includes(label)) {
@@ -37,7 +37,6 @@ export default function ChangeTypeSelect({ changeTypes }: { changeTypes: ChangeT
         variant="standard"
         label="Typ změny"
         renderValue={(data) => {
-          console.log(data)
           return <div>{values.length === changeTypes.length ? "Všechny" : values.toString()}</div>;
         }}
         value={values}

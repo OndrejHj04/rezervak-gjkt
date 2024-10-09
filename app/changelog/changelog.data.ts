@@ -6,6 +6,21 @@ const versionsChanges =
 {
   "versions": [
     {
+      title: "Verze 1.4 | 9. 10. 2024",
+      features: [
+        {
+          name: feature.label,
+          icon: feature.icon,
+          content: "Vylepšený formulář vytváření rezervací. Nově se při vytváření zobrazuje přehledný kalendář, který udává obsazenost jednotlivých pokojů."
+        },
+        {
+          name: feature.label,
+          icon: feature.icon,
+          content: "Nový WYSIWYG editor pro mailové šablony. Dynamické načítání proměnných přimo do logiky kalendáře umožňuje jejich přidání na jedno kliknutí."
+        }
+      ]
+    },
+    {
       title: "Verze 1.3 | 5. 10. 2024",
       features: [
         {

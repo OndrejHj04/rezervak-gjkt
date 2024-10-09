@@ -15,7 +15,6 @@ import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import HotelIcon from "@mui/icons-material/Hotel";
 
 export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
-  console.log(userDetail.reservations);
   return (
     <Paper className="md:p-4 p-2 flex md:flex-row flex-col gap-3">
       <div className="flex flex-col">

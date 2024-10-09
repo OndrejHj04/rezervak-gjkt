@@ -5,7 +5,6 @@ import { Paper, TextField, Typography } from "@mui/material"
 import dayjs from "dayjs"
 
 export default function MailDetailForm({ data }: any) {
-  console.log(data)
 
   return (
     <Paper className="flex flex-col gap-3 p-2">

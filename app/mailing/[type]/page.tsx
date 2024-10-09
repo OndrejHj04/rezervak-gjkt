@@ -3,7 +3,6 @@ import MailingSend from "../send/MailingSend";
 import MailingTemplates from "../templates/MailingTemplates"
 
 export default function Page({ params: { type } }: any) {
-  console.log(type)
   let content
   switch (type) {
     case "send":

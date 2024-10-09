@@ -17,7 +17,6 @@ export default function TemplateForm({ template }: { template?: any }) {
     handleSubmit,
     formState: { isValid, isDirty },
     control,
-    setValue
   } = methods
 
   const onSubmit = (data: any) => {
@@ -58,7 +57,8 @@ export default function TemplateForm({ template }: { template?: any }) {
           label="Předmět"
         />
         <Controller control={control} {...register("text")} render={({ field }) => (
-          <CustomEditor value={field.value} onEditorChange={(text: any) => setValue("text", text, { shouldDirty: true })} />)} />
+          <CustomEditor onEditorChange={field.onChange} value={field.value} variables={template.variables} initialValue={template.text}
+          />)} />
         {template && (
           <div className="flex items-center gap-2">
             <Typography>

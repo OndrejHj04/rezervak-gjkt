@@ -48,7 +48,6 @@ export default function AddChildrenModal({
   }, []);
 
   const onSubmit = (data: any) => {
-    console.log(data);
     userAddChildren({
       user: userId,
       children: data.children.map((group: any) => group.id),
@@ -60,7 +59,6 @@ export default function AddChildrenModal({
     MakeUserDetailRefetch(userId);
     setModal(false);
   };
-  console.log(children, currentChildren);
   return (
     <Paper sx={style} className="p-2">
       <Typography variant="h5" className="mb-2 text-center">

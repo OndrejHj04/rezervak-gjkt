@@ -2404,25 +2404,44 @@ export const getSendMailDetail = async (id: any) => {
 }
 
 export const getReservationTimeline = async (id: any) => {
-  const [data] = await Promise.all([
+  const [data, status] = await Promise.all([
     query({
       query: `SELECT 
-        JSON_OBJECT("timestamp", reservations.creation_date, "action", "Vytvoření") as creation,
-        JSON_OBJECT("timestamp", reservations.from_date, 'action', "Začátek") as start,
-        JSON_OBJECT("timestamp", reservations.to_date, 'action', "Konec") as end,
-        JSON_OBJECT("timestamp", reservations.to_date, "action", "Archivace") as archive,
-        Array(
-          DISTINCT JSON_OBJECT('id', status_change.reservation_id, 'timestamp', status_change.timestamp, 'from_status', status_change.from_status, 'to_status', status_change.to_status, 'user', status_change.user_id)
-        ) as status_change
+        JSON_OBJECT("timestamp", reservations.creation_date, "type_id", 0),
+        JSON_OBJECT("timestamp", reservations.from_date, "type_id", 1),
+        JSON_OBJECT("timestamp", reservations.to_date, "type_id", 2),
+        JSON_OBJECT("timestamp", reservations.to_date, "type_id", 3)
         FROM reservations
-        INNER JOIN reservation_status_changes as status_change ON status_change.reservation_id = reservations.id 
         WHERE reservations.id = ?
         GROUP BY reservations.id
         `,
       values: [id]
+    }),
+    query({
+      query: `
+
+SELECT 
+    reservation_status_changes.timestamp, 
+    4 as type_id, 
+    reservation_status_changes.from_status, 
+    reservation_status_changes.to_status,
+    JSON_OBJECT("id", users.id, "first_name", users.first_name, "last_name", users.last_name, "image", users.image) as user
+FROM 
+    reservation_status_changes 
+    INNER JOIN users ON users.id = reservation_status_changes.user_id
+WHERE 
+    reservation_status_changes.reservation_id = ? 
+      `,
+      values: [id]
     })
   ]) as any
 
-  console.log(data)
-  return { data: data }
+
+  const formatedData = [...Object.values(data[0]).map((item: any) => JSON.parse(item)), ...status.map(((item: any) => ({ ...item, user: JSON.parse(item.user) })))].sort((a, b) => {
+    var c = new Date(a.timestamp) as any;
+    var d = new Date(b.timestamp) as any;
+    return c - d;
+  });
+
+  return { data: formatedData }
 }

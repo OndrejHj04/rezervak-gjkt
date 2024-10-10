@@ -24,6 +24,7 @@ import TableListPagination from "@/ui-components/TableListPagination";
 import { getReservationTimeline } from "@/lib/api";
 import React from "react";
 
+
 export default async function ReservationDetailDisplay({
   reservation,
   users,
@@ -153,34 +154,30 @@ export default async function ReservationDetailDisplay({
           </div>
         </div>
         <Divider flexItem orientation="vertical" />
-        <div>
+        {/* <div>
           <Typography variant="h5">Timeline rezervace</Typography>
           <Divider />
 
           <Timeline>
-            {timelineData.map((action: any, i) => (
-              <TimelineItem key={i} className="before:[&]:hidden">
-                <TimelineOppositeContent color="text.secondary">
-                  {action.timestamp && <Typography noWrap>{dayjs(action.timestamp).format("DD. MM. YYYY")}</Typography>}
-                  {action.range && <React.Fragment>
-                    <Typography noWrap>
-                      {dayjs(action.range[0]).format("DD. MM. YYYY")}
-                    </Typography>
-                    <Typography noWrap>
-                      {dayjs(action.range[1]).format("DD. MM. YYYY")}
-                    </Typography>
-                  </React.Fragment>}
-                </TimelineOppositeContent>
-                <TimelineSeparator>
-                  <TimelineDot />
-                  {timelineData.length - 1 !== i && <TimelineConnector />}
-                </TimelineSeparator>
-                <TimelineContent>
-                  {action.action}
-                </TimelineContent>
-              </TimelineItem>
-            ))}
-          </Timeline>        </div>
+            {timelineData.map((action: any, i: any) => {
+              const { label } = timelineActionsStructure[action.type_id]
+
+              return (
+                <TimelineItem key={i} className="before:[&]:hidden">
+                  <TimelineOppositeContent color="text.secondary">
+                    <Typography noWrap>{dayjs(action.timestamp).format("DD. MM. YYYY hh:mm")}</Typography>
+                  </TimelineOppositeContent>
+                  <TimelineSeparator>
+                    <TimelineDot />
+                    {timelineData.length - 1 !== i && <TimelineConnector />}
+                  </TimelineSeparator>
+                  <TimelineContent>
+                    {label}
+                  </TimelineContent>
+                </TimelineItem>
+              )
+            })}
+          </Timeline>        </div> */}
       </div>
     </Paper >
   );

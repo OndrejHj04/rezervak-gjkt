@@ -230,11 +230,6 @@ export default function GroupDetailForm({ group }: { group: any }) {
                             checked={checked.includes(user.id)}
                           />
                         )}
-                        <IconButton
-                          onClick={(e) => push(`/user/detail/${user.id}`)}
-                        >
-                          <Icon>info_icon</Icon>
-                        </IconButton>
                       </ListItemButton>
                     </ListItem>
                   ))
@@ -293,14 +288,6 @@ export default function GroupDetailForm({ group }: { group: any }) {
                           disableRipple
                           checked={selectReservation.includes(reservation.id)}
                         />
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            push(`/reservation/detail/${reservation.id}`);
-                          }}
-                        >
-                          <Icon>info_icon</Icon>
-                        </IconButton>
                       </ListItemButton>
                     </ListItem>
                   ))

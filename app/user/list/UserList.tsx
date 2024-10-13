@@ -1,21 +1,21 @@
 import UserListItem from "@/app/user/list/components/UserListItem";
 import {
   Box,
-  Chip,
   Paper,
   Table,
   TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
 } from "@mui/material";
 
-import RemoveUser from "./components/removeUser";
 import TableListPagination from "@/ui-components/TableListPagination";
-import { rolesConfig } from "@/lib/rolesConfig";
 import UserListFilter from "./components/UserListFilter";
-import { getUserList } from "@/lib/api";
 import UserListHeader from "./UserListHeader";
+import { getUserList } from "@/lib/api";
+
+// const getUserList = async ({ page, organization, search, role }: any) => {
+//   const req = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/list?page=${page}`)
+//   const data = await req.json()
+//   return data
+// }
 
 export default async function UserList({
   searchParams,
@@ -27,7 +27,7 @@ export default async function UserList({
   userId: any;
 }) {
   const role = searchParams["role"] || 0;
-  const organization = searchParams["organization"] || 0;
+  const organization = searchParams["organization"];
   const page = searchParams["page"] || 1;
   const search = searchParams["search"] || "";
 

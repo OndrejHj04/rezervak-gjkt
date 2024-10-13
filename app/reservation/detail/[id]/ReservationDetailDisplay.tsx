@@ -35,8 +35,6 @@ export default async function ReservationDetailDisplay({
   groups: any;
 }) {
 
-  const { data: timelineData } = await getReservationTimeline(reservation.id)
-
   return (
     <Paper className="md:p-4 p-2 flex gap-3 md:flex-row flex-col">
       <div>

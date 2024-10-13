@@ -4,8 +4,8 @@ import { Box, Button, Paper, Table, TableBody, TableCell, TableHead, TableRow, T
 import dayjs from "dayjs"
 import Link from "next/link"
 
-export default async function MailingSend() {
-  const { data, count } = await getSendMails({})
+export default async function MailingSend({ page }: any) {
+  const { data, count } = await getSendMails({ page })
   return (
 
     <div className="flex flex-col w-full gap-2">

@@ -19,13 +19,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import InfoIcon from "@mui/icons-material/Info";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import { toast } from "react-toastify";
 import AddUserModal from "./AddUserModal";
@@ -52,11 +51,22 @@ export default function ReservationDetailForm({
     register,
     handleSubmit,
     reset,
-    formState: { isDirty },
-  } = useForm();
+    formState: { isDirty, dirtyFields },
+    control
+  } = useForm({
+    defaultValues: {
+      from_date: dayjs(reservation.from_date),
+      to_date: dayjs(reservation.to_date),
+      name: reservation.name,
+      purpouse: reservation.purpouse,
+      instructions: reservation.instructions
+    }
+  });
+
 
   const onSubmit = (data: any) => {
-    editReservationDetail({ ...data, id: reservation.id }).then(
+    const modifiedDates = dirtyFields.from_date || dirtyFields.to_date
+    editReservationDetail({ ...data, id: reservation.id, modifiedDates }).then(
       ({ success }) => {
         success && toast.success("Rezervace byla upravena");
         !success && toast.error("Něco se nepovedlo");
@@ -144,6 +154,10 @@ export default function ReservationDetailForm({
   };
 
   useEffect(() => {
+    setSelectedStatus(reservation.status.id)
+  }, [reservation])
+
+  useEffect(() => {
     setRejectedReason("")
   }, [selectedStatus])
 
@@ -209,29 +223,20 @@ export default function ReservationDetailForm({
                 <TextField
                   label="Název"
                   {...register("name")}
-                  defaultValue={reservation.name}
                 />
                 <TextField
                   {...register("purpouse")}
                   label="Účel rezervace"
-                  defaultValue={reservation.purpouse}
                 />
               </div>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <div className="flex flex-col justify-between gap-2">
-                  <DatePicker
-                    value={dayjs(reservation.from_date)}
-                    disabled
-                    label="Začátek rezervace"
-                    format="DD.MM.YYYY"
-                  />
-
-                  <DatePicker
-                    value={dayjs(reservation.to_date)}
-                    disabled
-                    label="Konec rezervace"
-                    format="DD.MM.YYYY"
-                  />
+                  <Controller control={control} name="from_date" render={({ field: { value, onChange } }) => (
+                    <DatePicker value={value} onChange={(e) => onChange(e)} label="Začátek rezervace" format="DD. MM. YYYY" disabled={reservation.status.id === 3} />
+                  )} />
+                  <Controller control={control} name="to_date" render={({ field: { value, onChange } }) => (
+                    <DatePicker value={value} onChange={(e) => onChange(e)} label="Konec rezervace" format="DD. MM. YYYY" disabled={reservation.status.id === 3} />
+                  )} />
                 </div>
               </LocalizationProvider>
               <TextField
@@ -244,7 +249,6 @@ export default function ReservationDetailForm({
                     height: "100%",
                   },
                 }}
-                defaultValue={reservation.instructions}
                 {...register("instructions")}
               />
             </div>
@@ -257,7 +261,7 @@ export default function ReservationDetailForm({
                 Odstranit
               </Button>
               <Button variant="outlined" type="submit" disabled={!isDirty}>
-                Uložit
+                Uložit změny
               </Button>
             </div>
           </div>
@@ -307,14 +311,6 @@ export default function ReservationDetailForm({
                               checked={selectedUsers.includes(user.id)}
                             />
                           )}
-                          <IconButton
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              push(`/user/detail/${user.id}`);
-                            }}
-                          >
-                            <InfoIcon />
-                          </IconButton>
                         </ListItemButton>
                       </ListItem>
                     ))
@@ -371,11 +367,6 @@ export default function ReservationDetailForm({
                             disableRipple
                             checked={selectedGroups.includes(group.id)}
                           />
-                          <IconButton
-                            onClick={() => push(`/group/detail/${group.id}`)}
-                          >
-                            <InfoIcon />
-                          </IconButton>
                         </ListItemButton>
                       </ListItem>
                     ))

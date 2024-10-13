@@ -8,7 +8,6 @@ export default async function middleware(req: NextRequest) {
   const verified = token?.verified;
   const active = token?.active;
   const routes = getRoutes(Object.values(rolesConfig), role);
-
   if (
     !role &&
     !routes.some((item: any) => item.path === req.nextUrl.pathname)

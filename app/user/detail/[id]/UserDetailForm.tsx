@@ -363,14 +363,6 @@ export default function UserDetailForm({
                             checked={selectGroups.includes(group.id)}
                           />
                         )}
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            push(`/group/detail/${group.id}`);
-                          }}
-                        >
-                          <Icon>info_icon</Icon>
-                        </IconButton>
                       </ListItemButton>
                     </ListItem>
                   ))
@@ -436,14 +428,6 @@ export default function UserDetailForm({
                             )}
                           />
                         )}
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            push(`/reservation/detail/${reservation.id}`);
-                          }}
-                        >
-                          <Icon>info_icon</Icon>
-                        </IconButton>
                       </ListItemButton>
                     </ListItem>
                   ))
@@ -505,14 +489,6 @@ export default function UserDetailForm({
                           disableRipple
                           checked={selectChildren.includes(child.id)}
                         />
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            push(`/user/detail/${child.id}`);
-                          }}
-                        >
-                          <Icon>info_icon</Icon>
-                        </IconButton>
                       </ListItemButton>
                     </ListItem>
                   ))

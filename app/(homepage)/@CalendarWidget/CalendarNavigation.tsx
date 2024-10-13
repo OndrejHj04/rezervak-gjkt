@@ -2,16 +2,21 @@
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import csLocale from "@fullcalendar/core/locales/cs"
-import { Paper, Button, ToggleButton, ButtonGroup, ToggleButtonGroup, Typography, Tooltip, Box, List, ListItem, ListItemText, Icon, ListItemIcon } from '@mui/material'
+import { Paper, Button, ToggleButton, ButtonGroup, ToggleButtonGroup, Typography, Tooltip, Box, List, ListItem, ListItemText, Icon, ListItemIcon, Divider, IconButton } from '@mui/material'
 import { roomsEnum } from '@/app/constants/rooms'
 import React, { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { NavigateBefore, NavigateNext } from "@mui/icons-material"
+import { ArrowLeft, NavigateBefore, NavigateNext } from "@mui/icons-material"
 import { getFullName } from '@/app/constants/fullName'
-import dayjs from 'dayjs'
+import interactionPlugin, { Draggable } from "@fullcalendar/interaction"
 
-export default function FullcalendarWidget({ searchParams, data }: { searchParams: any, data: any }) {
+import dayjs from 'dayjs'
+import { setBlockedDates } from '@/lib/api'
+import BlockDates from '@/app/homepage/blockDates/BlockDates'
+
+export default function FullcalendarWidget({ searchParams, data, type = "user" }: { searchParams: any, data: any, type?: "user" | "admin" }) {
   const [roomsFilter, setRoomsFilter] = useState<number[]>(searchParams.rooms?.length ? searchParams?.rooms.split(",").map(Number) : [])
+  const [selectedDays, setSelectedDays] = useState<any>([])
 
   const calendarEventData = data.data.map((event: any) => ({
     id: event.id,
@@ -28,7 +33,7 @@ export default function FullcalendarWidget({ searchParams, data }: { searchParam
 
   const calendarRef = useRef(null)
   const pathname = usePathname();
-  const { replace } = useRouter()
+  const { replace, refresh } = useRouter()
   const [calendarTitle, setCalendarTitle] = useState("")
 
   const handleRoomsFilterChange = (_: any, values: any[]) => {
@@ -85,6 +90,12 @@ export default function FullcalendarWidget({ searchParams, data }: { searchParam
     </Tooltip>
   }
 
+  const handleBlocation = async (e: any) => {
+    setBlockedDates({ from_date: selectedDays[0], to_date: selectedDays[1] })
+    setSelectedDays([])
+    refresh()
+  }
+
   return (
     <Paper className="flex w-full h-full sm:flex-row flex-col p-2">
       <div className='flex flex-col sm:mr-2 mb-2 gap-2'>
@@ -102,16 +113,21 @@ export default function FullcalendarWidget({ searchParams, data }: { searchParam
           </ButtonGroup>
           <Button variant="outlined" size="small" onClick={() => mutateCalendar("today")}>Dnes</Button>
         </div>
-        <ToggleButtonGroup orientation='vertical' className='sm:flex-col flex-row' size='small' onChange={handleRoomsFilterChange} value={roomsFilter}>
+        {type === "user" && <ToggleButtonGroup orientation='vertical' className='sm:flex-col flex-row' size='small' onChange={handleRoomsFilterChange} value={roomsFilter}>
           <ToggleButton value="all" selected={roomsEnum.list.length === roomsFilter.length}>Celá chata</ToggleButton>
           {roomsEnum.list.map(rooms => (
             <ToggleButton key={rooms.id} value={rooms.id}>{rooms.label}</ToggleButton>
           ))}
         </ToggleButtonGroup>
-      </div>
+        }
+        {type === "admin" &&
+          <div>
+            <Button variant='contained' disabled={!selectedDays.length} onClick={handleBlocation}>Potvrdit blokaci</Button>
+          </div>
+        }</div>
       <div className='flex-1' style={{ minHeight: 450 }}>
-        <FullCalendar ref={calendarRef} height="100%" locale={csLocale} headerToolbar={{ right: "", left: "" }} plugins={[dayGridPlugin]} initialView="dayGridMonth" events={calendarEventData} eventContent={eventContentInjection} />
+        <FullCalendar selectable={type === "admin"} ref={calendarRef} height="100%" locale={csLocale} headerToolbar={{ right: "", left: "" }} plugins={[dayGridPlugin, interactionPlugin]} initialView="dayGridMonth" events={calendarEventData} eventContent={eventContentInjection} select={(date) => setSelectedDays([date.start, date.end])} unselect={() => setSelectedDays([])} unselectCancel='.MuiButtonBase-root' />
       </div>
-    </Paper>
+    </Paper >
   )
 }

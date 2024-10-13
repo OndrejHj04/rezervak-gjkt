@@ -71,6 +71,14 @@ export const rolesConfig = {
     menu: [true, false],
     icon: "wb_sunny_icon",
   },
+  adminPanel: {
+    name: "Administrátorský panel",
+    path: "/admin_panel",
+    modules: {},
+    roles: [],
+    menu: [true, false],
+    icon: "dashboard_icon",
+  },
   users: {
     name: "Uživatelé",
     path: "/user",

@@ -1160,15 +1160,14 @@ export const reservationAddUsers = async ({
 export const setBlockedDates = async ({
   from_date,
   to_date,
-  userId,
 }: {
   from_date: any;
   to_date: any;
-  userId: any;
 }) => {
   const fromDate = dayjs(from_date).format("YYYY-MM-DD");
-  const toDate = dayjs(to_date).format("YYYY-MM-DD");
+  const toDate = dayjs(to_date).subtract(1, "day").format("YYYY-MM-DD");
   const guest = await checkUserSession();
+  const { user } = await getServerSession(authOptions) as any
 
   const [_, { affectedRows: affectedRows }] = (await Promise.all([
     query({
@@ -1179,7 +1178,7 @@ export const setBlockedDates = async ({
     query({
       query: `INSERT INTO reservations${guest ? "_mock" : ""
         } (from_date, to_date, name, status, leader, purpouse, instructions, creation_date)
-  VALUES("${fromDate}", "${toDate}", "Blokace", 5, ${userId}, "blokace", "", "${dayjs(
+  VALUES("${fromDate}", "${toDate}", "Blokace", 5,${user.id}, "blokace", "", "${dayjs(
           new Date()
         ).format("YYYY-MM-DD")
         }")`,

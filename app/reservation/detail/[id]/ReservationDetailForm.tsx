@@ -65,8 +65,14 @@ export default function ReservationDetailForm({
 
 
   const onSubmit = (data: any) => {
-    const modifiedDates = dirtyFields.from_date || dirtyFields.to_date
-    editReservationDetail({ ...data, id: reservation.id, modifiedDates }).then(
+    editReservationDetail({
+      id: reservation.id, dirtyFields,
+      from_date: dayjs(data.from_date).format("YYYY-MM-DD"),
+      to_date: dayjs(data.to_date).format("YYYY-MM-DD"),
+      instructions: data.instructions,
+      name: data.name,
+      purpouse: data.purpouse
+    }).then(
       ({ success }) => {
         success && toast.success("Rezervace byla upravena");
         !success && toast.error("Něco se nepovedlo");

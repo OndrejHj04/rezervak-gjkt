@@ -63,7 +63,7 @@ export default function ReservationDatesRender({
     to_date: any;
   }) => {
     setExpanded(false);
-    setCreateReservation({ ...createReservation, from_date: new Date(from_date), to_date: new Date(to_date), rooms });
+    setCreateReservation({ ...createReservation, from_date: dayjs(from_date).format("YYYY-MM-DD"), to_date: dayjs(to_date).format("YYYY-MM-DD"), rooms });
   };
 
   useEffect(() => {

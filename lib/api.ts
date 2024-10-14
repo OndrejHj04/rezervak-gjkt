@@ -1388,7 +1388,7 @@ export const editReservationDetail = async ({
   name,
   from_date,
   to_date,
-  modifiedDates
+  dirtyFields
 }: {
   id: any;
   purpouse: any;
@@ -1396,20 +1396,44 @@ export const editReservationDetail = async ({
   name: any;
   from_date: any
   to_date: any
-  modifiedDates: any
+  dirtyFields: any
 }) => {
-  const [{ affectedRows }] = await Promise.all([
-    ...modifiedDates && [query({
-      query: `UPDATE reservations SET status = 2 WHERE id = ?`,
-      values: [id]
-    }),
-    query({
-      query: `UPDATE reservations SET purpouse = ?, name = ?, instructions = ?, from_date = ?, to_date = ? WHERE id = ?`,
-      values: [purpouse, name, instructions, dayjs(from_date).format("YYYY-MM-DD"), dayjs(to_date).format("YYYY-MM-DD"), id],
-    }),
-    ]]) as any
+  const { user } = await getServerSession(authOptions) as any
+  const requests = []
 
-  return { success: affectedRows === 1 };
+  if (dirtyFields.from_date || dirtyFields.to_date) {
+    requests.push(
+      query({
+        query: `INSERT INTO reservation_status_change (reservation_id, user_id, before_status, after_status) SELECT ?,?, reservations.status, 2 FROM reservations WHERE id = ?`,
+        values: [id, user.id, id]
+      }),
+      query({
+        query: `INSERT INTO reservations_date_change (user_id, reservation_id, before_from_date, after_from_date, before_to_date, after_to_date) SELECT ?,?,reservations.from_date,?,reservations.to_date,? FROM reservations WHERE id = ?`,
+        values: [user.id, id, from_date, to_date, id]
+      }), query({
+        query: `UPDATE reservations SET status = 2 WHERE id = ?`,
+        values: [id]
+      }),
+    )
+  }
+
+  if (dirtyFields.name || dirtyFields.purpouse || dirtyFields.instructions) {
+    requests.push(
+      query({
+        query: `INSERT INTO reservations_description_change (user_id, reservation_id, before_name, after_name, before_purpouse, after_purpouse, before_instructions, after_instructions) SELECT ?,?,reservations.name,?,reservations.purpouse,?,reservations.instructions,? FROM reservations WHERE id = ?`,
+        values: [user.id, id, name, purpouse, instructions, id]
+      })
+    )
+  }
+
+  requests.push(query({
+    query: `UPDATE reservations SET purpouse = ?, name = ?, instructions = ?, from_date = ?, to_date = ? WHERE id = ?`,
+    values: [purpouse, name, instructions, from_date, to_date, id],
+  }))
+
+  const req = await Promise.all(requests) as any
+
+  return { success: req[req.length - 1].affectedRows === 1 };
 };
 
 export const reservationRemoveGroups = async ({

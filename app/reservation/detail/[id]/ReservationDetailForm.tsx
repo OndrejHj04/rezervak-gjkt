@@ -85,6 +85,7 @@ export default function ReservationDetailForm({
     reservation.status.id
   );
   const [rejectedReason, setRejectedReason] = useState("")
+  const [successLink, setSuccessLink] = useState("")
 
   const handleCheckUser = (id: number) => {
     if (selectedUsers.includes(id)) {
@@ -141,7 +142,8 @@ export default function ReservationDetailForm({
       id: reservation.id,
       newStatus: selectedStatus,
       oldStatus: reservation.status.id,
-      ...(rejectedReason.length && { reason: rejectedReason })
+      ...(rejectedReason.length && { rejectReason: rejectedReason }),
+      ...(successLink.length && { successLink: successLink })
     }).then(({ success }) => {
       success && toast.success("Status rezervace byl změněn");
       !success && toast.error("Něco se nepovedlo");
@@ -151,6 +153,7 @@ export default function ReservationDetailForm({
       : window.location.reload();
     reset();
     setRejectedReason("")
+    setSuccessLink("")
   };
 
   useEffect(() => {
@@ -434,11 +437,14 @@ export default function ReservationDetailForm({
               </List>
               {selectedStatus === 4 && <TextField className="mb-2" fullWidth label="Důvod zamítnutí" size="small" value={rejectedReason} onChange={(e) => setRejectedReason(e.target.value)} />
               }
+              {selectedStatus === 3 &&
+                <TextField className="mb-2" fullWidth label="Odkaz na web Pece pod Sněžkou" size="small" value={successLink} onChange={(e) => setSuccessLink(e.target.value)} />}
+
               <div className="flex flex-col gap-2 mt-auto">
                 <Button
                   variant="contained"
                   endIcon={<AddToPhotosIcon />}
-                  disabled={selectedStatus === reservation.status.id || (selectedStatus === 4 && !rejectedReason.length)}
+                  disabled={selectedStatus === reservation.status.id || (selectedStatus === 4 && !rejectedReason.length) || (selectedStatus === 3 && !successLink.length)}
                   onClick={handleUpdateStatus}
                 >
                   Uložit stav

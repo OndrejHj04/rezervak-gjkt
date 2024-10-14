@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { rolesConfig } from "./rolesConfig";
 import { decode, sign } from "jsonwebtoken";
 import { NextServer } from "next/dist/server/next";
+import { reject } from "lodash";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -1505,12 +1506,14 @@ export const reservationUpdateStatus = async ({
   id,
   oldStatus,
   newStatus,
-  reason
+  rejectReason,
+  successLink
 }: {
   id: any;
   oldStatus: any;
   newStatus: any;
-  reason?: any
+  rejectReason?: any
+  successLink?: any
 }) => {
   let eventId = 10;
   switch (newStatus) {
@@ -1523,7 +1526,7 @@ export const reservationUpdateStatus = async ({
   }
   const guest = await checkUserSession();
   const { user } = await getServerSession(authOptions) as any
-  const [reservation, { affectedRows }, { data }] = (await Promise.all([
+  const [reservation, { affectedRows }, { data }, _] = (await Promise.all([
     query({
       query: `SELECT reservations.from_date, reservations.status, reservations.name, reservations.to_date, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader,
       GROUP_CONCAT(distinct users.email) as emails FROM reservations${guest ? "_mock as reservations" : ""
@@ -1543,6 +1546,10 @@ export const reservationUpdateStatus = async ({
       values: [],
     }),
     mailEventDetail({ id: eventId }),
+    query({
+      query: `INSERT INTO reservation_status_change (user_id, reservation_id, before_status, after_status, reject_reason, success_link) VALUES (?,?,?,?,?,?)`,
+      values: [user.id, id, oldStatus, newStatus, rejectReason, successLink]
+    })
   ])) as any;
 
   const statuses = (await query({
@@ -1583,9 +1590,13 @@ export const reservationUpdateStatus = async ({
         name: "leader_name",
         value: resDetail.leader.first_name + " " + resDetail.leader.last_name,
       },
-      (eventId === 11 && reason && {
+      (eventId === 11 && rejectReason && {
         name: "reason",
-        value: reason
+        value: rejectReason
+      }),
+      (eventId === 10 && successLink && {
+        name: "outside_link",
+        value: successLink
       })
     ],
   });

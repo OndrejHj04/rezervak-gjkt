@@ -49,7 +49,7 @@ export default function ReservationModal({
     watch,
     formState: { isDirty, isValid, dirtyFields },
   } = useForm({
-    defaultValues: { status: reservation.status, reason: "" },
+    defaultValues: { status: reservation.status, reason: "", successLink: "" },
   });
 
   const isActive = Number(params.get("reservation_id")) === reservation.id;
@@ -66,7 +66,8 @@ export default function ReservationModal({
       id: reservation.id,
       newStatus: data.status.id,
       oldStatus: reservation.status.id,
-      ...(data.reason.length && { reason: data.reason })
+      ...(data.reason.length && { rejectReason: data.reason }),
+      ...(data.successLink.length && { successLink: data.successLink })
     }).then(({ success }) => {
       success && toast.success("Status rezervace úspěšně změněn");
       !success && toast.error("Něco se nepovedlo");
@@ -118,6 +119,7 @@ export default function ReservationModal({
             )}
           />
           {watch("status")?.id === 4 && <TextField fullWidth className="mb-2" {...register("reason", { required: true })} label="Důvod zamítnutí" />}
+          {watch("status")?.id === 3 && <TextField fullWidth className="mb-2" {...register("successLink", { required: true })} label="Odkaz na web Pece pod Sněžkou" />}
           <Button
             className="w-full"
             variant="contained"

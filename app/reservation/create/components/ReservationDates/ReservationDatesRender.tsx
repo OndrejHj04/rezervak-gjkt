@@ -59,11 +59,11 @@ export default function ReservationDatesRender({
     from_date,
     to_date,
   }: {
-    from_date: string;
-    to_date: string;
+    from_date: any;
+    to_date: any;
   }) => {
     setExpanded(false);
-    setCreateReservation({ ...createReservation, from_date, to_date, rooms });
+    setCreateReservation({ ...createReservation, from_date: new Date(from_date), to_date: new Date(to_date), rooms });
   };
 
   useEffect(() => {
@@ -76,8 +76,7 @@ export default function ReservationDatesRender({
       id: reservation.id,
       title: reservation.name,
       start: reservation.from_date,
-      end: dayjs(reservation.to_date).add(1, "day").toDate(),
-      allDay: true,
+      end: dayjs(reservation.to_date).add(1, "day").format("YYYY-MM-DD"),
       resourceIds: reservation.rooms.map(({ id }: any) => id),
       leader: reservation.leader,
       color: reservation.status.color,
@@ -86,12 +85,13 @@ export default function ReservationDatesRender({
     }))
 
     if (from_date && to_date) {
-      reservationData.push({ id: "custom", title: "Nová rezervace", start: dayjs(from_date).toDate(), end: dayjs(to_date).add(1, "day").toDate(), allDay: true, resourceIds: rooms, leader: {} } as any)
+      reservationData.push({ id: "custom", title: "Nová rezervace", start: dayjs(from_date).toDate(), end: dayjs(to_date).add(1, "day").toDate(), resourceIds: rooms, leader: {} } as any)
     }
 
     return reservationData
   }, [from_date, to_date, rooms])
 
+  console.log(calendarEventData)
   const calendarResources = useMemo(() => {
     return roomsEnum.list.map((room) => ({ id: room.id, title: room.label }))
   }, [])
@@ -194,10 +194,10 @@ export default function ReservationDatesRender({
               }
             >
               <Controller control={control} name="from_date" rules={{ required: true }} render={({ field }) => (
-                <DatePicker label="Začátek rezervace" minDate={dayjs()} maxDate={dayjs(to_date).subtract(1, "day")} {...field} />
+                <DatePicker label="Začátek rezervace" minDate={dayjs()} maxDate={dayjs(to_date).subtract(1, "day")} {...field} format="DD. MM. YYYY" />
               )} />
               <Controller control={control} name="to_date" rules={{ required: true }} render={({ field }) => (
-                <DatePicker label="Konec rezervace" {...field} minDate={dayjs(from_date).isValid() ? dayjs(from_date).add(1, "day") : dayjs()} />
+                <DatePicker label="Konec rezervace" {...field} minDate={dayjs(from_date).isValid() ? dayjs(from_date).add(1, "day") : dayjs()} format="DD. MM. YYYY" />
               )} />
             </LocalizationProvider>
             <Controller control={control} name="rooms" rules={{ required: true }} render={({ field }) => (

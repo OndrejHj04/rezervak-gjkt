@@ -9,6 +9,7 @@ import { rolesConfig } from "./rolesConfig";
 import { decode, sign } from "jsonwebtoken";
 import { NextServer } from "next/dist/server/next";
 import { reject } from "lodash";
+import { roomsEnum } from "@/app/constants/rooms";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -1165,26 +1166,21 @@ export const setBlockedDates = async ({
   from_date: any;
   to_date: any;
 }) => {
-  const fromDate = dayjs(from_date).format("YYYY-MM-DD");
-  const toDate = dayjs(to_date).subtract(1, "day").format("YYYY-MM-DD");
-  const guest = await checkUserSession();
   const { user } = await getServerSession(authOptions) as any
 
-  const [_, { affectedRows: affectedRows }] = (await Promise.all([
+  const blocation = await query({
+    query: `INSERT INTO reservations (from_date, to_date, name, status, leader, purpouse, instructions) VALUES(?, ?, "Blokace", 5, ?, "blokace", "")`,
+    values: [from_date, to_date, user.id],
+  }) as any
+  const [{ affectedRows: affectedRows }, _] = (await Promise.all([
     query({
-      query: `UPDATE reservations${guest ? "_mock" : ""
-        } SET status = 4 WHERE((from_date BETWEEN '${fromDate}' AND '${toDate}') OR(to_date BETWEEN '${fromDate}' AND '${toDate}')) AND status <>5 AND status <> 1`,
-      values: [],
+      query: `UPDATE reservations SET status = 4 WHERE((from_date BETWEEN ? AND ?) OR(to_date BETWEEN ? AND ?)) AND status <>5 AND status <> 1`,
+      values: [from_date, to_date, from_date, to_date],
     }),
     query({
-      query: `INSERT INTO reservations${guest ? "_mock" : ""
-        } (from_date, to_date, name, status, leader, purpouse, instructions, creation_date)
-  VALUES("${fromDate}", "${toDate}", "Blokace", 5,${user.id}, "blokace", "", "${dayjs(
-          new Date()
-        ).format("YYYY-MM-DD")
-        }")`,
-      values: [],
-    }),
+      query: `INSERT INTO reservations_rooms (reservationId, roomId) VALUES ?`,
+      values: [roomsEnum.list.map((room: any) => [blocation.insertId, room.id])]
+    })
   ])) as any;
 
   return {
@@ -1220,7 +1216,7 @@ export const createNewReservation = async ({
 
   const reservation = (await query({
     query: `INSERT INTO reservations (from_date, to_date, purpouse, leader, instructions, name, status) VALUES (?, ?, ?, ?, ?, ?, 2)`,
-    values: [dayjs(from_date).format("YYYY-MM-DD"), dayjs(to_date).format("YYYY-MM-DD"), purpouse, leader, instructions, name],
+    values: [from_date, to_date, purpouse, leader, instructions, name],
   })) as any;
 
   const [{ data }, leaderData, statusName, membersEmail] = (await Promise.all([

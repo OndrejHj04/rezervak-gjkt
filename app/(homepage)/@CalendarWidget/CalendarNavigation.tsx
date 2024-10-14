@@ -22,8 +22,7 @@ export default function FullcalendarWidget({ searchParams, data, role }: { searc
     id: event.id,
     title: event.name,
     start: event.from_date,
-    end: dayjs(event.to_date).add(1, "day").toDate(),
-    allDay: true,
+    end: dayjs(event.to_date).add(1, "day").format("YYYY-MM-DD"),
     rooms: event.rooms,
     leader: event.leader,
     color: event.status.color,
@@ -90,8 +89,8 @@ export default function FullcalendarWidget({ searchParams, data, role }: { searc
     </Tooltip>
   }
 
-  const handleBlocation = async (e: any) => {
-    setBlockedDates({ from_date: selectedDays[0], to_date: selectedDays[1] })
+  const handleBlocation = async () => {
+    setBlockedDates({ from_date: selectedDays[0], to_date: dayjs(selectedDays[1]).subtract(1, "day").format("YYYY-MM-DD") })
     setSelectedDays([])
     refresh()
   }
@@ -127,7 +126,7 @@ export default function FullcalendarWidget({ searchParams, data, role }: { searc
         </Tooltip>
         }</div>
       <div className='flex-1' style={{ minHeight: 450 }}>
-        <FullCalendar selectable={role.id === 1} ref={calendarRef} height="100%" locale={csLocale} headerToolbar={{ right: "", left: "" }} plugins={[dayGridPlugin, interactionPlugin]} initialView="dayGridMonth" events={calendarEventData} eventContent={eventContentInjection} select={(date) => setSelectedDays([date.start, date.end])} unselect={() => setSelectedDays([])} unselectCancel='.MuiButtonBase-root' />
+        <FullCalendar selectable={role.id === 1} ref={calendarRef} height="100%" locale={csLocale} headerToolbar={{ right: "", left: "" }} plugins={[dayGridPlugin, interactionPlugin]} initialView="dayGridMonth" events={calendarEventData} eventContent={eventContentInjection} select={(date) => setSelectedDays([date.start, date.end])} unselect={() => setSelectedDays([])} unselectCancel='.MuiButtonBase-root' defaultAllDay />
       </div>
     </Paper >
   )

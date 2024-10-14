@@ -14,7 +14,7 @@ import dayjs from 'dayjs'
 import { setBlockedDates } from '@/lib/api'
 import BlockDates from '@/app/homepage/blockDates/BlockDates'
 
-export default function FullcalendarWidget({ searchParams, data, type = "user" }: { searchParams: any, data: any, type?: "user" | "admin" }) {
+export default function FullcalendarWidget({ searchParams, data, role }: { searchParams: any, data: any, role: any }) {
   const [roomsFilter, setRoomsFilter] = useState<number[]>(searchParams.rooms?.length ? searchParams?.rooms.split(",").map(Number) : [])
   const [selectedDays, setSelectedDays] = useState<any>([])
 
@@ -113,20 +113,21 @@ export default function FullcalendarWidget({ searchParams, data, type = "user" }
           </ButtonGroup>
           <Button variant="outlined" size="small" onClick={() => mutateCalendar("today")}>Dnes</Button>
         </div>
-        {type === "user" && <ToggleButtonGroup orientation='vertical' className='sm:flex-col flex-row' size='small' onChange={handleRoomsFilterChange} value={roomsFilter}>
+        <ToggleButtonGroup orientation='vertical' className='sm:flex-col flex-row' size='small' onChange={handleRoomsFilterChange} value={roomsFilter}>
           <ToggleButton value="all" selected={roomsEnum.list.length === roomsFilter.length}>Celá chata</ToggleButton>
           {roomsEnum.list.map(rooms => (
             <ToggleButton key={rooms.id} value={rooms.id}>{rooms.label}</ToggleButton>
           ))}
         </ToggleButtonGroup>
-        }
-        {type === "admin" &&
-          <div>
-            <Button variant='contained' disabled={!selectedDays.length} onClick={handleBlocation}>Potvrdit blokaci</Button>
-          </div>
+
+        {role.id === 1 && <Tooltip title="Kliknutím nebo potažením mezi jednotlivými dny vyberete období k blokaci">
+          <span>
+            <Button variant='contained' fullWidth disabled={!selectedDays.length} onClick={handleBlocation} size="small">Blokovat</Button>
+          </span>
+        </Tooltip>
         }</div>
       <div className='flex-1' style={{ minHeight: 450 }}>
-        <FullCalendar selectable={type === "admin"} ref={calendarRef} height="100%" locale={csLocale} headerToolbar={{ right: "", left: "" }} plugins={[dayGridPlugin, interactionPlugin]} initialView="dayGridMonth" events={calendarEventData} eventContent={eventContentInjection} select={(date) => setSelectedDays([date.start, date.end])} unselect={() => setSelectedDays([])} unselectCancel='.MuiButtonBase-root' />
+        <FullCalendar selectable={role.id === 1} ref={calendarRef} height="100%" locale={csLocale} headerToolbar={{ right: "", left: "" }} plugins={[dayGridPlugin, interactionPlugin]} initialView="dayGridMonth" events={calendarEventData} eventContent={eventContentInjection} select={(date) => setSelectedDays([date.start, date.end])} unselect={() => setSelectedDays([])} unselectCancel='.MuiButtonBase-root' />
       </div>
     </Paper >
   )

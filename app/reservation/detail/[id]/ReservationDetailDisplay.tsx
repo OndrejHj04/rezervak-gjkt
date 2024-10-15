@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { getReservationTimeline } from "@/lib/api";
 import React from "react";
+import { roomsEnum } from "@/app/constants/rooms";
 
 
 export default async function ReservationDetailDisplay({
@@ -73,16 +74,6 @@ export default async function ReservationDetailDisplay({
           />
         </div>
         <Typography>Účel rezervace: {reservation.purpouse}</Typography>
-        <Typography>Pokoje: </Typography>
-        <div className="flex gap-2 flex-col">
-          {reservation.rooms.map((room: any) => (
-            <Chip
-              className="w-min"
-              key={room.id}
-              label={`Pokoj č. ${room.id}, ${room.people} lůžkový`}
-            />
-          ))}
-        </div>
         <Typography>
           Pokyny pro účastníky: {reservation.instructions}
         </Typography>
@@ -152,6 +143,21 @@ export default async function ReservationDetailDisplay({
           </div>
         </div>
         <Divider flexItem orientation="vertical" />
+        <div className="flex flex-col">
+          <Typography variant="h5">Pokoje</Typography>
+          <Divider />
+          <List>
+            {roomsEnum.list.map((room) => {
+              if (reservation.rooms.includes(room.id)) {
+                return (
+                  <ListItem key={room.id} disablePadding>
+                    <ListItemText primary={room.label} secondary={`Počet lůžek ${room.capacity}`} />
+                  </ListItem>
+                )
+              }
+            })}
+          </List>
+        </div>
         {/* <div>
           <Typography variant="h5">Timeline rezervace</Typography>
           <Divider />

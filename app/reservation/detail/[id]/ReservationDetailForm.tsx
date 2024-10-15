@@ -36,9 +36,11 @@ import {
   editReservationDetail,
   reservationRemoveGroups,
   reservationRemoveUsers,
+  reservationSaveRooms,
   reservationsDelete,
   reservationUpdateStatus,
 } from "@/lib/api";
+import { roomsEnum } from "@/app/constants/rooms";
 
 export default function ReservationDetailForm({
   reservation,
@@ -92,6 +94,7 @@ export default function ReservationDetailForm({
   );
   const [rejectedReason, setRejectedReason] = useState("")
   const [successLink, setSuccessLink] = useState("")
+  const [selectedRooms, setSelectedRooms] = useState(reservation.rooms)
 
   const handleCheckUser = (id: number) => {
     if (selectedUsers.includes(id)) {
@@ -108,6 +111,25 @@ export default function ReservationDetailForm({
       setSelectedGroups([...selectedGroups, id]);
     }
   };
+
+  const handleCheckRoom = (id: number) => {
+    if (selectedRooms.includes(id)) {
+      setSelectedRooms(selectedRooms.filter((room: any) => room !== id).sort());
+    } else {
+      setSelectedRooms([...selectedRooms, id].sort());
+    }
+  };
+
+  const saveReservationRooms = () => {
+    reservationSaveRooms({
+      reservation: reservation.id,
+      rooms: selectedRooms
+    }).then(({ success }) => {
+      success && toast.success("Nastavení pokojů úspěšně uloženo");
+      !success && toast.error("Něco se nepovedlo");
+    })
+    MakeReservationDetailRefetch(reservation.id);
+  }
 
   const handleRemoveUsers = () => {
     reservationRemoveUsers({
@@ -275,15 +297,6 @@ export default function ReservationDetailForm({
             </div>
           </div>
           <div className="flex gap-2 lg:flex-row flex-col">
-            <div className="flex sm:flex-row flex-col gap-2">
-              <Typography variant="h6">Pokoje:</Typography>
-              {reservation.rooms.map((room: any) => (
-                <Chip
-                  key={room.id}
-                  label={`Pokoj č. ${room.id}, ${room.people} lůžkový`}
-                />
-              ))}
-            </div>
             <Typography variant="h6">
               Datum vytvoření:{" "}
               {dayjs(reservation.creation_date).format("DD. MM. YYYY")}
@@ -408,6 +421,38 @@ export default function ReservationDetailForm({
                     onClick={() => setGroupsModal(true)}
                   >
                     Přidat skupiny
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <Typography variant="h5">Pokoje</Typography>
+              <Divider />
+              <List>
+                {roomsEnum.list.map((room) => (
+                  <ListItem key={room.id} disablePadding>
+                    <ListItemButton className="!p-1" onClick={() => handleCheckRoom(room.id)}>
+                      <ListItemText
+                        primary={room.label}
+                        secondary={`Počet lůžek: ${room.capacity}`}
+                      />
+                      <Checkbox
+                        disableRipple
+                        checked={selectedRooms.includes(room.id)}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+              <div className="mt-auto">
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant="contained"
+                    endIcon={<AddToPhotosIcon />}
+                    disabled={selectedRooms.toString() === reservation.rooms.toString()}
+                    onClick={saveReservationRooms}
+                  >
+                    Uložit
                   </Button>
                 </div>
               </div>

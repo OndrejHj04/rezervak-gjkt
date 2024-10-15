@@ -1232,9 +1232,8 @@ export const getReservationDetail = async ({
         query: `SELECT reservations.id, from_date, to_date, reservations.name, leader, instructions, purpouse, creation_date, 
     JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', display_name, 'icon', icon) as status,
     JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader,
-    GROUP_CONCAT(
-      JSON_OBJECT('id', rooms.id, 'people', rooms.people)
-    ) as rooms
+    GROUP_CONCAT(rooms.id separator ';')
+     as rooms
     FROM reservations${guest ? "_mock as reservations" : ""}
     INNER JOIN reservations_rooms${guest ? "_mock as reservations_rooms" : ""
           } ON reservations_rooms.reservationId = reservations.id
@@ -1283,7 +1282,7 @@ export const getReservationDetail = async ({
     ...reservations[0],
     status: JSON.parse(reservations[0].status),
     leader: JSON.parse(reservations[0].leader),
-    rooms: JSON.parse(`[${reservations[0].rooms}]`),
+    rooms: reservations[0].rooms.split(';').map(Number),
     users: {
       data: users,
       count: usersCount[0].total,
@@ -2286,4 +2285,19 @@ WHERE
   });
 
   return { data: formatedData }
+}
+
+export const reservationSaveRooms = async ({ reservation, rooms }: { reservation: any, rooms: any }) => {
+  const [_, { affectedRows }] = await Promise.all([
+    query({
+      query: `DELETE FROM reservations_rooms WHERE reservationId = ?`,
+      values: [reservation]
+    }),
+    query({
+      query: `INSERT INTO reservations_rooms (reservationId, roomId) VALUES ?`,
+      values: [rooms.map((room: any) => [reservation, room])]
+    })
+  ]) as any
+
+  return { success: affectedRows === rooms.length }
 }

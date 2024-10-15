@@ -2245,44 +2245,89 @@ export const getSendMailDetail = async (id: any) => {
 }
 
 export const getReservationTimeline = async (id: any) => {
-  const [data, status] = await Promise.all([
+  const [reservationDateChanges, reservationDescChanges, reservationUserChanges, reservationGroupChange, reservationStatusChange] = await Promise.all([
     query({
-      query: `SELECT 
-        JSON_OBJECT("timestamp", reservations.creation_date, "type_id", 0),
-        JSON_OBJECT("timestamp", reservations.from_date, "type_id", 1),
-        JSON_OBJECT("timestamp", reservations.to_date, "type_id", 2),
-        JSON_OBJECT("timestamp", reservations.to_date, "type_id", 3)
-        FROM reservations
-        WHERE reservations.id = ?
-        GROUP BY reservations.id
-        `,
+      query: `SELECT rdc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author,
+      JSON_OBJECT('before_from_date',before_from_date,'before_to_date',before_to_date) as before_change,
+      JSON_OBJECT('after_from_date', after_from_date, 'after_to_date', after_to_date) as after_change 
+      FROM reservations_date_change as rdc 
+      INNER JOIN users ON users.id = rdc.user_id
+      WHERE reservation_id = ?`,
       values: [id]
     }),
     query({
-      query: `
-
-SELECT 
-    reservation_status_changes.timestamp, 
-    4 as type_id, 
-    reservation_status_changes.from_status, 
-    reservation_status_changes.to_status,
-    JSON_OBJECT("id", users.id, "first_name", users.first_name, "last_name", users.last_name, "image", users.image) as user
-FROM 
-    reservation_status_changes 
-    INNER JOIN users ON users.id = reservation_status_changes.user_id
-WHERE 
-    reservation_status_changes.reservation_id = ? 
+      query: `SELECT rdc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, JSON_OBJECT('before_name', rdc.before_name, 'before_purpouse', rdc.before_purpouse, 'before_instructions', rdc.before_instructions) as before_change, 
+      JSON_OBJECT('after_name', rdc.after_name, 'after_purpouse', rdc.after_purpouse, 'after_instructions', rdc.after_instructions) as after_change 
+      FROM reservations_description_change as rdc
+      INNER JOIN users ON users.id = rdc.user_id
+      WHERE reservation_id = ?`,
+      values: [id]
+    }),
+    query({
+      query: `SELECT ruc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, ruc.direction, GROUP_CONCAT(JSON_OBJECT('id', u.id, 'first_name', u.first_name, 'last_name', u.last_name, 'image', u.image) separator ';') as users
+      FROM reservations_users_change as ruc
+      INNER JOIN users ON users.id = ruc.user_id
+      INNER JOIN reservations_users_change_users rucu ON rucu.change_id = ruc.id  
+      INNER JOIN users u ON u.id = rucu.user_id 
+      WHERE reservation_id = ?
+      GROUP BY timestamp`,
+      values: [id]
+    }),
+    query({
+      query: `SELECT rgc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, rgc.direction, GROUP_CONCAT(JSON_OBJECT('id', g.id) separator ';') as groups
+      FROM reservations_groups_change as rgc
+      INNER JOIN users ON users.id = rgc.user_id
+      INNER JOIN reservations_groups_change_groups rugu ON rugu.change_id = rgc.id  
+      INNER JOIN groups g ON g.id = rugu.group_id 
+      WHERE reservation_id = ?
+      GROUP BY timestamp
+      `,
+      values: [id]
+    }),
+    query({
+      query: `SELECT rsc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, rsc.before_status, JSON_OBJECT('id', rsb.id, 'display_name', rsb.display_name, 'color', rsb.color, 'icon', rsb.icon) as before_status, JSON_OBJECT('id', rsa.id, 'display_name', rsa.display_name, 'color', rsa.color, 'icon', rsa.icon) as after_status, rsc.reject_reason, rsc.success_link FROM reservation_status_change as rsc
+      INNER JOIN users ON users.id = rsc.user_id
+      INNER JOIN status as rsb ON rsb.id = rsc.before_status 
+      INNER JOIN status as rsa ON rsa.id = rsc.after_status 
+      WHERE reservation_id = ?
+      GROUP BY timestamp
       `,
       values: [id]
     })
   ]) as any
 
 
-  const formatedData = [...Object.values(data[0]).map((item: any) => JSON.parse(item)), ...status.map(((item: any) => ({ ...item, user: JSON.parse(item.user) })))].sort((a, b) => {
-    var c = new Date(a.timestamp) as any;
-    var d = new Date(b.timestamp) as any;
-    return c - d;
-  });
+  const formatedData = [...reservationDateChanges.map((item: any) => ({
+    author: JSON.parse(item.author),
+    before: JSON.parse(item.before_change),
+    after: JSON.parse(item.after_change),
+    timestamp: item.timestamp,
+    timelineEventTypeId: 40
+  })), ...reservationDescChanges.map((item: any) => ({
+    author: JSON.parse(item.author),
+    before: JSON.parse(item.before_change),
+    after: JSON.parse(item.after_change),
+    timestamp: item.timestamp,
+    timelineEventTypeId: 30
+  })), ...reservationUserChanges.map((item: any) => ({
+    ...item,
+    author: JSON.parse(item.author),
+    users: item.users.split(";").map((item: any) => JSON.parse(item)),
+    timelineEventTypeId: item.direction ? 11 : 10
+  })), ...reservationGroupChange.map((item: any) => ({
+    ...item,
+    author: JSON.parse(item.author),
+    groups: item.groups.split(";").map((item: any) => JSON.parse(item)),
+    timelineEventTypeId: item.direction ? 21 : 20
+  })), ...reservationStatusChange.map((item: any) => ({
+    ...item,
+    author: JSON.parse(item.author),
+    before_status: JSON.parse(item.before_status),
+    after_status: JSON.parse(item.after_status),
+    timelineEventTypeId: Number(`5${JSON.parse(item.after_status).id}`)
+  }))].sort((a, b) => {
+    return a.timestamp - b.timestamp
+  })
 
   return { data: formatedData }
 }

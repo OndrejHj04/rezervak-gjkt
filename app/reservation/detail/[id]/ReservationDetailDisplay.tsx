@@ -24,6 +24,8 @@ import TableListPagination from "@/ui-components/TableListPagination";
 import { getReservationTimeline } from "@/lib/api";
 import React from "react";
 import { roomsEnum } from "@/app/constants/rooms";
+import { Add, ArrowDownward, ArrowUpward, Remove } from "@mui/icons-material";
+import TimelineEventUi from "./TimelineEventUi";
 
 
 export default async function ReservationDetailDisplay({
@@ -36,6 +38,8 @@ export default async function ReservationDetailDisplay({
   groups: any;
 }) {
 
+  const reservationTimeline = await getReservationTimeline(reservation.id) as any
+  console.log(reservationTimeline)
   return (
     <Paper className="md:p-4 p-2 flex gap-3 md:flex-row flex-col">
       <div>
@@ -158,30 +162,23 @@ export default async function ReservationDetailDisplay({
             })}
           </List>
         </div>
-        {/* <div>
-          <Typography variant="h5">Timeline rezervace</Typography>
+        <Divider flexItem orientation="vertical" />
+        <div className="flex flex-col">
+          <Typography variant="h5">Timeline</Typography>
           <Divider />
-
-          <Timeline>
-            {timelineData.map((action: any, i: any) => {
-              const { label } = timelineActionsStructure[action.type_id]
-
-              return (
-                <TimelineItem key={i} className="before:[&]:hidden">
-                  <TimelineOppositeContent color="text.secondary">
-                    <Typography noWrap>{dayjs(action.timestamp).format("DD. MM. YYYY hh:mm")}</Typography>
-                  </TimelineOppositeContent>
-                  <TimelineSeparator>
-                    <TimelineDot />
-                    {timelineData.length - 1 !== i && <TimelineConnector />}
-                  </TimelineSeparator>
-                  <TimelineContent>
-                    {label}
-                  </TimelineContent>
-                </TimelineItem>
-              )
-            })}
-          </Timeline>        </div> */}
+          <Timeline className="!px-0 [&_.MuiTimelineItem-root:last-child_.MuiTimelineConnector-root]:hidden">
+            {reservationTimeline.data.map((item: any, i: any) => (
+              <TimelineItem key={item.timestamp} className="before:[&]:hidden">
+                <TimelineOppositeContent className="h-[54.5px] flex items-center">
+                  <ListItemText primary={<Typography noWrap>
+                    {dayjs(item.timestamp).format("DD. MM. HH:mm")}
+                  </Typography>} secondary={"Placeholder"} />
+                </TimelineOppositeContent>
+                {TimelineEventUi(item.timelineEventTypeId)}
+              </TimelineItem>
+            ))}
+          </Timeline>
+        </div>
       </div>
     </Paper >
   );

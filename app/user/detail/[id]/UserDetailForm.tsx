@@ -37,11 +37,10 @@ import {
   editUserDetail,
   makeUserSleep,
   userRemoveChildren,
-  userRemoveGroups,
-  userRemoveReservations,
 } from "@/lib/api";
 import AddChildrenModal from "./AddChildrenModal";
 
+const rowsPerPage = 5
 export default function UserDetailForm({
   userDetail,
   roles,
@@ -101,17 +100,6 @@ export default function UserDetailForm({
     }
   };
 
-  const removeGroups = () => {
-    userRemoveGroups({ user: userDetail.id, groups: selectGroups }).then(
-      ({ success }) => {
-        success && toast.success("Skupiny úspěšně odebrány");
-        !success && toast.error("Něco se nepovedlo");
-      }
-    );
-    setSelectGroups([]);
-    MakeUserDetailRefetch(userDetail.id);
-  };
-
   const handleCheckReservation = (id: number) => {
     if (selectReservations.includes(id)) {
       setSelectReservation(
@@ -132,17 +120,6 @@ export default function UserDetailForm({
     }
   };
 
-  const removeReservations = () => {
-    userRemoveReservations({
-      user: userDetail.id,
-      reservations: selectReservations,
-    }).then(({ success }) => {
-      success && toast.success("Rezervace úspěšně odebrány");
-      !success && toast.error("Něco se nepovedlo");
-    });
-    setSelectReservation([]);
-    MakeUserDetailRefetch(userDetail.id);
-  };
 
   const removeChildren = () => {
     userRemoveChildren({
@@ -345,168 +322,97 @@ export default function UserDetailForm({
               <Typography variant="h5">Skupiny uživatele</Typography>
               <Divider />
               <List>
-                {userDetail.groups.count ? (
-                  userDetail.groups.data.map((group: any) => (
-                    <ListItem disablePadding key={group.id}>
-                      <ListItemButton
-                        sx={{ padding: 1 }}
-                        disabled={group.owner.id === userDetail.id}
-                        onClick={() => handleCheckGroup(group.id)}
-                      >
-                        <ListItemText
-                          primary={<Typography>{group.name}</Typography>}
-                          secondary={`Počet členů: ${group.users.length}`}
-                        />
-                        {group.owner.id !== userDetail.id && (
-                          <Checkbox
-                            disableRipple
-                            checked={selectGroups.includes(group.id)}
-                          />
-                        )}
-                      </ListItemButton>
-                    </ListItem>
-                  ))
-                ) : (
-                  <>
-                    <Typography>Žádné skupiny uživatele</Typography>
-                  </>
-                )}
+                {userDetail.groups.data.map((group: any) => (
+                  <ListItem disablePadding key={group.id}>
+                    <ListItemButton
+                      className="!p-0"
+                      onClick={() => handleCheckGroup(group.id)}
+                    >
+                      <ListItemText
+                        primary={<Typography>{group.name}</Typography>}
+                        secondary={`Počet členů: ${group.users.length}`}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
               </List>
               <div className="mt-auto">
-                <TableListPagination
+                {userDetail.groups.count > rowsPerPage && <TableListPagination
                   name="groups"
-                  rpp={5}
+                  rpp={rowsPerPage}
                   count={userDetail.groups.count}
-                />
-                {makeEdit && (
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      variant="contained"
-                      color="error"
-                      endIcon={<DeleteForeverIcon />}
-                      disabled={!selectGroups.length}
-                      onClick={removeGroups}
-                    >
-                      Odebrat uživatele z vybraných skupin
-                    </Button>
-                    <Button
-                      variant="contained"
-                      endIcon={<AddToPhotosIcon />}
-                      onClick={() => setGroupsModal(true)}
-                    >
-                      Přidat uživatele do skupiny
-                    </Button>
-                  </div>
-                )}
-              </div>
+                />}</div>
             </div>
+            <Divider orientation="vertical" flexItem />
             <div className="flex flex-col">
               <Typography variant="h5">Rezervace uživatele</Typography>
               <Divider />
               <List>
-                {userDetail.reservations.count ? (
-                  userDetail.reservations.data.map((reservation: any) => (
-                    <ListItem disablePadding key={reservation.id}>
-                      <ListItemButton
-                        sx={{ padding: 1 }}
-                        disabled={reservation.leader.id === userDetail.id}
-                        onClick={() => handleCheckReservation(reservation.id)}
-                      >
-                        <ListItemText
-                          primary={<Typography>{reservation.name}</Typography>}
-                          secondary={`${dayjs(reservation.from_date).format(
-                            "DD.MM.YYYY"
-                          )} - ${dayjs(reservation.to_date).format(
-                            "DD.MM.YYYY"
-                          )}`}
-                        />
-                        {reservation.leader.id !== userDetail.id && (
-                          <Checkbox
-                            disableRipple
-                            checked={selectReservations.includes(
-                              reservation.id
-                            )}
-                          />
-                        )}
-                      </ListItemButton>
-                    </ListItem>
-                  ))
-                ) : (
-                  <>
-                    <Typography>Žádné rezervace uživatele</Typography>
-                  </>
-                )}
+                {userDetail.reservations.data.map((reservation: any) => (
+                  <ListItem disablePadding key={reservation.id}>
+                    <ListItemButton
+                      className="!p-0"
+                      onClick={() => handleCheckReservation(reservation.id)}
+                    >
+                      <ListItemText
+                        primary={<Typography>{reservation.name}</Typography>}
+                        secondary={`${dayjs(reservation.from_date).format(
+                          "DD.MM.YYYY"
+                        )} - ${dayjs(reservation.to_date).format(
+                          "DD.MM.YYYY"
+                        )}`}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
               </List>
               <div className="mt-auto">
-                <TableListPagination
+                {userDetail.reservations.count > rowsPerPage && <TableListPagination
                   name="reservations"
-                  rpp={5}
+                  rpp={rowsPerPage}
                   count={userDetail.reservations.count}
                 />
-                {makeEdit && (
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      variant="contained"
-                      color="error"
-                      endIcon={<DeleteForeverIcon />}
-                      disabled={!selectReservations.length}
-                      onClick={removeReservations}
-                    >
-                      Odebrat uživatele z vybraných rezervací
-                    </Button>
-                    <Button
-                      variant="contained"
-                      endIcon={<AddToPhotosIcon />}
-                      onClick={() => setReservationsModal(true)}
-                    >
-                      Přidat uživatele do rezervace
-                    </Button>
-                  </div>
-                )}
-              </div>
+                }</div>
             </div>
-
+            <Divider orientation="vertical" flexItem />
             <div className="flex flex-col">
               <Typography variant="h5">Dětské účty uživatele</Typography>
               <Divider />
               <List>
-                {userDetail.children.count ? (
-                  userDetail.children.data.map((child: any) => (
-                    <ListItem disablePadding key={child.id}>
-                      <ListItemButton
-                        sx={{ padding: 1 }}
-                        onClick={() => handleCheckChildren(child.id)}
-                      >
-                        <ListItemText
-                          primary={
-                            <Typography>
-                              {child.first_name} {child.last_name}
-                            </Typography>
-                          }
-                          secondary={child.email}
-                        />
-                        <Checkbox
-                          disableRipple
-                          checked={selectChildren.includes(child.id)}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  ))
-                ) : (
-                  <>
-                    <Typography>Žádné dětské účty uživatele</Typography>
-                  </>
-                )}
+                {userDetail.children.data.map((child: any) => (
+                  <ListItem disablePadding key={child.id}>
+                    <ListItemButton
+                      sx={{ padding: 1 }}
+                      onClick={() => handleCheckChildren(child.id)}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography>
+                            {child.first_name} {child.last_name}
+                          </Typography>
+                        }
+                        secondary={child.email}
+                      />
+                      <Checkbox
+                        disableRipple
+                        checked={selectChildren.includes(child.id)}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
               </List>
               <div className="mt-auto">
-                <TableListPagination
-                  name="children"
-                  rpp={5}
-                  count={userDetail.children.count}
-                />
+                {userDetail.children.count > rowsPerPage &&
+                  <TableListPagination
+                    name="children"
+                    rpp={rowsPerPage}
+                    count={userDetail.children.count}
+                  />
+                }
                 {makeEdit && (
                   <div className="flex flex-col gap-2">
                     <Button
+                      size="small"
                       variant="contained"
                       color="error"
                       endIcon={<DeleteForeverIcon />}
@@ -516,6 +422,7 @@ export default function UserDetailForm({
                       Odpojit vybrané dětské účty
                     </Button>
                     <Button
+                      size="small"
                       variant="contained"
                       endIcon={<AddToPhotosIcon />}
                       onClick={() => setChildrenModal(true)}

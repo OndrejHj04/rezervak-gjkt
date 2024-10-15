@@ -14,7 +14,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeGroupDetailRefetch from "./refetch";
 import UserCard from "@/app/user/detail/UserCard";
-import { getUserList, groupAddMembers } from "@/lib/api";
+import { getUserList, groupAddUsers } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -46,9 +46,9 @@ export default function AddUsersToGroupModal({
   }, []);
 
   const onSubmit = (data: any) => {
-    groupAddMembers({
+    groupAddUsers({
       group: group.id,
-      newMembers: data.users.map((group: any) => group.id),
+      users: data.users.map((group: any) => group.id),
     }).then(({ success }) => {
       success && toast.success("Uživatelé úspěšně přidáni");
       !success && toast.error("Něco se nepovedlo");

@@ -36,8 +36,9 @@ import csLocale from "@fullcalendar/core/locales/cs"
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { roomsEnum } from "@/app/constants/rooms";
 import { getFullName } from "@/app/constants/fullName";
-import { DatePicker, LocalizationProvider, csCZ } from "@mui/x-date-pickers";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { create } from "zustand";
+import { csCZ } from "@mui/x-date-pickers/locales";
 
 export default function ReservationDatesRender({
   reservations,

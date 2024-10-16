@@ -1,5 +1,6 @@
-import { DateCalendar, LocalizationProvider, csCZ } from "@mui/x-date-pickers";
+import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { csCZ } from "@mui/x-date-pickers/locales";
 import dayjs from "dayjs";
 import CzechLocale from "dayjs/locale/cs";
 

@@ -3,7 +3,6 @@ import {
   DatePicker,
   LocalizationProvider,
   PickersDay,
-  csCZ,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -15,6 +14,7 @@ import { toast } from "react-toastify";
 import HomepageRefetch from "../refetch";
 import { setBlockedDates } from "@/lib/api";
 import SingleReservation from "@/app/(homepage)/@ReservationsWidget/SingleReservation";
+import { csCZ } from "@mui/x-date-pickers/locales";
 
 export default function BlockDatesForm({
   reservations,
@@ -38,7 +38,6 @@ export default function BlockDatesForm({
     setBlockedDates({
       from_date: data.from_date,
       to_date: data.to_date,
-      userId: userId,
     }).then(({ success, from_date, to_date }) => {
       success &&
         toast.success(

@@ -25,21 +25,22 @@ import { getReservationTimeline } from "@/lib/api";
 import React from "react";
 import { roomsEnum } from "@/app/constants/rooms";
 import { Add, ArrowDownward, ArrowUpward, Remove } from "@mui/icons-material";
-import TimelineEventUi from "./TimelineEventUi";
+import TimelineEventUi, { TimelineEventDescription } from "./TimelineEventUi";
 
 
 export default async function ReservationDetailDisplay({
   reservation,
   users,
   groups,
+  timeline = 1
 }: {
   reservation: any;
   users: any;
   groups: any;
+  timeline: any
 }) {
 
   const reservationTimeline = await getReservationTimeline(reservation.id) as any
-  console.log(reservationTimeline)
   return (
     <Paper className="md:p-4 p-2 flex gap-3 md:flex-row flex-col">
       <div>
@@ -166,18 +167,17 @@ export default async function ReservationDetailDisplay({
         <div className="flex flex-col">
           <Typography variant="h5">Timeline</Typography>
           <Divider />
-          <Timeline className="!px-0 [&_.MuiTimelineItem-root:last-child_.MuiTimelineConnector-root]:hidden">
-            {reservationTimeline.data.map((item: any, i: any) => (
-              <TimelineItem key={item.timestamp} className="before:[&]:hidden">
-                <TimelineOppositeContent className="h-[54.5px] flex items-center">
-                  <ListItemText primary={<Typography noWrap>
-                    {dayjs(item.timestamp).format("DD. MM. HH:mm")}
-                  </Typography>} secondary={"Placeholder"} />
+          <Timeline className="!px-0 [&_.MuiTimelineItem-root:last-child_.MuiTimelineConnector-root]:hidden [&_.MuiTimelineOppositeContent-root]:!pl-0 [&_.MuiTimelineOppositeContent-root]:[flex:_0.5] [&_.MuiTimelineContent-root]:!pr-0 [&_.MuiTimelineOppositeContent-root]:mr-0 w-[400px]">
+            {reservationTimeline.data.slice(timeline * 5 - 5, timeline * 5).map((item: any, i: any) => (
+              <TimelineItem key={i} className="before:[&]:hidden" >
+                <TimelineOppositeContent className="">
+                  <ListItemText className="my-0" primary={dayjs(item.timestamp).format("DD. MM. HH:mm")} secondaryTypographyProps={{ className: "whitespace-nowrap" }} secondary={TimelineEventDescription(item.timelineEventTypeId)} />
                 </TimelineOppositeContent>
-                {TimelineEventUi(item.timelineEventTypeId)}
+                {TimelineEventUi(item)}
               </TimelineItem>
             ))}
           </Timeline>
+          <TableListPagination count={reservationTimeline.count} name="timeline" rpp={5} />
         </div>
       </div>
     </Paper >

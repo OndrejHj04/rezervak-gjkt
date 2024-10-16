@@ -7,12 +7,12 @@ import { getReservationDetail, getReservationsStatus } from "@/lib/api";
 
 export default async function ReservationDetail({
   params,
-  searchParams: { mode, users, groups },
+  searchParams: { mode, users, groups, timeline },
   userId,
   userRole,
 }: {
   params: any;
-  searchParams: { mode: any; users: any; groups: any };
+  searchParams: { mode: any; users: any; groups: any, timeline: any };
   userId: any;
   userRole: any;
 }) {
@@ -62,6 +62,7 @@ export default async function ReservationDetail({
           reservation={reservation}
           users={users}
           groups={groups}
+          timeline={timeline}
         />
       )}
     </>

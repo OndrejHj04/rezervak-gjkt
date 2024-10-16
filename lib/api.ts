@@ -2256,8 +2256,8 @@ export const getReservationTimeline = async (id: any) => {
       values: [id]
     }),
     query({
-      query: `SELECT rdc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, JSON_OBJECT('before_name', rdc.before_name, 'before_purpouse', rdc.before_purpouse, 'before_instructions', rdc.before_instructions) as before_change, 
-      JSON_OBJECT('after_name', rdc.after_name, 'after_purpouse', rdc.after_purpouse, 'after_instructions', rdc.after_instructions) as after_change 
+      query: `SELECT rdc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, JSON_OBJECT('name', rdc.before_name, 'purpouse', rdc.before_purpouse, 'instructions', rdc.before_instructions) as before_change, 
+      JSON_OBJECT('name', rdc.after_name, 'purpouse', rdc.after_purpouse, 'instructions', rdc.after_instructions) as after_change 
       FROM reservations_description_change as rdc
       INNER JOIN users ON users.id = rdc.user_id
       WHERE reservation_id = ?`,
@@ -2274,11 +2274,12 @@ export const getReservationTimeline = async (id: any) => {
       values: [id]
     }),
     query({
-      query: `SELECT rgc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, rgc.direction, GROUP_CONCAT(JSON_OBJECT('id', g.id) separator ';') as groups
+      query: `SELECT rgc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, rgc.direction, GROUP_CONCAT(JSON_OBJECT('id', g.id, 'name', g.name, 'owner', JSON_OBJECT('id', u.id, 'first_name', u.first_name, 'last_name', u.last_name)) separator ';') as groups
       FROM reservations_groups_change as rgc
       INNER JOIN users ON users.id = rgc.user_id
       INNER JOIN reservations_groups_change_groups rugu ON rugu.change_id = rgc.id  
       INNER JOIN groups g ON g.id = rugu.group_id 
+      INNER JOIN users u ON u.id = g.owner
       WHERE reservation_id = ?
       GROUP BY timestamp
       `,
@@ -2307,6 +2308,7 @@ export const getReservationTimeline = async (id: any) => {
     author: JSON.parse(item.author),
     before: JSON.parse(item.before_change),
     after: JSON.parse(item.after_change),
+    difference: Object.keys(JSON.parse(item.before_change)).filter(k => JSON.parse(item.before_change)[k] !== JSON.parse(item.after_change)[k]),
     timestamp: item.timestamp,
     timelineEventTypeId: 30
   })), ...reservationUserChanges.map((item: any) => ({
@@ -2329,7 +2331,7 @@ export const getReservationTimeline = async (id: any) => {
     return a.timestamp - b.timestamp
   })
 
-  return { data: formatedData }
+  return { data: formatedData, count: formatedData.length }
 }
 
 export const reservationSaveRooms = async ({ reservation, rooms }: { reservation: any, rooms: any }) => {

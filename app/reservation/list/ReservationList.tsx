@@ -58,10 +58,10 @@ export default async function ReservationList({
                   {rolesConfig.reservations.modules.reservationsTable.config.delete.includes(
                     userRole
                   ) && (
-                    <TableCell>
-                      <TrashBin />
-                    </TableCell>
-                  )}
+                      <TableCell>
+                        <TrashBin />
+                      </TableCell>
+                    )}
 
                   <TableCell sx={{ padding: 1.5 }}>
                     <Chip label="Název" />
@@ -91,6 +91,7 @@ export default async function ReservationList({
               <TableBody className="overflow-scroll">
                 {reservations.data.map((reservation: any) => (
                   <ReservationListItem
+                    searchParams={searchParams}
                     userId={userId}
                     userRole={userRole}
                     key={reservation.id}

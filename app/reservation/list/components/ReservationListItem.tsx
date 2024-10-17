@@ -21,15 +21,18 @@ import BedroomChildIcon from "@mui/icons-material/BedroomChild";
 import ReservationModal from "./ReservationModal";
 import NightShelterIcon from "@mui/icons-material/NightShelter";
 import HotelIcon from "@mui/icons-material/Hotel";
+import { useSearchParams } from "next/navigation";
 
 export default function ReservationListItem({
   reservation,
   userRole,
   userId,
+  searchParams
 }: {
   reservation: any;
   userRole: any;
   userId: any;
+  searchParams: any
 }) {
   const isMember = reservation.users.includes(userId);
   const isLeader = reservation.leader.id === userId;
@@ -108,12 +111,12 @@ export default function ReservationListItem({
         </TableCell>
         <TableCell>
           <Tooltip
-            componentsProps={{
+            slotProps={{
               tooltip: {
                 sx: {
                   bgcolor: "transparent",
                 },
-              },
+              }
             }}
             title={
               <Chip
@@ -128,7 +131,10 @@ export default function ReservationListItem({
             }
           >
             <Link
-              href={`/reservation/list?reservation_id=${reservation.id}`}
+              href={{
+                href: '/reservation/list',
+                query: { ...searchParams, reservation_id: reservation.id }
+              }}
               className={
                 !rolesConfig.reservations.modules.reservationsTable.config.changeStatus.includes(
                   userRole
@@ -158,7 +164,7 @@ export default function ReservationListItem({
             rolesConfig.reservations.modules.reservationsDetail.visitSelf.includes(
               userRole
             ))) &&
-        reservation.status.id !== 5 ? (
+          reservation.status.id !== 5 ? (
           <TableCell>
             <Link href={`/reservation/detail/${reservation.id}`}>
               <Button>detail</Button>

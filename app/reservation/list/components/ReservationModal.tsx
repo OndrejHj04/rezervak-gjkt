@@ -13,14 +13,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import ReservationListMakeRefetch from "../refetch";
 import { getReservationsStatus, reservationUpdateStatus } from "@/lib/api";
-import { rule } from "postcss";
 
 const style = {
   position: "absolute" as "absolute",
@@ -38,21 +36,19 @@ export default function ReservationModal({
   const [statuses, setStatuses] = useState([]);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const params = new URLSearchParams(searchParams);
-  const { replace } = useRouter();
+  const nextSearchParams = new URLSearchParams(searchParams)
+  const { back, replace } = useRouter();
   const {
     handleSubmit,
     control,
     register,
-    reset,
     watch,
-    formState: { isDirty, isValid, dirtyFields },
+    formState: { isValid, dirtyFields },
   } = useForm({
     defaultValues: { status: reservation.status, reason: "", successLink: "" },
   });
 
-  const isActive = Number(params.get("reservation_id")) === reservation.id;
+  const isActive = Number(searchParams.get("reservation_id")) === reservation.id;
   useEffect(() => {
     setLoading(false);
     if (isActive) {
@@ -71,14 +67,13 @@ export default function ReservationModal({
     }).then(({ success }) => {
       success && toast.success("Status rezervace úspěšně změněn");
       !success && toast.error("Něco se nepovedlo");
-      reset(data);
+      nextSearchParams.delete("reservation_id")
+      replace(`/reservation/list?${nextSearchParams}`)
     });
-    ReservationListMakeRefetch();
-    reset()
   };
 
   return (
-    <Modal open={isActive} onClose={() => replace(pathname)}>
+    <Modal open={isActive} onClose={() => back()}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Paper style={style} className="p-2 ">
           <Typography variant="h5">Změnit status rezervace</Typography>

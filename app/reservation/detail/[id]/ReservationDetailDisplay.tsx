@@ -1,42 +1,31 @@
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
-  Avatar,
   CardHeader,
-  Checkbox,
   Chip,
   Divider,
   Icon,
-  IconButton,
   List,
   ListItem,
-  ListItemButton,
   ListItemIcon,
   ListItemText,
   Paper,
-  TablePagination,
   Typography,
 } from "@mui/material";
-import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot, TimelineOppositeContent } from "@mui/lab"
-import FiberNewIcon from '@mui/icons-material/FiberNew';
-import FolderDeleteIcon from '@mui/icons-material/FolderDelete';
+import { Timeline, TimelineItem, TimelineOppositeContent } from "@mui/lab"
 import dayjs from "dayjs";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { getReservationTimeline } from "@/lib/api";
 import React from "react";
 import { roomsEnum } from "@/app/constants/rooms";
-import { Add, ArrowDownward, ArrowUpward, Remove } from "@mui/icons-material";
-import TimelineEventUi, { TimelineEventDescription } from "./TimelineEventUi";
+import TimelineEventUi from "./TimelineEventUi";
+import { smartTime } from "@/app/constants/smartTime";
 
 
 export default async function ReservationDetailDisplay({
   reservation,
-  users,
-  groups,
   timeline = 1
 }: {
   reservation: any;
-  users: any;
-  groups: any;
   timeline: any
 }) {
 
@@ -171,7 +160,7 @@ export default async function ReservationDetailDisplay({
             {reservationTimeline.data.slice(timeline * 5 - 5, timeline * 5).map(({ dateFormat = "DD. MM. HH:mm", ...rest }: any, i: any) => (
               <TimelineItem key={i} className="before:[&]:hidden" >
                 <TimelineOppositeContent className="">
-                  <ListItemText className="my-0" primary={dayjs(rest.timestamp).format(dateFormat)} secondaryTypographyProps={{ className: "whitespace-nowrap" }} secondary={TimelineEventDescription(rest.timelineEventTypeId)} />
+                  <ListItemText className="my-0" primary={smartTime(rest.timestamp)} secondaryTypographyProps={{ className: "whitespace-nowrap" }} secondary={dayjs(rest.timestamp).format(dateFormat)} />
                 </TimelineOppositeContent>
                 {TimelineEventUi(rest)}
               </TimelineItem>

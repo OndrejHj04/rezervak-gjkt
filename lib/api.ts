@@ -2245,7 +2245,7 @@ export const getSendMailDetail = async (id: any) => {
 }
 
 export const getReservationTimeline = async (id: any) => {
-  const [reservationCoreDates, reservationDateChanges, reservationDescChanges, reservationUserChanges, reservationGroupChange, reservationStatusChange] = await Promise.all([
+  const [reservationCoreDates, reservationDateChanges, reservationDescChanges, reservationUserChanges, reservationGroupChange, reservationStatusChange, reservationRoomsChange] = await Promise.all([
     query({
       query: 'SELECT reservations.creation_date, reservations.from_date, reservations.to_date, reservations.to_date as archivation FROM reservations WHERE id = ?',
       values: [id]
@@ -2298,10 +2298,13 @@ export const getReservationTimeline = async (id: any) => {
       GROUP BY timestamp
       `,
       values: [id]
+    }),
+    query({
+      query: `SELECT * FROM reservations_rooms_change rr WHERE reservation_id = ?`,
+      values: [id]
     })
   ]) as any
 
-  console.log(reservationCoreDates[0])
   const formatedData = [...Object.values(reservationCoreDates[0]).map(((event: any, i: any) => ({
     timestamp: event,
     timelineEventTypeId: i,
@@ -2335,6 +2338,10 @@ export const getReservationTimeline = async (id: any) => {
     before_status: JSON.parse(item.before_status),
     after_status: JSON.parse(item.after_status),
     timelineEventTypeId: Number(`5${JSON.parse(item.after_status).id}`)
+  })), ...reservationRoomsChange.map((item: any) => ({
+    ...item,
+    rooms: item.rooms.split(";"),
+    timelineEventTypeId: 60
   }))].sort((a, b) => {
     const timeDiff = a.timestamp - b.timestamp
     if (timeDiff !== 0) return timeDiff
@@ -2353,6 +2360,10 @@ export const reservationSaveRooms = async ({ reservation, rooms }: { reservation
     query({
       query: `INSERT INTO reservations_rooms (reservationId, roomId) VALUES ?`,
       values: [rooms.map((room: any) => [reservation, room])]
+    }),
+    query({
+      query: `INSERT INTO reservations_rooms_change (reservation_id, rooms) VALUES (?,?)`,
+      values: [reservation, rooms.toString()]
     })
   ]) as any
 

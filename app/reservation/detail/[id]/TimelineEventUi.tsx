@@ -1,7 +1,7 @@
 import AvatarWrapper from "@/ui-components/AvatarWrapper"
 import { Create, DoneAll, EditCalendar, FiberNew, FolderDeleteOutlined, GppBad, GroupAdd, GroupRemove, NightShelter, PersonAdd, PersonRemove, RunningWithErrors, Update, UpdateDisabled } from "@mui/icons-material"
 import { TimelineConnector, TimelineContent, TimelineDot, TimelineSeparator } from "@mui/lab"
-import { AvatarGroup, ListItemText } from "@mui/material"
+import { AvatarGroup, Divider, ListItemText, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import React from "react"
 
@@ -18,39 +18,6 @@ import React from "react"
 
 type reservationEventIds = 0 | 1 | 2 | 3 | 4 | 10 | 11 | 20 | 21 | 30 | 40 | 50 | 51 | 52 | 53 | 54 | 55 | 60
 
-export function TimelineEventDescription(eventTypeId: reservationEventIds) {
-  switch (eventTypeId) {
-    case 0:
-      return "Vytvoření rezervace"
-    case 1:
-      return "Začátek rezervace"
-    case 2:
-      return "Konec rezervace"
-    case 3:
-      return "Plánovaná archivace"
-    case 10:
-      return "Odebrání uživatelů"
-    case 11:
-      return "Přidání uživatelů"
-    case 20:
-      return "Odpojení skupiny"
-    case 21:
-      return "Připojení skupiny"
-    case 30:
-      return "Úprava popisku"
-    case 40:
-      return "Změna data"
-    case 52:
-      return "Čeká na schválení"
-    case 53:
-      return "Potvrzení rezervace"
-    case 54:
-      return "Zamítnutí rezervace"
-    case 60:
-      return "Změna pokojů"
-  }
-}
-
 export default function TimelineEventUi(event: any) {
   const dotProps = {}
   const renderUi = () => {
@@ -64,7 +31,8 @@ export default function TimelineEventUi(event: any) {
               </TimelineDot>
               <TimelineConnector />
             </TimelineSeparator>
-            <TimelineContent className="w-60">
+            <TimelineContent>
+              <Typography>Vytvoření rezervace</Typography>
             </TimelineContent>
           </React.Fragment>
         )
@@ -77,7 +45,8 @@ export default function TimelineEventUi(event: any) {
               </TimelineDot>
               <TimelineConnector />
             </TimelineSeparator>
-            <TimelineContent className="w-60">
+            <TimelineContent>
+              <Typography>Začátek rezervace</Typography>
             </TimelineContent>
           </React.Fragment>
         )
@@ -90,7 +59,8 @@ export default function TimelineEventUi(event: any) {
               </TimelineDot>
               <TimelineConnector />
             </TimelineSeparator>
-            <TimelineContent className="w-60">
+            <TimelineContent>
+              <Typography>Konec rezervace</Typography>
             </TimelineContent>
           </React.Fragment>
         )
@@ -104,6 +74,7 @@ export default function TimelineEventUi(event: any) {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent className="w-60">
+              <Typography>Plánovaná archivace</Typography>
             </TimelineContent>
           </React.Fragment>
         )
@@ -117,6 +88,7 @@ export default function TimelineEventUi(event: any) {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
+              <Typography>Přidání uživatelů:</Typography>
               <AvatarGroup max={3} className="w-fit">
                 {event.users.map((user: any) => (
                   <AvatarWrapper key={user.id} data={user} size={32} />
@@ -135,6 +107,7 @@ export default function TimelineEventUi(event: any) {
               <TimelineConnector />
             </TimelineSeparator >
             <TimelineContent>
+              <Typography>Odebrání uživatelů:</Typography>
               <AvatarGroup max={3} className="w-fit">
                 {event.users.map((user: any) => (
                   <AvatarWrapper key={user.id} data={user} size={32} />
@@ -153,8 +126,9 @@ export default function TimelineEventUi(event: any) {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
+              <Typography>Odebrání skupin:</Typography>
               {event.groups.map((group: any, i: any) => (
-                <ListItemText primary={group.name} secondary={`Majitel: ${group.owner.first_name} ${group.owner.last_name}`} key={i} />
+                <ListItemText className="my-0" primary={group.name} secondary={`Majitel: ${group.owner.first_name} ${group.owner.last_name}`} key={i} />
               ))}
             </TimelineContent>
           </React.Fragment>
@@ -169,8 +143,9 @@ export default function TimelineEventUi(event: any) {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
+              <Typography>Přidání skupin:</Typography>
               {event.groups.map((group: any, i: any) => (
-                <ListItemText primary={group.name} secondary={`Majitel: ${group.owner.first_name} ${group.owner.last_name}`} key={i} />
+                <ListItemText className="my-0" primary={group.name} secondary={`Majitel: ${group.owner.first_name} ${group.owner.last_name}`} key={i} />
               ))}
             </TimelineContent>
           </React.Fragment>
@@ -185,7 +160,8 @@ export default function TimelineEventUi(event: any) {
               </TimelineDot>
               <TimelineConnector />
             </TimelineSeparator>
-            <TimelineContent component={"div"} className="">
+            <TimelineContent>
+              <Typography>Úprava popisku:</Typography>
               {event.difference.map((item: any, i: any) => (
                 <ListItemText className="my-0" secondaryTypographyProps={{ className: "line-through" }} key={i} primary={`${translate[item]}: ${event.after[item]}`} secondary={`${translate[item]}: ${event.before[item]}`} />
               ))}
@@ -201,7 +177,8 @@ export default function TimelineEventUi(event: any) {
               </TimelineDot>
               <TimelineConnector />
             </TimelineSeparator>
-            <TimelineContent className="" component={"div"}>
+            <TimelineContent>
+              <Typography>Změna data:</Typography>
               <ListItemText className="!my-0" secondaryTypographyProps={{ className: 'line-through' }} primary={`${dayjs(event.after.after_from_date).format("DD. MM.")} - ${dayjs(event.after.after_to_date).format("DD. MM.")}`} secondary={`${dayjs(event.before.before_from_date).format("DD. MM.")} - ${dayjs(event.before.before_to_date).format("DD. MM.")}`} />
             </TimelineContent>
           </React.Fragment>
@@ -215,7 +192,9 @@ export default function TimelineEventUi(event: any) {
               </TimelineDot>
               <TimelineConnector />
             </TimelineSeparator>
-            <TimelineContent></TimelineContent>
+            <TimelineContent>
+              <Typography>Čeká na schválení</Typography>
+            </TimelineContent>
           </React.Fragment>
         )
       case 53:
@@ -228,6 +207,7 @@ export default function TimelineEventUi(event: any) {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
+              <Typography>Potvrzení rezervace</Typography>
               <ListItemText className="!my-0" primary={"Odkaz na registraci:"} secondary={event.success_link} />
             </TimelineContent>
           </React.Fragment>
@@ -242,6 +222,7 @@ export default function TimelineEventUi(event: any) {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
+              <Typography>Zamítnutí rezervace</Typography>
               <ListItemText className="!my-0" primary={"Důvod zamítnutí:"} secondary={event.reject_reason} />
             </TimelineContent>
           </React.Fragment>
@@ -250,12 +231,14 @@ export default function TimelineEventUi(event: any) {
         return (
           <React.Fragment>
             <TimelineSeparator>
-              <TimelineDot sx={{ background: "#ED9191", color: "black" }} {...dotProps}>
+              <TimelineDot color="info" sx={{ color: "black" }} {...dotProps}>
                 <NightShelter />
               </TimelineDot>
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
+              <Typography>Změna pokojů</Typography>
+              <Typography>Používané pokoje: {event.rooms.toString()}</Typography>
             </TimelineContent>
           </React.Fragment>
         )

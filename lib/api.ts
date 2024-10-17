@@ -2245,7 +2245,11 @@ export const getSendMailDetail = async (id: any) => {
 }
 
 export const getReservationTimeline = async (id: any) => {
-  const [reservationDateChanges, reservationDescChanges, reservationUserChanges, reservationGroupChange, reservationStatusChange] = await Promise.all([
+  const [reservationCoreDates, reservationDateChanges, reservationDescChanges, reservationUserChanges, reservationGroupChange, reservationStatusChange] = await Promise.all([
+    query({
+      query: 'SELECT reservations.creation_date, reservations.from_date, reservations.to_date, reservations.to_date as archivation FROM reservations WHERE id = ?',
+      values: [id]
+    }),
     query({
       query: `SELECT rdc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author,
       JSON_OBJECT('before_from_date',before_from_date,'before_to_date',before_to_date) as before_change,
@@ -2297,8 +2301,12 @@ export const getReservationTimeline = async (id: any) => {
     })
   ]) as any
 
-
-  const formatedData = [...reservationDateChanges.map((item: any) => ({
+  console.log(reservationCoreDates[0])
+  const formatedData = [...Object.values(reservationCoreDates[0]).map(((event: any, i: any) => ({
+    timestamp: event,
+    timelineEventTypeId: i,
+    ...((i === 1 || i === 2) && { dateFormat: "DD. MM." })
+  }))), ...reservationDateChanges.map((item: any) => ({
     author: JSON.parse(item.author),
     before: JSON.parse(item.before_change),
     after: JSON.parse(item.after_change),
@@ -2328,7 +2336,9 @@ export const getReservationTimeline = async (id: any) => {
     after_status: JSON.parse(item.after_status),
     timelineEventTypeId: Number(`5${JSON.parse(item.after_status).id}`)
   }))].sort((a, b) => {
-    return a.timestamp - b.timestamp
+    const timeDiff = a.timestamp - b.timestamp
+    if (timeDiff !== 0) return timeDiff
+    return a.timelineEventyTypeId - b.timelineEventyTypeId
   })
 
   return { data: formatedData, count: formatedData.length }

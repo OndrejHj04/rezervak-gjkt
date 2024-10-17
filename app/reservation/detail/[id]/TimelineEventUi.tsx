@@ -1,20 +1,33 @@
 import AvatarWrapper from "@/ui-components/AvatarWrapper"
-import { Create, DoneAll, EditCalendar, GppBad, GroupAdd, GroupRemove, PersonAdd, PersonRemove, RunningWithErrors } from "@mui/icons-material"
+import { Create, DoneAll, EditCalendar, FiberNew, FolderDeleteOutlined, GppBad, GroupAdd, GroupRemove, NightShelter, PersonAdd, PersonRemove, RunningWithErrors, Update, UpdateDisabled } from "@mui/icons-material"
 import { TimelineConnector, TimelineContent, TimelineDot, TimelineSeparator } from "@mui/lab"
-import { AvatarGroup, ListItemText, Typography } from "@mui/material"
+import { AvatarGroup, ListItemText } from "@mui/material"
 import dayjs from "dayjs"
-import React, { useCallback } from "react"
+import React from "react"
 
-// 1 - user events
-// 2 - groups events
-// 3 - description change
-// 4 - date change
-// 5 - status change
+// 0 - reservation create
+// 1 - reservation start
+// 2 - reservation end
+// 3 - reservation archive
+// 10 - user events
+// 20 - groups events
+// 30 - description change
+// 40 - date change
+// 50 - status change
+// 60 - rooms change
 
-type reservationEventIds = 10 | 11 | 20 | 21 | 30 | 40 | 50 | 51 | 52 | 53 | 54 | 55
+type reservationEventIds = 0 | 1 | 2 | 3 | 4 | 10 | 11 | 20 | 21 | 30 | 40 | 50 | 51 | 52 | 53 | 54 | 55 | 60
 
 export function TimelineEventDescription(eventTypeId: reservationEventIds) {
   switch (eventTypeId) {
+    case 0:
+      return "Vytvoření rezervace"
+    case 1:
+      return "Začátek rezervace"
+    case 2:
+      return "Konec rezervace"
+    case 3:
+      return "Plánovaná archivace"
     case 10:
       return "Odebrání uživatelů"
     case 11:
@@ -33,6 +46,8 @@ export function TimelineEventDescription(eventTypeId: reservationEventIds) {
       return "Potvrzení rezervace"
     case 54:
       return "Zamítnutí rezervace"
+    case 60:
+      return "Změna pokojů"
   }
 }
 
@@ -40,6 +55,58 @@ export default function TimelineEventUi(event: any) {
   const dotProps = {}
   const renderUi = () => {
     switch (event.timelineEventTypeId as reservationEventIds) {
+      case 0:
+        return (
+          <React.Fragment>
+            <TimelineSeparator>
+              <TimelineDot color="success" {...dotProps}>
+                <FiberNew />
+              </TimelineDot>
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent className="w-60">
+            </TimelineContent>
+          </React.Fragment>
+        )
+      case 1:
+        return (
+          <React.Fragment>
+            <TimelineSeparator>
+              <TimelineDot color="success" {...dotProps}>
+                <Update />
+              </TimelineDot>
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent className="w-60">
+            </TimelineContent>
+          </React.Fragment>
+        )
+      case 2:
+        return (
+          <React.Fragment>
+            <TimelineSeparator>
+              <TimelineDot color="error" {...dotProps}>
+                <UpdateDisabled />
+              </TimelineDot>
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent className="w-60">
+            </TimelineContent>
+          </React.Fragment>
+        )
+      case 3:
+        return (
+          <React.Fragment>
+            <TimelineSeparator>
+              <TimelineDot color="grey" {...dotProps}>
+                <FolderDeleteOutlined />
+              </TimelineDot>
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent className="w-60">
+            </TimelineContent>
+          </React.Fragment>
+        )
       case 11:
         return (
           <React.Fragment>
@@ -49,7 +116,7 @@ export default function TimelineEventUi(event: any) {
               </TimelineDot>
               <TimelineConnector />
             </TimelineSeparator>
-            <TimelineContent className="w-60">
+            <TimelineContent>
               <AvatarGroup max={3} className="w-fit">
                 {event.users.map((user: any) => (
                   <AvatarWrapper key={user.id} data={user} size={32} />
@@ -176,6 +243,19 @@ export default function TimelineEventUi(event: any) {
             </TimelineSeparator>
             <TimelineContent>
               <ListItemText className="!my-0" primary={"Důvod zamítnutí:"} secondary={event.reject_reason} />
+            </TimelineContent>
+          </React.Fragment>
+        )
+      case 60:
+        return (
+          <React.Fragment>
+            <TimelineSeparator>
+              <TimelineDot sx={{ background: "#ED9191", color: "black" }} {...dotProps}>
+                <NightShelter />
+              </TimelineDot>
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent>
             </TimelineContent>
           </React.Fragment>
         )

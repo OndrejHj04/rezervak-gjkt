@@ -168,12 +168,12 @@ export default async function ReservationDetailDisplay({
           <Typography variant="h5">Timeline</Typography>
           <Divider />
           <Timeline className="!px-0 [&_.MuiTimelineItem-root:last-child_.MuiTimelineConnector-root]:hidden [&_.MuiTimelineOppositeContent-root]:!pl-0 [&_.MuiTimelineOppositeContent-root]:[flex:_0.5] [&_.MuiTimelineContent-root]:!pr-0 [&_.MuiTimelineOppositeContent-root]:mr-0 w-[400px]">
-            {reservationTimeline.data.slice(timeline * 5 - 5, timeline * 5).map((item: any, i: any) => (
+            {reservationTimeline.data.slice(timeline * 5 - 5, timeline * 5).map(({ dateFormat = "DD. MM. HH:mm", ...rest }: any, i: any) => (
               <TimelineItem key={i} className="before:[&]:hidden" >
                 <TimelineOppositeContent className="">
-                  <ListItemText className="my-0" primary={dayjs(item.timestamp).format("DD. MM. HH:mm")} secondaryTypographyProps={{ className: "whitespace-nowrap" }} secondary={TimelineEventDescription(item.timelineEventTypeId)} />
+                  <ListItemText className="my-0" primary={dayjs(rest.timestamp).format(dateFormat)} secondaryTypographyProps={{ className: "whitespace-nowrap" }} secondary={TimelineEventDescription(rest.timelineEventTypeId)} />
                 </TimelineOppositeContent>
-                {TimelineEventUi(item)}
+                {TimelineEventUi(rest)}
               </TimelineItem>
             ))}
           </Timeline>

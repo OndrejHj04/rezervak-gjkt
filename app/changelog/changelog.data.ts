@@ -6,6 +6,36 @@ const versionsChanges =
 {
   "versions": [
     {
+      title: "Verze 1.5 | 17. 10. 2024",
+      features: [
+        {
+          name: feature.label,
+          icon: feature.icon,
+          content: "Timeline rezervace. V detailu rezervace v módu zobrazit je přidaná časová osa zobrazující jednotlivé důležité události v průběhu rezervace."
+        },
+        {
+          name: feature.label,
+          icon: feature.icon,
+          content: "Nastavení pokojů v průběhu rezervace. V detailu rezervace v módu upravit je možné měnit přiřazené pokoje k rezervaci. Ty se nově místo víčtu zobrazují v obou módech v tabulce."
+        },
+        {
+          name: feature.label,
+          icon: feature.icon,
+          content: "Vytvoření rezeravce bez přiřazení pokojů. Je možné vytvořit rezervaci na kterou není přiřazený žádný pokoj. Při vytváření rezervace jsou všechny pokoje zvolené jako výchozí možnost. Nastavení pokojů má i dvě předpřipravené možnosti."
+        },
+        {
+          name: fix.label,
+          icon: fix.icon,
+          content: "Oprava tlačítka pro přepínání barevných režimů."
+        },
+        {
+          name: fix.label,
+          icon: fix.icon,
+          content: "Opravení otevírání modálního okna na přepínání stavu v tabulce rezervací."
+        },
+      ]
+    },
+    {
       title: "Verze 1.4 | 9. 10. 2024",
       features: [
         {

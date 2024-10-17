@@ -60,8 +60,6 @@ export default async function ReservationDetail({
       ) : (
         <ReservationDetailDisplay
           reservation={reservation}
-          users={users}
-          groups={groups}
           timeline={timeline}
         />
       )}

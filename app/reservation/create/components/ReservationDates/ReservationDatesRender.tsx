@@ -16,9 +16,11 @@ import {
   ListItemIcon,
   ListItemText,
   MenuItem,
+  Radio,
   Select,
   Tooltip,
   Typography,
+  shouldSkipGeneratingVar,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -50,8 +52,8 @@ export default function ReservationDatesRender({
   const isValid = createReservation.from_date && createReservation.to_date
   const calendarRef = useRef(null)
   const [calendarTitle, setCalendarTitle] = useState("")
-  const { handleSubmit, control, watch, formState, reset, register } = useForm({
-    defaultValues: { from_date: null, to_date: null, rooms: [] },
+  const { handleSubmit, control, watch, formState, reset, register, setValue } = useForm({
+    defaultValues: { from_date: null, to_date: null, rooms: [1, 2, 3, 4, 5] },
   });
 
   const { from_date, to_date, rooms } = watch();
@@ -201,7 +203,7 @@ export default function ReservationDatesRender({
                 <DatePicker label="Konec rezervace" {...field} minDate={dayjs(from_date).isValid() ? dayjs(from_date).add(1, "day") : dayjs()} format="DD. MM. YYYY" />
               )} />
             </LocalizationProvider>
-            <Controller control={control} name="rooms" rules={{ required: true }} render={({ field }) => (
+            <Controller control={control} name="rooms" render={({ field }) => (
               <FormControl>
                 <InputLabel id="rooms-label">Pokoje</InputLabel>
                 <Select {...field} multiple label="Label" id="rooms" labelId="rooms-label">
@@ -213,6 +215,10 @@ export default function ReservationDatesRender({
                 </Select>
               </FormControl>
             )} />
+            <div className="-my-3">
+              <FormControlLabel control={<Radio checked={rooms.length === 5} />} label="Všechny pokoje" onClick={() => setValue("rooms", [1, 2, 3, 4, 5])} />
+              <FormControlLabel control={<Radio checked={rooms.length === 0} />} label="Žádný pokoj" onClick={() => setValue("rooms", [])} />
+            </div>
             <Typography>Celkem vybráno lůžek {bedsCount}</Typography>
             <div>
               <Button variant="contained" type="submit" className="!mr-2" disabled={!formState.isValid}>Uložit</Button>

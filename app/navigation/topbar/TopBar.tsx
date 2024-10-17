@@ -13,7 +13,7 @@ import TopBarUserCard from "./UserCardMenu";
 export default async function TopBar() {
   const data = (await getServerSession(authOptions)) as any;
   const { theme } = await getUserTheme();
-  
+
   return (
     <AppBar position="static" className="h-[52px]">
       <Toolbar className="!min-h-0 !p-0 !pl-2 flex my-auto">
@@ -29,12 +29,11 @@ export default async function TopBar() {
           </Typography>
         </div>
         <div className="flex flex-col">
-{          /* <Typography variant="body2">V Krkonoších teď prší a je  10 °C</Typography> */}
         </div>
         <div className="flex-1 flex justify-end">
-          <DarkModeToggle theme={theme} id={data?.id} />
+          <DarkModeToggle theme={theme} user={data?.user} />
           <LoginButton>
-            <TopBarUserCard data={data} />  
+            <TopBarUserCard data={data} />
           </LoginButton>
         </div>
       </Toolbar>

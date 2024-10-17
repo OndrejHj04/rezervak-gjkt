@@ -509,17 +509,14 @@ export const usersDelete = async ({ users }: { users: any }) => {
 
 export const getUserTheme = async () => {
   const user = (await getServerSession(authOptions)) as any;
-  const guest = await checkUserSession();
+  if (!user) return { theme: 1 }
 
-  if (user) {
-    const [{ theme }] = (await query({
-      query: `SELECT theme FROM users${guest ? "_mock" : ""} WHERE id = ?`,
-      values: [user.user.id],
-    })) as any;
+  const [{ theme }] = (await query({
+    query: `SELECT theme FROM users WHERE id = ?`,
+    values: [user.user.id],
+  })) as any;
 
-    return { theme };
-  }
-  return { theme: 1 };
+  return { theme };
 };
 
 export const getUserDetail = async ({
@@ -2214,11 +2211,9 @@ export const verifyUser = async ({
 };
 
 export const setTheme = async (theme: any, id: any) => {
-  const guest = await checkUserSession();
   const req = (await query({
-    query: `UPDATE users${guest ? "_mock" : ""
-      } SET theme = ${!theme} WHERE id = "${id}"`,
-    values: [],
+    query: `UPDATE users SET theme = ? WHERE id = ?`,
+    values: [!theme, id],
   })) as any;
 };
 

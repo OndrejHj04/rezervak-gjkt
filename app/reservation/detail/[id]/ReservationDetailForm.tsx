@@ -61,7 +61,9 @@ export default function ReservationDetailForm({
       to_date: dayjs(reservation.to_date),
       name: reservation.name,
       purpouse: reservation.purpouse,
-      instructions: reservation.instructions
+      instructions: reservation.instructions,
+      success_link: reservation.success_link,
+      payment_symbol: reservation.payment_symbol,
     }
   });
 
@@ -73,7 +75,9 @@ export default function ReservationDetailForm({
       to_date: dayjs(data.to_date).format("YYYY-MM-DD"),
       instructions: data.instructions,
       name: data.name,
-      purpouse: data.purpouse
+      purpouse: data.purpouse,
+      success_link: data.success_link,
+      payment_symbol: data.payment_symbol
     }).then(
       ({ success }) => {
         success && toast.success("Rezervace byla upravena");
@@ -93,8 +97,6 @@ export default function ReservationDetailForm({
     reservation.status.id
   );
   const [rejectedReason, setRejectedReason] = useState("")
-  const [successLink, setSuccessLink] = useState("")
-  const [paymentSymbol, setPaymentSymbol] = useState("")
   const [selectedRooms, setSelectedRooms] = useState(reservation.rooms)
 
   const handleCheckUser = (id: number) => {
@@ -171,9 +173,9 @@ export default function ReservationDetailForm({
       id: reservation.id,
       newStatus: selectedStatus,
       oldStatus: reservation.status.id,
+      paymentSymbol: reservation.paymentSymbol,
+      successLink: reservation.successLink,
       ...(rejectedReason.length && { rejectReason: rejectedReason }),
-      ...(successLink.length && { successLink: successLink }),
-      ...(paymentSymbol.length && { paymentSymbol })
     }).then(({ success }) => {
       success && toast.success("Status rezervace byl změněn");
       !success && toast.error("Něco se nepovedlo");
@@ -183,8 +185,6 @@ export default function ReservationDetailForm({
       : window.location.reload();
     reset();
     setRejectedReason("")
-    setSuccessLink("")
-    setPaymentSymbol("")
   };
 
   useEffect(() => {
@@ -195,10 +195,6 @@ export default function ReservationDetailForm({
     setRejectedReason("")
   }, [selectedStatus])
 
-  const maxMembers = reservation.rooms.reduce(
-    (a: any, b: any) => a + b.people,
-    0
-  );
   return (
     <>
       {usersModal && (
@@ -271,6 +267,16 @@ export default function ReservationDetailForm({
                   <Controller control={control} name="to_date" render={({ field: { value, onChange } }) => (
                     <DatePicker value={value} onChange={(e) => onChange(e)} label="Konec rezervace" format="DD. MM. YYYY" disabled={reservation.status.id === 3} />
                   )} />
+                </div>
+                <div className="flex flex-col justify-between gap-2">
+                  <TextField
+                    label="Odkaz na web Pece pod Sněžkou"
+                    {...register("success_link")}
+                  />
+                  <TextField
+                    label="Variabilní symbol"
+                    {...register("payment_symbol")}
+                  />
                 </div>
               </LocalizationProvider>
               <TextField
@@ -491,31 +497,16 @@ export default function ReservationDetailForm({
               </List>
               {selectedStatus === 4 && <TextField className="mb-2" fullWidth label="Důvod zamítnutí" size="small" value={rejectedReason} onChange={(e) => setRejectedReason(e.target.value)} />
               }
-              {selectedStatus === 3 &&
-                <React.Fragment>
-                  <TextField className="mb-2" fullWidth label="Odkaz na web Pece pod Sněžkou" size="small" value={successLink} onChange={(e) => setSuccessLink(e.target.value)} />
-                  <TextField className="mb-2" fullWidth label="Variabilní symbol" size="small" value={paymentSymbol} onChange={(e) => setPaymentSymbol(e.target.value)} />
-                </React.Fragment>
-              }
 
               <div className="flex flex-col gap-2 mt-auto">
                 <Button
                   variant="contained"
                   endIcon={<AddToPhotosIcon />}
-                  disabled={selectedStatus === reservation.status.id || (selectedStatus === 4 && !rejectedReason.length) || (selectedStatus === 3 && !successLink.length)}
+                  disabled={selectedStatus === reservation.status.id}
                   onClick={handleUpdateStatus}
                 >
                   Uložit stav
                 </Button>
-                {selectedStatus === 1 && (
-                  <Typography
-                    color="error"
-                    className="text-center"
-                    variant="body1"
-                  >
-                    Tato akce je nevratná!
-                  </Typography>
-                )}
               </div>
             </div>
           </div>

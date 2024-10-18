@@ -17,10 +17,8 @@ import { rolesConfig } from "@/lib/rolesConfig";
 import ReservationTableSort from "./components/Sort";
 import ReservationFilters from "./components/ReservationFilters";
 import { getReservationList } from "@/lib/api";
+import ReservationListItem from "./components/ReservationListItem";
 
-const ReservationListItem = dynamic(
-  () => import("./components/ReservationListItem")
-);
 
 export default async function ReservationList({
   searchParams,

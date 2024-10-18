@@ -151,7 +151,7 @@ export default function TimelineEventUi(event: any) {
           </React.Fragment>
         )
       case 30:
-        const translate = { purpouse: "Důvod", name: "Název", instructions: "Instrukce" } as any
+        const translate = { purpouse: "Důvod", name: "Název", instructions: "Instrukce", success_link: "Odkaz na web PdS", payment_symbol: "Variabilní symbol" } as any
         return (
           <React.Fragment>
             <TimelineSeparator>
@@ -208,8 +208,6 @@ export default function TimelineEventUi(event: any) {
             </TimelineSeparator>
             <TimelineContent>
               <Typography>Potvrzení rezervace</Typography>
-              <ListItemText className="!my-0" primary={"Odkaz na registraci:"} secondary={event.success_link} />
-              <ListItemText className="!my-0" primary={"Variabilní symbol:"} secondary={event.payment_symbol} />
             </TimelineContent>
           </React.Fragment>
         )
@@ -223,8 +221,7 @@ export default function TimelineEventUi(event: any) {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              <Typography>Zamítnutí rezervace</Typography>
-              <ListItemText className="!my-0" primary={"Důvod zamítnutí:"} secondary={event.reject_reason} />
+              <ListItemText className="!my-0" primary={"Zamítnutí rezervace"} secondary={`Důvod: ${event.reject_reason || "neuveden"}`} />
             </TimelineContent>
           </React.Fragment>
         )

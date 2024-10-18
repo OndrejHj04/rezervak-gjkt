@@ -43,11 +43,13 @@ export default function ReservationModal({
     control,
     register,
     watch,
+    resetField,
     formState: { isValid, dirtyFields },
   } = useForm({
-    defaultValues: { status: reservation.status, reason: "", successLink: "", paymentSymbol: "" },
+    defaultValues: { status: reservation.status, reason: reservation.reject_reason || "", successLink: reservation.success_link || "", paymentSymbol: reservation.payment_symbol || "" },
   });
-
+  const selectedStatus = watch("status")
+  console.log(watch())
   const isActive = Number(searchParams.get("reservation_id")) === reservation.id;
   useEffect(() => {
     setLoading(false);
@@ -63,8 +65,8 @@ export default function ReservationModal({
       newStatus: data.status.id,
       oldStatus: reservation.status.id,
       ...(data.reason.length && { rejectReason: data.reason }),
+      ...(data.paymentSymbol.length && { paymentSymbol: data.paymentSymbol }),
       ...(data.successLink.length && { successLink: data.successLink }),
-      ...(data.paymentSymbol.length && { paymentSymbol: data.paymentSymbol })
     }).then(({ success }) => {
       success && toast.success("Status rezervace úspěšně změněn");
       !success && toast.error("Něco se nepovedlo");
@@ -72,6 +74,12 @@ export default function ReservationModal({
       replace(`/reservation/list?${nextSearchParams}`)
     });
   };
+
+  useEffect(() => {
+    resetField("successLink")
+    resetField("reason")
+    resetField("paymentSymbol")
+  }, [selectedStatus])
 
   return (
     <Modal open={isActive} onClose={() => back()}>

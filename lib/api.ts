@@ -11,6 +11,7 @@ import { NextServer } from "next/dist/server/next";
 import { reject, values } from "lodash";
 import { roomsEnum } from "@/app/constants/rooms";
 import { Noto_Sans_Vai } from "next/font/google";
+import { RejectedThenable } from "react";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -145,7 +146,7 @@ export const getReservationList = async ({
   const [reservations, count] = (await Promise.all([
     query({
       query: `
-        SELECT reservations.id, from_date, to_date, reservations.name, purpouse, leader, status, creation_date,
+        SELECT reservations.id, from_date, to_date, reservations.name, purpouse, leader, status, creation_date, reject_reason, payment_symbol, success_link,
         JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status,
         JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader, 
         GROUP_CONCAT(
@@ -308,7 +309,6 @@ export const sendEmail = async ({
     return text;
   }
 
-  console.log(variables)
   const mailContent = MakeEmailText(template.text, variables)
   const mail = await transporter.sendMail({
     from: process.env.EMAIL_ADRESS,
@@ -1229,7 +1229,7 @@ export const getReservationDetail = async ({
   const [reservations, users, usersCount, groups, groupsCount] =
     (await Promise.all([
       query({
-        query: `SELECT reservations.id, from_date, to_date, reservations.name, leader, instructions, purpouse, creation_date, 
+        query: `SELECT reservations.id, from_date, to_date, reservations.name, leader, instructions, purpouse, creation_date, success_link, payment_symbol, reject_reason, 
     JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', display_name, 'icon', icon) as status,
     JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader,
     GROUP_CONCAT(rooms.id separator ';') as rooms FROM reservations
@@ -1301,7 +1301,9 @@ export const editReservationDetail = async ({
   name,
   from_date,
   to_date,
-  dirtyFields
+  dirtyFields,
+  success_link,
+  payment_symbol
 }: {
   id: any;
   purpouse: any;
@@ -1310,6 +1312,8 @@ export const editReservationDetail = async ({
   from_date: any
   to_date: any
   dirtyFields: any
+  success_link: any,
+  payment_symbol: any
 }) => {
   const { user } = await getServerSession(authOptions) as any
   const requests = []
@@ -1330,19 +1334,19 @@ export const editReservationDetail = async ({
     )
   }
 
-  if (dirtyFields.name || dirtyFields.purpouse || dirtyFields.instructions) {
+  if (dirtyFields.name || dirtyFields.purpouse || dirtyFields.instructions || dirtyFields.success_link || dirtyFields.payment_symbol) {
     requests.push(
       query({
-        query: `INSERT INTO reservations_description_change (user_id, reservation_id, before_name, after_name, before_purpouse, after_purpouse, before_instructions, after_instructions) SELECT ?,?,reservations.name,?,reservations.purpouse,?,reservations.instructions,? FROM reservations WHERE id = ?`,
-        values: [user.id, id, name, purpouse, instructions, id]
+        query: `INSERT INTO reservations_description_change (user_id, reservation_id, before_name, after_name, before_purpouse, after_purpouse, before_instructions, after_instructions, before_success_link, after_success_link, before_payment_symbol, after_payment_symbol) SELECT ?,?,reservations.name,?,reservations.purpouse,?,reservations.instructions,?,reservations.success_link,?,reservations.payment_symbol,? FROM reservations WHERE id = ?`,
+        values: [user.id, id, name, purpouse, instructions, success_link, payment_symbol, id]
       })
     )
   }
 
-  requests.push(query({
-    query: `UPDATE reservations SET purpouse = ?, name = ?, instructions = ?, from_date = ?, to_date = ? WHERE id = ?`,
-    values: [purpouse, name, instructions, from_date, to_date, id],
-  }))
+  await query({
+    query: `UPDATE reservations SET purpouse = ?, name = ?, instructions = ?, from_date = ?, to_date = ?, success_link = ?, payment_symbol = ? WHERE id = ?`,
+    values: [purpouse, name, instructions, from_date, to_date, success_link, payment_symbol, id],
+  })
 
   const req = await Promise.all(requests) as any
 
@@ -1461,16 +1465,16 @@ export const reservationUpdateStatus = async ({
   id,
   oldStatus,
   newStatus,
-  rejectReason,
-  successLink,
-  paymentSymbol
+  rejectReason = null,
+  paymentSymbol = null,
+  successLink = null,
 }: {
   id: any;
   oldStatus: any;
   newStatus: any;
   rejectReason?: any
-  successLink?: any
-  paymentSymbol?: any
+  paymentSymbol?: any,
+  successLink?: any,
 }) => {
   let eventId = 10;
   switch (newStatus) {
@@ -1483,9 +1487,10 @@ export const reservationUpdateStatus = async ({
   }
   const guest = await checkUserSession();
   const { user } = await getServerSession(authOptions) as any
-  const [reservation, { affectedRows }, { data }, _] = (await Promise.all([
+
+  const [reservation, { data }, _] = (await Promise.all([
     query({
-      query: `SELECT reservations.from_date, reservations.status, reservations.name, reservations.to_date, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader,
+      query: `SELECT reservations.from_date, reservations.status, reservations.name, reservations.to_date, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader, reservations.payment_symbol, reservations.success_link,
       GROUP_CONCAT(distinct users.email) as emails FROM reservations${guest ? "_mock as reservations" : ""
         } LEFT JOIN users_reservations${guest ? "_mock as users_reservations" : ""
         } ON users_reservations.reservationId = reservations.id 
@@ -1497,25 +1502,37 @@ export const reservationUpdateStatus = async ({
        WHERE reservations.id = ? GROUP BY reservations.id`,
       values: [id],
     }),
-    query({
-      query: `UPDATE reservations SET status = ? WHERE id = ?`,
-      values: [newStatus, id],
-    }),
     mailEventDetail({ id: eventId }),
     query({
-      query: `INSERT INTO reservation_status_change (user_id, reservation_id, before_status, after_status, reject_reason, success_link, payment_symbol) VALUES (?,?,?,?,?,?,?)`,
-      values: [user.id, id, oldStatus, newStatus, rejectReason, successLink, paymentSymbol]
+      query: `INSERT INTO reservation_status_change (user_id, reservation_id, before_status, after_status, reject_reason) VALUES (?,?,?,?,?)`,
+      values: [user.id, id, oldStatus, newStatus, rejectReason]
     })
   ])) as any;
 
-  const statuses = (await query({
-    query: `
+  if (reservation[0].success_link !== successLink || reservation.payment_symbol !== paymentSymbol) {
+    await query({
+      query: `INSERT INTO reservations_description_change (user_id, reservation_id, before_name, after_name, before_purpouse, after_purpouse, before_instructions, after_instructions, before_success_link, after_success_link, before_payment_symbol, after_payment_symbol) SELECT ?,?,reservations.name,reservations.name,reservations.purpouse,reservations.purpouse,reservations.instructions,reservations.instructions,reservations.success_link,?,reservations.payment_symbol,? FROM reservations WHERE id = ?        
+      `,
+      values: [user.id, id, successLink, paymentSymbol, id]
+    })
+  }
+
+  const [statuses, { affectedRows }] = (await Promise.all([
+    query({
+      query: `
       SELECT status.display_name FROM status WHERE id = ?
       UNION ALL
       SELECT status.display_name FROM status WHERE id = ?
     `,
-    values: [oldStatus, newStatus],
-  })) as any;
+      values: [oldStatus, newStatus],
+    }),
+    query({
+      query: `UPDATE reservations SET status = ?, reject_reason = ?, payment_symbol = ?, success_link = ? WHERE id = ?`,
+      values: [newStatus, rejectReason, paymentSymbol, successLink, id],
+    }),
+  ])) as any
+
+  console.log(reservation.success_link, reservation, successLink, paymentSymbol)
 
   const resDetail = {
     ...reservation[0],
@@ -1545,15 +1562,7 @@ export const reservationUpdateStatus = async ({
       {
         name: "leader_name",
         value: resDetail.leader.first_name + " " + resDetail.leader.last_name,
-      },
-      ...(eventId === 11 ? [{
-        name: "reason",
-        value: rejectReason
-      }] : []),
-      ...(eventId === 10 ? [{
-        name: "outside_link",
-        value: successLink
-      }, { name: "payment_symbol", value: paymentSymbol }] : [])
+      }
     ],
   });
 
@@ -2254,8 +2263,8 @@ export const getReservationTimeline = async (id: any) => {
       values: [id]
     }),
     query({
-      query: `SELECT rdc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, JSON_OBJECT('name', rdc.before_name, 'purpouse', rdc.before_purpouse, 'instructions', rdc.before_instructions) as before_change, 
-      JSON_OBJECT('name', rdc.after_name, 'purpouse', rdc.after_purpouse, 'instructions', rdc.after_instructions) as after_change 
+      query: `SELECT rdc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, JSON_OBJECT('name', rdc.before_name, 'purpouse', rdc.before_purpouse, 'instructions', rdc.before_instructions, 'success_link', rdc.before_success_link, 'payment_symbol', rdc.before_payment_symbol) as before_change, 
+      JSON_OBJECT('name', rdc.after_name, 'purpouse', rdc.after_purpouse, 'instructions', rdc.after_instructions, 'success_link', rdc.after_success_link, 'payment_symbol', rdc.after_payment_symbol) as after_change 
       FROM reservations_description_change as rdc
       INNER JOIN users ON users.id = rdc.user_id
       WHERE reservation_id = ?`,
@@ -2284,7 +2293,7 @@ export const getReservationTimeline = async (id: any) => {
       values: [id]
     }),
     query({
-      query: `SELECT rsc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, rsc.before_status, JSON_OBJECT('id', rsb.id, 'display_name', rsb.display_name, 'color', rsb.color, 'icon', rsb.icon) as before_status, JSON_OBJECT('id', rsa.id, 'display_name', rsa.display_name, 'color', rsa.color, 'icon', rsa.icon) as after_status, rsc.reject_reason, rsc.success_link, rsc.payment_symbol FROM reservation_status_change as rsc
+      query: `SELECT rsc.timestamp, rsc.reject_reason, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, rsc.before_status, JSON_OBJECT('id', rsb.id, 'display_name', rsb.display_name, 'color', rsb.color, 'icon', rsb.icon) as before_status, JSON_OBJECT('id', rsa.id, 'display_name', rsa.display_name, 'color', rsa.color, 'icon', rsa.icon) as after_status FROM reservation_status_change as rsc
       INNER JOIN users ON users.id = rsc.user_id
       INNER JOIN status as rsb ON rsb.id = rsc.before_status 
       INNER JOIN status as rsa ON rsa.id = rsc.after_status 

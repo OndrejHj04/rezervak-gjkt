@@ -209,6 +209,7 @@ export default function TimelineEventUi(event: any) {
             <TimelineContent>
               <Typography>Potvrzení rezervace</Typography>
               <ListItemText className="!my-0" primary={"Odkaz na registraci:"} secondary={event.success_link} />
+              <ListItemText className="!my-0" primary={"Variabilní symbol:"} secondary={event.payment_symbol} />
             </TimelineContent>
           </React.Fragment>
         )

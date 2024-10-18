@@ -16,7 +16,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { getReservationsStatus, reservationUpdateStatus } from "@/lib/api";
 
@@ -45,7 +45,7 @@ export default function ReservationModal({
     watch,
     formState: { isValid, dirtyFields },
   } = useForm({
-    defaultValues: { status: reservation.status, reason: "", successLink: "" },
+    defaultValues: { status: reservation.status, reason: "", successLink: "", paymentSymbol: "" },
   });
 
   const isActive = Number(searchParams.get("reservation_id")) === reservation.id;
@@ -63,7 +63,8 @@ export default function ReservationModal({
       newStatus: data.status.id,
       oldStatus: reservation.status.id,
       ...(data.reason.length && { rejectReason: data.reason }),
-      ...(data.successLink.length && { successLink: data.successLink })
+      ...(data.successLink.length && { successLink: data.successLink }),
+      ...(data.paymentSymbol.length && { paymentSymbol: data.paymentSymbol })
     }).then(({ success }) => {
       success && toast.success("Status rezervace úspěšně změněn");
       !success && toast.error("Něco se nepovedlo");
@@ -113,8 +114,11 @@ export default function ReservationModal({
               />
             )}
           />
-          {watch("status")?.id === 4 && <TextField fullWidth className="mb-2" {...register("reason", { required: true })} label="Důvod zamítnutí" />}
-          {watch("status")?.id === 3 && <TextField fullWidth className="mb-2" {...register("successLink", { required: true })} label="Odkaz na web Pece pod Sněžkou" />}
+          {watch("status")?.id === 4 && <TextField fullWidth className="mb-2" {...register("reason")} label="Důvod zamítnutí" />}
+          {watch("status")?.id === 3 && <React.Fragment>
+            <TextField fullWidth className="mb-2" {...register("successLink")} label="Odkaz na web Pece pod Sněžkou" />
+            <TextField fullWidth className="mb-2" {...register("paymentSymbol")} label="Variabilní symbol" />
+          </React.Fragment>}
           <Button
             className="w-full"
             variant="contained"

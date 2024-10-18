@@ -18,7 +18,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -94,6 +94,7 @@ export default function ReservationDetailForm({
   );
   const [rejectedReason, setRejectedReason] = useState("")
   const [successLink, setSuccessLink] = useState("")
+  const [paymentSymbol, setPaymentSymbol] = useState("")
   const [selectedRooms, setSelectedRooms] = useState(reservation.rooms)
 
   const handleCheckUser = (id: number) => {
@@ -171,7 +172,8 @@ export default function ReservationDetailForm({
       newStatus: selectedStatus,
       oldStatus: reservation.status.id,
       ...(rejectedReason.length && { rejectReason: rejectedReason }),
-      ...(successLink.length && { successLink: successLink })
+      ...(successLink.length && { successLink: successLink }),
+      ...(paymentSymbol.length && { paymentSymbol })
     }).then(({ success }) => {
       success && toast.success("Status rezervace byl změněn");
       !success && toast.error("Něco se nepovedlo");
@@ -182,6 +184,7 @@ export default function ReservationDetailForm({
     reset();
     setRejectedReason("")
     setSuccessLink("")
+    setPaymentSymbol("")
   };
 
   useEffect(() => {
@@ -489,7 +492,11 @@ export default function ReservationDetailForm({
               {selectedStatus === 4 && <TextField className="mb-2" fullWidth label="Důvod zamítnutí" size="small" value={rejectedReason} onChange={(e) => setRejectedReason(e.target.value)} />
               }
               {selectedStatus === 3 &&
-                <TextField className="mb-2" fullWidth label="Odkaz na web Pece pod Sněžkou" size="small" value={successLink} onChange={(e) => setSuccessLink(e.target.value)} />}
+                <React.Fragment>
+                  <TextField className="mb-2" fullWidth label="Odkaz na web Pece pod Sněžkou" size="small" value={successLink} onChange={(e) => setSuccessLink(e.target.value)} />
+                  <TextField className="mb-2" fullWidth label="Variabilní symbol" size="small" value={paymentSymbol} onChange={(e) => setPaymentSymbol(e.target.value)} />
+                </React.Fragment>
+              }
 
               <div className="flex flex-col gap-2 mt-auto">
                 <Button

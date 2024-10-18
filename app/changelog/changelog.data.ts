@@ -2,6 +2,10 @@ import { changeTypeEnum } from "./changelog.types"
 
 const { feature, chore, fix, refactoring } = changeTypeEnum.enum
 
+/*
+přidání variabilního symbolu na potvrzenou rezervaci
+*/
+
 const versionsChanges =
 {
   "versions": [

@@ -10,6 +10,7 @@ import { decode, sign } from "jsonwebtoken";
 import { NextServer } from "next/dist/server/next";
 import { reject, values } from "lodash";
 import { roomsEnum } from "@/app/constants/rooms";
+import { Noto_Sans_Vai } from "next/font/google";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -306,6 +307,8 @@ export const sendEmail = async ({
     });
     return text;
   }
+
+  console.log(variables)
   const mailContent = MakeEmailText(template.text, variables)
   const mail = await transporter.sendMail({
     from: process.env.EMAIL_ADRESS,
@@ -1459,13 +1462,15 @@ export const reservationUpdateStatus = async ({
   oldStatus,
   newStatus,
   rejectReason,
-  successLink
+  successLink,
+  paymentSymbol
 }: {
   id: any;
   oldStatus: any;
   newStatus: any;
   rejectReason?: any
   successLink?: any
+  paymentSymbol?: any
 }) => {
   let eventId = 10;
   switch (newStatus) {
@@ -1493,14 +1498,13 @@ export const reservationUpdateStatus = async ({
       values: [id],
     }),
     query({
-      query: `UPDATE reservations${guest ? "_mock" : ""
-        } SET status = ${newStatus} WHERE id = ${id}`,
-      values: [],
+      query: `UPDATE reservations SET status = ? WHERE id = ?`,
+      values: [newStatus, id],
     }),
     mailEventDetail({ id: eventId }),
     query({
-      query: `INSERT INTO reservation_status_change (user_id, reservation_id, before_status, after_status, reject_reason, success_link) VALUES (?,?,?,?,?,?)`,
-      values: [user.id, id, oldStatus, newStatus, rejectReason, successLink]
+      query: `INSERT INTO reservation_status_change (user_id, reservation_id, before_status, after_status, reject_reason, success_link, payment_symbol) VALUES (?,?,?,?,?,?,?)`,
+      values: [user.id, id, oldStatus, newStatus, rejectReason, successLink, paymentSymbol]
     })
   ])) as any;
 
@@ -1542,14 +1546,14 @@ export const reservationUpdateStatus = async ({
         name: "leader_name",
         value: resDetail.leader.first_name + " " + resDetail.leader.last_name,
       },
-      (eventId === 11 && rejectReason && {
+      ...(eventId === 11 ? [{
         name: "reason",
         value: rejectReason
-      }),
-      (eventId === 10 && successLink && {
+      }] : []),
+      ...(eventId === 10 ? [{
         name: "outside_link",
         value: successLink
-      })
+      }, { name: "payment_symbol", value: paymentSymbol }] : [])
     ],
   });
 
@@ -2280,7 +2284,7 @@ export const getReservationTimeline = async (id: any) => {
       values: [id]
     }),
     query({
-      query: `SELECT rsc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, rsc.before_status, JSON_OBJECT('id', rsb.id, 'display_name', rsb.display_name, 'color', rsb.color, 'icon', rsb.icon) as before_status, JSON_OBJECT('id', rsa.id, 'display_name', rsa.display_name, 'color', rsa.color, 'icon', rsa.icon) as after_status, rsc.reject_reason, rsc.success_link FROM reservation_status_change as rsc
+      query: `SELECT rsc.timestamp, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'image', users.image) as author, rsc.before_status, JSON_OBJECT('id', rsb.id, 'display_name', rsb.display_name, 'color', rsb.color, 'icon', rsb.icon) as before_status, JSON_OBJECT('id', rsa.id, 'display_name', rsa.display_name, 'color', rsa.color, 'icon', rsa.icon) as after_status, rsc.reject_reason, rsc.success_link, rsc.payment_symbol FROM reservation_status_change as rsc
       INNER JOIN users ON users.id = rsc.user_id
       INNER JOIN status as rsb ON rsb.id = rsc.before_status 
       INNER JOIN status as rsa ON rsa.id = rsc.after_status 

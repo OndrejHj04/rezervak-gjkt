@@ -1,19 +1,18 @@
 import { Tab, Tabs } from "@mui/material";
-import MailingEvents from "../events/MailingEvents";
-import MailingTemplates from "../templates/MailingTemplates";
 import Link from "next/link";
-import { mailingEventsList, malingTemplatesList } from "@/lib/api";
+import MailingToggle from "./mailingToggle";
+import { getEmailSettings } from "@/lib/api";
 
 enum navigation {
   "send", "templates", "events"
 }
 
+
 export default async function Layout({
   params, children
 }: any) {
   const { type } = params
-  const events = await mailingEventsList();
-  const templates = await malingTemplatesList();
+  const { allowEmails } = await getEmailSettings()
 
   return (
     <div>
@@ -35,6 +34,7 @@ export default async function Layout({
             href="/mailing/events"
           />
         </Tabs>
+        <MailingToggle allowMails={allowEmails} />
       </div>
       {children}
     </div>

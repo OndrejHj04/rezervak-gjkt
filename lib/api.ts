@@ -293,6 +293,8 @@ export const sendEmail = async ({
   variables: any;
 }) => {
   const guest = await checkUserSession();
+  const { allowEmails } = await getEmailSettings()
+  if (!allowEmails) return { success: false }
 
   if (!send || guest) {
     return { success: false, msg: "Email sent is forbidden." };
@@ -2347,4 +2349,21 @@ export const reservationSaveRooms = async ({ reservation, rooms }: { reservation
   ]) as any
 
   return { success: affectedRows === rooms.length }
+}
+
+export const toggleEmailSettings = async (switchValue: boolean) => {
+  const { affectedRows } = await query({
+    query: `UPDATE settings SET allow_mail_sending = ?`,
+    values: [switchValue]
+  }) as any
+
+  return { success: affectedRows === 1 }
+}
+
+export const getEmailSettings = async () => {
+  const req = await query({
+    query: `SELECT allow_mail_sending FROM settings`,
+  }) as any
+
+  return { allowEmails: req[0].allow_mail_sending }
 }

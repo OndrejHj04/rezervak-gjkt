@@ -1,11 +1,8 @@
-import { Group } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
-import { Button, Checkbox, TableCell, TableRow } from "@mui/material";
+import { Button, TableCell, TableRow } from "@mui/material";
 
 import Link from "next/link";
-import TableListCheckbox from "@/ui-components/TableListCheckbox";
 import { rolesConfig } from "@/lib/rolesConfig";
-import { store } from "@/store/store";
 import GroupItemCheckbox from "./GroupItemCheckbox";
 
 export default function GroupListItem({
@@ -13,7 +10,7 @@ export default function GroupListItem({
   userRole,
   userId,
 }: {
-  group: Group;
+  group: any;
   userRole: any;
   userId: any;
 }) {
@@ -24,10 +21,10 @@ export default function GroupListItem({
       {rolesConfig.groups.modules.groupsTable.config.topbar.delete.includes(
         userRole
       ) && (
-        <TableCell>
-          <GroupItemCheckbox group={group.id} />
-        </TableCell>
-      )}
+          <TableCell>
+            <GroupItemCheckbox group={group.id} />
+          </TableCell>
+        )}
       <TableCell>{group.name}</TableCell>
       <TableCell>{group.description}</TableCell>
       <TableCell>{group.users.length}</TableCell>
@@ -35,10 +32,10 @@ export default function GroupListItem({
         <AvatarWrapper data={group.owner} />
       </TableCell>
       {rolesConfig.groups.modules.groupsDetail.visit.includes(userRole) ||
-      (isMember &&
-        rolesConfig.groups.modules.groupsDetail.visitSelf.includes(
-          userRole
-        )) ? (
+        (isMember &&
+          rolesConfig.groups.modules.groupsDetail.visitSelf.includes(
+            userRole
+          )) ? (
         <TableCell>
           <Link href={`/group/detail/${group.id}?mode=view`}>
             <Button>Detail</Button>

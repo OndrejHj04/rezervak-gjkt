@@ -1,5 +1,4 @@
-import { Group } from "@/types";
-import { Avatar, CardHeader, MenuItem, Typography } from "@mui/material";
+import { MenuItem, Typography } from "@mui/material";
 import Link from "next/link";
 
 export default function SingleGroup({ group }: { group: any }) {

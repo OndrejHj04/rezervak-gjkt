@@ -10,7 +10,6 @@ const inter = Inter({ subsets: ["latin"] });
 import "react-perfect-scrollbar/dist/css/styles.css";
 import SlidingMenuConfig from "./navigation/sidebar/SlidingMenuConfig";
 import { getUserTheme } from "@/lib/api";
-import { store } from "@/store/store";
 
 export const metadata: Metadata = {
   title: "Chata GJKT",

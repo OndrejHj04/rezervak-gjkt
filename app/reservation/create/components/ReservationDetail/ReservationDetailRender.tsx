@@ -4,19 +4,14 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Autocomplete,
-  Box,
   Button,
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Controller, useForm } from "react-hook-form";
-import { User } from "next-auth";
-import AvatarWrapper from "@/ui-components/AvatarWrapper";
-import { useSession } from "next-auth/react";
+import { useForm } from "react-hook-form";
 import { store } from "@/store/store";
 
 export default function ReservationDetailRender({ id }: { id: any }) {

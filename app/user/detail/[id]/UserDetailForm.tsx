@@ -1,5 +1,4 @@
 "use client";
-import { Role } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Alert,
@@ -17,20 +16,17 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { DateField, DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import MakeUserDetailRefetch from "./refetch";
-import { useRouter } from "next/navigation";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useState } from "react";
 import AddGroupsModal from "./AddGroupsModal";
 import AddReservationsModal from "./AddReservationsModal";
 import { rolesConfig } from "@/lib/rolesConfig";
-import HotelIcon from "@mui/icons-material/Hotel";
 import TableListPagination from "@/ui-components/TableListPagination";
 import {
   editUserDetail,
@@ -46,7 +42,7 @@ export default function UserDetailForm({
   userRole,
 }: {
   userDetail: any;
-  roles: Role[];
+  roles: any;
   userRole: any;
 }) {
   const {

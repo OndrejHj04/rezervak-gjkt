@@ -1,9 +1,7 @@
-import { Reservation } from "@/types";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Badge,
   Button,
-  Checkbox,
   Chip,
   IconButton,
   TableCell,
@@ -17,11 +15,9 @@ import { Icon } from "@mui/material";
 import Link from "next/link";
 import TableListCheckbox from "@/ui-components/TableListCheckbox";
 import { rolesConfig } from "@/lib/rolesConfig";
-import BedroomChildIcon from "@mui/icons-material/BedroomChild";
 import ReservationModal from "./ReservationModal";
 import NightShelterIcon from "@mui/icons-material/NightShelter";
 import HotelIcon from "@mui/icons-material/Hotel";
-import { useSearchParams } from "next/navigation";
 
 export default function ReservationListItem({
   reservation,

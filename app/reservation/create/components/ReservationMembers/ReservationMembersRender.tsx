@@ -16,9 +16,7 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useEffect, useState } from "react";
-import { Group, GroupOwner } from "@/types";
-import { User } from "next-auth";
+import { useState } from "react";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { store } from "@/store/store";
 import SearchIcon from "@mui/icons-material/Search";

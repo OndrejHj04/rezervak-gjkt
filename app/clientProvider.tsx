@@ -4,8 +4,9 @@ import { csCZ as CzechComponents } from "@mui/material/locale";
 import { csCZ as CzechDatePickers } from "@mui/x-date-pickers/locales";
 import { SessionProvider } from "next-auth/react";
 import "material-icons/iconfont/material-icons.css";
-import { LocalizationProvider } from "@mui/x-date-pickers";
+import { LocalizationProvider, csCZ } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import CzechLocale from "dayjs/locale/cs";
 
 export default function ClientProvider({
   children,
@@ -22,7 +23,12 @@ export default function ClientProvider({
 
   return (
     <ThemeProvider theme={mode}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}
+        adapterLocale={CzechLocale as any}
+        localeText={
+          csCZ.components.MuiLocalizationProvider.defaultProps.localeText
+        }
+      >
         <CssBaseline />
         <SessionProvider>{children}</SessionProvider>
       </LocalizationProvider>

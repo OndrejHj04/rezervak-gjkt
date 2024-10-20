@@ -1,29 +1,12 @@
-import { NewReservation, Role } from "@/types";
-import { User } from "next-auth";
 import { create } from "zustand";
 
-interface stateInterface {
-  panel: boolean;
-  setPanel: (panel: boolean) => void;
-  selectedUsers: number[];
-  setSelectedUsers: (users: number[]) => void;
-  selectedGroups: number[];
-  setSelectedGroups: (groups: number[]) => void;
-  createReservation: NewReservation;
-  setCreateReservation: (value: NewReservation) => void;
-  selectedReservations: number[];
-  setSelectedReservations: (value: number[]) => void;
-  selectedTemplates: number[];
-  setSelectedTemplates: (value: number[]) => void;
-}
-
-export const store = create<stateInterface>((set) => ({
+export const store = create((set: any) => ({
   panel: false,
-  setPanel: (panel) => set({ panel }),
+  setPanel: (panel: any) => set({ panel }),
   selectedUsers: [],
-  setSelectedUsers: (selectedUsers) => set({ selectedUsers }),
+  setSelectedUsers: (selectedUsers: any) => set({ selectedUsers }),
   selectedGroups: [],
-  setSelectedGroups: (selectedGroups) => set({ selectedGroups }),
+  setSelectedGroups: (selectedGroups: any) => set({ selectedGroups }),
   createReservation: {
     from_date: "",
     to_date: "",
@@ -35,10 +18,10 @@ export const store = create<stateInterface>((set) => ({
     instructions: "",
     name: "",
   },
-  setCreateReservation: (createReservation) => set({ createReservation }),
+  setCreateReservation: (createReservation: any) => set({ createReservation }),
   selectedReservations: [],
-  setSelectedReservations: (selectedReservations) =>
+  setSelectedReservations: (selectedReservations: any) =>
     set({ selectedReservations }),
   selectedTemplates: [],
-  setSelectedTemplates: (selectedTemplates) => set({ selectedTemplates }),
-}));
+  setSelectedTemplates: (selectedTemplates: any) => set({ selectedTemplates }),
+})) as any

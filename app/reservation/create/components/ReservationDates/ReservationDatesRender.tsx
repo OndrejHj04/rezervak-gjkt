@@ -5,10 +5,8 @@ import {
   AccordionSummary,
   Button,
   ButtonGroup,
-  Checkbox,
   FormControl,
   FormControlLabel,
-  FormHelperText,
   Icon,
   InputLabel,
   List,
@@ -20,11 +18,8 @@ import {
   Select,
   Tooltip,
   Typography,
-  shouldSkipGeneratingVar,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import CzechLocale from "dayjs/locale/cs";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
@@ -38,9 +33,7 @@ import csLocale from "@fullcalendar/core/locales/cs"
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { roomsEnum } from "@/app/constants/rooms";
 import { getFullName } from "@/app/constants/fullName";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { create } from "zustand";
-import { csCZ } from "@mui/x-date-pickers/locales";
+import { DatePicker } from "@mui/x-date-pickers";
 
 export default function ReservationDatesRender({
   reservations,
@@ -190,19 +183,12 @@ export default function ReservationDatesRender({
             <FullCalendar ref={calendarRef} contentHeight="auto" locale={csLocale} plugins={[resourceTimelineWeek]} initialView="resourceTimelineWeek" events={calendarEventData} slotDuration={{ days: 1 }} slotLabelFormat={{ weekday: "short", day: "numeric", month: "numeric" }} resources={calendarResources} resourceAreaHeaderContent="Pokoje" slotMinWidth={100} resourceAreaWidth="101px" eventContent={eventContentInjection} />
           </div>
           <div className="flex flex-col md:mt-[33.5px] mt-0 gap-3">
-            <LocalizationProvider dateAdapter={AdapterDayjs}
-              adapterLocale={CzechLocale as any}
-              localeText={
-                csCZ.components.MuiLocalizationProvider.defaultProps.localeText
-              }
-            >
-              <Controller control={control} name="from_date" rules={{ required: true }} render={({ field }) => (
-                <DatePicker label="Začátek rezervace" minDate={dayjs()} maxDate={dayjs(to_date).subtract(1, "day")} {...field} format="DD. MM. YYYY" />
-              )} />
-              <Controller control={control} name="to_date" rules={{ required: true }} render={({ field }) => (
-                <DatePicker label="Konec rezervace" {...field} minDate={dayjs(from_date).isValid() ? dayjs(from_date).add(1, "day") : dayjs()} format="DD. MM. YYYY" />
-              )} />
-            </LocalizationProvider>
+            <Controller control={control} name="from_date" rules={{ required: true }} render={({ field }) => (
+              <DatePicker label="Začátek rezervace" minDate={dayjs()} maxDate={dayjs(to_date).subtract(1, "day")} {...field} format="DD. MM. YYYY" />
+            )} />
+            <Controller control={control} name="to_date" rules={{ required: true }} render={({ field }) => (
+              <DatePicker label="Konec rezervace" {...field} minDate={dayjs(from_date).isValid() ? dayjs(from_date).add(1, "day") : dayjs()} format="DD. MM. YYYY" />
+            )} />
             <Controller control={control} name="rooms" render={({ field }) => (
               <FormControl>
                 <InputLabel id="rooms-label">Pokoje</InputLabel>

@@ -1,12 +1,11 @@
 "use client";
 import { store } from "@/store/store";
-import { Reservation } from "@/types";
 import { Checkbox } from "@mui/material";
 
 export default function CheckboxComponent({
   reservations,
 }: {
-  reservations: Reservation[];
+  reservations: any[];
 }) {
   const { selectedReservations, setSelectedReservations } = store();
 

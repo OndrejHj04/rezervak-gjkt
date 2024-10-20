@@ -1,13 +1,13 @@
 "use client";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
-  Avatar,
   Button,
+  ButtonBase,
+  CardHeader,
   Checkbox,
   Chip,
   Divider,
   Icon,
-  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -24,8 +24,7 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import dayjs from "dayjs";
-import MakeGroupRefetch from "../../list/refetch";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import MakeGroupDetailRefetch from "./refetch";
 import AddUsersToGroupModal from "./AddUsersToGroupModal";
 import AddGroupToReservationModal from "./AddGroupToReservationModal";
@@ -37,10 +36,11 @@ import {
   groupRemoveUsers,
   removeGroups,
 } from "@/lib/api";
+import Link from "next/link";
 
 export default function GroupDetailForm({ group }: { group: any }) {
   const { push } = useRouter();
-  const [checked, setChecked] = useState<number[]>([]);
+  const [checked, setChecked] = useState<any>([]);
   const [usersModal, setUsersModal] = useState(false);
   const [reservationModal, setReservationModal] = useState(false);
   const [selectReservation, setSelectReservation] = useState<number[]>([]);
@@ -93,7 +93,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
 
   const handleCheck = (Id: number) => {
     if (checked.includes(Id)) {
-      setChecked(checked.filter((id) => id !== Id));
+      setChecked(checked.filter((id: any) => id !== Id));
     } else {
       setChecked([...checked, Id]);
     }
@@ -119,14 +119,6 @@ export default function GroupDetailForm({ group }: { group: any }) {
     setSelectReservation([]);
   };
 
-  if (!group) {
-    return (
-      <Paper className="flex w-full p-2">
-        <Typography>Not found</Typography>
-      </Paper>
-    );
-  }
-
   return (
     <>
       {usersModal && (
@@ -138,54 +130,21 @@ export default function GroupDetailForm({ group }: { group: any }) {
           />
         </Modal>
       )}
-      {reservationModal && (
-        <Modal
-          open={reservationModal}
-          onClose={() => setReservationModal(false)}
-        >
-          <AddGroupToReservationModal
-            groupId={group.id}
-            setModal={setReservationModal}
-            currentReservations={group.reservations.data.map(
-              (user: any) => user.id
-            )}
-          />
-        </Modal>
-      )}
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-        <Paper className="flex gap-4 md:p-4 p-2 flex-col">
-          <div className="flex gap-2 md:flex-row flex-col">
-            <div className="flex flex-col gap-1">
-              <Typography variant="h5">Vedoucí skupiny</Typography>
-              <div className="flex gap-2">
-                <AvatarWrapper size={56} data={group.owner as any} />
-                <div className="flex flex-col">
-                  <Typography variant="h6" className="font-semibold">
-                    {group.owner.first_name} {group.owner.last_name}
-                  </Typography>
-                  <Typography>{group.owner.email}</Typography>
-                </div>
-              </div>
-              <div className="flex">
-                <Typography variant="h6">Počet členů:</Typography>
-                <Chip
-                  className="ml-2"
-                  label={`${group.users.count} členů`}
-                  icon={<Icon>group_icon</Icon>}
-                />
-              </div>
+        <Paper className="flex md:p-3 p-1 gap-3 flex-col">
+          <div className="flex md:flex-row flex-col md:gap-1 gap-3">
+            <div>
+              <Typography variant="h5">Vedoucí skupiny: </Typography>
+              <ButtonBase className="mr-auto">
+                <CardHeader component={Link} href={`/user/detail/${group.owner.id}`} className="!p-0 text-inherit no-underline text-left" titleTypographyProps={{ variant: "h5" }} avatar={<AvatarWrapper size={48} data={group.owner as any} />} title={`${group.owner.first_name} ${group.owner.last_name}`} subheader={group.owner.email} />
+              </ButtonBase>
             </div>
-            <div className="flex gap-2 md:flex-row flex-col">
-              <TextField label="Jméno" {...register("name")} />
-              <TextField
-                {...register("description")}
-                multiline
-                label="Popis skupiny"
-                minRows={4}
-                maxRows={4}
-              />
-            </div>
-            <div className="flex flex-col gap-2 ml-auto">
+            <TextField label="Jméno" {...register("name")} />
+            <TextField
+              {...register("description")}
+              label="Popis skupiny"
+            />
+            <div className="flex flex-col gap-2 md:ml-auto">
               <Button
                 variant="outlined"
                 color="error"
@@ -199,45 +158,29 @@ export default function GroupDetailForm({ group }: { group: any }) {
             </div>
           </div>
 
-          <div className="flex md:flex-row flex-col gap-3">
+          <div className="flex md:flex-row flex-col gap-2">
             <div className="flex flex-col">
-              <Typography variant="h5">Uživatelé ve skupině </Typography>
+              <Typography variant="h5" className="text-center">Uživatelé ve skupině</Typography>
               <Divider />
               <List>
-                {group.users.count ? (
-                  group.users.data.map((user: any) => (
-                    <ListItem disablePadding key={user.id}>
-                      <ListItemButton
-                        sx={{ padding: 1 }}
-                        disabled={group.owner.id === user.id}
-                        onClick={() => handleCheck(user.id)}
-                      >
-                        <ListItemIcon>
-                          <AvatarWrapper data={user} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Typography>
-                              {user.first_name} {user.last_name}
-                            </Typography>
-                          }
-                          secondary={user.email}
-                        />
-                        {group.owner.id !== user.id && (
-                          <Checkbox
-                            disableRipple
-                            disabled={group.owner.id === user.id}
-                            checked={checked.includes(user.id)}
-                          />
-                        )}
-                      </ListItemButton>
-                    </ListItem>
-                  ))
-                ) : (
-                  <>
-                    <Typography>Žádní uživatelé ve skupině</Typography>
-                  </>
-                )}
+                {group.users.data.map((user: any) => (
+                  <ListItem disablePadding key={user.id}>
+                    <ListItemButton
+                      className="[&]:!opacity-100 !py-0.5 px-2"
+                      disabled={group.owner.id === user.id}
+                      selected={checked.includes(user.id)}
+                      onClick={() => handleCheck(user.id)}
+                    >
+                      <ListItemIcon>
+                        <AvatarWrapper data={user} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={`${user.first_name} ${user.last_name}`}
+                        secondary={user.email}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
               </List>
               <div className="mt-auto">
                 <TableListPagination
@@ -249,53 +192,40 @@ export default function GroupDetailForm({ group }: { group: any }) {
                   <Button
                     variant="contained"
                     color="error"
-                    endIcon={<DeleteForeverIcon />}
                     disabled={checked.length === 0}
                     onClick={handleDeleteMembers}
+                    size="small"
                   >
                     Odebrat vybrané uživatele ze skupiny
                   </Button>
                   <Button
                     variant="contained"
                     onClick={() => setUsersModal(true)}
-                    endIcon={<AddToPhotosIcon />}
+                    size="small"
                   >
                     Přidat uživatele do skupiny
                   </Button>
                 </div>
               </div>
             </div>
+            <Divider flexItem orientation="vertical" />
             <div className="flex flex-col">
-              <Typography variant="h5">Rezervace skupiny </Typography>
+              <Typography variant="h5" className="text-center">Rezervace skupiny </Typography>
               <Divider />
               <List>
-                {group.reservations.count ? (
-                  group.reservations.data.map((reservation: any) => (
-                    <ListItem disablePadding key={reservation.id}>
-                      <ListItemButton
-                        sx={{ padding: 1 }}
-                        onClick={() => handleSelectReservation(reservation.id)}
-                      >
-                        <ListItemText
-                          primary={<Typography>{reservation.name}</Typography>}
-                          secondary={`${dayjs(reservation.from_date).format(
-                            "DD.MM.YYYY"
-                          )} - ${dayjs(reservation.to_date).format(
-                            "DD.MM.YYYY"
-                          )}`}
-                        />
-                        <Checkbox
-                          disableRipple
-                          checked={selectReservation.includes(reservation.id)}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  ))
-                ) : (
-                  <>
-                    <Typography>Žádné rezervace skupiny</Typography>
-                  </>
-                )}
+                {group.reservations.data.map((reservation: any) => (
+                  <ListItem disablePadding key={reservation.id}>
+                    <ListItemText
+                      primary={reservation.name}
+                      secondary={`${dayjs(reservation.from_date).format(
+                        "DD.MM.YYYY"
+                      )} - ${dayjs(reservation.to_date).format(
+                        "DD.MM.YYYY"
+                      )}`}
+                    />
+                  </ListItem>
+                ))
+                }
               </List>
               <div className="mt-auto">
                 <TableListPagination
@@ -303,24 +233,6 @@ export default function GroupDetailForm({ group }: { group: any }) {
                   name="reservations"
                   count={group.reservations.count}
                 />
-                <div className="flex flex-col gap-2">
-                  <Button
-                    variant="contained"
-                    color="error"
-                    endIcon={<DeleteForeverIcon />}
-                    disabled={!selectReservation.length}
-                    onClick={() => removeFromReservations()}
-                  >
-                    Odpojit vybrané rezervace
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={() => setReservationModal(true)}
-                    endIcon={<AddToPhotosIcon />}
-                  >
-                    Připojit rezervaci ke skupině
-                  </Button>
-                </div>
               </div>
             </div>
           </div>

@@ -23,14 +23,16 @@ export default function TableListPagination({
   };
 
   return (
+
     <TablePagination
       component="div"
       count={count}
       page={page - 1}
+      labelRowsPerPage={"dat"}
       onPageChange={pageChange}
       rowsPerPage={rpp}
       rowsPerPageOptions={[]}
-      onRowsPerPageChange={() => {}}
+      onRowsPerPageChange={() => { }}
     />
   );
 }

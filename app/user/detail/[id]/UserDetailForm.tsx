@@ -5,10 +5,9 @@ import {
   Alert,
   Autocomplete,
   Button,
+  CardHeader,
   Checkbox,
   Divider,
-  Icon,
-  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -18,7 +17,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { DateField, LocalizationProvider } from "@mui/x-date-pickers";
+import { DateField, DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
@@ -57,7 +56,6 @@ export default function UserDetailForm({
     formState: { isDirty },
     setValue,
   } = useForm();
-  const { push } = useRouter();
 
   const [selectGroups, setSelectGroups] = useState<number[]>([]);
   const [selectReservations, setSelectReservation] = useState<number[]>([]);
@@ -175,124 +173,101 @@ export default function UserDetailForm({
           />
         </Modal>
       )}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
-        <Paper className="p-4 flex flex-col gap-4">
-          <div className="flex gap-2 lg:flex-row flex-col">
-            <div className="flex lg:flex-col flex-row justify-between flex-wrap">
-              <div className="flex gap-2">
-                <AvatarWrapper size={56} data={userDetail} />
-                <div className="flex flex-col">
-                  <Typography variant="h6" className="font-semibold">
-                    {userDetail.first_name} {userDetail.last_name}
-                  </Typography>
-                  <Typography>{userDetail.email}</Typography>
-                </div>
-              </div>
-              {!userDetail.active ? (
-                <Alert variant="outlined" severity="info" icon={<HotelIcon />}>
-                  Účet byl uspán
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+        <Paper className="md:p-3 p-1 flex flex-col gap-3">
+          <div className="flex md:gap-1 gap-3 md:flex-row flex-col">
+            <div className="flex flex-col justify-between w-fit">
+              <CardHeader className="!p-0" titleTypographyProps={{ variant: "h5" }} avatar={<AvatarWrapper size={56} data={userDetail} />} title={`${userDetail.first_name} ${userDetail.last_name}`} subheader={userDetail.email} />
+              {!userDetail.verified ? (
+                <Alert severity="error">
+                  Neověřený uživatel
                 </Alert>
               ) : (
-                <>
-                  {!userDetail.verified ? (
-                    <Alert variant="outlined" severity="error">
-                      Neověřený uživatel
-                    </Alert>
-                  ) : (
-                    <Alert variant="outlined" severity="success">
-                      Ověřený uživatel
-                    </Alert>
-                  )}
-                </>
+                <Alert severity="success">
+                  Ověřený uživatel
+                </Alert>
               )}
             </div>
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-2 flex-col lg:flex-row">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <Controller
-                    control={control}
-                    name="birth_date"
-                    defaultValue={
-                      userDetail.birth_date && dayjs(userDetail.birth_date)
+            <div className="grid sm:grid-rows-2 sm:grid-cols-3 gap-3 grid-rows-3 grid-cols-2">
+              <Controller
+                control={control}
+                name="birth_date"
+                defaultValue={
+                  userDetail.birth_date && dayjs(userDetail.birth_date)
+                }
+                render={({ field }) => (
+                  <DatePicker
+                    {...field}
+                    label="Datum narození"
+                    format="DD.MM.YYYY"
+                  />
+                )}
+              />
+              <TextField
+                label="Číslo OP"
+                {...register("ID_code")}
+                defaultValue={userDetail.ID_code}
+              />
+              <Controller
+                control={control}
+                name="role"
+                defaultValue={userDetail.role}
+                render={({ field: { value, onChange } }) => (
+                  <Autocomplete
+                    value={value}
+                    disabled={!makeEdit}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
                     }
-                    render={({ field }) => (
-                      <DateField
-                        {...field}
-                        label="Datum narození"
-                        format="DD.MM.YYYY"
+                    options={roles}
+                    onChange={(e, value) => {
+                      onChange(value);
+                    }}
+                    renderOption={(props: any, option: any) => (
+                      <div {...props}>{option.name}</div>
+                    )}
+                    getOptionLabel={(option: any) => option.name}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Role"
                       />
                     )}
                   />
-                </LocalizationProvider>
-
-                <TextField
-                  label="Číslo OP"
-                  {...register("ID_code")}
-                  defaultValue={userDetail.ID_code}
-                />
-                <Controller
-                  control={control}
-                  name="role"
-                  defaultValue={userDetail.role}
-                  render={({ field: { value, onChange } }) => (
-                    <Autocomplete
-                      value={value}
-                      disabled={!makeEdit}
-                      isOptionEqualToValue={(option, value) =>
-                        option.id === value.id
-                      }
-                      options={roles}
-                      onChange={(e, value) => {
-                        onChange(value);
-                      }}
-                      renderOption={(props: any, option: any) => (
-                        <div {...props}>{option.name}</div>
-                      )}
-                      getOptionLabel={(option: any) => option.name}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Role"
-                          className="lg:w-40 w-full"
-                        />
-                      )}
-                    />
-                  )}
-                />
-                <Controller
-                  control={control}
-                  name="organization"
-                  defaultValue={userDetail.organization}
-                  render={({ field: { value, onChange } }) => (
-                    <Autocomplete
-                      value={value}
-                      disabled={!makeEdit}
-                      isOptionEqualToValue={(option, value) =>
-                        option.id === value.id
-                      }
-                      options={[
-                        { id: 1, name: "ZO" },
-                        { id: 2, name: "Zaměstnanec" },
-                        { id: 3, name: "Veřejnost" },
-                      ]}
-                      onChange={(e, value) => {
-                        onChange(value);
-                      }}
-                      renderOption={(props: any, option: any) => (
-                        <div {...props}>{option.name}</div>
-                      )}
-                      getOptionLabel={(option: any) => option.name}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Vztah k organizaci"
-                          className="lg:w-48 w-full"
-                        />
-                      )}
-                    />
-                  )}
-                />
-              </div>
+                )}
+              />
+              <Controller
+                control={control}
+                name="organization"
+                defaultValue={userDetail.organization}
+                render={({ field: { value, onChange } }) => (
+                  <Autocomplete
+                    value={value}
+                    disabled={!makeEdit}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    options={[
+                      { id: 1, name: "ZO" },
+                      { id: 2, name: "Zaměstnanec" },
+                      { id: 3, name: "Veřejnost" },
+                    ]}
+                    onChange={(e, value) => {
+                      onChange(value);
+                    }}
+                    renderOption={(props: any, option: any) => (
+                      <div {...props}>{option.name}</div>
+                    )}
+                    getOptionLabel={(option: any) => option.name}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Vztah k organizaci"
+                      />
+                    )}
+                  />
+                )}
+              />
               <TextField
                 label="Adresa"
                 className="col-span-2"
@@ -337,11 +312,12 @@ export default function UserDetailForm({
                 ))}
               </List>
               <div className="mt-auto">
-                {userDetail.groups.count > rowsPerPage && <TableListPagination
+                <TableListPagination
                   name="groups"
                   rpp={rowsPerPage}
                   count={userDetail.groups.count}
-                />}</div>
+                />
+              </div>
             </div>
             <Divider orientation="vertical" flexItem />
             <div className="flex flex-col">
@@ -367,12 +343,12 @@ export default function UserDetailForm({
                 ))}
               </List>
               <div className="mt-auto">
-                {userDetail.reservations.count > rowsPerPage && <TableListPagination
+                <TableListPagination
                   name="reservations"
                   rpp={rowsPerPage}
                   count={userDetail.reservations.count}
                 />
-                }</div>
+              </div>
             </div>
             <Divider orientation="vertical" flexItem />
             <div className="flex flex-col">
@@ -402,13 +378,11 @@ export default function UserDetailForm({
                 ))}
               </List>
               <div className="mt-auto">
-                {userDetail.children.count > rowsPerPage &&
-                  <TableListPagination
-                    name="children"
-                    rpp={rowsPerPage}
-                    count={userDetail.children.count}
-                  />
-                }
+                <TableListPagination
+                  name="children"
+                  rpp={rowsPerPage}
+                  count={userDetail.children.count}
+                />
                 {makeEdit && (
                   <div className="flex flex-col gap-2">
                     <Button

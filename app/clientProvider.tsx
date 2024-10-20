@@ -1,10 +1,11 @@
 "use client";
-import { store } from "@/store/store";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
-
-import { SessionProvider, signIn, useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { csCZ as CzechComponents } from "@mui/material/locale";
+import { csCZ as CzechDatePickers } from "@mui/x-date-pickers/locales";
+import { SessionProvider } from "next-auth/react";
 import "material-icons/iconfont/material-icons.css";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export default function ClientProvider({
   children,
@@ -17,12 +18,14 @@ export default function ClientProvider({
     palette: {
       mode: theme ? "light" : "dark",
     },
-  });
+  }, CzechComponents, CzechDatePickers);
 
   return (
     <ThemeProvider theme={mode}>
-      <CssBaseline />
-      <SessionProvider>{children}</SessionProvider>
-    </ThemeProvider>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <CssBaseline />
+        <SessionProvider>{children}</SessionProvider>
+      </LocalizationProvider>
+    </ThemeProvider >
   );
 }

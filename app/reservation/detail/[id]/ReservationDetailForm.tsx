@@ -18,8 +18,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -227,38 +226,36 @@ export default function ReservationDetailForm({
             </div>
 
             <div className="grid md:grid-rows-2 grid-rows-3 md:grid-cols-4 grid-cols-2 gap-3">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <TextField
-                  label="Název"
-                  {...register("name")}
-                />
-                <Controller control={control} name="from_date" render={({ field: { value, onChange } }) => (
-                  <DatePicker className="col-start-2 row-start-1" value={value} onChange={(e) => onChange(e)} label="Začátek rezervace" format="DD. MM. YYYY" disabled={reservation.status.id === 3} />
-                )} />
-                <TextField
-                  label="Odkaz na web Pece pod Sněžkou"
-                  {...register("success_link")}
-                />
-                <TextField
-                  className="row-span-2 [&_.MuiInputBase-root]:h-full [&_.MuiInputBase-root]:py-2"
-                  multiline
-                  minRows={4}
-                  maxRows={4}
-                  label="Pokyny pro účastníky"
-                  {...register("instructions")}
-                />
-                <TextField
-                  {...register("purpouse")}
-                  label="Účel rezervace"
-                />
-                <Controller control={control} name="to_date" render={({ field: { value, onChange } }) => (
-                  <DatePicker className="col-start-2 row-start-2" value={value} onChange={(e) => onChange(e)} label="Konec rezervace" format="DD. MM. YYYY" disabled={reservation.status.id === 3} />
-                )} />
-                <TextField
-                  label="Variabilní symbol"
-                  {...register("payment_symbol")}
-                />
-              </LocalizationProvider>
+              <TextField
+                label="Název"
+                {...register("name")}
+              />
+              <Controller control={control} name="from_date" render={({ field: { value, onChange } }) => (
+                <DatePicker className="col-start-2 row-start-1" value={value} onChange={(e) => onChange(e)} label="Začátek rezervace" format="DD. MM. YYYY" disabled={reservation.status.id === 3} />
+              )} />
+              <TextField
+                label="Odkaz na web Pece pod Sněžkou"
+                {...register("success_link")}
+              />
+              <TextField
+                className="row-span-2 [&_.MuiInputBase-root]:h-full [&_.MuiInputBase-root]:py-2"
+                multiline
+                minRows={4}
+                maxRows={4}
+                label="Pokyny pro účastníky"
+                {...register("instructions")}
+              />
+              <TextField
+                {...register("purpouse")}
+                label="Účel rezervace"
+              />
+              <Controller control={control} name="to_date" render={({ field: { value, onChange } }) => (
+                <DatePicker value={value} onChange={(e) => onChange(e)} label="Konec rezervace" format="DD. MM. YYYY" disabled={reservation.status.id === 3} />
+              )} />
+              <TextField
+                label="Variabilní symbol"
+                {...register("payment_symbol")}
+              />
             </div>
             <div className="md:ml-auto flex flex-col md:gap-2 gap-3">
               <Button variant="outlined" type="submit" disabled={!isDirty}>
@@ -309,12 +306,14 @@ export default function ReservationDetailForm({
                   <Button
                     variant="contained"
                     color="error"
+                    size="small"
                     disabled={!selectedUsers.length}
                     onClick={handleRemoveUsers}
                   >
                     Odebrat vybrané uživatele
                   </Button>
                   <Button
+                    size="small"
                     variant="contained"
                     onClick={() => setUsersModal(true)}
                   >
@@ -353,6 +352,7 @@ export default function ReservationDetailForm({
                 <div className="flex flex-col gap-2">
                   <Button
                     variant="contained"
+                    size="small"
                     color="error"
                     disabled={!selectedGroups.length}
                     onClick={handleRemoveGroups}
@@ -361,6 +361,7 @@ export default function ReservationDetailForm({
                   </Button>
                   <Button
                     variant="contained"
+                    size="small"
                     onClick={() => setGroupsModal(true)}
                   >
                     Připojit skupiny
@@ -391,7 +392,9 @@ export default function ReservationDetailForm({
                 ))}
               </List>
               <div className="mt-auto flex flex-col">
-                {selectedStatus === 4 && <TextField className="mb-2" label="Důvod zamítnutí" size="small" value={rejectedReason} onChange={(e) => setRejectedReason(e.target.value)} />}<Button
+                {selectedStatus === 4 && <TextField className="mb-2" label="Důvod zamítnutí" size="small" value={rejectedReason} onChange={(e) => setRejectedReason(e.target.value)} />}
+                <Button
+                  size="small"
                   variant="contained"
                   disabled={selectedStatus === reservation.status.id && !(selectedStatus === 4 && rejectedReason !== reservation.reject_reason)}
                   onClick={handleUpdateStatus}
@@ -419,6 +422,7 @@ export default function ReservationDetailForm({
               <div className="mt-auto">
                 <div className="flex flex-col gap-2">
                   <Button
+                    size="small"
                     variant="contained"
                     disabled={selectedRooms.toString() === reservation.rooms.toString()}
                     onClick={saveReservationRooms}

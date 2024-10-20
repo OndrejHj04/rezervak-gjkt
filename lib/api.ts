@@ -7,11 +7,7 @@ import { transporter } from "./email";
 import dayjs from "dayjs";
 import { rolesConfig } from "./rolesConfig";
 import { decode, sign } from "jsonwebtoken";
-import { NextServer } from "next/dist/server/next";
-import { reject, values } from "lodash";
 import { roomsEnum } from "@/app/constants/rooms";
-import { Noto_Sans_Vai } from "next/font/google";
-import { RejectedThenable } from "react";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -1505,7 +1501,7 @@ export const reservationUpdateStatus = async ({
     })
   ])) as any;
 
-  if (reservation[0].success_link !== successLink || reservation.payment_symbol !== paymentSymbol) {
+  if (reservation[0].success_link !== successLink || reservation[0].payment_symbol !== paymentSymbol) {
     await query({
       query: `INSERT INTO reservations_description_change (user_id, reservation_id, before_name, after_name, before_purpouse, after_purpouse, before_instructions, after_instructions, before_success_link, after_success_link, before_payment_symbol, after_payment_symbol) SELECT ?,?,reservations.name,reservations.name,reservations.purpouse,reservations.purpouse,reservations.instructions,reservations.instructions,reservations.success_link,?,reservations.payment_symbol,? FROM reservations WHERE id = ?        
       `,
@@ -1654,7 +1650,7 @@ export const groupAddUsers = async ({
 
   await sendEmail({
     send: template.data.active,
-    to: users.map(({ email }: { email: any }) => email),
+    to: usersDetail.map(({ email }: { email: any }) => email),
     template: template.data.template,
     variables: [
       { name: "group_name", value: groupDetail[0].name },
@@ -1670,22 +1666,6 @@ export const groupAddUsers = async ({
   return { success: affectedRows === users.length };
 };
 
-export const groupAddReservation = async ({
-  group,
-  reservations,
-}: {
-  group: any;
-  reservations: any;
-}) => {
-  const values = reservations.map((res: any) => [res, group])
-
-  const { affectedRows } = (await query({
-    query: `INSERT INTO reservations_groups (reservationId, groupId) VALUES ?`,
-    values: [values],
-  })) as any;
-
-  return { success: affectedRows === reservations.length };
-};
 
 export const createNewGroup = async ({
   name,

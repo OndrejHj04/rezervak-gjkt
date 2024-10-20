@@ -1,6 +1,5 @@
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
-  Avatar,
   CardHeader,
   Divider,
   List,

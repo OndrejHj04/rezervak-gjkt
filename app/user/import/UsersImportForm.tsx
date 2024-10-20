@@ -17,9 +17,9 @@ import Papa from "papaparse";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { toast } from "react-toastify";
-import MakeUserListRefetch from "@/app/user/list/refetch";
 import Link from "next/link";
 import { importNewUsers, validateImport } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const importUsersValidFormat = [
   { value: "first_name", name: "Jméno" },
@@ -35,6 +35,7 @@ export default function UsersImportForm({ roles }: { roles: any }) {
   const [file, setFile] = useState<any>(null);
   const [message, setMessage] = useState("");
 
+  const { refresh, push } = useRouter()
   const handleSubmit = (e: any) => {
     setLoading(true);
     e.preventDefault();
@@ -52,7 +53,8 @@ export default function UsersImportForm({ roles }: { roles: any }) {
       success && toast.success(`${count} uživatelů úspěšně importováno`);
       !success && toast.error(`Něco se nepovedlo`);
     });
-    MakeUserListRefetch("/user/list", 1);
+    refresh()
+    push("/user/list")
   };
 
   const clearFile = () => {

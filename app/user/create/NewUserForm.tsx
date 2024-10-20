@@ -1,5 +1,4 @@
 "use client";
-import MakeUserListRefetch from "@/app/user/list/refetch";
 import { createUserAccount } from "@/lib/api";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Autocomplete, Paper, TextField, Typography } from "@mui/material";
@@ -7,6 +6,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import UserCard from "../detail/UserCard";
+import { useRouter } from "next/navigation";
 
 export default function NewUserForm({
   roles,
@@ -22,6 +22,7 @@ export default function NewUserForm({
     formState: { isValid },
     control,
   } = useForm();
+  const { refresh, push } = useRouter()
 
   const onSubmit = async (data: any) => {
     setLoading(true);
@@ -32,7 +33,8 @@ export default function NewUserForm({
     }).then(({ success, msg }) => {
       if (success) {
         toast.success("Uživatel úspěšně vytvořen");
-        MakeUserListRefetch("/user/list", 1);
+        refresh()
+        push("/user/list")
       } else {
         toast.error(msg || "Něco se nepovedlo");
       }

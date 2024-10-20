@@ -1,6 +1,4 @@
 "use client";
-
-import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Autocomplete,
   Button,
@@ -9,12 +7,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import MakeGroupDetailRefetch from "./refetch";
 import UserCard from "@/app/user/detail/UserCard";
 import { getUserList, groupAddUsers } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const style = {
   position: "absolute" as "absolute",
@@ -29,8 +27,8 @@ export default function AddUsersToGroupModal({
   currentUsers,
   group,
 }: {
-  setModal: Dispatch<SetStateAction<boolean>>;
-  currentUsers: number[];
+  setModal: any
+  currentUsers: any[];
   group: any;
 }) {
   const [users, setUsers] = useState(null);
@@ -41,6 +39,7 @@ export default function AddUsersToGroupModal({
     formState: { isValid },
   } = useForm();
 
+  const { refresh } = useRouter()
   useEffect(() => {
     getUserList().then((res) => setUsers(res.data));
   }, []);
@@ -55,7 +54,7 @@ export default function AddUsersToGroupModal({
     });
 
     setModal(false);
-    MakeGroupDetailRefetch(group.id);
+    refresh()
   };
 
   return (

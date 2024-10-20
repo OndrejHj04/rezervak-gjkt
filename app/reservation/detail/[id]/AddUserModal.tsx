@@ -9,9 +9,9 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import MakeRefetch from "./refetch";
 import UserCard from "@/app/user/detail/UserCard";
 import { getUserList, reservationAddUsers } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const style = {
   position: "absolute" as "absolute",
@@ -31,7 +31,7 @@ export default function AddUserModal({
   setModal: Dispatch<SetStateAction<boolean>>;
 }) {
   const [users, setUsers] = useState(null);
-
+  const { refresh } = useRouter()
   const { handleSubmit, control, register } = useForm();
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function AddUserModal({
       success && toast.success("Uživatelé úspěšně přidáni");
       !success && toast.error("Něco se nepovedlo");
     });
-    MakeRefetch(reservation.id);
+    refresh()
     setModal(false);
   };
 

@@ -8,12 +8,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import MakeUserDetailRefetch from "./refetch";
 import { getUserList, userAddChildren } from "@/lib/api";
 import UserCard from "../UserCard";
+import { useRouter } from "next/navigation";
 
 const style = {
   position: "absolute" as "absolute",
@@ -40,7 +40,7 @@ export default function AddChildrenModal({
   } = useForm();
 
   const [children, setChildren] = useState(null);
-
+  const { refresh } = useRouter()
   useEffect(() => {
     getUserList({ withChildrenCollapsed: true }).then((res) =>
       setChildren(res.data)
@@ -56,7 +56,7 @@ export default function AddChildrenModal({
       !success && toast.error("Něco se nepovedlo");
     });
 
-    MakeUserDetailRefetch(userId);
+    refresh()
     setModal(false);
   };
   return (

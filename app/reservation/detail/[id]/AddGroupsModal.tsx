@@ -9,8 +9,8 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "react-toastify";
 import { Controller, useForm } from "react-hook-form";
-import MakeRefetch from "./refetch";
 import { getGroupList, reservationsAddGroups } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const style = {
   position: "absolute" as "absolute",
@@ -30,6 +30,7 @@ export default function AddGroupsModal({
   setModal: Dispatch<SetStateAction<boolean>>;
 }) {
   const [groups, setGroups] = useState(null);
+  const { refresh } = useRouter()
   const {
     handleSubmit,
     control,
@@ -48,7 +49,7 @@ export default function AddGroupsModal({
       success && toast.success("Skupiny úspěšně přidány do rezervace");
       !success && toast.error("Něco se nepovedlo");
     });
-    MakeRefetch(reservationId);
+    refresh()
     setModal(false);
   };
   return (

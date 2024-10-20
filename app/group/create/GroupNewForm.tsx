@@ -1,23 +1,18 @@
 "use client";
 import {
   Autocomplete,
-  Box,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
-import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { toast } from "react-toastify";
-import MakeGroupDetailRefetch from "@/app/group/detail/[id]/refetch";
 import { rolesConfig } from "@/lib/rolesConfig";
 import UserCard from "@/app/user/detail/UserCard";
 import { createNewGroup } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 export default function GroupNewForm({
   users,
@@ -34,6 +29,7 @@ export default function GroupNewForm({
     formState: { isValid },
   } = useForm();
 
+  const { push } = useRouter()
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (formData: any) => {
@@ -41,14 +37,14 @@ export default function GroupNewForm({
     createNewGroup({
       ...formData,
       owner: formData.owner.id,
-    }).then(({ success, id }) => {
+    }).then(({ success }) => {
       if (success) {
         toast.success(`Skupina  úspěšně vytvořena`);
       } else {
         setLoading(false);
         toast.error("Něco se pokazilo");
       }
-      MakeGroupDetailRefetch(id, 1);
+      push("/group/list")
     });
   };
 
@@ -93,7 +89,7 @@ export default function GroupNewForm({
                 defaultValue={user}
                 disabled={
                   !rolesConfig.groups.modules.groupsCreate.select[
-                    user.role.id as never
+                  user.role.id as never
                   ]
                 }
                 onChange={(e, value) => {

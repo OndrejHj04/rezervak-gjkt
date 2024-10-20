@@ -3,12 +3,13 @@
 import { store } from "@/store/store";
 import { Button } from "@mui/material";
 import { toast } from "react-toastify";
-import ReservationListMakeRefetch from "../list/refetch";
 import { useState } from "react";
 import { createNewReservation } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 export default function CreateButton() {
   const { createReservation, setCreateReservation } = store();
+  const { push, refresh } = useRouter()
   const [loading, setLoading] = useState(false);
   const setDefault = () => {
     setCreateReservation({
@@ -26,12 +27,12 @@ export default function CreateButton() {
   const handleSubmit = () => {
     setLoading(true);
     createNewReservation({ ...createReservation }).then(({ success }) => {
-      if (success) {
-        toast.success("Rezervace úspěšně vytvořena");
-        ReservationListMakeRefetch();
-        setDefault();
-      } else toast.error("Něco se nepovedlo");
+      if (success) toast.success("Rezervace úspěšně vytvořena");
+      else toast.error("Něco se nepovedlo");
     });
+    push("/reservation/list")
+    refresh()
+    setDefault()
   };
 
   return (

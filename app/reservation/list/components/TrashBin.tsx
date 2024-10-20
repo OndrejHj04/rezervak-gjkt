@@ -3,17 +3,18 @@ import { Badge, IconButton } from "@mui/material";
 import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { store } from "@/store/store";
-import ReservationListMakeRefetch from "../refetch";
 import { reservationsDelete } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 export default function TrashBin() {
   const { selectedReservations, setSelectedReservations } = store();
+  const { refresh } = useRouter()
   const handleRemove = () => {
     reservationsDelete({ reservations: selectedReservations }).then((res) => {
       if (res.success) toast.success("Rezervace úspěšně odstraněny");
       else toast.error("Něco se pokazilo");
     });
-    ReservationListMakeRefetch();
+    refresh()
     setSelectedReservations([]);
   };
 

@@ -24,7 +24,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import AddUserModal from "./AddUserModal";
 import AddGroupsModal from "./AddGroupsModal";
-import MakeReservationDetailRefetch from "./refetch";
 import TableListPagination from "@/ui-components/TableListPagination";
 import {
   editReservationDetail,
@@ -44,6 +43,7 @@ export default function ReservationDetailForm({
   reservation: any;
   reservationStatus: any;
 }) {
+  const { refresh } = useRouter()
   const {
     register,
     handleSubmit,
@@ -80,7 +80,7 @@ export default function ReservationDetailForm({
         reset(data);
       }
     );
-    MakeReservationDetailRefetch(reservation.id);
+    refresh()
   };
 
   const { push } = useRouter();
@@ -126,7 +126,7 @@ export default function ReservationDetailForm({
       success && toast.success("Nastavení pokojů úspěšně uloženo");
       !success && toast.error("Něco se nepovedlo");
     })
-    MakeReservationDetailRefetch(reservation.id);
+    refresh()
   }
 
   const handleRemoveUsers = () => {
@@ -137,7 +137,7 @@ export default function ReservationDetailForm({
       success && toast.success("Uživatelé byli odebráni z rezervace");
       !success && toast.error("Něco se nepovedlo");
     });
-    MakeReservationDetailRefetch(reservation.id);
+    refresh()
     setSelecetedUsers([]);
   };
 
@@ -149,7 +149,7 @@ export default function ReservationDetailForm({
       success && toast.success("Skupiny byly odebrány z rezervace");
       !success && toast.error("Něco se nepovedlo");
     });
-    MakeReservationDetailRefetch(reservation.id);
+    refresh()
     setSelectedGroups([]);
   };
 

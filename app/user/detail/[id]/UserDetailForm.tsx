@@ -20,12 +20,9 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import MakeUserDetailRefetch from "./refetch";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useState } from "react";
-import AddGroupsModal from "./AddGroupsModal";
-import AddReservationsModal from "./AddReservationsModal";
 import { rolesConfig } from "@/lib/rolesConfig";
 import TableListPagination from "@/ui-components/TableListPagination";
 import {
@@ -34,6 +31,7 @@ import {
   userRemoveChildren,
 } from "@/lib/api";
 import AddChildrenModal from "./AddChildrenModal";
+import { useRouter } from "next/navigation";
 
 const rowsPerPage = 5
 export default function UserDetailForm({
@@ -56,17 +54,16 @@ export default function UserDetailForm({
   const [selectGroups, setSelectGroups] = useState<number[]>([]);
   const [selectReservations, setSelectReservation] = useState<number[]>([]);
   const [selectChildren, setSelectChildren] = useState<number[]>([]);
-  const [groupsModal, setGroupsModal] = useState(false);
-  const [reservationsModal, setReservationsModal] = useState(false);
   const [childrenModal, setChildrenModal] = useState(false);
   const makeEdit = rolesConfig.users.modules.userDetail.edit.includes(userRole);
+  const { refresh } = useRouter()
 
   const handleUserSleep = (id: any, active: any) => {
     makeUserSleep({ id, active }).then(({ success, msg }) => {
       success && toast.success(msg);
       !success && toast.error("Něco se nepovedlo");
     });
-    MakeUserDetailRefetch(userDetail.id);
+    refresh()
   };
 
   const onSubmit = (data: any) => {
@@ -82,7 +79,7 @@ export default function UserDetailForm({
       success && toast.success("Detail uživatele upraven");
       !success && toast.error("Něco se nepovedlo");
     });
-    MakeUserDetailRefetch(userDetail.id);
+    refresh()
     setValue("birth_date", data.birth_date);
   };
 
@@ -124,42 +121,11 @@ export default function UserDetailForm({
       !success && toast.error("Něco se nepovedlo");
     });
     setSelectChildren([]);
-    MakeUserDetailRefetch(userDetail.id);
+    refresh()
   };
 
   return (
     <>
-      {groupsModal && (
-        <Modal open={groupsModal} onClose={() => setGroupsModal(false)}>
-          {groupsModal && (
-            <AddGroupsModal
-              currentGroups={userDetail.groups.data.map(
-                (group: any) => group.id
-              )}
-              userId={userDetail.id}
-              userEmail={userDetail.email}
-              setModal={setGroupsModal}
-            />
-          )}
-        </Modal>
-      )}
-      {reservationsModal && (
-        <Modal
-          open={reservationsModal}
-          onClose={() => setReservationsModal(false)}
-        >
-          {reservationsModal && (
-            <AddReservationsModal
-              currentReservations={userDetail.reservations.data.map(
-                (group: any) => group.id
-              )}
-              userId={userDetail.id}
-              userEmail={userDetail.email}
-              setModal={setReservationsModal}
-            />
-          )}
-        </Modal>
-      )}
       {childrenModal && (
         <Modal open={childrenModal} onClose={() => setChildrenModal(false)}>
           <AddChildrenModal
@@ -296,7 +262,7 @@ export default function UserDetailForm({
                 {userDetail.groups.data.map((group: any) => (
                   <ListItem disablePadding key={group.id}>
                     <ListItemButton
-                      className="!p-0"
+                      className="py-0.5 px-2"
                       onClick={() => handleCheckGroup(group.id)}
                     >
                       <ListItemText
@@ -322,9 +288,7 @@ export default function UserDetailForm({
               <List>
                 {userDetail.reservations.data.map((reservation: any) => (
                   <ListItem disablePadding key={reservation.id}>
-                    <ListItemButton
-                      className="!p-0"
-                      onClick={() => handleCheckReservation(reservation.id)}
+                    <ListItemButton className="py-0.5 px-2" onClick={() => handleCheckReservation(reservation.id)}
                     >
                       <ListItemText
                         primary={<Typography>{reservation.name}</Typography>}
@@ -353,21 +317,10 @@ export default function UserDetailForm({
               <List>
                 {userDetail.children.data.map((child: any) => (
                   <ListItem disablePadding key={child.id}>
-                    <ListItemButton
-                      sx={{ padding: 1 }}
-                      onClick={() => handleCheckChildren(child.id)}
-                    >
+                    <ListItemButton className="py-0.5 px-2" onClick={() => handleCheckChildren(child.id)} selected={selectChildren.includes(child.id)}>
                       <ListItemText
-                        primary={
-                          <Typography>
-                            {child.first_name} {child.last_name}
-                          </Typography>
-                        }
+                        primary={`${child.first_name} ${child.last_name}`}
                         secondary={child.email}
-                      />
-                      <Checkbox
-                        disableRipple
-                        checked={selectChildren.includes(child.id)}
                       />
                     </ListItemButton>
                   </ListItem>

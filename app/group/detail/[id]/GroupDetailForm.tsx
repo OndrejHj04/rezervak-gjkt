@@ -4,10 +4,7 @@ import {
   Button,
   ButtonBase,
   CardHeader,
-  Checkbox,
-  Chip,
   Divider,
-  Icon,
   List,
   ListItem,
   ListItemButton,
@@ -19,20 +16,15 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
-import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import MakeGroupDetailRefetch from "./refetch";
 import AddUsersToGroupModal from "./AddUsersToGroupModal";
-import AddGroupToReservationModal from "./AddGroupToReservationModal";
 import _ from "lodash";
 import TableListPagination from "@/ui-components/TableListPagination";
 import {
   groupDetailEdit,
-  groupRemoveReservations,
   groupRemoveUsers,
   removeGroups,
 } from "@/lib/api";
@@ -40,10 +32,8 @@ import Link from "next/link";
 
 export default function GroupDetailForm({ group }: { group: any }) {
   const { push } = useRouter();
-  const [checked, setChecked] = useState<any>([]);
+  const [checked, setChecked] = useState<any[]>([]);
   const [usersModal, setUsersModal] = useState(false);
-  const [reservationModal, setReservationModal] = useState(false);
-  const [selectReservation, setSelectReservation] = useState<number[]>([]);
   const {
     formState: { isDirty },
     register,
@@ -56,6 +46,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
     },
   });
 
+  const { refresh } = useRouter()
   const onSubmit = (data: any) => {
     groupDetailEdit({
       id: group.id,
@@ -68,7 +59,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
         toast.error("Něco se nepovedlo");
       }
     });
-    MakeGroupDetailRefetch(group.id);
+    refresh()
   };
 
   const handleRemoveGroup = () => {
@@ -87,36 +78,16 @@ export default function GroupDetailForm({ group }: { group: any }) {
       success && toast.success("Uživatelé úspěšně odebráni");
       !success && toast.error("Něco se nepovedlo");
     });
-    setChecked([]);
-    MakeGroupDetailRefetch(group.id);
+    setChecked([])
+    refresh()
   };
 
-  const handleCheck = (Id: number) => {
+  const handleCheck = (Id: any) => {
     if (checked.includes(Id)) {
       setChecked(checked.filter((id: any) => id !== Id));
     } else {
       setChecked([...checked, Id]);
     }
-  };
-
-  const handleSelectReservation = (Id: number) => {
-    if (selectReservation.includes(Id)) {
-      setSelectReservation(selectReservation.filter((id) => id !== Id));
-    } else {
-      setSelectReservation([...selectReservation, Id]);
-    }
-  };
-
-  const removeFromReservations = () => {
-    groupRemoveReservations({
-      group: group.id,
-      reservations: selectReservation,
-    }).then(({ success }) => {
-      success && toast.success("Rezervace úspěšně odstraněny");
-      !success && toast.error("Něco se nepovedlo");
-    });
-    MakeGroupDetailRefetch(group.id);
-    setSelectReservation([]);
   };
 
   return (

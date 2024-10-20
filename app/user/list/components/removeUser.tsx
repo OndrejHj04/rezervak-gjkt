@@ -3,19 +3,19 @@ import { store } from "@/store/store";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Badge, IconButton } from "@mui/material";
 import { toast } from "react-toastify";
-import MakeUserListRefetch from "../refetch";
 import { usersDelete } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 export default function RemoveUser() {
   const { selectedUsers, setSelectedUsers } = store();
-
+  const { refresh } = useRouter()
   const deleteUsers = () => {
     usersDelete({ users: selectedUsers }).then(({ success }) => {
       success && toast.success("Uživatelé úspěšně odstraněni");
       !success && toast.error("Něco se nepovedlo");
     });
     setSelectedUsers([]);
-    MakeUserListRefetch("/user/list");
+    refresh()
   };
 
   return (

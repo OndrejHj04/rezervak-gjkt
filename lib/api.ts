@@ -1170,10 +1170,6 @@ export const createNewReservation = async ({
         group,
       ])],
     }),
-    query({
-      query: `INSERT INTO reservations_users_change_users (user_id, change_id) VALUES ?`,
-      values: [members.map((user: any) => [user, change.insertId])]
-    })
   ])) as any;
 
   await sendEmail({
@@ -1343,12 +1339,12 @@ export const editReservationDetail = async ({
     )
   }
 
+  const req = await Promise.all(requests) as any
+
   await query({
     query: `UPDATE reservations SET purpouse = ?, name = ?, instructions = ?, from_date = ?, to_date = ?, success_link = ?, payment_symbol = ? WHERE id = ?`,
     values: [purpouse, name, instructions, from_date, to_date, success_link, payment_symbol, id],
   })
-
-  const req = await Promise.all(requests) as any
 
   return { success: req[req.length - 1].affectedRows === 1 };
 };
@@ -1517,6 +1513,8 @@ export const reservationUpdateStatus = async ({
     })
   }
 
+  const formatRejectReason = (newStatus === 2 || newStatus === 3 || newStatus === 1) ? null : rejectReason
+
   const [statuses, { affectedRows }] = (await Promise.all([
     query({
       query: `
@@ -1528,11 +1526,9 @@ export const reservationUpdateStatus = async ({
     }),
     query({
       query: `UPDATE reservations SET status = ?, reject_reason = ?, payment_symbol = ?, success_link = ? WHERE id = ?`,
-      values: [newStatus, rejectReason, paymentSymbol, successLink, id],
+      values: [newStatus, formatRejectReason, paymentSymbol, successLink, id],
     }),
   ])) as any
-
-  console.log(reservation.success_link, reservation, successLink, paymentSymbol)
 
   const resDetail = {
     ...reservation[0],
@@ -1566,7 +1562,7 @@ export const reservationUpdateStatus = async ({
     ],
   });
 
-  return { success: affectedRows === 1 };
+  return { success: affectedRows === 1, rejectReason: formatRejectReason };
 };
 
 export const userSpecifiedReservations = async ({

@@ -163,7 +163,7 @@ export default function TimelineEventUi(event: any) {
             <TimelineContent>
               <Typography>Úprava popisku:</Typography>
               {event.difference.map((item: any, i: any) => (
-                <ListItemText className="my-0" secondaryTypographyProps={{ className: "line-through" }} key={i} primary={`${translate[item]}: ${event.after[item]}`} secondary={`${translate[item]}: ${event.before[item]}`} />
+                <ListItemText className="my-0" secondaryTypographyProps={{ className: "line-through" }} key={i} primary={`${translate[item]}: ${event.after[item] || ""}`} secondary={`${translate[item]}: ${event.before[item] || ""}`} />
               ))}
             </TimelineContent>
           </React.Fragment>

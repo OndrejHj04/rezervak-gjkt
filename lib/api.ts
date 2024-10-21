@@ -8,6 +8,10 @@ import dayjs from "dayjs";
 import { rolesConfig } from "./rolesConfig";
 import { decode, sign } from "jsonwebtoken";
 import { roomsEnum } from "@/app/constants/rooms";
+import { google } from "googleapis";
+import { formFields } from "./registrationForm";
+
+import { authenticate } from '@google-cloud/local-auth';
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -1223,12 +1227,13 @@ export const getReservationDetail = async ({
   const [reservations, users, usersCount, groups, groupsCount] =
     (await Promise.all([
       query({
-        query: `SELECT reservations.id, from_date, to_date, reservations.name, leader, instructions, purpouse, creation_date, success_link, payment_symbol, reject_reason, 
+        query: `SELECT reservations.id, from_date, to_date, reservations.name, leader, instructions, purpouse, creation_date, success_link, payment_symbol, reject_reason, JSON_OBJECT('form_link', rf.form_link, 'watcher_id', rf.watcher_id, 'watcher_expiration', rf.watcher_expiration) as form,
     JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', display_name, 'icon', icon) as status,
     JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader,
     GROUP_CONCAT(rooms.id separator ';') as rooms FROM reservations
     INNER JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
     INNER JOIN status ON reservations.status = status.id
+    INNER JOIN reservation_form rf ON rf.reservation_id = reservations.id
     INNER JOIN users ON users.id = reservations.leader
     INNER JOIN rooms ON roomId = rooms.id
     WHERE reservations.id = ?
@@ -2367,3 +2372,78 @@ export const getEmailSettings = async () => {
 
   return { allowEmails: req[0].allow_mail_sending }
 }
+
+
+export const allowReservationSignIn = async ({ reservation }: { reservation: any }) => {
+  const authClient = new google.auth.GoogleAuth({
+    keyFile: "./app/credentials.json",
+    scopes: ["https://www.googleapis.com/auth/drive",
+      "https://www.googleapis.com/auth/script.projects"]
+  });
+
+  // const { forms } = google.forms({
+  //   version: 'v1',
+  //   auth: authClient,
+  // });
+
+  // const newForm = {
+  //   info: {
+  //     title: `Přihlašování na rezervaci ${reservation.name}`,
+  //   },
+  // }
+
+  // const res = await forms.create({
+  //   requestBody: newForm,
+  // }) as any
+
+
+  // const { responderUri, formId } = res.data
+
+  const script = google.script({ version: "v1", auth: authClient }) as any
+
+  console.log(script.projects.create({
+    resource: {
+      title: 'My Script',
+    },
+  }))
+
+  // const data = await forms.watches.create({
+  //   formId,
+  //   requestBody: {
+  //     watch: {
+  //       target: {
+  //         topic: {
+  //           topicName: ""
+  //         }
+  //       },
+  //       eventType: "RESPONSES"
+  //     }
+  //   }
+  // })
+
+  // await Promise.all([
+  //   query({
+  //     query: `INSERT INTO reservation_form (form_link, form_id, watcher_id, watcher_expiration, reservation_id) VALUES (?,?,?,?,?)`,
+  //     values: [responderUri, formId, reservation.id]
+  //   }),
+  // ]) as any
+
+  // forms.batchUpdate({
+  //   formId: formId,
+  //   requestBody: {
+  //     requests: [
+  //       {
+  //         updateFormInfo: {
+  //           info: {
+  //             description: `Rezervace na chatě Gymnázia J.K.Tyla v termínu od ${dayjs(reservation.from_date).format("DD. MM. YYYY")} do ${dayjs(reservation.to_date).format("DD. MM. YYYY")}`,
+  //           },
+  //           updateMask: 'description',
+  //         },
+  //       },
+  //       ...formFields
+  //     ]
+  //   }
+  // })
+  // return { success: responderUri && formId }
+}
+

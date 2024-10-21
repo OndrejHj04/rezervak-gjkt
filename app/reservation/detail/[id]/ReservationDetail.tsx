@@ -1,9 +1,10 @@
 import ReservationDetailForm from "./ReservationDetailForm";
 import ReservationDetailDisplay from "./ReservationDetailDisplay";
-import { Tab, Tabs } from "@mui/material";
+import { Button, Tab, Tabs } from "@mui/material";
 import Link from "next/link";
 import { rolesConfig } from "@/lib/rolesConfig";
 import { getReservationDetail, getReservationsStatus } from "@/lib/api";
+import GoogleFormButton from "./GoogleFormButton";
 
 export default async function ReservationDetail({
   params,
@@ -51,6 +52,7 @@ export default async function ReservationDetail({
               )}
           </Tabs>
         </div>
+        <GoogleFormButton reservation={reservation} />
       </div>
       {mode === "edit" ? (
         <ReservationDetailForm

@@ -12,6 +12,7 @@ import { google } from "googleapis";
 import { formFields } from "./registrationForm";
 
 import { authenticate } from '@google-cloud/local-auth';
+import { values } from "lodash";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -1227,13 +1228,13 @@ export const getReservationDetail = async ({
   const [reservations, users, usersCount, groups, groupsCount] =
     (await Promise.all([
       query({
-        query: `SELECT reservations.id, from_date, to_date, reservations.name, leader, instructions, purpouse, creation_date, success_link, payment_symbol, reject_reason, JSON_OBJECT('form_link', rf.form_link, 'watcher_id', rf.watcher_id, 'watcher_expiration', rf.watcher_expiration) as form,
+        query: `SELECT reservations.id, from_date, to_date, reservations.name, leader, instructions, purpouse, creation_date, success_link, payment_symbol, reject_reason, JSON_OBJECT('id', rf.form_id, 'publicUrl', rf.form_public_url) as form,
     JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', display_name, 'icon', icon) as status,
     JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader,
     GROUP_CONCAT(rooms.id separator ';') as rooms FROM reservations
     INNER JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
     INNER JOIN status ON reservations.status = status.id
-    INNER JOIN reservation_form rf ON rf.reservation_id = reservations.id
+    INNER JOIN reservations_forms rf ON rf.reservation_id = reservations.id
     INNER JOIN users ON users.id = reservations.leader
     INNER JOIN rooms ON roomId = rooms.id
     WHERE reservations.id = ?
@@ -1276,6 +1277,7 @@ export const getReservationDetail = async ({
     ...reservations[0],
     status: JSON.parse(reservations[0].status),
     leader: JSON.parse(reservations[0].leader),
+    form: JSON.parse(reservations[0].form),
     rooms: reservations[0].rooms ? reservations[0].rooms.split(';').map(Number) : [],
     users: {
       data: users,
@@ -2375,75 +2377,17 @@ export const getEmailSettings = async () => {
 
 
 export const allowReservationSignIn = async ({ reservation }: { reservation: any }) => {
-  const authClient = new google.auth.GoogleAuth({
-    keyFile: "./app/credentials.json",
-    scopes: ["https://www.googleapis.com/auth/drive",
-      "https://www.googleapis.com/auth/script.projects"]
-  });
+  const reqBody = { name: reservation.name, from_date: dayjs(reservation.from_date).format("DD. MM. YYYY"), to_date: dayjs(reservation.to_date).format("DD. MM. YYYY") }
 
-  // const { forms } = google.forms({
-  //   version: 'v1',
-  //   auth: authClient,
-  // });
+  const req = await fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: reqBody }) })
 
-  // const newForm = {
-  //   info: {
-  //     title: `Přihlašování na rezervaci ${reservation.name}`,
-  //   },
-  // }
+  const { success, formId, formPublicUrl } = await req.json()
 
-  // const res = await forms.create({
-  //   requestBody: newForm,
-  // }) as any
+  const saveForm = await query({
+    query: `INSERT INTO reservations_forms (form_id, form_public_url, reservation_id) VALUES (?,?,?)`,
+    values: [formId, formPublicUrl, reservation.id]
+  })
 
-
-  // const { responderUri, formId } = res.data
-
-  const script = google.script({ version: "v1", auth: authClient }) as any
-
-  console.log(script.projects.create({
-    resource: {
-      title: 'My Script',
-    },
-  }))
-
-  // const data = await forms.watches.create({
-  //   formId,
-  //   requestBody: {
-  //     watch: {
-  //       target: {
-  //         topic: {
-  //           topicName: ""
-  //         }
-  //       },
-  //       eventType: "RESPONSES"
-  //     }
-  //   }
-  // })
-
-  // await Promise.all([
-  //   query({
-  //     query: `INSERT INTO reservation_form (form_link, form_id, watcher_id, watcher_expiration, reservation_id) VALUES (?,?,?,?,?)`,
-  //     values: [responderUri, formId, reservation.id]
-  //   }),
-  // ]) as any
-
-  // forms.batchUpdate({
-  //   formId: formId,
-  //   requestBody: {
-  //     requests: [
-  //       {
-  //         updateFormInfo: {
-  //           info: {
-  //             description: `Rezervace na chatě Gymnázia J.K.Tyla v termínu od ${dayjs(reservation.from_date).format("DD. MM. YYYY")} do ${dayjs(reservation.to_date).format("DD. MM. YYYY")}`,
-  //           },
-  //           updateMask: 'description',
-  //         },
-  //       },
-  //       ...formFields
-  //     ]
-  //   }
-  // })
-  // return { success: responderUri && formId }
+  return { success: true }
 }
 

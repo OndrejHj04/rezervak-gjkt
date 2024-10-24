@@ -253,7 +253,7 @@ export default function TimelineEventUi(event: any) {
             </TimelineSeparator>
             <TimelineContent>
               <Typography>Spuštění přihlašování</Typography>
-              <Link className="text-inherit" href={event.formPublicUrl}>Odkaz na formulář</Link>
+              <Link className="text-inherit" target="_blank" href={event.formPublicUrl}>Odkaz na formulář</Link>
             </TimelineContent>
           </React.Fragment>
         )

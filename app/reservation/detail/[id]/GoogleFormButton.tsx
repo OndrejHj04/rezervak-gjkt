@@ -30,7 +30,7 @@ export default function GoogleFormButton({ reservation }: { reservation: any }) 
   return (
     <div className="flex items-center gap-2">
       {loading && <CircularProgress size={30} />}
-      <FormControlLabel control={<Switch disabled={on || loading} defaultChecked={on} />} onChange={handleToggle} label="Povolit přihlašování na rezervaci" />
+      <FormControlLabel control={<Switch disabled={on || loading} checked={on} />} onChange={handleToggle} label="Povolit přihlašování na rezervaci" />
       <Button variant="outlined" disabled={!on} LinkComponent={Link} target="_blank" href={reservation.form.publicUrl}>Přihlašovací formulář</Button>
     </div>
   )

@@ -4,6 +4,7 @@ import {
   Button,
   ButtonBase,
   CardHeader,
+  CircularProgress,
   Divider,
   Icon,
   List,
@@ -32,9 +33,11 @@ import {
   reservationSaveRooms,
   reservationsDelete,
   reservationUpdateStatus,
+  stopSignin,
 } from "@/lib/api";
 import { roomsEnum } from "@/app/constants/rooms";
 import Link from "next/link";
+import { LoadingButton } from "@mui/lab";
 
 export default function ReservationDetailForm({
   reservation,
@@ -93,6 +96,7 @@ export default function ReservationDetailForm({
   );
   const [rejectedReason, setRejectedReason] = useState(reservation.reject_reason)
   const [selectedRooms, setSelectedRooms] = useState(reservation.rooms)
+  const [stopSinginLoading, setStopSigninLoading] = useState(false)
 
   const handleCheckUser = (id: number) => {
     if (selectedUsers.includes(id)) {
@@ -176,11 +180,21 @@ export default function ReservationDetailForm({
       !success && toast.error("Něco se nepovedlo");
       setRejectedReason(rejectReason)
     });
-    selectedStatus !== 1
-      ? MakeReservationDetailRefetch(reservation.id)
-      : window.location.reload();
+    // selectedStatus !== 1 go to list page
     reset();
   };
+
+  const handleStopSignin = () => {
+    setStopSigninLoading(true)
+    stopSignin({
+      formId: reservation.form.id
+    }).then(({ success }) => {
+      if (success) toast.success("Přihlašování na rezervaci úspěšně zastaveno")
+      else toast.error("Něco se nepovedlo")
+      setStopSigninLoading(false)
+      refresh()
+    })
+  }
 
   useEffect(() => {
     setSelectedStatus(reservation.status.id)
@@ -261,6 +275,15 @@ export default function ReservationDetailForm({
               <Button variant="outlined" type="submit" disabled={!isDirty}>
                 Uložit změny
               </Button>
+              <LoadingButton
+                variant="outlined"
+                color="error"
+                disabled={!reservation.form.id}
+                loading={stopSinginLoading}
+                onClick={handleStopSignin}
+              >
+                Ukončit přihlašování
+              </LoadingButton>
               <Button
                 variant="outlined"
                 color="error"

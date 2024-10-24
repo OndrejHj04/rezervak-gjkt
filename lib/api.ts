@@ -2387,7 +2387,7 @@ export const getEmailSettings = async () => {
 export const allowReservationSignIn = async ({ reservation }: { reservation: any }) => {
   const reqBody = { name: reservation.name, from_date: dayjs(reservation.from_date).format("DD. MM. YYYY"), to_date: dayjs(reservation.to_date).format("DD. MM. YYYY"), instructions: reservation.instructions, leader: { first_name: reservation.leader.first_name, last_name: reservation.leader.last_name } }
 
-  const req = await fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: reqBody }) })
+  const req = await fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: reqBody, action: "create" }) })
 
   const { success, formId, formPublicUrl } = await req.json()
 
@@ -2399,3 +2399,15 @@ export const allowReservationSignIn = async ({ reservation }: { reservation: any
   return { success: true }
 }
 
+export const stopSignin = async ({ formId }: { formId: any }) => {
+
+  const [, { affectedRows }] = await Promise.all([
+    fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: { formId }, action: "clear" }) }),
+    query({
+      query: `DELETE FROM reservations_forms WHERE form_id = ?`,
+      values: [formId]
+    })
+  ]) as any
+
+  return { success: affectedRows === 1 }
+} 

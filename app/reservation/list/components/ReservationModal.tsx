@@ -49,7 +49,7 @@ export default function ReservationModal({
     defaultValues: { status: reservation.status, reason: reservation.reject_reason || "", successLink: reservation.success_link || "", paymentSymbol: reservation.payment_symbol || "" },
   });
   const selectedStatus = watch("status")
-  console.log(watch())
+
   const isActive = Number(searchParams.get("reservation_id")) === reservation.id;
   useEffect(() => {
     setLoading(false);

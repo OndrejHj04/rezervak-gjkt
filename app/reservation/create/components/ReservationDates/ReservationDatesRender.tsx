@@ -87,7 +87,6 @@ export default function ReservationDatesRender({
     return reservationData
   }, [from_date, to_date, rooms])
 
-  console.log(calendarEventData)
   const calendarResources = useMemo(() => {
     return roomsEnum.list.map((room) => ({ id: room.id, title: room.label }))
   }, [])

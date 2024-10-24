@@ -1,9 +1,13 @@
+"use client"
+
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Badge,
   Button,
   Chip,
   IconButton,
+  Menu,
+  MenuItem,
   TableCell,
   TableRow,
   Tooltip,
@@ -13,12 +17,16 @@ import dayjs from "dayjs";
 import GroupIcon from "@mui/icons-material/Group";
 import { Icon } from "@mui/material";
 import Link from "next/link";
-import TableListCheckbox from "@/ui-components/TableListCheckbox";
 import { rolesConfig } from "@/lib/rolesConfig";
 import ReservationModal from "./ReservationModal";
 import NightShelterIcon from "@mui/icons-material/NightShelter";
 import HotelIcon from "@mui/icons-material/Hotel";
 import { Cancel, CheckCircle } from "@mui/icons-material";
+import { store } from "@/store/store";
+import React, { useRef, useState } from "react";
+import { reservationsDelete } from "@/lib/api";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function ReservationListItem({
   reservation,
@@ -33,15 +41,48 @@ export default function ReservationListItem({
 }) {
   const isMember = reservation.users.includes(userId);
   const isLeader = reservation.leader.id === userId;
+  const { refresh } = useRouter()
+
+  const [contextMenu, setContextMenu] = useState<any>(null)
+  const { selectedReservations, setSelectedReservations } = store()
+
+  const handleSelectReservation = () => {
+    if (selectedReservations.includes(reservation.id)) {
+      setSelectedReservations(selectedReservations.filter((res: any) => res !== reservation.id))
+    } else {
+      setSelectedReservations([...selectedReservations, reservation.id])
+    }
+  }
+
+  const handleDeleteReservations = () => {
+    reservationsDelete({ reservations: selectedReservations }).then((res) => {
+      if (res.success) toast.success("Rezervace úspěšně odstraněny");
+      else toast.error("Něco se pokazilo");
+    });
+    refresh()
+    setSelectedReservations([]);
+  }
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setContextMenu(
+      contextMenu === null && selectedReservations.includes(reservation.id)
+        ? {
+          mouseX: e.clientX + 2,
+          mouseY: e.clientY - 6,
+        }
+        : null,
+    );
+  };
+
+  const handleClose = () => {
+    setContextMenu(null);
+  }
 
   return (
-    <>
+    <React.Fragment>
       <ReservationModal reservation={reservation} />
-      <TableRow>
-        {rolesConfig.reservations.modules.reservationsTable.config.delete.includes(
-          userRole
-        ) && <TableListCheckbox prop="reservations" id={reservation.id} />}
-
+      <TableRow onContextMenu={handleContextMenu} selected={selectedReservations.includes(reservation.id)} onClick={handleSelectReservation}>
         <TableCell>
           <Typography>{reservation.name}</Typography>
         </TableCell>
@@ -172,7 +213,7 @@ export default function ReservationListItem({
             ))) &&
           reservation.status.id !== 5 ? (
           <TableCell>
-            <Link href={`/reservation/detail/${reservation.id}`}>
+            <Link href={`/reservation/detail/${reservation.id}`} onClick={e => e.stopPropagation()}>
               <Button>detail</Button>
             </Link>
           </TableCell>
@@ -180,6 +221,16 @@ export default function ReservationListItem({
           <TableCell />
         )}
       </TableRow>
-    </>
+      <Menu open={Boolean(contextMenu)}
+        onClose={handleClose}
+        className="[&_.MuiList-root]:!p-0"
+        anchorReference="anchorPosition"
+        anchorPosition={contextMenu !== null
+          ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+          : undefined}
+      >
+        <MenuItem onClick={handleDeleteReservations}>Odstranit vybrané</MenuItem>
+      </Menu>
+    </React.Fragment>
   );
 }

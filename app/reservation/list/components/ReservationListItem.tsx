@@ -18,6 +18,7 @@ import { rolesConfig } from "@/lib/rolesConfig";
 import ReservationModal from "./ReservationModal";
 import NightShelterIcon from "@mui/icons-material/NightShelter";
 import HotelIcon from "@mui/icons-material/Hotel";
+import { Cancel, CheckCircle } from "@mui/icons-material";
 
 export default function ReservationListItem({
   reservation,
@@ -56,6 +57,15 @@ export default function ReservationListItem({
         </TableCell>
         <TableCell>
           <Typography>{reservation.users.length}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography>
+            {reservation.form.active ?
+              <CheckCircle color="success" sx={{ width: 32, height: 32 }} />
+              :
+              <Cancel color="error" sx={{ width: 32, height: 32 }} />
+            }
+          </Typography>
         </TableCell>
         <TableCell>
           <div className="flex items-center gap-2">

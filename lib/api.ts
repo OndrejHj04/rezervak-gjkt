@@ -8,11 +8,6 @@ import dayjs from "dayjs";
 import { rolesConfig } from "./rolesConfig";
 import { decode, sign } from "jsonwebtoken";
 import { roomsEnum } from "@/app/constants/rooms";
-import { google } from "googleapis";
-import { formFields } from "./registrationForm";
-
-import { authenticate } from '@google-cloud/local-auth';
-import { values } from "lodash";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -153,12 +148,17 @@ export const getReservationList = async ({
         GROUP_CONCAT(
             DISTINCT groups.name
           ) as groups,
+          JSON_OBJECT('active',
+          CASE WHEN reservations_forms.form_id IS NULL THEN false
+        ELSE true END
+          ) as form,
         GROUP_CONCAT(DISTINCT userId) as users,
         GROUP_CONCAT(
           DISTINCT JSON_OBJECT('id', rooms.id, 'people', rooms.people)
         ) as rooms
         FROM reservations${guest ? "_mock as reservations" : ""}
         INNER JOIN status ON status.id = reservations.status
+        LEFT JOIN reservations_forms ON reservations_forms.reservation_id = reservations.id
         INNER JOIN users${guest ? "_mock as users" : ""
         } ON users.id = reservations.leader
         LEFT JOIN reservations_rooms${guest ? "_mock as reservations_rooms" : ""
@@ -207,6 +207,7 @@ export const getReservationList = async ({
   const data = reservations.map((reservation: any) => ({
     ...reservation,
     leader: JSON.parse(reservation.leader),
+    form: JSON.parse(reservation.form),
     status: JSON.parse(reservation.status),
     groups: reservation.groups ? reservation.groups.split(",") : [],
     users: reservation.users ? reservation.users.split(",").map(Number) : [],
@@ -2233,7 +2234,7 @@ export const getSendMailDetail = async (id: any) => {
 }
 
 export const getReservationTimeline = async (id: any) => {
-  const [reservationCoreDates, reservationDateChanges, reservationDescChanges, reservationUserChanges, reservationGroupChange, reservationStatusChange, reservationRoomsChange] = await Promise.all([
+  const [reservationCoreDates, reservationDateChanges, reservationDescChanges, reservationUserChanges, reservationGroupChange, reservationStatusChange, reservationRoomsChange, reservationSigninChange] = await Promise.all([
     query({
       query: 'SELECT reservations.creation_date, reservations.from_date, reservations.to_date, reservations.to_date as archivation FROM reservations WHERE id = ?',
       values: [id]
@@ -2290,6 +2291,10 @@ export const getReservationTimeline = async (id: any) => {
     query({
       query: `SELECT * FROM reservations_rooms_change rr WHERE reservation_id = ?`,
       values: [id]
+    }),
+    query({
+      query: `SELECT rf.form_id, rf.form_public_url as formPublicUrl, rf.timestamp FROM reservations_forms as rf WHERE reservation_id = ?`,
+      values: [id]
     })
   ]) as any
 
@@ -2330,6 +2335,9 @@ export const getReservationTimeline = async (id: any) => {
     ...item,
     rooms: item.rooms.split(";"),
     timelineEventTypeId: 60
+  })), ...reservationSigninChange.map((item: any) => ({
+    ...item,
+    timelineEventTypeId: 70
   }))].sort((a, b) => {
     const timeDiff = a.timestamp - b.timestamp
     if (timeDiff !== 0) return timeDiff
@@ -2377,7 +2385,7 @@ export const getEmailSettings = async () => {
 
 
 export const allowReservationSignIn = async ({ reservation }: { reservation: any }) => {
-  const reqBody = { name: reservation.name, from_date: dayjs(reservation.from_date).format("DD. MM. YYYY"), to_date: dayjs(reservation.to_date).format("DD. MM. YYYY") }
+  const reqBody = { name: reservation.name, from_date: dayjs(reservation.from_date).format("DD. MM. YYYY"), to_date: dayjs(reservation.to_date).format("DD. MM. YYYY"), instructions: reservation.instructions, leader: { first_name: reservation.leader.first_name, last_name: reservation.leader.last_name } }
 
   const req = await fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: reqBody }) })
 

@@ -1,8 +1,9 @@
 import AvatarWrapper from "@/ui-components/AvatarWrapper"
-import { Create, DoneAll, EditCalendar, FiberNew, FolderDeleteOutlined, GppBad, GroupAdd, GroupRemove, NightShelter, PersonAdd, PersonRemove, RunningWithErrors, Update, UpdateDisabled } from "@mui/icons-material"
+import { Create, DoneAll, EditCalendar, FiberNew, FolderDeleteOutlined, GppBad, GroupAdd, GroupRemove, InsertDriveFile, NightShelter, PersonAdd, PersonRemove, RunningWithErrors, Update, UpdateDisabled } from "@mui/icons-material"
 import { TimelineConnector, TimelineContent, TimelineDot, TimelineSeparator } from "@mui/lab"
 import { AvatarGroup, Divider, ListItemText, Typography } from "@mui/material"
 import dayjs from "dayjs"
+import Link from "next/link"
 import React from "react"
 
 // 0 - reservation create
@@ -15,8 +16,9 @@ import React from "react"
 // 40 - date change
 // 50 - status change
 // 60 - rooms change
+// 70 - signin start
 
-type reservationEventIds = 0 | 1 | 2 | 3 | 4 | 10 | 11 | 20 | 21 | 30 | 40 | 50 | 51 | 52 | 53 | 54 | 55 | 60
+type reservationEventIds = 0 | 1 | 2 | 3 | 4 | 10 | 11 | 20 | 21 | 30 | 40 | 50 | 51 | 52 | 53 | 54 | 55 | 60 | 70
 
 export default function TimelineEventUi(event: any) {
   const dotProps = {}
@@ -172,7 +174,7 @@ export default function TimelineEventUi(event: any) {
         return (
           <React.Fragment>
             <TimelineSeparator>
-              <TimelineDot color="info" {...dotProps}>
+              <TimelineDot color="warning" {...dotProps}>
                 <EditCalendar />
               </TimelineDot>
               <TimelineConnector />
@@ -229,7 +231,7 @@ export default function TimelineEventUi(event: any) {
         return (
           <React.Fragment>
             <TimelineSeparator>
-              <TimelineDot color="info" sx={{ color: "black" }} {...dotProps}>
+              <TimelineDot color="warning" sx={{ color: "black" }} {...dotProps}>
                 <NightShelter />
               </TimelineDot>
               <TimelineConnector />
@@ -237,6 +239,21 @@ export default function TimelineEventUi(event: any) {
             <TimelineContent>
               <Typography>Změna pokojů</Typography>
               <Typography>Používané pokoje: {event.rooms.toString()}</Typography>
+            </TimelineContent>
+          </React.Fragment>
+        )
+      case 70:
+        return (
+          <React.Fragment>
+            <TimelineSeparator>
+              <TimelineDot color="primary" sx={{ color: "black" }} {...dotProps}>
+                <InsertDriveFile />
+              </TimelineDot>
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent>
+              <Typography>Spuštění přihlašování</Typography>
+              <Link className="text-inherit" href={event.formPublicUrl}>Odkaz na formulář</Link>
             </TimelineContent>
           </React.Fragment>
         )

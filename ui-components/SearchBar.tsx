@@ -2,9 +2,9 @@
 import { TextField } from "@mui/material";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
-export default function SearchBar({ label }: { label: any }) {
+export default function SearchBar(props: any) {
   const input = useRef(null) as any;
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -21,10 +21,9 @@ export default function SearchBar({ label }: { label: any }) {
   return (
     <TextField
       ref={input}
-      variant="outlined"
-      label={`Hledat ${label}...`}
       defaultValue={search}
       onChange={(e) => makeSearch(e.target.value)}
+      {...props}
     />
   );
 }

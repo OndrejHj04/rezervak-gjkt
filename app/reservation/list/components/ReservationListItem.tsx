@@ -2,28 +2,21 @@
 
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
-  Badge,
   Button,
-  Chip,
-  IconButton,
   Menu,
   MenuItem,
   TableCell,
   TableRow,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import GroupIcon from "@mui/icons-material/Group";
 import { Icon } from "@mui/material";
 import Link from "next/link";
 import { rolesConfig } from "@/lib/rolesConfig";
 import ReservationModal from "./ReservationModal";
-import NightShelterIcon from "@mui/icons-material/NightShelter";
-import HotelIcon from "@mui/icons-material/Hotel";
 import { Cancel, CheckCircle } from "@mui/icons-material";
 import { store } from "@/store/store";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { reservationsDelete } from "@/lib/api";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
@@ -84,20 +77,19 @@ export default function ReservationListItem({
       <ReservationModal reservation={reservation} />
       <TableRow onContextMenu={handleContextMenu} selected={selectedReservations.includes(reservation.id)} onClick={handleSelectReservation}>
         <TableCell>
-          <Typography>{reservation.name}</Typography>
+          {reservation.name}
         </TableCell>
         <TableCell>
-          <Typography>
-            {dayjs(reservation.from_date).format("DD. MM. YYYY")}
-          </Typography>
+          {dayjs(reservation.creation_date).format("DD. MMMM")}
         </TableCell>
         <TableCell>
-          <Typography>
-            {dayjs(reservation.to_date).format("DD. MM. YYYY")}
-          </Typography>
+          {dayjs(reservation.from_date).format("DD. MMMM. YYYY")}
         </TableCell>
         <TableCell>
-          <Typography>{reservation.users.length}</Typography>
+          {dayjs(reservation.to_date).format("DD. MMMM. YYYY")}
+        </TableCell>
+        <TableCell>
+          {reservation.users.length}
         </TableCell>
         <TableCell>
           <Typography>
@@ -111,97 +103,24 @@ export default function ReservationListItem({
         <TableCell>
           <div className="flex items-center gap-2">
             <AvatarWrapper data={reservation.leader as any} />
-            <Typography>
-              {reservation.leader.first_name} {reservation.leader.last_name}
-            </Typography>
+            {reservation.leader.first_name} {reservation.leader.last_name}
           </div>
         </TableCell>
         <TableCell>
-          {!!reservation.rooms.length && (
-            <Tooltip
-              title={reservation.rooms.map((room: any) => (
-                <Chip
-                  key={room.id}
-                  label={`Pokoj č. ${room.id}, ${room.people} lůžkový`}
-                />
-              ))}
-            >
-              <div className="flex justify-around">
-                <Badge badgeContent={reservation.rooms.length} color="primary">
-                  <NightShelterIcon color="primary" fontSize="large" />
-                </Badge>
-                <Badge
-                  badgeContent={reservation.rooms.reduce(
-                    (a: any, b: any) => a + b.people,
-                    0
-                  )}
-                  color="primary"
-                >
-                  <HotelIcon color="primary" fontSize="large" />
-                </Badge>
-              </div>
-            </Tooltip>
-          )}
+          {reservation.rooms.reduce((a: any, b: any) => a + b.people, 0)}
         </TableCell>
+
         <TableCell>
-          {!!reservation.groups.length && (
-            <Tooltip
-              title={reservation.groups.map((group: any) => (
-                <Chip key={group} label={group} />
-              ))}
-            >
-              <Badge badgeContent={reservation.groups.length} color="primary">
-                <GroupIcon color="primary" />
-              </Badge>
-            </Tooltip>
-          )}
-        </TableCell>
-        <TableCell>
-          <Tooltip
-            slotProps={{
-              tooltip: {
-                sx: {
-                  bgcolor: "transparent",
-                },
-              }
-            }}
-            title={
-              <Chip
-                sx={{
-                  backgroundColor: reservation.status.color,
-                  color: "black",
-                }}
-                label={
-                  <Typography>{reservation.status.display_name}</Typography>
-                }
-              />
-            }
+          <Button className="normal-case text-inherit" onClick={e => e.stopPropagation()} component={Link} href={{
+            href: '/reservation/list',
+            query: { ...searchParams, reservation_id: reservation.id }
+          } as any}
           >
-            <Link
-              href={{
-                href: '/reservation/list',
-                query: { ...searchParams, reservation_id: reservation.id }
-              }}
-              className={
-                !rolesConfig.reservations.modules.reservationsTable.config.changeStatus.includes(
-                  userRole
-                )
-                  ? "pointer-events-none"
-                  : ""
-              }
-            >
-              <IconButton>
-                <Icon sx={{ color: reservation.status.color }}>
-                  {reservation.status.icon}
-                </Icon>
-              </IconButton>
-            </Link>
-          </Tooltip>
-        </TableCell>
-        <TableCell>
-          <Typography>
-            {dayjs(reservation.creation_date).format("DD. MM. YYYY")}
-          </Typography>
+            <Icon sx={{ color: reservation.status.color }} className="mr-2">
+              {reservation.status.icon}
+            </Icon>
+            {reservation.status.display_name}
+          </Button>
         </TableCell>
         {(rolesConfig.reservations.modules.reservationsDetail.visit.includes(
           userRole
@@ -212,7 +131,7 @@ export default function ReservationListItem({
               userRole
             ))) &&
           reservation.status.id !== 5 ? (
-          <TableCell>
+          <TableCell align="right">
             <Link href={`/reservation/detail/${reservation.id}`} onClick={e => e.stopPropagation()}>
               <Button>detail</Button>
             </Link>
@@ -231,6 +150,6 @@ export default function ReservationListItem({
       >
         <MenuItem onClick={handleDeleteReservations}>Odstranit vybrané</MenuItem>
       </Menu>
-    </React.Fragment>
+    </React.Fragment >
   );
 }

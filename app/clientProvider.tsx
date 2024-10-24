@@ -7,7 +7,9 @@ import "material-icons/iconfont/material-icons.css";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CzechLocale from "dayjs/locale/cs";
+import dayjs from "dayjs";
 
+dayjs.locale("cs")
 export default function ClientProvider({
   children,
   theme,

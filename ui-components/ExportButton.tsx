@@ -13,10 +13,8 @@ function s2ab(s: any) {
 export default function ExportButton({
   prop,
   translate,
-}: {
-  prop: any;
-  translate: any;
-}) {
+  ...rest
+}: any) {
   const makeExport = async () => {
     const req = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/${prop}/export`
@@ -33,7 +31,7 @@ export default function ExportButton({
   };
 
   return (
-    <Button variant="outlined" onClick={makeExport}>
+    <Button variant="outlined" onClick={makeExport} {...rest}>
       Export
     </Button>
   );

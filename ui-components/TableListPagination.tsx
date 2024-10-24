@@ -23,8 +23,8 @@ export default function TableListPagination({
   };
 
   return (
-
     <TablePagination
+      className="[&_.MuiToolbar-root]:!min-h-[40px]"
       component="div"
       count={count}
       page={page - 1}

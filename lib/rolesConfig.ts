@@ -182,6 +182,12 @@ export const rolesConfig = {
         menu: [false, true],
         icon: "edit_calendar_icon",
       },
+      reservaionsForms: {
+        name: "Přihlašování na rezervace",
+        path: "/reservation/forms",
+        roles: [1, 2, 3],
+        menu: [false, false],
+      },
       reservationsTable: {
         name: "Všechny rezervace",
         path: "/reservation/list",

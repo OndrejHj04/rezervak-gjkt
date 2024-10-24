@@ -1,5 +1,6 @@
 "use client";
 
+import { DoDisturb, DoneAll, FolderDelete, GppBad, Grid4x4Rounded, RunningWithErrors } from "@mui/icons-material";
 import {
   FormControl,
   FormHelperText,
@@ -10,7 +11,16 @@ import {
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
-export default function StatusSelect({ statuses }: { statuses: any }) {
+
+const statuses = [
+  { id: 1, color: "#999999", displayName: "Archiv", icon: <FolderDelete /> },
+  { id: 2, color: "#FCD34D", displayName: "Čeká na potvrzení", icon: <RunningWithErrors /> },
+  { id: 3, color: "#34D399", displayName: "Potvrzeno", icon: <DoneAll /> },
+  { id: 4, color: "#ED9191", displayName: "Zamítnuto", icon: <GppBad /> },
+  { id: 5, color: "#ED9191", displayName: "Blokováno správcem", icon: <DoDisturb /> },
+]
+
+export default function StatusSelect({ className }: { className?: any }) {
   const searchParams = useSearchParams();
   const status = Number(searchParams.get("status")) || 0;
   const { replace } = useRouter();
@@ -23,7 +33,7 @@ export default function StatusSelect({ statuses }: { statuses: any }) {
   };
 
   return (
-    <FormControl sx={{ width: 150 }}>
+    <FormControl className={className}>
       <Select
         labelId="demo-simple-select-label"
         id="demo-simple-select"
@@ -31,7 +41,7 @@ export default function StatusSelect({ statuses }: { statuses: any }) {
         label="Status rezervace"
         renderValue={(data) => {
           const name = statuses.find((status: any) => status.id === data);
-          return <div>{name?.display_name || "Všechny"}</div>;
+          return <div>{name?.displayName || "Všechny"}</div>;
         }}
         defaultValue={status}
         onChange={handleChange}
@@ -40,7 +50,7 @@ export default function StatusSelect({ statuses }: { statuses: any }) {
         {statuses.map((status: any) => (
           <MenuItem key={status.id} value={status.id} className="gap-2">
             <Icon sx={{ "&&": { color: status.color } }}>{status.icon}</Icon>
-            {status.display_name}
+            {status.displayName}
           </MenuItem>
         ))}
       </Select>

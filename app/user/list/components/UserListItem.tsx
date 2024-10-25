@@ -1,33 +1,27 @@
 "use client";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
-  Box,
   Button,
-  Checkbox,
-  Chip,
-  Collapse,
   IconButton,
+  Menu,
+  MenuItem,
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableRow,
-  Tooltip,
   Typography,
 } from "@mui/material";
-import { User } from "next-auth";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
-import dayjs from "dayjs";
-import HotelIcon from "@mui/icons-material/Hotel";
 import Link from "next/link";
-import TableListCheckbox from "@/ui-components/TableListCheckbox";
-import { rolesConfig } from "@/lib/rolesConfig";
 import React, { useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { isNull } from "lodash";
-import UserListHeader from "../UserListHeader";
+import { getFullName } from "@/app/constants/fullName";
+import { store } from "@/store/store";
+import { usersDelete } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function UserListItem({
   user,
@@ -40,15 +34,50 @@ export default function UserListItem({
   userId: any;
   childrenData: any;
 }) {
-  const cells = rolesConfig.users.modules.userTable.columns[
-    userRole as never
-  ] as any;
 
   const [open, setOpen] = useState(false);
+  const [contextMenu, setContextMenu] = useState<any>(null)
+  const { selectedUsers, setSelectedUsers } = store()
+  const { refresh } = useRouter()
+
+  const handleDeleteUsers = (e: any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    usersDelete({ users: selectedUsers }).then(({ success }) => {
+      if (success) toast.success("Rezervace úspěšně odstraněny");
+      else toast.error("Něco se pokazilo");
+    })
+    refresh()
+    setSelectedUsers([])
+  }
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setContextMenu(
+      contextMenu === null && selectedUsers.includes(user.id)
+        ? {
+          mouseX: e.clientX + 2,
+          mouseY: e.clientY - 6,
+        }
+        : null,
+    );
+  };
+
+  const handleClose = () => {
+    setContextMenu(null);
+  }
+
+  const handleSelectUser = () => {
+    if (selectedUsers.includes(user.id)) {
+      setSelectedUsers(selectedUsers.filter((res: any) => res !== user.id))
+    } else {
+      setSelectedUsers([...selectedUsers, user.id])
+    }
+  }
 
   return (
     <React.Fragment key={user.id}>
-      <TableRow>
+      <TableRow onContextMenu={handleContextMenu} selected={selectedUsers.includes(user.id)} onClick={handleSelectUser}>
         {childrenData && (
           <TableCell>
             {!!childrenData.length && (
@@ -58,62 +87,37 @@ export default function UserListItem({
             )}
           </TableCell>
         )}
-        {rolesConfig.users.modules.userTable.config.delete.includes(userRole) &&
-        user.id === userId ? (
-          <TableCell>
-            <Checkbox disabled />
-          </TableCell>
-        ) : (
-          <TableListCheckbox prop="users" id={user.id} />
-        )}
-
         <TableCell>
           <AvatarWrapper data={user} />
         </TableCell>
-        {cells.includes("name") && (
-          <TableCell>
-            {user.first_name} {user.last_name}
-          </TableCell>
-        )}
-        {/* */}
-        {cells.includes("email") && <TableCell>{user.email}</TableCell>}
-        {cells.includes("role") && (
-          <TableCell>
-            <Typography variant="subtitle2">{user.role.name}</Typography>
-          </TableCell>
-        )}
-        {cells.includes("birth_date") && (
-          <TableCell>
-            {user.birth_date && dayjs(user.birth_date).format("DD.MM.YYYY")}
-          </TableCell>
-        )}
-        {cells.includes("verified") && (
-          <TableCell>
-            {user.verified ? (
-              <CheckCircleIcon color="success" sx={{ width: 32, height: 32 }} />
-            ) : (
-              <CancelIcon color="error" sx={{ width: 32, height: 32 }} />
-            )}
-          </TableCell>
-        )}
-        {cells.includes("organization") && (
-          <TableCell>
-            <Typography variant="subtitle2">
-              {user.organization && user.organization.name}
-            </Typography>
-          </TableCell>
-        )}
-        {rolesConfig.users.modules.userDetail.visit.includes(userRole) ||
-        (userId === user.id &&
-          rolesConfig.users.modules.userDetail.visitSelf.includes(userRole)) ? (
-          <TableCell>
-            <Link href={`/user/detail/${user.id}`}>
-              <Button>Detail</Button>
-            </Link>
-          </TableCell>
-        ) : (
-          <TableCell />
-        )}
+        <TableCell>{getFullName(user)}</TableCell>
+        <TableCell>{user.email}</TableCell>
+        <TableCell>{user.role.name}</TableCell>
+        <TableCell>
+          {user.organization && user.organization.name}
+        </TableCell>
+        <TableCell>
+          {user.verified ? (
+            <CheckCircleIcon color="success" sx={{ width: 32, height: 32 }} />
+          ) : (
+            <CancelIcon color="error" sx={{ width: 32, height: 32 }} />
+          )}
+        </TableCell>
+        <TableCell align="right" className="min-w-[150px]">
+          <Link href={`/user/detail/${user.id}`}>
+            <Button>Detail</Button>
+          </Link>
+        </TableCell>
+        <Menu open={Boolean(contextMenu)}
+          onClose={handleClose}
+          className="[&_.MuiList-root]:!p-0"
+          anchorReference="anchorPosition"
+          anchorPosition={contextMenu !== null
+            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            : undefined}
+        >
+          <MenuItem onClick={handleDeleteUsers}>Odstranit vybrané</MenuItem>
+        </Menu>
       </TableRow>
       {open && (
         <React.Fragment>

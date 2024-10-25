@@ -3,11 +3,13 @@ import { FormControl, FormHelperText, MenuItem, Select } from "@mui/material";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
-export default function OrganizationSelect({
-  organizations,
-}: {
-  organizations: any;
-}) {
+const organizations = [
+  { id: 1, name: "ZO" },
+  { id: 2, name: "Zaměstnanec" },
+  { id: 3, name: "Veřejnost" }
+]
+
+export default function OrganizationSelect() {
   const searchParams = useSearchParams();
   const status = Number(searchParams.get("organization")) || 0;
   const { replace } = useRouter();
@@ -20,7 +22,7 @@ export default function OrganizationSelect({
   };
 
   return (
-    <FormControl sx={{ width: 150 }}>
+    <FormControl>
       <Select
         labelId="demo-simple-select-label"
         id="demo-simple-select"

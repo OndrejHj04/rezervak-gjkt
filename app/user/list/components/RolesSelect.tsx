@@ -3,7 +3,14 @@ import { FormControl, FormHelperText, MenuItem, Select } from "@mui/material";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
-export default function RolesSelect({ roles }: { roles: any }) {
+const roles = [
+  { id: 1, name: "Admin" },
+  { id: 2, name: "Správce" },
+  { id: 3, name: "Uživatel" },
+  { id: 4, name: "Veřejnost" }
+]
+
+export default function RolesSelect() {
   const searchParams = useSearchParams();
   const status = Number(searchParams.get("role")) || 0;
   const { replace } = useRouter();
@@ -16,12 +23,10 @@ export default function RolesSelect({ roles }: { roles: any }) {
   };
 
   return (
-    <FormControl sx={{ width: 150 }}>
+    <FormControl>
       <Select
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
         variant="standard"
-        label="Role uživatele"
+        label="Role"
         renderValue={(data) => {
           const name = roles.find((status: any) => status.id === data);
           return <div>{name?.name || "Všechny"}</div>;
@@ -36,7 +41,7 @@ export default function RolesSelect({ roles }: { roles: any }) {
           </MenuItem>
         ))}
       </Select>
-      <FormHelperText>Role uživatele</FormHelperText>
+      <FormHelperText>Role</FormHelperText>
     </FormControl>
   );
 }

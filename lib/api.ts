@@ -33,9 +33,7 @@ export const getUserList = async ({
   const [users, count] = (await Promise.all([
     query({
       query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.verified, users.birth_date, users.active, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role
-      
-${withChildrenCollapsed
-          ? `      ,GROUP_CONCAT(DISTINCT JSON_OBJECT(
+      ${withChildrenCollapsed ? `,GROUP_CONCAT(DISTINCT JSON_OBJECT(
         'id', children_detail.id, 
         'first_name', children_detail.first_name, 
         'last_name', children_detail.last_name, 
@@ -50,32 +48,19 @@ ${withChildrenCollapsed
         ), 
         'role', JSON_OBJECT(
             'id', children_roles.id, 
-            'name', children_roles.name
-        )
-    )
-) AS children`
-          : ""
-        }
-
-
-            FROM users INNER JOIN roles ON roles.id = users.role
-             LEFT JOIN organization ON organization.id = users.organization
-${withChildrenCollapsed
-          ? `             LEFT JOIN children_accounts ON children_accounts.parentId = users.id
-             LEFT JOIN users as children_detail ON children_detail.id = children_accounts.childrenId
-             LEFT JOIN roles as children_roles ON children_roles.id = children_detail.role
-             LEFT JOIN organization as children_organization ON children_organization.id = children_detail.organization`
-          : ""
-        }
-            WHERE 1=1
-                  ${withChildrenCollapsed
+            'name', children_roles.name))) AS children`: ""}
+        FROM users INNER JOIN roles ON roles.id = users.role
+        LEFT JOIN organization ON organization.id = users.organization
+        ${withChildrenCollapsed ? `LEFT JOIN children_accounts ON children_accounts.parentId = users.id
+        LEFT JOIN users as children_detail ON children_detail.id = children_accounts.childrenId
+        LEFT JOIN roles as children_roles ON children_roles.id = children_detail.role
+        LEFT JOIN organization as children_organization ON children_organization.id = children_detail.organization`: ""}
+        WHERE 1=1
+        ${withChildrenCollapsed
           ? `AND NOT EXISTS (SELECT 1 FROM children_accounts WHERE children_accounts.childrenId = users.id)`
           : ""
         }
-          ${search
-          ? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`
-          : ""
-        }
+          ${search ? `AND CONCAT(users.first_name, ' ', users.last_name) LIKE "%${search}%"` : ""}
           ${role ? `AND users.role = ${role}` : ""}
           ${organization ? `AND users.organization = ${organization}` : ""}
           GROUP BY users.id
@@ -88,10 +73,7 @@ ${withChildrenCollapsed
           ? `AND NOT EXISTS (SELECT 1 FROM children_accounts WHERE children_accounts.childrenId = users.id)`
           : ""
         }
-          ${search
-          ? `AND (users.first_name LIKE "%${search}%" OR users.last_name LIKE "%${search}%")`
-          : ""
-        }
+          ${search ? `AND CONCAT(users.first_name, ' ', users.last_name) LIKE "%${search}%"` : ""}
           ${role ? `AND users.role = ${role}` : ""}
           `,
       values: [],

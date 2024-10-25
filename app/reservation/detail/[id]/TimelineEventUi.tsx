@@ -18,7 +18,7 @@ import React from "react"
 // 60 - rooms change
 // 70 - signin start
 
-type reservationEventIds = 0 | 1 | 2 | 3 | 4 | 10 | 11 | 20 | 21 | 30 | 40 | 50 | 51 | 52 | 53 | 54 | 55 | 60 | 70
+type reservationEventIds = 0 | 1 | 2 | 3 | 4 | 10 | 11 | 20 | 21 | 30 | 40 | 50 | 51 | 52 | 53 | 54 | 55 | 60 | 70 | 71
 
 export default function TimelineEventUi(event: any) {
   const dotProps = {}
@@ -242,7 +242,7 @@ export default function TimelineEventUi(event: any) {
             </TimelineContent>
           </React.Fragment>
         )
-      case 70:
+      case 71:
         return (
           <React.Fragment>
             <TimelineSeparator>
@@ -253,7 +253,21 @@ export default function TimelineEventUi(event: any) {
             </TimelineSeparator>
             <TimelineContent>
               <Typography>Spuštění přihlašování</Typography>
-              <Link className="text-inherit" target="_blank" href={event.formPublicUrl}>Odkaz na formulář</Link>
+              <Link className="text-inherit" target="_blank" href={event.form_public_url}>Odkaz na formulář</Link>
+            </TimelineContent>
+          </React.Fragment>
+        )
+      case 70:
+        return (
+          <React.Fragment>
+            <TimelineSeparator>
+              <TimelineDot color="error" sx={{ color: "black" }} {...dotProps}>
+                <InsertDriveFile />
+              </TimelineDot>
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent>
+              <Typography>Ukončení přihlašování</Typography>
             </TimelineContent>
           </React.Fragment>
         )

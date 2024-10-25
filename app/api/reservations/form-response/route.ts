@@ -11,19 +11,33 @@ export async function POST(req: NextRequest) {
     values: [id_code]
   }) as any
 
-  const [{ insertId }] = await Promise.all([
+  const [{ insertId: userInsertId }] = await Promise.all([
     !checkUser.length && query({
       query: `INSERT INTO users (first_name, last_name, role, email, verified, adress, birth_date, ID_code, active, theme) VALUES (?,?,4,?,1,?,?,?,1,1)`,
       values: [first_name, last_name, email, address, formatBirthday, id_code]
     })
   ]) as any
 
-  const userId = insertId || checkUser[0].id
+  const userId = userInsertId || checkUser[0].id
 
-  const { affectedRows } = await query({
-    query: `INSERT IGNORE INTO users_reservations (userId, reservationId, registration_outside) SELECT ?, reservation_id, 1 FROM reservations_forms WHERE form_id = ?`,
-    values: [userId, form_id]
-  }) as any
+  const [{ affectedRows }] = await Promise.all([
+    query({
+      query: `INSERT IGNORE INTO users_reservations (userId, reservationId) SELECT ?, reservation_id FROM reservations_forms WHERE form_id = ?`,
+      values: [userId, form_id]
+    }),
+  ]) as any
+
+  if (affectedRows > 0) {
+    const { insertId } = await query({
+      query: `INSERT INTO reservations_users_change (user_id, reservation_id, direction, outside) SELECT ?, reservation_id, 1, 1 FROM reservations_forms WHERE form_id = ?`,
+      values: [userId, form_id]
+    }) as any
+
+    query({
+      query: `INSERT INTO reservations_users_change_users (user_id, change_id) VALUES (?,?)`,
+      values: [userId, insertId]
+    })
+  }
 
   const userHasAccount = Boolean(checkUser.length)
   const isPartOfReservation = !Boolean(affectedRows)

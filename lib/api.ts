@@ -2293,7 +2293,7 @@ export const getReservationTimeline = async (id: any) => {
       values: [id]
     }),
     query({
-      query: `SELECT rf.form_id, rf.form_public_url as formPublicUrl, rf.timestamp FROM reservations_forms as rf WHERE reservation_id = ?`,
+      query: `SELECT rf.form_id, rf.direction, rf.timestamp, rf.form_public_url FROM reservations_forms_changes as rf WHERE reservation_id = ?`,
       values: [id]
     })
   ]) as any
@@ -2337,7 +2337,7 @@ export const getReservationTimeline = async (id: any) => {
     timelineEventTypeId: 60
   })), ...reservationSigninChange.map((item: any) => ({
     ...item,
-    timelineEventTypeId: 70
+    timelineEventTypeId: item.direction ? 71 : 70
   }))].sort((a, b) => {
     const timeDiff = a.timestamp - b.timestamp
     if (timeDiff !== 0) return timeDiff
@@ -2392,22 +2392,33 @@ export const allowReservationSignIn = async ({ reservation }: { reservation: any
 
   const { success, formId, formPublicUrl } = await req.json()
 
-  const saveForm = await query({
-    query: `INSERT INTO reservations_forms (form_id, form_public_url, reservation_id, user_id) VALUES (?,?,?,?)`,
-    values: [formId, formPublicUrl, reservation.id, user.id]
-  })
+  await Promise.all([
+    query({
+      query: `INSERT INTO reservations_forms (form_id, form_public_url, reservation_id, user_id) VALUES (?,?,?,?)`,
+      values: [formId, formPublicUrl, reservation.id, user.id]
+    }),
+    query({
+      query: `INSERT INTO reservations_forms_changes (reservation_id, form_id, form_public_url, direction) VALUES (?,?,?,1)`,
+      values: [reservation.id, formId, formPublicUrl]
+    })
+  ])
 
   return { success: true }
 }
 
 export const cancelRegistration = async ({ formId }: { formId: any }) => {
 
+  await query({
+    query: `INSERT INTO reservations_forms_changes (reservation_id, form_id, direction) SELECT rf.reservation_id, ?, 0 FROM reservations_forms rf WHERE rf.form_id = ?`,
+    values: [formId, formId]
+  })
+
   const [, { affectedRows }] = await Promise.all([
     fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: { formId }, action: "clear" }) }),
     query({
       query: `DELETE FROM reservations_forms WHERE form_id = ?`,
       values: [formId]
-    })
+    }),
   ]) as any
 
   return { success: affectedRows === 1 }
@@ -2417,11 +2428,13 @@ export const getRegistrationList = async ({ page }: { page: any }) => {
 
   const [data, count] = await Promise.all([
     query({
-      query: `SELECT rf.timestamp, rf.form_public_url, rf.form_id, JSON_OBJECT('id', u.id, 'first_name', u.first_name, 'last_name', u.last_name, 'image', u.image, 'email',u.email) as author, COUNT(ur.userId) as outside_registration_count 
+      query: `SELECT rf.timestamp, r.from_date, rf.form_public_url, rf.form_id, JSON_OBJECT('id', u.id, 'first_name', u.first_name, 'last_name', u.last_name, 'image', u.image, 'email',u.email) as author, COUNT(ruc.id) as outside_registration_count 
       FROM reservations_forms rf
       INNER JOIN users u ON u.id = rf.user_id
-      LEFT JOIN users_reservations ur ON ur.reservationId = rf.reservation_id AND ur.registration_outside = 1
+      INNER JOIN reservations r ON r.id = rf.reservation_id
+      LEFT JOIN reservations_users_change ruc ON ruc.reservation_id = rf.reservation_id AND ruc.direction = 1 AND ruc.outside = 1 AND ruc.timestamp > rf.timestamp
       GROUP BY rf.form_id
+      ORDER BY r.from_date
       LIMIT 10 OFFSET ?
       `,
       values: [page * 10 - 10]
@@ -2432,7 +2445,6 @@ export const getRegistrationList = async ({ page }: { page: any }) => {
       values: []
     })]) as any
 
-  console.log(data)
   return { data: data.map((item: any) => ({ ...item, author: JSON.parse(item.author) })), count: count[0].count }
 }
 

@@ -9,7 +9,6 @@ import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { toast } from "react-toastify";
-import { rolesConfig } from "@/lib/rolesConfig";
 import UserCard from "@/app/user/detail/UserCard";
 import { createNewGroup } from "@/lib/api";
 import { useRouter } from "next/navigation";
@@ -87,11 +86,6 @@ export default function GroupNewForm({
                 className="sm:w-80 w-full"
                 value={value}
                 defaultValue={user}
-                disabled={
-                  !rolesConfig.groups.modules.groupsCreate.select[
-                  user.role.id as never
-                  ]
-                }
                 onChange={(e, value) => {
                   onChange(value);
                 }}

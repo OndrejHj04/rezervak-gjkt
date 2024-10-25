@@ -1,5 +1,4 @@
 "use client";
-import { store } from "@/store/store";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -14,7 +13,7 @@ import {
 } from "@mui/material";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -28,6 +27,7 @@ export default function Page({ searchParams }: { searchParams: any }) {
     handleSubmit,
     formState: { isValid },
   } = useForm();
+
   const onSubmit = (data: any) => {
     setLoading(true);
     signIn("credentials", {
@@ -57,20 +57,22 @@ export default function Page({ searchParams }: { searchParams: any }) {
           type={showPassword ? "text" : "password"}
           variant="outlined"
           label="Heslo"
-          {...register("password", { required: true })}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() => setShowPassword(!showPassword)}
-                  edge="end"
-                >
-                  {showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }
           }}
+          {...register("password", { required: true })}
         />
         <div className="flex gap-3 sm:flex-row flex-col">
           <Link href="/password-reset/email" className="w-full">

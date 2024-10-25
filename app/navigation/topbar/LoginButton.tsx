@@ -1,9 +1,8 @@
 "use client"
 import React from "react"
-import { Button, ButtonBase, ButtonGroup, Divider, IconButton, Skeleton, Typography } from "@mui/material";
+import { Button, Skeleton } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import UserMenuCard from "./UserCardMenu";
 
 export default function LoginButton({ children }: { children: React.ReactNode }) {
   const { status, data } = useSession();
@@ -14,9 +13,7 @@ export default function LoginButton({ children }: { children: React.ReactNode })
 
   if (status === "unauthenticated") {
     return (
-      <Link href="/login">
-        <Button style={{ color: "white" }}>Přihlásit se</Button>
-      </Link>
+      <Button component={Link} href="/login" style={{ color: "white" }}>Přihlásit se</Button>
     );
   }
 

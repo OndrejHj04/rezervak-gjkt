@@ -5,13 +5,11 @@ import {
   Autocomplete,
   Button,
   CardHeader,
-  Checkbox,
   Divider,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
-  Modal,
   Paper,
   TextField,
   Typography,
@@ -20,24 +18,18 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useState } from "react";
-import { rolesConfig } from "@/lib/rolesConfig";
 import TableListPagination from "@/ui-components/TableListPagination";
 import {
   editUserDetail,
   makeUserSleep,
-  userRemoveChildren,
 } from "@/lib/api";
-import AddChildrenModal from "./AddChildrenModal";
 import { useRouter } from "next/navigation";
 
 const rowsPerPage = 5
 export default function UserDetailForm({
   userDetail,
   roles,
-  userRole,
 }: {
   userDetail: any;
   roles: any;
@@ -54,8 +46,6 @@ export default function UserDetailForm({
   const [selectGroups, setSelectGroups] = useState<number[]>([]);
   const [selectReservations, setSelectReservation] = useState<number[]>([]);
   const [selectChildren, setSelectChildren] = useState<number[]>([]);
-  const [childrenModal, setChildrenModal] = useState(false);
-  const makeEdit = rolesConfig.users.modules.userDetail.edit.includes(userRole);
   const { refresh } = useRouter()
 
   const handleUserSleep = (id: any, active: any) => {
@@ -111,30 +101,8 @@ export default function UserDetailForm({
     }
   };
 
-
-  const removeChildren = () => {
-    userRemoveChildren({
-      user: userDetail.id,
-      children: selectChildren,
-    }).then(({ success }) => {
-      success && toast.success("Dětské účty úspěšně odpojeny");
-      !success && toast.error("Něco se nepovedlo");
-    });
-    setSelectChildren([]);
-    refresh()
-  };
-
   return (
     <>
-      {childrenModal && (
-        <Modal open={childrenModal} onClose={() => setChildrenModal(false)}>
-          <AddChildrenModal
-            currentChildren={userDetail.children.data}
-            setModal={setChildrenModal}
-            userId={userDetail.id}
-          />
-        </Modal>
-      )}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
         <Paper className="md:p-3 p-1 flex flex-col gap-3">
           <div className="flex md:gap-1 gap-3 md:flex-row flex-col">
@@ -177,7 +145,6 @@ export default function UserDetailForm({
                 render={({ field: { value, onChange } }) => (
                   <Autocomplete
                     value={value}
-                    disabled={!makeEdit}
                     isOptionEqualToValue={(option, value) =>
                       option.id === value.id
                     }
@@ -205,7 +172,6 @@ export default function UserDetailForm({
                 render={({ field: { value, onChange } }) => (
                   <Autocomplete
                     value={value}
-                    disabled={!makeEdit}
                     isOptionEqualToValue={(option, value) =>
                       option.id === value.id
                     }
@@ -238,17 +204,15 @@ export default function UserDetailForm({
               />
             </div>
             <div className="flex flex-col gap-2 ml-auto">
-              {makeEdit && (
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={() =>
-                    handleUserSleep(userDetail.id, userDetail.active)
-                  }
-                >
-                  {userDetail.active ? "Uspat uživatele" : "Probudit uživatele"}
-                </Button>
-              )}
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() =>
+                  handleUserSleep(userDetail.id, userDetail.active)
+                }
+              >
+                {userDetail.active ? "Uspat uživatele" : "Probudit uživatele"}
+              </Button>
               <Button variant="outlined" type="submit" disabled={!isDirty}>
                 Uložit
               </Button>
@@ -332,28 +296,6 @@ export default function UserDetailForm({
                   rpp={rowsPerPage}
                   count={userDetail.children.count}
                 />
-                {makeEdit && (
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      size="small"
-                      variant="contained"
-                      color="error"
-                      endIcon={<DeleteForeverIcon />}
-                      disabled={!selectChildren.length}
-                      onClick={removeChildren}
-                    >
-                      Odpojit vybrané dětské účty
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      endIcon={<AddToPhotosIcon />}
-                      onClick={() => setChildrenModal(true)}
-                    >
-                      Přidat uživateli dětské účty
-                    </Button>
-                  </div>
-                )}
               </div>
             </div>
           </div>

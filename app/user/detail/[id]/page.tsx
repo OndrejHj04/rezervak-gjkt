@@ -21,7 +21,6 @@ export default async function UserListConfig({
       params={params.id}
       searchParams={searchParams}
       userRole={id}
-      userId={userId}
     />
   );
 }

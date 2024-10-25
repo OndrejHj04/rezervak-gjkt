@@ -55,7 +55,7 @@ export default function GroupListItem({ group }: { group: any }) {
       <TableRow key={group.id} onContextMenu={handleContextMenu} selected={selectedGroups.includes(group.id)} onClick={handleSelectGroup}>
         <TableCell>{group.name}</TableCell>
         <TableCell>{group.description}</TableCell>
-        <TableCell className="flex items-center gap-2">
+        <TableCell className="!flex !items-center !gap-2">
           <AvatarWrapper data={group.owner} />
           {getFullName(group.owner)}
         </TableCell>

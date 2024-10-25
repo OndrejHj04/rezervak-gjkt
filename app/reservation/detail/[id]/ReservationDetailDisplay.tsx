@@ -40,7 +40,7 @@ export default async function ReservationDetailDisplay({
         <Divider />
         <Typography variant="h6">Vedoucí rezervace: </Typography>
         <CardHeader
-          className="p-0 mb-2"
+          className="!p-0 !mb-2"
           avatar={<AvatarWrapper data={reservation.leader} size={56} />}
           title={
             <Typography variant="h5">

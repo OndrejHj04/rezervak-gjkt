@@ -5,7 +5,6 @@ import { query } from "./db";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { transporter } from "./email";
 import dayjs from "dayjs";
-import { rolesConfig } from "./rolesConfig";
 import { decode, sign } from "jsonwebtoken";
 import { roomsEnum } from "@/app/constants/rooms";
 
@@ -202,7 +201,6 @@ export const getReservationList = async ({
 };
 
 export const getReservationCalendarData = async ({ rooms = [] }: { rooms: any }) => {
-  const guest = await checkUserSession();
 
   const [result] = (await Promise.all([
     query({
@@ -882,32 +880,12 @@ export const validateImport = async ({ data }: { data: any }) => {
   };
 };
 
-export const getRolesList = async ({ filter }: { filter: any }) => {
-  const {
-    user: { role },
-  } = (await getServerSession(authOptions)) as any;
-
-  if (!filter) {
-    const data = await query({
-      query: `SELECT * FROM roles`,
-    });
-    return { data };
-  }
-
-  const thisRoles = rolesConfig.users.modules.userCreate.options[
-    role.id as never
-  ] as any;
-
-  if (thisRoles.length === 0) {
-    return { data: [] };
-  }
-
+export const getRolesList = async () => {
   const data = await query({
-    query: `
-    SELECT * FROM roles WHERE id IN(${thisRoles.map(() => "?")})
-    `,
-    values: [...thisRoles],
+    query: `SELECT * FROM roles `,
+    values: [],
   });
+
   return { data };
 };
 
@@ -1206,7 +1184,6 @@ export const getReservationDetail = async ({
   upage: any;
   gpage: any;
 }) => {
-  const guest = await checkUserSession();
 
   const [reservations, users, usersCount, groups, groupsCount] =
     (await Promise.all([
@@ -1217,7 +1194,7 @@ export const getReservationDetail = async ({
     GROUP_CONCAT(rooms.id separator ';') as rooms FROM reservations
     INNER JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
     INNER JOIN status ON reservations.status = status.id
-    INNER JOIN reservations_forms rf ON rf.reservation_id = reservations.id
+    LEFT JOIN reservations_forms rf ON rf.reservation_id = reservations.id
     INNER JOIN users ON users.id = reservations.leader
     INNER JOIN rooms ON roomId = rooms.id
     WHERE reservations.id = ?
@@ -1225,24 +1202,19 @@ export const getReservationDetail = async ({
         values: [id],
       }),
       query({
-        query: `SELECT users.id, first_name, last_name, image, email FROM users_reservations${guest ? "_mock" : ""
-          } INNER JOIN users${guest ? "_mock as users" : ""
-          } ON users.id = userId WHERE reservationId = ? LIMIT 5 OFFSET ?`,
+        query: `SELECT users.id, first_name, last_name, image, email FROM users_reservations INNER JOIN users ON users.id = userId WHERE reservationId = ? LIMIT 5 OFFSET ?`,
         values: [id, upage * 5 - 5],
       }),
       query({
-        query: `SELECT COUNT(*) as total FROM users_reservations${guest ? "_mock" : ""
-          } WHERE reservationId = ?`,
+        query: `SELECT COUNT(*) as total FROM users_reservations WHERE reservationId = ?`,
         values: [id],
       }),
       query({
         query: `
         SELECT groups.id, groups.name, description, GROUP_CONCAT(DISTINCT userId) as users
-        FROM reservations_groups${guest ? "_mock as reservations_groups" : ""}
-        INNER JOIN groups${guest ? "_mock as groups" : ""
-          } ON reservations_groups.groupId = groups.id
-        LEFT JOIN users_groups${guest ? "_mock as users_groups" : ""
-          } ON groups.id = users_groups.groupId
+        FROM reservations_groups
+        INNER JOIN groups ON reservations_groups.groupId = groups.id
+        LEFT JOIN users_groups ON groups.id = users_groups.groupId
         WHERE reservationId = ?
         GROUP BY groups.id
         LIMIT 5 OFFSET ?
@@ -1250,8 +1222,7 @@ export const getReservationDetail = async ({
         values: [id, gpage * 5 - 5],
       }),
       query({
-        query: `SELECT COUNT(*) as total FROM reservations_groups${guest ? "_mock as reservations_groups" : ""
-          } WHERE reservationId = ?`,
+        query: `SELECT COUNT(*) as total FROM reservations_groups WHERE reservationId = ?`,
         values: [id],
       }),
     ])) as any;
@@ -1748,12 +1719,9 @@ export const groupDetailEdit = async ({
   description: any;
   id: any;
 }) => {
-  const guest = await checkUserSession();
 
   const { affectedRows } = (await query({
-    query: `
-      UPDATE groups${guest ? "_mock" : ""
-      } SET name = ?, description = ? WHERE id = ?`,
+    query: `UPDATE groups SET name = ?, description = ? WHERE id = ?`,
     values: [name, description, id],
   })) as any;
 
@@ -2372,8 +2340,11 @@ export const getEmailSettings = async () => {
 
 
 export const allowReservationSignIn = async ({ reservation }: { reservation: any }) => {
+  console.log(reservation)
   const { user } = await getServerSession(authOptions) as any
+  console.log(user)
   const reqBody = { name: reservation.name, from_date: dayjs(reservation.from_date).format("DD. MM. YYYY"), to_date: dayjs(reservation.to_date).format("DD. MM. YYYY"), instructions: reservation.instructions, leader: { first_name: reservation.leader.first_name, last_name: reservation.leader.last_name } }
+  console.log(reqBody)
 
   const req = await fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: reqBody, action: "create" }) })
 

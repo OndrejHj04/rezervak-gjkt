@@ -12,6 +12,7 @@ export default async function SpeedComponent() {
   const menu = getRoutes(Object.values(rolesConfig), data?.user.role).filter(
     (item: any) => item.menu[1]
   );
+
   return (
     <>
       {!!menu.length && (

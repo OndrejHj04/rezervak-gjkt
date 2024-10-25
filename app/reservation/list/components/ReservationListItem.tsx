@@ -12,7 +12,6 @@ import {
 import dayjs from "dayjs";
 import { Icon } from "@mui/material";
 import Link from "next/link";
-import { rolesConfig } from "@/lib/rolesConfig";
 import ReservationModal from "./ReservationModal";
 import { Cancel, CheckCircle } from "@mui/icons-material";
 import { store } from "@/store/store";
@@ -23,17 +22,11 @@ import { useRouter } from "next/navigation";
 
 export default function ReservationListItem({
   reservation,
-  userRole,
-  userId,
   searchParams
 }: {
   reservation: any;
-  userRole: any;
-  userId: any;
   searchParams: any
 }) {
-  const isMember = reservation.users.includes(userId);
-  const isLeader = reservation.leader.id === userId;
   const { refresh } = useRouter()
 
   const [contextMenu, setContextMenu] = useState<any>(null)
@@ -83,7 +76,7 @@ export default function ReservationListItem({
           {dayjs(reservation.creation_date).format("DD. MMMM")}
         </TableCell>
         <TableCell>
-          {dayjs(reservation.from_date).format("DD. MMMM. YYYY")}
+          {dayjs(reservation.from_date).format("DD. MMMM YYYY")}
         </TableCell>
         <TableCell>
           {dayjs(reservation.to_date).format("DD. MMMM. YYYY")}
@@ -111,7 +104,7 @@ export default function ReservationListItem({
         </TableCell>
 
         <TableCell>
-          <Button className="normal-case text-inherit" onClick={e => e.stopPropagation()} component={Link} href={{
+          <Button className="!normal-case !text-inherit" onClick={e => e.stopPropagation()} component={Link} href={{
             href: '/reservation/list',
             query: { ...searchParams, reservation_id: reservation.id }
           } as any}
@@ -122,23 +115,11 @@ export default function ReservationListItem({
             {reservation.status.display_name}
           </Button>
         </TableCell>
-        {(rolesConfig.reservations.modules.reservationsDetail.visit.includes(
-          userRole
-        ) ||
-          isLeader ||
-          (isMember &&
-            rolesConfig.reservations.modules.reservationsDetail.visitSelf.includes(
-              userRole
-            ))) &&
-          reservation.status.id !== 5 ? (
-          <TableCell align="right">
-            <Link href={`/reservation/detail/${reservation.id}`} onClick={e => e.stopPropagation()}>
-              <Button>detail</Button>
-            </Link>
-          </TableCell>
-        ) : (
-          <TableCell />
-        )}
+        <TableCell align="right">
+          <Link href={`/reservation/detail/${reservation.id}`} onClick={e => e.stopPropagation()}>
+            <Button>detail</Button>
+          </Link>
+        </TableCell>
       </TableRow>
       <Menu open={Boolean(contextMenu)}
         onClose={handleClose}

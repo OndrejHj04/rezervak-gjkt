@@ -1,18 +1,17 @@
 "use client"
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import interactionPlugin from '@fullcalendar/interaction'
 import csLocale from "@fullcalendar/core/locales/cs"
-import { Paper, Button, ToggleButton, ButtonGroup, ToggleButtonGroup, Typography, Tooltip, Box, List, ListItem, ListItemText, Icon, ListItemIcon, Divider, IconButton } from '@mui/material'
+import { Paper, Button, ToggleButton, ButtonGroup, ToggleButtonGroup, Typography, Tooltip, List, ListItem, ListItemText, Icon, ListItemIcon } from '@mui/material'
 import { roomsEnum } from '@/app/constants/rooms'
 import React, { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { ArrowLeft, NavigateBefore, NavigateNext } from "@mui/icons-material"
+import { NavigateBefore, NavigateNext } from "@mui/icons-material"
 import { getFullName } from '@/app/constants/fullName'
-import interactionPlugin, { Draggable } from "@fullcalendar/interaction"
 
 import dayjs from 'dayjs'
 import { setBlockedDates } from '@/lib/api'
-import BlockDates from '@/app/homepage/blockDates/BlockDates'
 
 export default function FullcalendarWidget({ searchParams, data, role }: { searchParams: any, data: any, role: any }) {
   const [roomsFilter, setRoomsFilter] = useState<number[]>(searchParams.rooms?.length ? searchParams?.rooms.split(",").map(Number) : [])

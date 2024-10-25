@@ -2,26 +2,6 @@ export const rolesConfig = {
   homepage: {
     name: "Přehled",
     path: "/",
-    modules: {
-      personalGroups: {
-        display: [1, 2, 3, 4],
-      },
-      personalReservations: {
-        display: [1, 2, 3, 4],
-      },
-      weatherWidget: {
-        display: [1, 2, 3, 4],
-      },
-      allReservations: {
-        display: [1, 2],
-      },
-      pastReservations: {
-        display: [1, 2],
-      },
-      blockDates: {
-        display: [1],
-      },
-    },
     roles: [],
     menu: [true, false],
     icon: "home",
@@ -105,26 +85,6 @@ export const rolesConfig = {
         },
         menu: [true, false],
         icon: "person_search_icon",
-        columns: {
-          1: [
-            "name",
-            "email",
-            "role",
-            "birth_date",
-            "verified",
-            "organization",
-          ],
-          2: [
-            "name",
-            "email",
-            "role",
-            "birth_date",
-            "verified",
-            "organization",
-          ],
-          3: ["name", "email", "role"],
-          4: [],
-        },
       },
       userDetail: {
         path: "/user/detail",

@@ -2,6 +2,7 @@
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
   Button,
+  Divider,
   IconButton,
   Menu,
   MenuItem,
@@ -109,19 +110,20 @@ export default function UserListItem({
           )}
         </TableCell>
         <TableCell align="right" className="min-w-[150px]">
-          <Link href={`/user/detail/${user.id}`}>
+          <Link href={`/user/detail/${user.id}`} onClick={e => e.stopPropagation()}>
             <Button>Detail</Button>
           </Link>
         </TableCell>
         <Menu open={Boolean(contextMenu)}
           onClose={handleClose}
-          className="[&_.MuiList-root]:!p-0"
           anchorReference="anchorPosition"
           anchorPosition={contextMenu !== null
             ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
             : undefined}
         >
           <MenuItem onClick={handleDeleteUsers}>Odstranit vybrané</MenuItem>
+          <Divider />
+          <MenuItem onClick={handleDeleteUsers}>Přidat do skupiny...</MenuItem>
         </Menu>
       </TableRow>
       {open && (

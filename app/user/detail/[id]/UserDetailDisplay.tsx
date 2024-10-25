@@ -16,10 +16,10 @@ import HotelIcon from "@mui/icons-material/Hotel";
 
 export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
   return (
-    <Paper className="md:p-4 p-2 flex md:flex-row flex-col gap-3">
+    <Paper className="md:p-3 p-2 flex md:flex-row flex-col gap-3">
       <div className="flex flex-col">
         <CardHeader
-          className="p-0 mb-2"
+          className="!p-0 mb-2"
           avatar={<AvatarWrapper data={userDetail} size={56} />}
           title={
             <Typography variant="h5">

@@ -33,7 +33,7 @@ export default async function TopBar() {
         <div className="flex-1 flex justify-end">
           <DarkModeToggle theme={theme} user={data?.user} />
           <LoginButton>
-            <TopBarUserCard data={data} />
+            <TopBarUserCard data={data?.user} />
           </LoginButton>
         </div>
       </Toolbar>

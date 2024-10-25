@@ -8,8 +8,6 @@ import {
 } from "@mui/material";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { getReservationList } from "@/lib/api";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import ReservationListItem from "../list/components/ReservationListItem";
 import React from "react";
 
@@ -18,7 +16,6 @@ export default async function ReservationList({
 }: {
   searchParams: any;
 }) {
-  const { user } = (await getServerSession(authOptions)) as any;
 
   const page = searchParams["page"] || 1;
   const status = searchParams["status"] || 0;
@@ -63,8 +60,6 @@ export default async function ReservationList({
             {reservations.data.map((reservation: any) => (
               <ReservationListItem
                 searchParams={searchParams}
-                userId={user.id}
-                userRole={user.role.id}
                 key={reservation.id}
                 reservation={reservation}
               />

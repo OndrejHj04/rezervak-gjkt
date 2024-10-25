@@ -38,13 +38,12 @@ import {
 import { roomsEnum } from "@/app/constants/rooms";
 import Link from "next/link";
 import { LoadingButton } from "@mui/lab";
+import { statuses } from "../../list/components/StatusSelect";
 
 export default function ReservationDetailForm({
   reservation,
-  reservationStatus,
 }: {
   reservation: any;
-  reservationStatus: any;
 }) {
   const { refresh } = useRouter()
   const {
@@ -397,7 +396,7 @@ export default function ReservationDetailForm({
               <Typography variant="h5" className="text-center">Status rezervace</Typography>
               <Divider />
               <List className="">
-                {reservationStatus.map((status: any) => (
+                {statuses.map((status: any) => (
                   <ListItem disablePadding key={status.id} value={status.id}>
                     <ListItemButton
                       onClick={() => setSelectedStatus(status.id)}
@@ -409,7 +408,7 @@ export default function ReservationDetailForm({
                           {status.icon}
                         </Icon>
                       </ListItemIcon>
-                      <ListItemText primary={status.display_name} />
+                      <ListItemText primary={status.displayName} />
                     </ListItemButton>
                   </ListItem>
                 ))}

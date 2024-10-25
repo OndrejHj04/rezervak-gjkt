@@ -12,7 +12,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 
-const statuses = [
+export const statuses = [
   { id: 1, color: "#999999", displayName: "Archiv", icon: <FolderDelete /> },
   { id: 2, color: "#FCD34D", displayName: "Čeká na potvrzení", icon: <RunningWithErrors /> },
   { id: 3, color: "#34D399", displayName: "Potvrzeno", icon: <DoneAll /> },

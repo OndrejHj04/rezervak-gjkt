@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   const userId = insertId || checkUser[0].id
 
   const { affectedRows } = await query({
-    query: `INSERT IGNORE INTO users_reservations (userId, reservationId) SELECT ?, reservation_id FROM reservations_forms WHERE form_id = ?`,
+    query: `INSERT IGNORE INTO users_reservations (userId, reservationId, registration_outside) SELECT ?, reservation_id, 1 FROM reservations_forms WHERE form_id = ?`,
     values: [userId, form_id]
   }) as any
 

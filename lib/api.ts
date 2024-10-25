@@ -2385,6 +2385,7 @@ export const getEmailSettings = async () => {
 
 
 export const allowReservationSignIn = async ({ reservation }: { reservation: any }) => {
+  const { user } = await getServerSession(authOptions) as any
   const reqBody = { name: reservation.name, from_date: dayjs(reservation.from_date).format("DD. MM. YYYY"), to_date: dayjs(reservation.to_date).format("DD. MM. YYYY"), instructions: reservation.instructions, leader: { first_name: reservation.leader.first_name, last_name: reservation.leader.last_name } }
 
   const req = await fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: reqBody, action: "create" }) })
@@ -2392,14 +2393,14 @@ export const allowReservationSignIn = async ({ reservation }: { reservation: any
   const { success, formId, formPublicUrl } = await req.json()
 
   const saveForm = await query({
-    query: `INSERT INTO reservations_forms (form_id, form_public_url, reservation_id) VALUES (?,?,?)`,
-    values: [formId, formPublicUrl, reservation.id]
+    query: `INSERT INTO reservations_forms (form_id, form_public_url, reservation_id, user_id) VALUES (?,?,?,?)`,
+    values: [formId, formPublicUrl, reservation.id, user.id]
   })
 
   return { success: true }
 }
 
-export const stopSignin = async ({ formId }: { formId: any }) => {
+export const cancelRegistration = async ({ formId }: { formId: any }) => {
 
   const [, { affectedRows }] = await Promise.all([
     fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: { formId }, action: "clear" }) }),
@@ -2410,4 +2411,28 @@ export const stopSignin = async ({ formId }: { formId: any }) => {
   ]) as any
 
   return { success: affectedRows === 1 }
-} 
+}
+
+export const getRegistrationList = async ({ page }: { page: any }) => {
+
+  const [data, count] = await Promise.all([
+    query({
+      query: `SELECT rf.timestamp, rf.form_public_url, rf.form_id, JSON_OBJECT('id', u.id, 'first_name', u.first_name, 'last_name', u.last_name, 'image', u.image, 'email',u.email) as author, COUNT(ur.userId) as outside_registration_count 
+      FROM reservations_forms rf
+      INNER JOIN users u ON u.id = rf.user_id
+      LEFT JOIN users_reservations ur ON ur.reservationId = rf.reservation_id AND ur.registration_outside = 1
+      GROUP BY rf.form_id
+      LIMIT 10 OFFSET ?
+      `,
+      values: [page * 10 - 10]
+    }),
+    query({
+      query: `SELECT COUNT(*) as count FROM reservations_forms 
+    `,
+      values: []
+    })]) as any
+
+  console.log(data)
+  return { data: data.map((item: any) => ({ ...item, author: JSON.parse(item.author) })), count: count[0].count }
+}
+

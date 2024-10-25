@@ -42,7 +42,7 @@ export default async function ReservationList({
       <TableContainer>
         <Table size="small">
           <TableHead>
-            <TableRow className="font-semibold [&_.MuiTableCell-root]:font-semibold [&_.MuiTableCell-root]:text-lg">
+            <TableRow className="[&_.MuiTableCell-root]:font-semibold [&_.MuiTableCell-root]:text-lg">
               <TableCell>Název</TableCell>
               <TableCell>Datum vytvoření</TableCell>
               <TableCell>Začátek</TableCell>

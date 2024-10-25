@@ -96,7 +96,7 @@ export const rolesConfig = {
         icon: "import_export_icon",
       },
       userTable: {
-        name: "Všichni uživatelé",
+        name: "Uživatelé",
         path: "/user/list",
         roles: [1, 2, 3],
         config: {
@@ -153,7 +153,7 @@ export const rolesConfig = {
         },
       },
       groupsTable: {
-        name: "Všechny skupiny",
+        name: "Skupiny",
         path: "/group/list",
         roles: [1, 2, 3],
         config: {
@@ -182,14 +182,8 @@ export const rolesConfig = {
         menu: [false, true],
         icon: "edit_calendar_icon",
       },
-      reservaionsForms: {
-        name: "Přihlašování na rezervace",
-        path: "/reservation/forms",
-        roles: [1, 2, 3],
-        menu: [false, false],
-      },
       reservationsTable: {
-        name: "Všechny rezervace",
+        name: "Rezervace",
         path: "/reservation/list",
         roles: [1, 2, 3],
         config: {
@@ -208,6 +202,19 @@ export const rolesConfig = {
       },
     },
   },
+  registrations: {
+    name: "Přihlašování",
+    path: "/registrations",
+    modules: {
+      registrationsList: {
+        name: "Aktivní přihlašování",
+        path: "/registration/list",
+        roles: [1, 2, 3],
+        menu: [true, false],
+        icon: "assignment_icon"
+      }
+    }
+  },
   emails: {
     name: "Maily",
     path: "/mailing",
@@ -217,7 +224,7 @@ export const rolesConfig = {
         path: "/mailing/send",
         roles: [1, 2],
         menu: [true, false],
-        icon: "feed_icon",
+        icon: "alternate_email_icon",
       },
       templates: {
         name: "Templates",

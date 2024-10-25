@@ -5,5 +5,5 @@ import 'dayjs/locale/cs';
 dayjs.extend(relativeTime)
 
 export const smartTime = (date: any) => {
-  return dayjs().to(date)
+  return dayjs().locale('cs').to(date)
 }

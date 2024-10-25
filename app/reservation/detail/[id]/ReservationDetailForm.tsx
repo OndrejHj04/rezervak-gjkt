@@ -33,7 +33,7 @@ import {
   reservationSaveRooms,
   reservationsDelete,
   reservationUpdateStatus,
-  stopSignin,
+  cancelRegistration,
 } from "@/lib/api";
 import { roomsEnum } from "@/app/constants/rooms";
 import Link from "next/link";
@@ -186,7 +186,7 @@ export default function ReservationDetailForm({
 
   const handleStopSignin = () => {
     setStopSigninLoading(true)
-    stopSignin({
+    cancelRegistration({
       formId: reservation.form.id
     }).then(({ success }) => {
       if (success) toast.success("Přihlašování na rezervaci úspěšně zastaveno")

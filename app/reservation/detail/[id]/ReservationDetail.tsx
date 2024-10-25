@@ -8,12 +8,12 @@ import GoogleFormButton from "./GoogleFormButton";
 
 export default async function ReservationDetail({
   params,
-  searchParams: { mode, users, groups, timeline },
+  searchParams: { mode, users, groups, timeline, timelineDisplay },
   userId,
   userRole,
 }: {
   params: any;
-  searchParams: { mode: any; users: any; groups: any, timeline: any };
+  searchParams: { mode: any; users: any; groups: any, timeline: any, timelineDisplay: any };
   userId: any;
   userRole: any;
 }) {
@@ -63,6 +63,7 @@ export default async function ReservationDetail({
         <ReservationDetailDisplay
           reservation={reservation}
           timeline={timeline}
+          timelineDisplay={timelineDisplay}
         />
       )}
     </>

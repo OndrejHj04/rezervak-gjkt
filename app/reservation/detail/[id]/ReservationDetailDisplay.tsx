@@ -19,17 +19,20 @@ import React from "react";
 import { roomsEnum } from "@/app/constants/rooms";
 import TimelineEventUi from "./TimelineEventUi";
 import { smartTime } from "@/app/constants/smartTime";
+import TimelineToggle from "./TimelineToggle";
 
 
 export default async function ReservationDetailDisplay({
   reservation,
-  timeline = 1
+  timeline = 1,
+  timelineDisplay = "new"
 }: {
   reservation: any;
   timeline: any
+  timelineDisplay: any
 }) {
 
-  const reservationTimeline = await getReservationTimeline(reservation.id) as any
+  const reservationTimeline = await getReservationTimeline({ reservationId: reservation.id, mode: timelineDisplay }) as any
   return (
     <Paper className="md:p-4 p-2 flex gap-3 md:flex-row flex-col">
       <div>
@@ -154,7 +157,10 @@ export default async function ReservationDetailDisplay({
         </div>
         <Divider flexItem orientation="vertical" />
         <div className="flex flex-col">
-          <Typography variant="h5">Timeline</Typography>
+          <div className="flex items-center justify-between">
+            <Typography variant="h5">Timeline</Typography>
+            <TimelineToggle />
+          </div>
           <Divider />
           <Timeline className="!px-0 [&_.MuiTimelineItem-root:last-child_.MuiTimelineConnector-root]:hidden [&_.MuiTimelineOppositeContent-root]:!pl-0 [&_.MuiTimelineOppositeContent-root]:[flex:_0.5] [&_.MuiTimelineContent-root]:!pr-0 [&_.MuiTimelineOppositeContent-root]:mr-0 w-[400px]">
             {reservationTimeline.data.slice(timeline * 5 - 5, timeline * 5).map(({ dateFormat = "DD. MM. HH:mm", ...rest }: any, i: any) => (

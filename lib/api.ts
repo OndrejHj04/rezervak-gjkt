@@ -2233,7 +2233,7 @@ export const getSendMailDetail = async (id: any) => {
   return { data: data[0] }
 }
 
-export const getReservationTimeline = async (id: any) => {
+export const getReservationTimeline = async ({ reservationId: id, mode }: { reservationId: any, mode: any }) => {
   const [reservationCoreDates, reservationDateChanges, reservationDescChanges, reservationUserChanges, reservationGroupChange, reservationStatusChange, reservationRoomsChange, reservationSigninChange] = await Promise.all([
     query({
       query: 'SELECT reservations.creation_date, reservations.from_date, reservations.to_date, reservations.to_date as archivation FROM reservations WHERE id = ?',
@@ -2338,8 +2338,13 @@ export const getReservationTimeline = async (id: any) => {
   })), ...reservationSigninChange.map((item: any) => ({
     ...item,
     timelineEventTypeId: item.direction ? 71 : 70
-  }))].sort((a, b) => {
-    const timeDiff = a.timestamp - b.timestamp
+  }))].filter((item) => {
+    if (mode === "new") {
+      return dayjs(item.timestamp).isBefore(new Date())
+    }
+    return dayjs(item.timestamp).isAfter(new Date())
+  }).sort((a, b) => {
+    const timeDiff = b.timestamp - a.timestamp
     if (timeDiff !== 0) return timeDiff
     return a.timelineEventyTypeId - b.timelineEventyTypeId
   })

@@ -1763,8 +1763,8 @@ export const groupDetailEdit = async ({
 export const getGroupList = async ({
   page,
   search,
-  limit,
-  rpp,
+  limit = false,
+  rpp = 10,
 }: {
   page?: any;
   search?: any;
@@ -1839,7 +1839,7 @@ export const getGroupList = async ({
   return { data, count: count[0].total };
 };
 
-export const removeGroups = async ({ groups }: { groups: any }) => {
+export const groupsDelete = async ({ groups }: { groups: any }) => {
   const eventId = 7;
   const guest = await checkUserSession();
 

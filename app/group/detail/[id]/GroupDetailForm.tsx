@@ -26,7 +26,7 @@ import TableListPagination from "@/ui-components/TableListPagination";
 import {
   groupDetailEdit,
   groupRemoveUsers,
-  removeGroups,
+  deleteGroups,
 } from "@/lib/api";
 import Link from "next/link";
 
@@ -63,7 +63,7 @@ export default function GroupDetailForm({ group }: { group: any }) {
   };
 
   const handleRemoveGroup = () => {
-    removeGroups({ groups: [group.id] }).then(({ success }) => {
+    deleteGroups({ groups: [group.id] }).then(({ success }) => {
       success && toast.success("Skupina úspěšně odstraněna");
       !success && toast.error("Něco se nepovedlo");
     });

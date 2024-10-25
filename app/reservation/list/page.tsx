@@ -7,8 +7,6 @@ import {
   TableRow,
 } from "@mui/material";
 import TableListPagination from "@/ui-components/TableListPagination";
-import { rolesConfig } from "@/lib/rolesConfig";
-
 import { getReservationList } from "@/lib/api";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";

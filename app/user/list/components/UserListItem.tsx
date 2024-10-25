@@ -75,13 +75,18 @@ export default function UserListItem({
     }
   }
 
+  const handleOpenSubRow = (e: any) => {
+    e.stopPropagation()
+    setOpen(o => !o)
+  }
+
   return (
     <React.Fragment key={user.id}>
       <TableRow onContextMenu={handleContextMenu} selected={selectedUsers.includes(user.id)} onClick={handleSelectUser}>
         {childrenData && (
           <TableCell>
             {!!childrenData.length && (
-              <IconButton size="small" onClick={() => setOpen((o) => !o)}>
+              <IconButton size="small" onClick={handleOpenSubRow}>
                 {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
               </IconButton>
             )}

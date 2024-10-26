@@ -16,7 +16,7 @@ export default async function Layout({ children }: { children: any }) {
     return (
       <React.Fragment>
         <div className="md:absolute static z-50">
-          <VerifyUser id={user.id} />
+          <VerifyUser id={user.user.id} />
         </div>
         <div className="w-full h-full blur-sm pointer-events-none">
           {children}

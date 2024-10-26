@@ -34,7 +34,7 @@ export const authOptions: NextAuthOptions = {
         const { email, password } = credentials;
         const { user } = await userLogin({ email, password });
 
-        return user;
+        return { ...user }
       },
     }),
   ],

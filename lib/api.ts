@@ -2105,22 +2105,21 @@ export const verifyUser = async ({
   adress: any;
   id: any;
 }) => {
-  const guest = await checkUserSession();
   const eventId = 2;
 
-  const data = (await query({
-    query: `UPDATE users${guest ? "_mock" : ""
-      } SET password = MD5("${newPassword}"), ID_code = "${ID_code}", verified = 1, birth_date = "${birth_date}", adress = "${adress}" WHERE id = ${id} AND password = MD5("${password}")`, // verified = 1!! pak přidat
-    values: [],
+  const { affectedRows } = (await query({
+    query: `UPDATE users SET password = MD5(?), ID_code = ?, verified = 1, birth_date = ?, adress = ? WHERE id = ? AND password = MD5(?)`,
+    values: [newPassword, ID_code, birth_date, adress, id, password],
   })) as any;
 
-  if (data.affectedRows === 0) {
+  console.log(affectedRows)
+  if (affectedRows === 0) {
     return { success: false };
   }
 
   const [user, template] = (await Promise.all([
     query({
-      query: `SELECT * FROM users${guest ? "_mock" : ""} WHERE id = ?`,
+      query: `SELECT * FROM users WHERE id = ?`,
       values: [id],
     }),
     mailEventDetail({ id: eventId }),

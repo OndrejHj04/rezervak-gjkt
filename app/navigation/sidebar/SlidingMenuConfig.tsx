@@ -1,16 +1,20 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import SlidingMenu from "./SlidingMenu";
-import { getRoutes, rolesConfig } from "@/lib/rolesConfig";
-import changelog from "@/app/changelog/changelog.data"
+
+const menu = [
+  { name: "Přehled", icon: "home", href: "/" },
+  { name: "Galerie", icon: "panorama", href: "/photogallery" },
+  { name: "Počasí", icon: "wb_sunny", href: "/weather" },
+  { name: "Uživatelé", icon: "person", href: "/user/list" },
+  { name: "Skupiny", icon: "group", href: "/group/list" },
+  { name: "Rezervace", icon: "calendar_month", href: "/reservation/list" },
+  { name: "Aktivní přihlašování", icon: "assignment", href: "/registration/list" },
+  { name: "Mailing", icon: "alternate_email", href: "/mailing/send" },
+]
 
 export default async function SlidingMenuConfig() {
-  const data = (await getServerSession(authOptions)) as any;
-  const currentVersion = changelog.versions[0].title
-  const menuConfig = getRoutes(
-    Object.values(rolesConfig),
-    data?.user.role
-  ).filter((item: any) => item.menu[0]);
+  const user = (await getServerSession(authOptions)) as any;
 
-  return <SlidingMenu menuConfig={menuConfig} version={currentVersion} />;
+  return <SlidingMenu menuConfig={menu} user={user} />;
 }

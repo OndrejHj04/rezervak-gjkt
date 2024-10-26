@@ -13,7 +13,7 @@ import { getFullName } from '@/app/constants/fullName'
 import dayjs from 'dayjs'
 import { setBlockedDates } from '@/lib/api'
 
-export default function FullcalendarWidget({ searchParams, data, role }: { searchParams: any, data: any, role: any }) {
+export default function FullcalendarComponent({ searchParams, data, role }: { searchParams: any, data: any, role: any }) {
   const [roomsFilter, setRoomsFilter] = useState<number[]>(searchParams.rooms?.length ? searchParams?.rooms.split(",").map(Number) : [])
   const [selectedDays, setSelectedDays] = useState<any>([])
 

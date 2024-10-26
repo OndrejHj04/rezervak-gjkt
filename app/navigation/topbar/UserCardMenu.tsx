@@ -3,20 +3,20 @@ import { Button, Typography } from "@mui/material"
 import Link from "next/link"
 import AvatarWrapper from "@/ui-components/AvatarWrapper"
 
-export default async function TopBarUserCard({ data }: { data: any }) {
+export default async function TopBarUserCard({ user }: { user: any }) {
   return (
     <React.Fragment>
       <div className="flex">
-        <Button component={Link} href={`/user/detail/${data.id}`}>
+        <Button component={Link} href={`/user/detail/${user.id}`}>
           <div className="flex-col mx-4 items-end normal-case text-white sm:flex hidden">
             <Typography className="!font-semibold capitalize" variant="body1">
-              {data.first_name} {data.last_name}
+              {user.first_name} {user.last_name}
             </Typography>
             <div className="flex gap-1 items-center">
-              <Typography variant="body2">{data.role.name}</Typography>
+              <Typography variant="body2">{user.role.name}</Typography>
             </div>
           </div>
-          <AvatarWrapper data={data} />
+          <AvatarWrapper data={user} />
         </Button>
       </div>
     </React.Fragment>

@@ -2,22 +2,22 @@ import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { getRoutes, rolesConfig } from "@/lib/rolesConfig";
 import { Icon } from "@mui/material";
 
+const menu = [
+  { href: "/reservation/create", name: "Vytvořit rezervaci", icon: "edit_calendar" },
+  { href: "/group/create", name: "Vytvořit skupinu", icon: "group_add" },
+  { href: "/user/import", name: "Importovat uživatele", icon: "import_export" },
+  { href: "/user/create", name: "Vytvořit uživatele", icon: "person_add" },
+]
+
 export default async function SpeedComponent() {
-  const data = (await getServerSession(authOptions)) as any;
-  const menu = getRoutes(Object.values(rolesConfig), data?.user.role).filter(
-    (item: any) => item.menu[1]
-  );
 
   return (
     <>
       {!!menu.length && (
         <SpeedDial
-          ariaLabel="IsShowSpeed dial"
+          ariaLabel="IShowSpeed dial"
           sx={{ position: "absolute", bottom: 16, right: 16 }}
           icon={<SpeedDialIcon />}
         >
@@ -27,7 +27,7 @@ export default async function SpeedComponent() {
                 key={action.name}
                 icon={
                   <Link
-                    href={action.path}
+                    href={action.href}
                     className="flex justify-center items-center w-full h-full"
                   >
                     <Icon color="action">{action.icon}</Icon>

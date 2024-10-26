@@ -1526,14 +1526,11 @@ export const reservationUpdateStatus = async ({
 
 export const userSpecifiedReservations = async ({
   userId,
-  page,
 }: {
   userId: any;
-  page: any;
 }) => {
-  const guest = await checkUserSession();
 
-  const [reservations, count] = (await Promise.all([
+  const [reservations] = (await Promise.all([
     query({
       query: `SELECT reservations.id, from_date, to_date, status, reservations.name, leader, 
       JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status,
@@ -1541,24 +1538,15 @@ export const userSpecifiedReservations = async ({
       GROUP_CONCAT(
         DISTINCT JSON_OBJECT('id', rooms.id, 'people', rooms.people)
       ) as rooms
-      FROM users_reservations${guest ? "_mock as users_reservations" : ""}
-      INNER JOIN reservations${guest ? "_mock as reservations" : ""
-        } ON users_reservations.reservationId = reservations.id 
+      FROM users_reservations
+      INNER JOIN reservations ON users_reservations.reservationId = reservations.id 
       INNER JOIN status ON status.id = reservations.status
-      INNER JOIN reservations_rooms${guest ? "_mock as reservations_rooms" : ""
-        } ON reservations.id = reservations_rooms.reservationId
+      INNER JOIN reservations_rooms ON reservations.id = reservations_rooms.reservationId
       INNER JOIN rooms ON reservations_rooms.roomId = rooms.id
-      INNER JOIN users${guest ? "_mock as users" : ""
-        } ON users.id = reservations.leader
+      INNER JOIN users ON users.id = reservations.leader
       WHERE userId = ?
       GROUP BY reservations.id
-      LIMIT 5 OFFSET ${page * 5 - 5}
       `,
-      values: [userId],
-    }),
-    query({
-      query: `SELECT COUNT(*) as total FROM users_reservations${guest ? "_mock" : ""
-        } WHERE userId = ?`,
       values: [userId],
     }),
   ])) as any;
@@ -1570,7 +1558,7 @@ export const userSpecifiedReservations = async ({
     rooms: JSON.parse(`[${reservation.rooms}]`),
   }));
 
-  return { data, count: count[0].total };
+  return { data };
 };
 
 export const groupAddUsers = async ({
@@ -1934,30 +1922,18 @@ export const groupRemoveReservations = async ({
 
 export const userSpecifiedGroups = async ({
   id,
-  page,
 }: {
   id: any;
-  page: any;
 }) => {
-  const guest = await checkUserSession();
 
-  const [groups, count] = (await Promise.all([
+  const [groups] = (await Promise.all([
     query({
       query: `SELECT groups.id, name, description, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) AS owner,
-      (SELECT COUNT(*) FROM users_groups${guest ? "_mock" : ""
-        } WHERE groupId = groups.id) AS userCount 
-      FROM groups${guest ? "_mock as groups" : ""} INNER JOIN users_groups${guest ? "_mock as users_groups" : ""
-        } ON groups.id = users_groups.groupId INNER JOIN users${guest ? "_mock as users" : ""
-        } ON groups.owner = users.id 
-      WHERE users_groups.userId = ? LIMIT 5 OFFSET ?`,
-      values: [id, page * 5 - 5],
-    }),
-    query({
-      query: `SELECT COUNT(*) as total FROM users_groups${guest ? "_mock as users_groups" : ""
-        } WHERE users_groups.userId = ?`,
+      (SELECT COUNT(*) FROM users_groups WHERE groupId = groups.id) AS userCount 
+      FROM groups INNER JOIN users_groups ON groups.id = users_groups.groupId INNER JOIN users ON groups.owner = users.id 
+      `,
       values: [id],
-    }),
-  ])) as any;
+    })])) as any;
 
   const data = groups.map((group: any) => {
     return {
@@ -1966,7 +1942,7 @@ export const userSpecifiedGroups = async ({
     };
   });
 
-  return { data, count: count[0].total };
+  return { data };
 };
 
 export const mailingTemplateEdit = async ({
@@ -2340,11 +2316,8 @@ export const getEmailSettings = async () => {
 
 
 export const allowReservationSignIn = async ({ reservation }: { reservation: any }) => {
-  console.log(reservation)
   const { user } = await getServerSession(authOptions) as any
-  console.log(user)
   const reqBody = { name: reservation.name, from_date: dayjs(reservation.from_date).format("DD. MM. YYYY"), to_date: dayjs(reservation.to_date).format("DD. MM. YYYY"), instructions: reservation.instructions, leader: { first_name: reservation.leader.first_name, last_name: reservation.leader.last_name } }
-  console.log(reqBody)
 
   const req = await fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: reqBody, action: "create" }) })
 

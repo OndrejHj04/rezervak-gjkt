@@ -1,13 +1,13 @@
 import { getReservationCalendarData } from "@/lib/api";
-import FullcalendarWidget from "./CalendarNavigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
+import FullcalendarComponent from "./Fullcalendar";
 
-export default async function Page({ searchParams }: { searchParams: any }) {
+export default async function CalendarWidget({ searchParams }: { searchParams: any }) {
   const data = await getReservationCalendarData({ rooms: searchParams.rooms?.length ? searchParams.rooms.split(",") : [] })
-  const { user } = await getServerSession(authOptions) as any
+  const user = await getServerSession(authOptions) as any
 
   return (
-    <FullcalendarWidget data={data} searchParams={searchParams} role={user.role} />
+    <FullcalendarComponent data={data} searchParams={searchParams} role={user?.user.role} />
   )
 }

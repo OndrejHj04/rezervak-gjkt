@@ -4,11 +4,11 @@ import { getUserTheme } from "@/lib/api";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import LoginButton from "./LoginButton";
 import DarkModeToggle from "./DarkModeToggle";
 import SideMenuButton from "./SideMenuButton"
 import Link from "next/link";
 import TopBarUserCard from "./UserCardMenu";
+import { Button } from "@mui/material";
 
 export default async function TopBar() {
   const data = (await getServerSession(authOptions)) as any;
@@ -31,10 +31,7 @@ export default async function TopBar() {
         <div className="flex flex-col">
         </div>
         <div className="flex-1 flex justify-end">
-          <DarkModeToggle theme={theme} user={data?.user} />
-          <LoginButton>
-            <TopBarUserCard data={data?.user} />
-          </LoginButton>
+          {data ? <TopBarUserCard user={data.user} /> : <Button component={Link} href="/login" style={{ color: "white" }}>Přihlásit se</Button>}
         </div>
       </Toolbar>
     </AppBar>

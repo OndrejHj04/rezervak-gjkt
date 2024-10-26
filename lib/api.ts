@@ -7,6 +7,9 @@ import { transporter } from "./email";
 import dayjs from "dayjs";
 import { decode, sign } from "jsonwebtoken";
 import { roomsEnum } from "@/app/constants/rooms";
+import { Z_VERSION_ERROR } from "zlib";
+import { values } from "lodash";
+import { redirect } from "next/navigation";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -498,9 +501,9 @@ export const getUserTheme = async () => {
   const user = (await getServerSession(authOptions)) as any;
   if (!user) return { theme: 1 }
 
-  const [{ theme }] = (await query({
+  const { theme } = (await query({
     query: `SELECT theme FROM users WHERE id = ?`,
-    values: [user.user.id],
+    values: [user.id],
   })) as any;
 
   return { theme };
@@ -722,6 +725,21 @@ export const importNewUsers = async ({ users }: { users: any }) => {
   return { success: affectedRows === users.length, count: affectedRows };
 };
 
+export const userGoogleLogin = async ({ account }: { account: any }) => {
+
+  const data = await query({
+    query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.theme, users.verified, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ?`,
+    values: [account.email]
+  }) as any
+
+  if (!data.length) {
+    return { user: null }
+  }
+
+  return { user: { ...data[0], role: JSON.parse(data[0].role) } };
+
+}
+
 export const userLogin = async ({
   email,
   password,
@@ -729,20 +747,16 @@ export const userLogin = async ({
   email: any;
   password: any;
 }) => {
-  if (email === "host@nemazat.cz") {
-    const data = (await query({
-      query: `SELECT users.*, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users_mock as users INNER JOIN roles ON roles.id = users.role WHERE email = ?`,
-      values: [email],
-    })) as any;
-
-    return { data: { ...data[0], role: JSON.parse(data[0].role) } };
-  }
   const data = (await query({
-    query: `SELECT users.*, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ? AND password = MD5(?)`,
+    query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.theme, users.verified, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ? AND password = MD5(?)`,
     values: [email, password],
   })) as any;
 
-  return { data: { ...data[0], role: JSON.parse(data[0].role) } };
+  if (!data.length) {
+    return { user: null }
+  }
+
+  return { user: { ...data[0], role: JSON.parse(data[0].role) } };
 };
 
 export const createUserAccount = async ({
@@ -901,18 +915,10 @@ export const getOrganizationsList = async () => {
 export const resetUserPassword = async ({
   password,
   id,
-  token,
 }: {
   password: any;
   id: any;
-  token: any;
 }) => {
-  const { exp } = decode(token) as any;
-
-  if (dayjs(exp).isBefore(dayjs())) {
-    return { success: false };
-  }
-
   const { affectedRows } = (await query({
     query: `UPDATE users SET password = MD5(?) WHERE id = ? `,
     values: [password, id],
@@ -946,7 +952,7 @@ export const sendResetPasswordEmail = async ({ email }: { email: any }) => {
       variables: [
         {
           name: "link",
-          value: `${process.env.NEXT_PUBLIC_API_URL} / password - reset / form ? id = ${users[0].id} & token=${tkn}`,
+          value: `${process.env.NEXT_PUBLIC_API_URL}/password-reset?userId=${users[0].id}&token=${tkn}`,
         },
       ],
     });
@@ -2378,4 +2384,3 @@ export const getRegistrationList = async ({ page }: { page: any }) => {
 
   return { data: data.map((item: any) => ({ ...item, author: JSON.parse(item.author) })), count: count[0].count }
 }
-

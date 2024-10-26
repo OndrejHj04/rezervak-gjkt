@@ -3,6 +3,8 @@ import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import Link from "next/link";
 import { Icon } from "@mui/material";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 const menu = [
   { href: "/reservation/create", name: "Vytvořit rezervaci", icon: "edit_calendar" },
@@ -12,33 +14,34 @@ const menu = [
 ]
 
 export default async function SpeedComponent() {
+  const user = await getServerSession(authOptions) as any
+
+  if (!user) {
+    return null
+  }
 
   return (
-    <>
-      {!!menu.length && (
-        <SpeedDial
-          ariaLabel="IShowSpeed dial"
-          sx={{ position: "absolute", bottom: 16, right: 16 }}
-          icon={<SpeedDialIcon />}
-        >
-          {menu.map((action: any) => {
-            return (
-              <SpeedDialAction
-                key={action.name}
-                icon={
-                  <Link
-                    href={action.href}
-                    className="flex justify-center items-center w-full h-full"
-                  >
-                    <Icon color="action">{action.icon}</Icon>
-                  </Link>
-                }
-                tooltipTitle={action.name}
-              />
-            );
-          })}
-        </SpeedDial>
-      )}
-    </>
+    <SpeedDial
+      ariaLabel="IShowSpeed dial"
+      sx={{ position: "absolute", bottom: 16, right: 16 }}
+      icon={<SpeedDialIcon />}
+    >
+      {menu.map((action: any) => {
+        return (
+          <SpeedDialAction
+            key={action.name}
+            icon={
+              <Link
+                href={action.href}
+                className="flex justify-center items-center w-full h-full"
+              >
+                <Icon color="action">{action.icon}</Icon>
+              </Link>
+            }
+            tooltipTitle={action.name}
+          />
+        );
+      })}
+    </SpeedDial>
   );
 }

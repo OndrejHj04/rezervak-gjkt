@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/options";
-import WelcomeComponent from "@/sub-components/WelcomeComponent";
 import React from "react";
 import VerifyUser from "@/sub-components/VerifyUser";
+import WelcomeComponent from "./welcome/WelcomeComponent";
 
 export default async function Layout({ children }: { children: any }) {
   const user = await getServerSession(authOptions) as any

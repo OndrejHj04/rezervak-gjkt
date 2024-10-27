@@ -5,6 +5,8 @@ import ReservationDetailForm from "./ReservationDetailForm";
 import ReservationDetailDisplay from "./ReservationDetailDisplay";
 import { getReservationDetail, getReservationsStatus } from "@/lib/api";
 import React from "react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 export default async function ReservationDetail({
   searchParams,
@@ -13,6 +15,7 @@ export default async function ReservationDetail({
   searchParams: any;
   params: any;
 }) {
+  const { user } = await getServerSession(authOptions) as any
   const { users, groups, mode, timeline, timelineDisplay } = searchParams
   const { id } = params
 
@@ -21,6 +24,8 @@ export default async function ReservationDetail({
     upage: users || 1,
     gpage: groups || 1,
   })) as any;
+
+  const allowModification = user.role.id !== 3 || user.id === data.leader.id
 
   return (
     <React.Fragment>
@@ -36,10 +41,11 @@ export default async function ReservationDetail({
               component={Link}
               href={`/reservation/detail/${id}?mode=edit`}
               label="Editovat"
+              disabled={!allowModification}
             />
           </Tabs>
         </div>
-        <GoogleFormButton reservation={data} />
+        <GoogleFormButton reservation={data} disabled={!allowModification} />
       </div>
 
       {mode === "edit" ?

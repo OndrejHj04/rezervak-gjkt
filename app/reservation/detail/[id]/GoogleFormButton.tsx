@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 import { toast } from "react-toastify"
 
-export default function GoogleFormButton({ reservation }: { reservation: any }) {
+export default function GoogleFormButton({ reservation, disabled }: { reservation: any, disabled: any }) {
   const [loading, setLoading] = useState(false)
   const { refresh } = useRouter()
   const on = reservation.form.id && reservation.form.publicUrl
@@ -35,7 +35,7 @@ export default function GoogleFormButton({ reservation }: { reservation: any }) 
   return (
     <div className="flex items-center gap-2">
       {loading && <CircularProgress size={30} />}
-      <FormControlLabel control={<Switch disabled={loading} checked={on} />} onChange={handleToggle} label="Přihlašování na rezervaci" />
+      <FormControlLabel control={<Switch disabled={loading || disabled} checked={on} />} onChange={handleToggle} label="Přihlašování na rezervaci" />
       <Button variant="outlined" disabled={!on || loading} LinkComponent={Link} target="_blank" href={reservation.form.publicUrl}>Přihlašovací formulář</Button>
     </div>
   )

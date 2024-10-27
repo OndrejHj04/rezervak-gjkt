@@ -25,7 +25,7 @@ export default function SlidingMenu({
       <div className="h-full flex flex-col justify-between">
         <MenuList>
           {menuConfig.map((item: any) => (
-            <MenuItem key={item.name} component={Link} href={item.href} onClick={() => setPanel(false)}>
+            <MenuItem key={item.name} component={Link} href={item.href[0]} onClick={() => setPanel(false)}>
               <Icon fontSize="large" color="primary">
                 {item.icon}
               </Icon>

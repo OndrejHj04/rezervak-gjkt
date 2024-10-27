@@ -10,13 +10,15 @@ import TableListPagination from "@/ui-components/TableListPagination";
 import { getReservationList } from "@/lib/api";
 import ReservationListItem from "../list/components/ReservationListItem";
 import React from "react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 export default async function ReservationList({
   searchParams,
 }: {
   searchParams: any;
 }) {
-
+  const { user } = await getServerSession(authOptions)
   const page = searchParams["page"] || 1;
   const status = searchParams["status"] || 0;
   const search = searchParams["search"] || "";
@@ -62,6 +64,7 @@ export default async function ReservationList({
                 searchParams={searchParams}
                 key={reservation.id}
                 reservation={reservation}
+                allowModal={user.role.id !== 3}
               />
             ))}
           </TableBody>

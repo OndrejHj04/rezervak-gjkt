@@ -5,7 +5,7 @@ import { Button } from "@mui/material"
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-export default function GroupDeleteButton({ groupId }: { groupId: any }) {
+export default function GroupDeleteButton({ groupId, disabled }: { groupId: any, disabled: any }) {
   const { replace } = useRouter()
 
   const handleRemoveGroup = () => {
@@ -20,6 +20,7 @@ export default function GroupDeleteButton({ groupId }: { groupId: any }) {
     <Button
       onClick={handleRemoveGroup}
       variant="outlined"
+      disabled={disabled}
       color="error"
       size="small"
     >

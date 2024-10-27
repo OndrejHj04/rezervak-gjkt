@@ -2,6 +2,7 @@
 import * as XLSX from "xlsx";
 import handleExport from "@/lib/handleExport";
 import { Button } from "@mui/material";
+import { useSession } from "next-auth/react";
 
 function s2ab(s: any) {
   const buf = new ArrayBuffer(s.length);
@@ -15,6 +16,9 @@ export default function ExportButton({
   translate,
   ...rest
 }: any) {
+  const { data } = useSession()
+  const roleId = data?.user.role.id
+
   const makeExport = async () => {
     const req = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/${prop}/export`
@@ -31,7 +35,7 @@ export default function ExportButton({
   };
 
   return (
-    <Button variant="outlined" onClick={makeExport} {...rest}>
+    <Button variant="outlined" onClick={makeExport} disabled={roleId === 3} {...rest}>
       Export
     </Button>
   );

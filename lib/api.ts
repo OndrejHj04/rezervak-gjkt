@@ -2383,3 +2383,12 @@ export const getRegistrationList = async ({ page }: { page: any }) => {
 
   return { data: data.map((item: any) => ({ ...item, author: JSON.parse(item.author) })), count: count[0].count }
 }
+
+export const getReservationLeader = async ({ id }: { id: any }) => {
+  const data = await query({
+    query: `SELECT leader FROM reservations WHERE id = ?`,
+    values: [id]
+  })
+
+  return { data }
+}

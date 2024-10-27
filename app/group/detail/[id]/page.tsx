@@ -5,6 +5,8 @@ import GroupDetailForm from "./GroupDetailForm";
 import GroupDetailDisplay from "./GroupDetailDisplay";
 import { getGroupDetail, } from "@/lib/api";
 import GroupDeleteButton from "./GroupDeleteButton";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 export default async function GroupListConfig({
   searchParams,
@@ -13,6 +15,8 @@ export default async function GroupListConfig({
   searchParams: any;
   params: any;
 }) {
+  const { user } = await getServerSession(authOptions) as any
+
   const { mode, reservations, users } = searchParams
   const { id } = params
 
@@ -22,6 +26,7 @@ export default async function GroupListConfig({
     upage: users || 1,
   })) as any;
 
+  const allowModification = user.role.id !== 3 || user.id === group.owner.id
 
   return (
     <React.Fragment>
@@ -41,10 +46,11 @@ export default async function GroupListConfig({
               pathname: `/group/detail/${id}`,
               query: { mode: "edit" }
             }}
+            disabled={!allowModification}
             label="Editovat"
           />
         </Tabs>
-        <GroupDeleteButton groupId={group.id} />
+        <GroupDeleteButton groupId={group.id} disabled={!allowModification} />
       </div>
       {mode === "edit" ? (
         <GroupDetailForm group={group} />

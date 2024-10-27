@@ -5,13 +5,7 @@ import Link from "next/link";
 import { Icon } from "@mui/material";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-
-const menu = [
-  { href: "/reservation/create", name: "Vytvořit rezervaci", icon: "edit_calendar" },
-  { href: "/group/create", name: "Vytvořit skupinu", icon: "group_add" },
-  { href: "/user/import", name: "Importovat uživatele", icon: "import_export" },
-  { href: "/user/create", name: "Vytvořit uživatele", icon: "person_add" },
-]
+import { actionMenu } from "@/lib/rolesConfig";
 
 export default async function SpeedComponent() {
   const user = await getServerSession(authOptions) as any
@@ -26,7 +20,7 @@ export default async function SpeedComponent() {
       sx={{ position: "absolute", bottom: 16, right: 16 }}
       icon={<SpeedDialIcon />}
     >
-      {menu.map((action: any) => {
+      {actionMenu.map((action: any) => {
         return (
           <SpeedDialAction
             key={action.name}

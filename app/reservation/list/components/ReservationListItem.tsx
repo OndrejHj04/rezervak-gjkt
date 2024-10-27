@@ -22,10 +22,12 @@ import { useRouter } from "next/navigation";
 
 export default function ReservationListItem({
   reservation,
-  searchParams
+  searchParams,
+  allowModal
 }: {
   reservation: any;
   searchParams: any
+  allowModal: any
 }) {
   const { refresh } = useRouter()
 
@@ -67,7 +69,7 @@ export default function ReservationListItem({
 
   return (
     <React.Fragment>
-      <ReservationModal reservation={reservation} />
+      {allowModal && <ReservationModal reservation={reservation} />}
       <TableRow onContextMenu={handleContextMenu} selected={selectedReservations.includes(reservation.id)} onClick={handleSelectReservation}>
         <TableCell>
           {reservation.name}
@@ -104,10 +106,12 @@ export default function ReservationListItem({
         </TableCell>
 
         <TableCell>
-          <Button className="!normal-case !text-inherit" onClick={e => e.stopPropagation()} component={Link} href={{
-            href: '/reservation/list',
-            query: { ...searchParams, reservation_id: reservation.id }
-          } as any}
+          <Button className="!normal-case !text-inherit" onClick={e => e.stopPropagation()} {...(allowModal && {
+            component: Link, href: {
+              href: '/reservation/list',
+              query: { ...searchParams, reservation_id: reservation.id }
+            }
+          })}
           >
             <Icon sx={{ color: reservation.status.color }} className="mr-2">
               {reservation.status.icon}

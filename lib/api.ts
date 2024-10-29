@@ -5,11 +5,9 @@ import { query } from "./db";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { transporter } from "./email";
 import dayjs from "dayjs";
-import { decode, sign } from "jsonwebtoken";
+import { sign } from "jsonwebtoken";
 import { roomsEnum } from "@/app/constants/rooms";
-import { Z_VERSION_ERROR } from "zlib";
 import { values } from "lodash";
-import { redirect } from "next/navigation";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -509,167 +507,7 @@ export const getUserTheme = async () => {
   return { theme };
 };
 
-export const getUserDetail = async ({
-  id,
-  gpage,
-  rpage,
-  chpage,
-}: {
-  id: any;
-  gpage: any;
-  rpage: any;
-  chpage: any;
-}) => {
-  const guest = await checkUserSession();
 
-  const [
-    user,
-    groups,
-    userChildren,
-    userChildrenCount,
-    groupsCount,
-    reservations,
-    reservationsCount,
-    isChildrenAccount,
-  ] = (await Promise.all([
-    query({
-      query: `SELECT users.id, users.first_name, users.image, users.last_name, users.email, users.active, users.verified, users.adress, users.ID_code, users.birth_date, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role, GROUP_CONCAT(DISTINCT JSON_OBJECT('id', children_detail.id, 'first_name', children_detail.first_name, 'last_name', children_detail.last_name)) as children
-        FROM users${guest ? "_mock as users" : ""
-        } INNER JOIN roles ON roles.id = users.role
-        LEFT JOIN organization ON  organization.id = users.organization
-        LEFT JOIN children_accounts ON children_accounts.parentId = users.id
-        LEFT JOIN users as children_detail ON children_accounts.childrenId = children_detail.id
-        WHERE users.id = ?`,
-      values: [id],
-    }),
-    query({
-      query: `
-      SELECT groups.id, groups.name, groups.description, 
-      JSON_OBJECT('id', owner.id, 'first_name', owner.first_name, 'last_name', owner.last_name, 'email', owner.email) as owner,
-      GROUP_CONCAT(users_groups.userId) as users
-      FROM users_groups${guest ? "_mock as users_groups" : ""}
-      INNER JOIN groups${guest ? "_mock as groups" : ""
-        } ON users_groups.groupId = groups.id 
-      INNER JOIN users${guest ? "_mock as owner" : " as owner"
-        } ON owner.id = groups.owner
-      WHERE groups.id IN (
-        SELECT groupId FROM users_groups WHERE userId = ?
-      )
-      GROUP BY groups.id
-      LIMIT 5 OFFSET ?
-    `,
-      values: [id, gpage * 5 - 5],
-    }),
-    query({
-      query: `SELECT 
-   users.id, 
-    users.first_name, 
-    users.last_name, 
-    users.image, 
-    users.email
-  FROM 
-    children_accounts 
-  LEFT JOIN 
-    users ON users.id = children_accounts.childrenId 
-  WHERE 
-    children_accounts.parentId = ?
-   LIMIT 5 OFFSET ?`,
-      values: [id, chpage * 5 - 5],
-    }),
-    query({
-      query: `SELECT 
-      COUNT(*) as total
-  FROM 
-    children_accounts 
-  LEFT JOIN 
-    users ON users.id = children_accounts.childrenId 
-  WHERE 
-    children_accounts.parentId = ?`,
-      values: [id],
-    }),
-    query({
-      query: `SELECT COUNT(*) as total FROM users_groups${guest ? "_mock as users_groups" : ""
-        } WHERE userId = ?`,
-      values: [id],
-    }),
-    query({
-      query: `SELECT reservations.id, from_date, to_date, reservations.name, JSON_OBJECT('id', users.id, 'first_name', first_name, 'last_name', last_name, 'email', email, 'image', image) as leader, JSON_OBJECT('name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status
-      FROM users_reservations${guest ? "_mock as users_reservations" : ""}
-      INNER JOIN reservations${guest ? "_mock as reservations" : ""
-        } ON reservations.id = users_reservations.reservationId
-      INNER JOIN users${guest ? "_mock as users" : ""
-        } ON users.id = reservations.leader
-      INNER JOIN status ON status.id = reservations.status
-      WHERE userId = ? LIMIT 5 OFFSET ?`,
-      values: [id, rpage * 5 - 5],
-    }),
-    query({
-      query: `SELECT COUNT(*) as total FROM users_reservations${guest ? "_mock as users_reservations" : ""
-        } WHERE userId = ?`,
-      values: [id],
-    }),
-    query({
-      query: `SELECT users.first_name, users.last_name as count FROM children_accounts ${guest ? "_mock as users_reservations" : ""
-        } 
-      INNER JOIN users ON children_accounts.parentId = users.id  
-      WHERE childrenId = ?`,
-      values: [id],
-    }),
-  ])) as any;
-
-  const data = {
-    ...user[0],
-    children: { count: userChildrenCount[0].total, data: userChildren },
-    role: JSON.parse(user[0].role),
-    organization: JSON.parse(user[0].organization).id
-      ? JSON.parse(user[0].organization)
-      : null,
-    reservations: {
-      data: reservations.map((res: any) => ({
-        ...res,
-        leader: JSON.parse(res.leader),
-        status: JSON.parse(res.status),
-      })),
-      count: reservationsCount[0].total,
-    },
-    groups: {
-      data: groups.map((group: any) => ({
-        ...group,
-        owner: JSON.parse(group.owner),
-        users: group.users.split(","),
-      })),
-      count: groupsCount[0].total,
-    },
-    parrentAccount: isChildrenAccount.length ? isChildrenAccount[0] : null
-  };
-
-  return { data };
-};
-
-export const editUserDetail = async ({ id, user }: { id: any; user: any }) => {
-  let str = "";
-  const guest = await checkUserSession();
-
-  Object.keys(user).forEach((key, i) => {
-    str += `${key} = ${user[key] ? "'" : ""}${Number(user[key]) || user[key].length ? user[key] : null
-      }${user[key] ? "'" : ""}${Object.keys(user).length - 1 !== i ? ", " : ""}`;
-  });
-
-  (await query({
-    query: `UPDATE users${guest ? "_mock as users" : ""
-      } SET ${str} WHERE id = ${id}`,
-    values: [],
-  })) as any;
-
-  const userDetail = (await query({
-    query: `SELECT * FROM users${guest ? "_mock as users" : ""} WHERE id = ?`,
-    values: [id],
-  })) as any;
-
-  userDetail.map((item: any) => (item.role = JSON.parse(item.role as any)));
-
-  return { success: true };
-};
 
 export const getUserDetailByEmail = async ({ email }: { email: any }) => {
   if (!email) {
@@ -728,7 +566,7 @@ export const importNewUsers = async ({ users }: { users: any }) => {
 export const userGoogleLogin = async ({ account }: { account: any }) => {
 
   const data = await query({
-    query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.theme, users.verified, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ?`,
+    query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.theme, users.verified, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ? AND role <> 4`,
     values: [account.email]
   }) as any
 
@@ -748,7 +586,7 @@ export const userLogin = async ({
   password: any;
 }) => {
   const data = (await query({
-    query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.theme, users.verified, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ? AND password = MD5(?)`,
+    query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.theme, users.verified, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ? AND password = MD5(?) AND role <> 4`,
     values: [email, password],
   })) as any;
 
@@ -1178,81 +1016,8 @@ export const reservationsDelete = async ({
     values: [[reservations]],
   }) as any
 
+
   return { success: affectedRows === reservations.length };
-};
-
-export const getReservationDetail = async ({
-  id,
-  upage,
-  gpage,
-}: {
-  id: any;
-  upage: any;
-  gpage: any;
-}) => {
-
-  const [reservations, users, usersCount, groups, groupsCount] =
-    (await Promise.all([
-      query({
-        query: `SELECT reservations.id, from_date, to_date, reservations.name, leader, instructions, purpouse, creation_date, success_link, payment_symbol, reject_reason, JSON_OBJECT('id', rf.form_id, 'publicUrl', rf.form_public_url) as form,
-    JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', display_name, 'icon', icon) as status,
-    JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader,
-    GROUP_CONCAT(rooms.id separator ';') as rooms FROM reservations
-    INNER JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
-    INNER JOIN status ON reservations.status = status.id
-    LEFT JOIN reservations_forms rf ON rf.reservation_id = reservations.id
-    INNER JOIN users ON users.id = reservations.leader
-    INNER JOIN rooms ON roomId = rooms.id
-    WHERE reservations.id = ?
-    `,
-        values: [id],
-      }),
-      query({
-        query: `SELECT users.id, first_name, last_name, image, email FROM users_reservations INNER JOIN users ON users.id = userId WHERE reservationId = ? LIMIT 5 OFFSET ?`,
-        values: [id, upage * 5 - 5],
-      }),
-      query({
-        query: `SELECT COUNT(*) as total FROM users_reservations WHERE reservationId = ?`,
-        values: [id],
-      }),
-      query({
-        query: `
-        SELECT groups.id, groups.name, description, GROUP_CONCAT(DISTINCT userId) as users
-        FROM reservations_groups
-        INNER JOIN groups ON reservations_groups.groupId = groups.id
-        LEFT JOIN users_groups ON groups.id = users_groups.groupId
-        WHERE reservationId = ?
-        GROUP BY groups.id
-        LIMIT 5 OFFSET ?
-        `,
-        values: [id, gpage * 5 - 5],
-      }),
-      query({
-        query: `SELECT COUNT(*) as total FROM reservations_groups WHERE reservationId = ?`,
-        values: [id],
-      }),
-    ])) as any;
-
-  const data = reservations.length && {
-    ...reservations[0],
-    status: JSON.parse(reservations[0].status),
-    leader: JSON.parse(reservations[0].leader),
-    form: JSON.parse(reservations[0].form),
-    rooms: reservations[0].rooms ? reservations[0].rooms.split(';').map(Number) : [],
-    users: {
-      data: users,
-      count: usersCount[0].total,
-    },
-    groups: {
-      data: groups.map((group: any) => ({
-        ...group,
-        users: group.users ? group.users.split(",") : [],
-      })),
-      count: groupsCount[0].total,
-    },
-  };
-
-  return { data };
 };
 
 export const editReservationDetail = async ({
@@ -1645,65 +1410,6 @@ export const createNewGroup = async ({
   return { success: affectedRows === 1, id: insertId };
 };
 
-export const getGroupDetail = async ({
-  id,
-  upage,
-  rpage,
-}: {
-  id: any;
-  upage: any;
-  rpage: any;
-}) => {
-  const guest = await checkUserSession();
-
-  const [group, reservations, resCount, users, usersCount] = (await Promise.all(
-    [
-      query({
-        query: `SELECT groups.id, name, description, JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image)
-         as owner FROM groups${guest ? "_mock as groups" : ""
-          } INNER JOIN users${guest ? "_mock as users" : ""
-          } ON users.id = groups.owner WHERE groups.id = ?`,
-        values: [id],
-      }),
-      query({
-        query: `SELECT reservations.id, from_date, to_date, name, status FROM reservations${guest ? "_mock as reservations" : ""
-          } 
-    INNER JOIN reservations_groups${guest ? "_mock as reservations_groups" : ""
-          } ON reservations.id = reservations_groups.reservationId 
-    WHERE reservations_groups.groupId = ? LIMIT 5 OFFSET ?`,
-        values: [id, rpage * 5 - 5],
-      }),
-      query({
-        query: `SELECT COUNT(*) AS total FROM reservations_groups${guest ? "_mock as reservations_groups" : ""
-          } WHERE reservations_groups.groupId = ?`,
-        values: [id],
-      }),
-      query({
-        query: `SELECT users.id, first_name, last_name, email, image FROM users${guest ? "_mock as users" : ""
-          } 
-    INNER JOIN users_groups${guest ? "_mock as users_groups" : ""
-          } ON users.id = users_groups.userId 
-    WHERE users_groups.groupId = ? LIMIT 5 OFFSET ?`,
-        values: [id, upage * 5 - 5],
-      }),
-      query({
-        query: `SELECT COUNT(*) AS total FROM users_groups${guest ? "_mock as users_groups" : ""
-          } WHERE users_groups.groupId = ?`,
-        values: [id],
-      }),
-    ]
-  )) as any;
-
-  const data = {
-    ...group[0],
-    owner: JSON.parse(group[0].owner),
-    reservations: { data: reservations, count: resCount[0].total },
-    users: { data: users, count: usersCount[0].total },
-  };
-
-  return { data };
-};
-
 export const groupDetailEdit = async ({
   name,
   description,
@@ -1857,57 +1563,13 @@ export const groupRemoveUsers = async ({
   group: any;
   users: any;
 }) => {
-  const eventId = 6;
-  const guest = await checkUserSession();
 
-  const [
-    groupDetail,
-    groupUsers,
-    owner,
-    reservations,
-    { affectedRows },
-    template,
-  ] = (await Promise.all([
-    query({
-      query: `SELECT * FROM groups WHERE id = ?`,
-      values: [group],
-    }),
-    query({
-      query: `SELECT first_name, last_name, email FROM users WHERE id IN ?`,
-      values: [[users]],
-    }),
-    query({
-      query: `SELECT first_name, last_name, email FROM users INNER JOIN groups ON groups.owner = users.id WHERE groups.id = ?`,
-      values: [group],
-    }),
-    query({
-      query: `SELECT * FROM reservations INNER JOIN reservations_groups ON reservations.id = reservations_groups.groupId WHERE reservations_groups.groupId = ?`,
-      values: [group],
-    }),
-    query({
-      query: `DELETE FROM users_groups WHERE groupId = ? AND userId IN ?`,
-      values: [group, [users]]
-    }),
-    mailEventDetail({ id: eventId }),
-  ])) as any;
+  const { affectedRows } = await query({
+    query: `DELETE FROM users_groups WHERE groupId = ? AND userId = ?`,
+    values: [group, users]
+  }) as any
 
-  const data = { ...groupDetail[0], owner: owner[0], groupUsers, reservations };
-
-  await sendEmail({
-    send: template.data.active,
-    to: groupUsers.map(({ email }: { email: any }) => email),
-    template: template.data.template,
-    variables: [
-      { name: "group_name", value: groupDetail[0].name },
-      {
-        name: "owner_name",
-        value: owner[0].first_name + " " + owner[0].last_name,
-      },
-      { name: "owner_email", value: owner[0].email },
-    ],
-  });
-
-  return { success: affectedRows === users.length };
+  return { success: affectedRows === 1 };
 };
 
 export const groupRemoveReservations = async ({
@@ -1919,11 +1581,11 @@ export const groupRemoveReservations = async ({
 }) => {
 
   const { affectedRows } = (await query({
-    query: `DELETE FROM reservations_groups WHERE groupId = ? AND reservationId IN ?`,
-    values: [group, [reservations]],
+    query: `DELETE FROM reservations_groups WHERE groupId = ? AND reservationId = ?`,
+    values: [group, reservations],
   })) as any;
 
-  return { success: affectedRows === reservations.length };
+  return { success: affectedRows === 1 };
 };
 
 export const userSpecifiedGroups = async ({
@@ -2112,7 +1774,6 @@ export const verifyUser = async ({
     values: [newPassword, ID_code, birth_date, adress, id, password],
   })) as any;
 
-  console.log(affectedRows)
   if (affectedRows === 0) {
     return { success: false };
   }
@@ -2391,4 +2052,196 @@ export const getReservationLeader = async ({ id }: { id: any }) => {
   })
 
   return { data }
+}
+
+export const getUsersAvaliableGroups = async (id: any) => {
+  const data = await query({
+    query: `SELECT groups.id, groups.name, CONCAT('[', COALESCE(GROUP_CONCAT(users.id), ''), ']') AS users FROM groups LEFT JOIN users_groups ON users_groups.groupId = groups.id LEFT JOIN users ON users.id = users_groups.userId WHERE owner = ? GROUP BY groups.id`,
+    values: [id]
+  }) as any
+
+  const groups = data.map((item: any) => ({
+    ...item,
+    users: JSON.parse(item.users)
+  }))
+
+  return { groups }
+}
+
+export const getUsersAvaliableReservations = async (id: any) => {
+  const data = await query({
+    query: `SELECT reservations.id, reservations.name, CONCAT('[', COALESCE(GROUP_CONCAT(users.id), ''), ']') AS users FROM reservations LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id LEFT JOIN users ON users.id = users_reservations.userId WHERE leader = ? GROUP BY reservations.id`,
+    values: [id]
+  }) as any
+
+  const reservations = data.map((item: any) => ({
+    ...item,
+    users: JSON.parse(item.users)
+  }))
+
+  return { reservations }
+}
+
+export const getGroupReservations = async ({ groupId, page }: { groupId: any, page: any }) => {
+
+  const [dataRequest, countRequest] = await Promise.all([
+    query({
+      query: `SELECT r.id, r.name, r.from_date, r.to_date, COUNT(ur.userId) as users_count, CONCAT(u.first_name, ' ', u.last_name) as leader_name,
+      u.image as leader_image  
+      FROM groups g 
+      INNER JOIN reservations_groups rg ON rg.groupId = g.id
+      INNER JOIN reservations r ON r.id = rg.reservationId
+      LEFT JOIN users_reservations ur ON ur.reservationId = r.id
+      INNER JOIN users u ON u.id = r.leader
+      INNER JOIN status s ON s.id = r.status
+      WHERE g.id = ?
+      GROUP BY r.id
+      LIMIT 10 OFFSET ?`
+      ,
+      values: [groupId, page * 10 - 10]
+    }),
+    query({
+      query: `SELECT COUNT(rg.reservationId) as count FROM groups g 
+      INNER JOIN reservations_groups as rg ON rg.groupId = g.id
+      WHERE g.id = ?`,
+      values: [groupId]
+    })
+  ]) as any
+
+  return { data: dataRequest, count: countRequest[0].count }
+}
+
+export const getGroupUsers = async ({ groupId, page }: { groupId: any, page: any }) => {
+  const [dataRequest, countRequest] = await Promise.all([
+    query({
+      query: `SELECT u.id, CONCAT(u.first_name, ' ', u.last_name), u.email, u.image, r.name, o.name, u.verified
+    FROM groups g
+    INNER JOIN users_groups ug ON ug.groupId = g.id
+    INNER JOIN users u ON ug.userId = u.id
+    INNER JOIN roles r ON r.id = u.role
+    LEFT JOIN organization o ON o.id = u.organization
+    WHERE g.id = ?
+    LIMIT 10 OFFSET ?
+    `,
+      values: [groupId, page * 10 - 10]
+    }),
+    query({
+      query: `SELECT COUNT(g.id) as count FROM groups g 
+      INNER JOIN users_groups ug ON ug.groupId = g.id
+      WHERE g.id = ?`,
+      values: [groupId]
+    })
+  ]) as any
+
+
+  return { data: dataRequest, count: countRequest[0].count }
+}
+
+export const getGroupDetail = async ({ groupId }: { groupId: any }) => {
+
+  const req = await query({
+    query: `SELECT g.id, g.name, g.description, u.image as owner_image, CONCAT(u.first_name, ' ', u.last_name) as owner_name, u.email as owner_email FROM groups g INNER JOIN users u ON u.id = g.owner WHERE g.id = ?`,
+    values: [groupId]
+  }) as any
+
+  const data = req[0]
+
+  return { data }
+}
+
+export const editGroupDetail = async ({ groupId, name, description }: { groupId: any, name: any, description: any }) => {
+
+  const req = await query({
+    query: `UPDATE groups set name = ?, description = ? WHERE groups.id = ?`,
+    values: [name, description, groupId]
+  }) as any
+
+  return { success: req.affectedRows === 1 }
+}
+
+export const getUserDetail = async ({ userId }: { userId: any }) => {
+  const req = await query({
+    query: `SELECT u.id, CONCAT(u.first_name, ' ', u.last_name) as name, u.image, u.email, r.name as role, u.verified, u.adress, u.birth_date, u.ID_code, o.id as organization_id, o.name as organization_name
+    FROM users u 
+    INNER JOIN roles r ON r.id = u.role
+    LEFT JOIN organization o ON o.id = u.organization
+    WHERE u.id = ?`,
+    values: [userId]
+  }) as any
+
+
+  const data = req[0]
+  return { data: data }
+}
+
+export const editUserDetail = async ({ userId, ID_code, adress, organization }: { userId: any, ID_code: any, adress: any, organization: any }) => {
+  const req = await query({
+    query: `UPDATE users set ID_code = ?, adress = ?, organization = ? WHERE users.id = ?`,
+    values: [ID_code, adress, organization, userId]
+  }) as any
+
+  return { success: req.affectedRows === 1 }
+
+}
+
+export const getUserGroups = async ({ userId, page }: { userId: any, page: any }) => {
+  const [dataRequest, countRequest] = await Promise.all([
+    query({
+      query: `SELECT g.id, g.name, g.description, CONCAT(o.first_name, ' ', o.last_name) as owner_name,o.image as owner_image
+    FROM users u
+    INNER JOIN users_groups ug ON ug.userId = u.id
+    INNER JOIN groups g ON ug.groupId = g.id
+    INNER JOIN users o ON o.id = g.owner
+    WHERE u.id = ?
+    LIMIT 10 OFFSET ?      
+    `,
+      values: [userId, page * 10 - 10]
+    }),
+    query({
+      query: `SELECT COUNT(ug.groupId) as count FROM users u 
+    INNER JOIN users_groups ug ON ug.userId = u.id
+    WHERE u.id = ?`,
+      values: [userId]
+    })
+  ]) as any
+
+
+  return { data: dataRequest, count: countRequest[0].count }
+}
+
+export const getUserReservations = async ({ userId, page }: { userId: any, page: any }) => {
+
+  const [dataRequest, countRequest] = await Promise.all([
+    query({
+      query: `SELECT r.id, r.name, r.from_date, r.to_date, CONCAT(l.first_name, ' ', l.last_name) as leader_name, l.image as leader_image, COUNT(ur2.userId) as users_count, s.color as status_color, s.icon as status_icon, s.display_name as status_name
+        FROM users u
+        INNER JOIN users_reservations ur ON ur.userId = u.id
+        INNER JOIN reservations r ON r.id = ur.reservationId
+        INNER JOIN users l ON l.id = r.leader
+        INNER JOIN users_reservations ur2 ON ur2.reservationId = r.id  
+        INNER JOIN status s ON s.id = r.status
+        WHERE u.id = ?
+        GROUP BY r.id
+        LIMIT 10 OFFSET ?
+      `,
+      values: [userId, page * 10 - 10]
+    }),
+    query({
+      query: `SELECT COUNT(ur.userId) as count FROM users u
+      INNER JOIN users_reservations ur ON ur.userId = u.id
+      WHERE u.id = ?`,
+      values: [userId]
+    })
+  ]) as any
+
+  console.log(dataRequest)
+  return { data: dataRequest, count: countRequest[0].count }
+}
+
+export const getReservationDetail = async ({ reservationId }: { reservationId: any }) => {
+  const req = await query({
+    query: ``,
+    values: [reservationId]
+  })
+
 }

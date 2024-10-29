@@ -1,13 +1,17 @@
-import { getUserList } from "@/lib/api";
+import { getUserList, getUsersAvaliableGroups, getUsersAvaliableReservations } from "@/lib/api";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import UserListItem from "./components/UserListItem";
 import TableListPagination from "@/ui-components/TableListPagination";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 export default async function UserListConfig({
   searchParams: { users, search, organization, role },
 }: {
   searchParams: { users: any, search: any, organization: any, role: any }
 }) {
+
+  const { user: currentUser } = await getServerSession(authOptions) as any
 
   const { data, count } = await getUserList({
     page: users || 1,
@@ -16,6 +20,9 @@ export default async function UserListConfig({
     organization: Number(organization) || 0,
     withChildrenCollapsed: true,
   });
+
+  const { groups: avaliableGroups } = await getUsersAvaliableGroups(currentUser.id)
+  const { reservations: avaliableReservations } = await getUsersAvaliableReservations(currentUser.id)
 
   return (
     <TableContainer>
@@ -39,9 +46,9 @@ export default async function UserListConfig({
             <UserListItem
               key={user.id}
               user={user}
-              userRole={user.role.id}
-              userId={user.id}
               childrenData={user.children}
+              avaliableGroups={avaliableGroups}
+              avaliableReservations={avaliableReservations}
             />
           ))}
         </TableBody>

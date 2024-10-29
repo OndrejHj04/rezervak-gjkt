@@ -33,7 +33,6 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials: any) {
         const { email, password } = credentials;
         const { user } = await userLogin({ email, password });
-
         return { ...user }
       },
     }),
@@ -50,7 +49,7 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     async signIn({ user }: any) {
-      if (user.forbidden) return false
+      if (user.forbidden || !user.id) return false
 
       return true
     },

@@ -7,7 +7,6 @@ export async function GET(_: NextRequest, { params }: any) {
     query: `SELECT id FROM users WHERE id = ?`,
     values: [params.id]
   }) as any
-  console.log(data, 'xdd')
   if (!data.length) {
     return NextResponse.json({ exists: false })
   }

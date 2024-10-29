@@ -20,70 +20,60 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { getFullName } from "@/app/constants/fullName";
 import { store } from "@/store/store";
-import { usersDelete } from "@/lib/api";
+import { reservationAddUsers, userAddGroups, userAddReservations, usersDelete } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 export default function UserListItem({
   user,
-  userRole,
-  userId,
   childrenData,
+  avaliableGroups,
+  avaliableReservations
 }: {
   user: any;
-  userRole: any;
-  userId: any;
   childrenData: any;
+  avaliableGroups: any
+  avaliableReservations: any
 }) {
-
   const [open, setOpen] = useState(false);
-  const [contextMenu, setContextMenu] = useState<any>(null)
-  const { selectedUsers, setSelectedUsers } = store()
+  const [anchorEl, setAnchorEl] = useState<any>(null)
   const { refresh } = useRouter()
-
-  const handleDeleteUsers = (e: any) => {
-    e.preventDefault()
-    e.stopPropagation()
-    usersDelete({ users: selectedUsers }).then(({ success }) => {
-      if (success) toast.success("Rezervace úspěšně odstraněny");
-      else toast.error("Něco se pokazilo");
-    })
-    refresh()
-    setSelectedUsers([])
-  }
-
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault()
-    setContextMenu(
-      contextMenu === null && selectedUsers.includes(user.id)
-        ? {
-          mouseX: e.clientX + 2,
-          mouseY: e.clientY - 6,
-        }
-        : null,
-    );
-  };
-
-  const handleClose = () => {
-    setContextMenu(null);
-  }
-
-  const handleSelectUser = () => {
-    if (selectedUsers.includes(user.id)) {
-      setSelectedUsers(selectedUsers.filter((res: any) => res !== user.id))
-    } else {
-      setSelectedUsers([...selectedUsers, user.id])
-    }
-  }
 
   const handleOpenSubRow = (e: any) => {
     e.stopPropagation()
     setOpen(o => !o)
   }
 
+  const setMenuPosition = (e: any) => {
+    setAnchorEl(
+      anchorEl === null
+        ? {
+          mouseX: e.clientX + 2,
+          mouseY: e.clientY - 6,
+        }
+        : null
+    )
+  }
+
+  const handleAddToGroup = (groupId: any) => {
+    userAddGroups({ user: user.id, groups: [groupId] }).then(({ success }) => {
+      if (success) toast.success("Uživatel úspěšně přidán do skupiny")
+      else toast.error("Něco se nepovedlo")
+      refresh()
+    })
+  }
+
+  const handleAddToReservation = (reservationId: any) => {
+    userAddReservations({ user: user.id, reservations: [reservationId] }).then(({ success }) => {
+      if (success) toast.success("Uživatel úspěšně přidán do rezervace")
+      else toast.error("Něco se nepovedlo")
+      refresh()
+    })
+  }
+
   return (
     <React.Fragment key={user.id}>
-      <TableRow onContextMenu={handleContextMenu} selected={selectedUsers.includes(user.id)} onClick={handleSelectUser}>
+      <TableRow onClick={setMenuPosition} selected={Boolean(anchorEl)}>
         {childrenData && (
           <TableCell>
             {!!childrenData.length && (
@@ -114,16 +104,20 @@ export default function UserListItem({
             <Button>Detail</Button>
           </Link>
         </TableCell>
-        <Menu open={Boolean(contextMenu)}
-          onClose={handleClose}
+        <Menu open={Boolean(anchorEl)}
+          onClose={() => setAnchorEl(null)}
           anchorReference="anchorPosition"
-          anchorPosition={contextMenu !== null
-            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+          anchorPosition={anchorEl !== null
+            ? { top: anchorEl.mouseY, left: anchorEl.mouseX }
             : undefined}
         >
-          <MenuItem onClick={handleDeleteUsers}>Odstranit vybrané</MenuItem>
+          {avaliableGroups.map((group: any) => (
+            <MenuItem disabled={group.users.includes(user.id)} key={group.id} onClick={() => handleAddToGroup(group.id)}>Přidat do skupiny {group.name}</MenuItem>
+          ))}
           <Divider />
-          <MenuItem onClick={handleDeleteUsers}>Přidat do skupiny...</MenuItem>
+          {avaliableReservations.map((reservation: any) => (
+            <MenuItem disabled={reservation.users.includes(user.id)} key={reservation.id} onClick={() => handleAddToReservation(reservation.id)}>Přidat do rezervace {reservation.name}</MenuItem>
+          ))}
         </Menu>
       </TableRow>
       {open && (
@@ -142,8 +136,8 @@ export default function UserListItem({
                           key={child.id}
                           user={child}
                           childrenData={null}
-                          userId={userId}
-                          userRole={userRole}
+                          avaliableGroups={avaliableGroups}
+                          avaliableReservations={avaliableReservations}
                         />
                       ))}
                     </TableBody>

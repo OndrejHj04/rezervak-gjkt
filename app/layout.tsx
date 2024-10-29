@@ -32,7 +32,7 @@ export default async function RootLayout({
             <TopBar />
             <SlidingMenuConfig />
             <SpeedComponent />
-            <div className="p-2 overflow-auto flex-grow">{children}</div>
+            <div className="py-2 overflow-auto flex-grow">{children}</div>
           </ClientProvider>
           <ToastContainer />
         </div>

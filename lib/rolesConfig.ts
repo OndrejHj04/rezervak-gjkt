@@ -16,6 +16,6 @@ const actionMenu = [
   { href: "/user/create", name: "Vytvořit uživatele", icon: "person_add" },
 ]
 
-const otherRoutes = ['/changelog', '/password-reset']
+const otherRoutes = ['/changelog', '/password-reset', '/vzorovy_soubor.csv', '/podminky.pdf']
 
 export { sideMenu, actionMenu, otherRoutes }

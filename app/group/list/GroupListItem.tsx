@@ -63,7 +63,7 @@ export default function GroupListItem({ group }: { group: any }) {
           {group.users.length}
         </TableCell>
         <TableCell align="right" className="min-w-[150px]" onClick={e => e.stopPropagation()}>
-          <Button component={Link} href={`/group/detail/${group.id}`}>detail</Button>
+          <Button component={Link} href={`/group/detail/${group.id}/info`}>detail</Button>
         </TableCell>
       </TableRow>
       <Menu open={Boolean(contextMenu)}

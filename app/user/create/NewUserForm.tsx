@@ -8,11 +8,15 @@ import { toast } from "react-toastify";
 import UserCard from "../detail/UserCard";
 import { useRouter } from "next/navigation";
 
+const roles = [
+  { id: 1, name: "Admin" },
+  { id: 2, name: "Správce" },
+  { id: 3, name: "Uživatel" }
+]
+
 export default function NewUserForm({
-  roles,
   users,
 }: {
-  roles: any;
   users: any;
 }) {
   const [loading, setLoading] = useState(false);

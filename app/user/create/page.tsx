@@ -1,8 +1,8 @@
 import NewUserForm from "./NewUserForm";
-import { getRolesList, getUserList } from "@/lib/api";
+import { getUsersBySearch } from "@/lib/api";
 
 export default async function CreateUserForm() {
-  const { data: users } = await getUserList({ withChildrenCollapsed: true });
+  const { data } = await getUsersBySearch();
 
-  return <NewUserForm users={users} />;
+  return <NewUserForm options={data} />;
 }

@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 export default async function GroupReservationsTable({ id, page = 1 }: { id: any, page: any }) {
   const { data, count } = await getGroupReservations({ groupId: id, page })
 
+  console.log(data)
   return (
     <TableContainer>
       <Table size="small">

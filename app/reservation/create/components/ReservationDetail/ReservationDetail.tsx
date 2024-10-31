@@ -1,9 +1,11 @@
 import { getServerSession } from "next-auth";
 import ReservationDetailRender from "./ReservationDetailRender";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { getUsersBySearch } from "@/lib/api";
 
-export default async function ReservationDetail() {
+export default async function ReservationDetail({ userSearch = "" }: { userSearch: any }) {
   const { user } = (await getServerSession(authOptions)) as any;
+  const { data } = await getUsersBySearch({ search: userSearch })
 
-  return <ReservationDetailRender id={user.id} />;
+  return <ReservationDetailRender user={user} options={data} />;
 }

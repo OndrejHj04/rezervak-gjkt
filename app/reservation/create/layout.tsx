@@ -7,7 +7,7 @@ export default function CreateReservationLayout({ children }: { children: React.
   return (
     <div className="flex flex-col">
       <div className="flex justify-between mb-2 items-center">
-        <Typography variant="h4">Nová rezervace</Typography>
+        <Typography variant="h5">Nová rezervace</Typography>
         <CreateButton />
       </div>
       {children}

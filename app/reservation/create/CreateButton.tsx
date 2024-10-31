@@ -4,19 +4,20 @@ import { store } from "@/store/store";
 import { Button } from "@mui/material";
 import { toast } from "react-toastify";
 import { useState } from "react";
-import { createNewReservation } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { createNewReservation } from "@/lib/api";
 
 export default function CreateButton() {
   const { createReservation, setCreateReservation } = store();
   const { push, refresh } = useRouter()
   const [loading, setLoading] = useState(false);
+  const { from_date, to_date, name, purpouse } = createReservation
+  const isValid = from_date.length && to_date.length && name.length && purpouse.length
   const setDefault = () => {
     setCreateReservation({
       from_date: "",
       to_date: "",
       groups: [],
-      members: [],
       rooms: [],
       leader: 0,
       purpouse: "",
@@ -39,15 +40,9 @@ export default function CreateButton() {
     <Button
       variant="outlined"
       type="submit"
+      size="small"
       onClick={handleSubmit}
-      disabled={
-        !Object.keys(createReservation).every((value: any) => {
-          if (value !== "groups" && Array.isArray(createReservation)) {
-            return createReservation.length > 0;
-          }
-          return value === "instructions" ? true : Boolean(createReservation);
-        }) || loading
-      }
+      disabled={!isValid || loading}
     >
       Uložit
     </Button>

@@ -158,12 +158,9 @@ export default function ReservationDatesRender({
             )
           }
         >
-          <div className="flex gap-5 items-center">
-            <Typography variant="h6">Termín a pokoje rezervace</Typography>
-            <Typography>{(dayjs(createReservation.from_date).isValid() && dayjs(createReservation.to_date).isValid() && createReservation.rooms.length) && `${dayjs(createReservation.from_date).format("DD. MM. YYYY")} - ${dayjs(createReservation.to_date).format("DD. MM. YYYY")}, ${createReservation.rooms} pokojů`}</Typography>
-          </div>
+          <Typography variant="h6">Termín a pokoje rezervace</Typography>
         </AccordionSummary>
-        <AccordionDetails className="md:p-4 p-1 flex md:flex-row flex-col gap-2">
+        <AccordionDetails className="p-2 flex md:flex-row flex-col gap-2">
           <div className="md:w-[810px] w-auto">
             <div className="flex gap-2 mb-2">
               <ButtonGroup size="small">

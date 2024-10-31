@@ -1,6 +1,5 @@
 "use client";
 
-import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
   Button,
@@ -50,8 +49,8 @@ export default function UsersImportForm({ roles }: { roles: any }) {
       }
     });
     importNewUsers({ users: newData }).then(({ success, count }) => {
-      success && toast.success(`${count} uživatelů úspěšně importováno`);
-      !success && toast.error(`Něco se nepovedlo`);
+      if (success) toast.success(`${count} uživatelů úspěšně importováno`);
+      else toast.error(`Něco se nepovedlo`);
     });
     refresh()
     push("/user/list")
@@ -109,17 +108,16 @@ export default function UsersImportForm({ roles }: { roles: any }) {
     <form className="flex flex-col">
       <div className="mb-2 flex justify-between gap-2">
         <Typography variant="h5">Importovat uživatele</Typography>
-        <LoadingButton
+        <Button
           type="submit"
           variant="contained"
           onClick={handleSubmit}
-          loading={loading}
           disabled={Boolean(
-            !file || message.length || data.every((item) => !item[4])
+            !file || message.length || data.every((item) => !item[4]) || loading
           )}
         >
           Importovat uživatele
-        </LoadingButton>
+        </Button>
       </div>
       <Paper className="md:p-4 p-2 flex md:flex-row flex-col gap-4 justify-between">
         <div className="flex flex-col gap-2">

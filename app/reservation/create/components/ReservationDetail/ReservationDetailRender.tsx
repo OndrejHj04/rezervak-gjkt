@@ -4,6 +4,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Autocomplete,
   Button,
   TextField,
   Typography,
@@ -11,30 +12,35 @@ import {
 import { useState } from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { store } from "@/store/store";
 
-export default function ReservationDetailRender({ id }: { id: any }) {
+export default function ReservationDetailRender({ user, options }: { user: any, options: any }) {
   const { createReservation, setCreateReservation } = store();
   const [expanded, setExpanded] = useState(false);
   const reservationValidation =
-    createReservation.name && createReservation.purpouse;
+    createReservation.name && createReservation.purpouse && createReservation.leader;
   const {
     handleSubmit,
-    formState: { isValid },
+    formState: { isValid, isDirty },
+    control,
     register,
     reset,
-  } = useForm();
+  } = useForm({
+    defaultValues: { name: "", purpouse: "", instructions: "", leader: options.find((item: any) => item.id === user.id) }
+  });
 
+  const isAdmin = user.role.id !== 3
   const onSubmit = (data: any) => {
     setCreateReservation({
       ...createReservation,
-      leader: id,
+      leader: data.leader.id,
       purpouse: data.purpouse,
       instructions: data.instructions,
       name: data.name,
     });
     setExpanded(false);
+    reset(data)
   };
 
   return (
@@ -49,66 +55,63 @@ export default function ReservationDetailRender({ id }: { id: any }) {
           )
         }
       >
-        <div className="flex gap-5 items-center">
-          <Typography variant="h6">Detail rezervace</Typography>
-          {!!createReservation.name && (
-            <Typography>Název rezervace: {createReservation.name}</Typography>
-          )}
-        </div>
+        <Typography variant="h6">Detail rezervace</Typography>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails className="p-2">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex gap-2 md:flex-row flex-col"
+          className="grid grid-cols-2 w-[320px] gap-3"
         >
-          <div className="flex flex-col gap-2">
-            <div className="flex gap-2 md:flex-row flex-col">
-              <TextField
-                {...register("name", { required: true })}
-                label="Název rezervace"
-                variant="outlined"
-              />
-              <TextField
-                {...register("purpouse", { required: true })}
-                variant="outlined"
-                label="Účel rezervace"
-              />
-            </div>
-            <TextField
-              {...register("instructions")}
-              label="Pokyny pro účastníky (dobrovolné)"
-              multiline
-              maxRows={4}
-              minRows={4}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Button variant="contained" disabled={!isValid} type="submit">
-              Uložit
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              disabled={!reservationValidation}
-              onClick={() => {
-                setCreateReservation({
-                  ...createReservation,
-                  purpouse: "",
-                  name: "",
-                  instructions: "",
-                });
-                reset({
-                  purpouse: "",
-                  instructions: "",
-                  name: "",
-                });
-              }}
-            >
-              Zrušit
-            </Button>
-          </div>
+          <TextField
+            {...register("name", { required: true })}
+            label="Název rezervace"
+            variant="outlined"
+          />
+          <TextField
+            {...register("purpouse", { required: true })}
+            variant="outlined"
+            label="Účel rezervace"
+          />
+          <TextField
+            {...register("instructions")}
+            className="col-span-2"
+            label="Pokyny pro účastníky (dobrovolné)"
+          />
+          <Controller
+            control={control}
+            name="leader"
+            rules={{ required: true }}
+            render={({ field: { value, onChange } }) => (
+              <Autocomplete value={value} onChange={(_, value) => onChange(value)} disabled={!isAdmin} className="col-span-2" options={options}
+                renderOption={(props: any, option: any) => <li {...props}><span className="flex justify-between w-full">
+                  <Typography>{option.name}</Typography>
+                  <Typography color="text.secondary">{option.email}</Typography>
+                </span></li>} getOptionLabel={(option: any) => option.name} renderInput={(params) => (
+                  <TextField {...params} label="Vedoucí" helperText="Vedoucí bude automaticky přidán jako účastník rezervace a poté může do rezervace přidávat další účastníky." />
+                )} />
+            )}
+          />
+          <Button variant="contained" disabled={!isValid || !isDirty} type="submit">
+            Uložit
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            disabled={!reservationValidation}
+            onClick={() => {
+              setCreateReservation({
+                ...createReservation,
+                purpouse: "",
+                name: "",
+                instructions: "",
+              });
+              reset({ name: "", instructions: "", purpouse: "" })
+            }}
+          >
+            Zrušit
+          </Button>
         </form>
       </AccordionDetails>
-    </Accordion>
+    </Accordion >
   );
 }

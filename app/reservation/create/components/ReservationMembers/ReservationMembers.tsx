@@ -1,24 +1,13 @@
+import { getServerSession } from "next-auth";
 import ReservationMembersRender from "./ReservationMembersRender";
-import { getGroupList, getUserList } from "@/lib/api";
+import { getUserGroupsWhereOwner } from "@/lib/api";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-export default async function ReservationMembers({
-  users,
-  groups,
-  gpage,
-  upage,
-}: {
-  users: any;
-  groups: any;
-  gpage: any;
-  upage: any;
-}) {
-  const groupsList = await getGroupList({
-    page: gpage,
-    limit: true,
-    rpp: 5,
-    search: groups || "",
-  });
-  const usersList = await getUserList({ search: users, page: upage });
+export default async function ReservationMembers() {
+  const { user } = await getServerSession(authOptions) as any
+  const { data } = await getUserGroupsWhereOwner({
+    userId: user.id,
+  })
 
-  return <ReservationMembersRender groups={groupsList} users={usersList} />;
+  return <ReservationMembersRender groups={data} />;
 }

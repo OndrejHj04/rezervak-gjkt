@@ -1,81 +1,72 @@
 "use client";
 import {
   Autocomplete,
+  Button,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-import LoadingButton from "@mui/lab/LoadingButton";
 import { toast } from "react-toastify";
-import UserCard from "@/app/user/detail/UserCard";
 import { createNewGroup } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 export default function GroupNewForm({
-  users,
+  options,
   user,
 }: {
-  users: any;
+  options: any
   user: any;
 }) {
   const {
     register,
     handleSubmit,
-    setValue,
     control,
     formState: { isValid },
-  } = useForm();
+    reset
+  } = useForm({
+    defaultValues: {
+      name: "", description: "", owner: options.find((item: any) => item.id === user.id)
+    }
+  });
 
-  const { push } = useRouter()
-  const [loading, setLoading] = useState(false);
+  const { push, refresh } = useRouter()
 
-  const onSubmit = async (formData: any) => {
-    setLoading(true);
+  const onSubmit = async (data: any) => {
+    reset(data)
     createNewGroup({
-      ...formData,
-      owner: formData.owner.id,
+      ...data,
+      owner: data.owner.id,
     }).then(({ success }) => {
-      if (success) {
-        toast.success(`Skupina  úspěšně vytvořena`);
-      } else {
-        setLoading(false);
-        toast.error("Něco se pokazilo");
-      }
+      if (success) toast.success(`Skupina  úspěšně vytvořena`);
+      else toast.error("Něco se pokazilo");
       push("/group/list")
+      refresh()
     });
   };
 
-  useEffect(() => {
-    if (user) {
-      setValue(
-        "owner",
-        users.find((u: any) => u.id === user.id)
-      );
-    }
-  }, [user]);
-
   return (
     <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-      <div className="mb-2 flex justify-between gap-2">
+      <div className="flex justify-between gap-2 mb-2">
         <Typography variant="h5">Nová skupina</Typography>
-        <LoadingButton
+        <Button
           type="submit"
-          variant="contained"
-          disabled={!isValid || loading}
+          variant="outlined"
+          size="small"
+          disabled={!isValid}
         >
           Uložit
-        </LoadingButton>
+        </Button>
       </div>
-      <Paper className="sm:p-4 p-2 gap-4">
-        <div className="flex sm:flex-row flex-col gap-2">
+      <Paper className="p-2">
+        <div className="flex-col flex gap-3 max-w-[320px]">
           <TextField
             label="Název skupiny"
             {...register("name", { required: true })}
           />
           <TextField
             label="Popis"
+            className="col-span-2"
             {...register("description", { required: true })}
           />
           <Controller
@@ -83,19 +74,17 @@ export default function GroupNewForm({
             {...register("owner", { required: true })}
             render={({ field: { value, onChange } }) => (
               <Autocomplete
-                className="sm:w-80 w-full"
+                fullWidth
                 value={value}
-                defaultValue={user}
-                onChange={(e, value) => {
+                onChange={(_, value) => {
                   onChange(value);
                 }}
-                options={users}
-                getOptionLabel={(option: any) =>
-                  `${option.first_name} ${option.last_name}`
-                }
-                renderOption={(props: any, option: any) => (
-                  <UserCard user={option} {...props} />
-                )}
+                options={options}
+                getOptionLabel={(option: any) => option.name}
+                renderOption={(props: any, option: any) => <li {...props}><span className="flex justify-between w-full">
+                  <Typography>{option.name}</Typography>
+                  <Typography color="text.secondary">{option.email}</Typography>
+                </span></li>}
                 renderInput={(params) => (
                   <TextField {...params} label="Majitel skupiny" />
                 )}

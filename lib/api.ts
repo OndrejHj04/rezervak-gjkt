@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { sign } from "jsonwebtoken";
 import { roomsEnum } from "@/app/constants/rooms";
 import { values } from "lodash";
+import { Z_VERSION_ERROR } from "zlib";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -612,11 +613,9 @@ export const createUserAccount = async ({
 }) => {
   const eventId = 1;
   const password = Math.random().toString(36).slice(-9) as any;
-  const guest = await checkUserSession();
 
   const check = (await query({
-    query: `SELECT * FROM users${guest ? "_mock as users" : ""
-      } WHERE email = ?`,
+    query: `SELECT u.id FROM users u WHERE u.email = ?`,
     values: [email],
   })) as any;
 
@@ -626,8 +625,7 @@ export const createUserAccount = async ({
 
   const [{ affectedRows, insertId }, { data }] = (await Promise.all([
     query({
-      query: `INSERT INTO users${guest ? "_mock" : ""
-        }(first_name, last_name, email, role, password, verified, active) VALUES(?,?,?,?, MD5(?), 0, 1)`,
+      query: `INSERT INTO users (first_name, last_name, email, role, password, verified, active) VALUES(?,?,?,?, MD5(?), 0, 1)`,
       values: [first_name, last_name, email, role, password],
     }),
     mailEventDetail({ id: eventId }),
@@ -635,9 +633,8 @@ export const createUserAccount = async ({
 
   if (parent) {
     await query({
-      query: `INSERT INTO children_accounts${guest ? "_mock" : ""
-        }(childrenId, parentId, id) VALUES(?,?,?)`,
-      values: [insertId, parent, `${insertId},${parent}`],
+      query: `INSERT INTO children_accounts (childrenId, parentId) VALUES(?,?)`,
+      values: [insertId, parent],
     });
   }
 
@@ -907,104 +904,6 @@ export const setBlockedDates = async ({
   };
 };
 
-export const createNewReservation = async ({
-  from_date,
-  to_date,
-  leader,
-  rooms,
-  groups,
-  purpouse,
-  members,
-  instructions,
-  name,
-}: {
-  from_date: any;
-  to_date: any;
-  leader: any;
-  rooms: any;
-  groups: any;
-  purpouse: any;
-  members: any;
-  instructions: any;
-  name: any;
-}) => {
-  const eventId = 8;
-  const guest = await checkUserSession();
-  const { user } = await getServerSession(authOptions) as any
-
-  const reservation = await query({
-    query: `INSERT INTO reservations (from_date, to_date, purpouse, leader, instructions, name, status) VALUES (?, ?, ?, ?, ?, ?, 2)`,
-    values: [from_date, to_date, purpouse, leader, instructions, name],
-  }) as any
-
-  const change = await query({
-    query: `INSERT INTO reservations_users_change (user_id, reservation_id, direction) VALUES (?,?,1)`,
-    values: [user.id, reservation.insertId]
-  }) as any
-
-  const [{ data }, leaderData, statusName, membersEmail] = (await Promise.all([
-    mailEventDetail({ id: eventId }),
-    query({
-      query: `SELECT first_name, last_name, email FROM users WHERE id = ?`,
-      values: [leader],
-    }),
-    query({
-      query: `SELECT display_name FROM status WHERE id = 2`,
-    }),
-    query({
-      query: `SELECT email FROM users WHERE id IN ?`,
-      values: [[members]],
-    }),
-    query({
-      query: `INSERT INTO reservations_rooms (reservationId, roomId) VALUES ?`,
-      values: [rooms.map((room: any) => [
-        reservation.insertId,
-        room,
-      ])],
-    }),
-    members.length &&
-    query({
-      query: `INSERT INTO users_reservations (userId, reservationId) VALUES ?`,
-      values: [members.map((member: any) => [
-        member,
-        reservation.insertId,
-      ])],
-    }),
-    groups.length &&
-    query({
-      query: `INSERT INTO reservations_groups (reservationId, groupId) VALUES ?`,
-      values: [groups.map((group: any) => [
-        reservation.insertId,
-        group,
-      ])],
-    }),
-  ])) as any;
-
-  await sendEmail({
-    send: data.active,
-    to: membersEmail.map(({ email }: { email: any }) => email),
-    template: data.template,
-    variables: [
-      {
-        name: "reservation_start",
-        value: dayjs(from_date).format("DD.MM.YYYY"),
-      },
-      {
-        name: "reservation_end",
-        value: dayjs(to_date).format("DD.MM.YYYY"),
-      },
-      { name: "reservation_status", value: statusName[0].display_name },
-      {
-        name: "leader_name",
-        value: leaderData[0].first_name + " " + leaderData[0].last_name,
-      },
-      { name: "leader_email", value: leaderData[0].email },
-    ],
-  });
-
-  return { success: true };
-};
-
 export const reservationsDelete = async ({
   reservations,
 }: {
@@ -1018,65 +917,6 @@ export const reservationsDelete = async ({
 
 
   return { success: affectedRows === reservations.length };
-};
-
-export const editReservationDetail = async ({
-  id,
-  purpouse,
-  instructions,
-  name,
-  from_date,
-  to_date,
-  dirtyFields,
-  success_link,
-  payment_symbol
-}: {
-  id: any;
-  purpouse: any;
-  instructions: any;
-  name: any;
-  from_date: any
-  to_date: any
-  dirtyFields: any
-  success_link: any,
-  payment_symbol: any
-}) => {
-  const { user } = await getServerSession(authOptions) as any
-  const requests = []
-
-  if (dirtyFields.from_date || dirtyFields.to_date) {
-    requests.push(
-      query({
-        query: `INSERT INTO reservation_status_change (reservation_id, user_id, before_status, after_status) SELECT ?,?, reservations.status, 2 FROM reservations WHERE id = ?`,
-        values: [id, user.id, id]
-      }),
-      query({
-        query: `INSERT INTO reservations_date_change (user_id, reservation_id, before_from_date, after_from_date, before_to_date, after_to_date) SELECT ?,?,reservations.from_date,?,reservations.to_date,? FROM reservations WHERE id = ?`,
-        values: [user.id, id, from_date, to_date, id]
-      }), query({
-        query: `UPDATE reservations SET status = 2 WHERE id = ?`,
-        values: [id]
-      }),
-    )
-  }
-
-  if (dirtyFields.name || dirtyFields.purpouse || dirtyFields.instructions || dirtyFields.success_link || dirtyFields.payment_symbol) {
-    requests.push(
-      query({
-        query: `INSERT INTO reservations_description_change (user_id, reservation_id, before_name, after_name, before_purpouse, after_purpouse, before_instructions, after_instructions, before_success_link, after_success_link, before_payment_symbol, after_payment_symbol) SELECT ?,?,reservations.name,?,reservations.purpouse,?,reservations.instructions,?,reservations.success_link,?,reservations.payment_symbol,? FROM reservations WHERE id = ?`,
-        values: [user.id, id, name, purpouse, instructions, success_link, payment_symbol, id]
-      })
-    )
-  }
-
-  const req = await Promise.all(requests) as any
-
-  await query({
-    query: `UPDATE reservations SET purpouse = ?, name = ?, instructions = ?, from_date = ?, to_date = ?, success_link = ?, payment_symbol = ? WHERE id = ?`,
-    values: [purpouse, name, instructions, from_date, to_date, success_link, payment_symbol, id],
-  })
-
-  return { success: req[req.length - 1].affectedRows === 1 };
 };
 
 export const reservationRemoveGroups = async ({
@@ -1293,43 +1133,6 @@ export const reservationUpdateStatus = async ({
   });
 
   return { success: affectedRows === 1, rejectReason: formatRejectReason };
-};
-
-export const userSpecifiedReservations = async ({
-  userId,
-}: {
-  userId: any;
-}) => {
-
-  const [reservations] = (await Promise.all([
-    query({
-      query: `SELECT reservations.id, from_date, to_date, status, reservations.name, leader, 
-      JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status,
-      JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader,
-      GROUP_CONCAT(
-        DISTINCT JSON_OBJECT('id', rooms.id, 'people', rooms.people)
-      ) as rooms
-      FROM users_reservations
-      INNER JOIN reservations ON users_reservations.reservationId = reservations.id 
-      INNER JOIN status ON status.id = reservations.status
-      INNER JOIN reservations_rooms ON reservations.id = reservations_rooms.reservationId
-      INNER JOIN rooms ON reservations_rooms.roomId = rooms.id
-      INNER JOIN users ON users.id = reservations.leader
-      WHERE userId = ?
-      GROUP BY reservations.id
-      `,
-      values: [userId],
-    }),
-  ])) as any;
-
-  const data = reservations.map((reservation: any) => ({
-    ...reservation,
-    status: JSON.parse(reservation.status),
-    leader: JSON.parse(reservation.leader),
-    rooms: JSON.parse(`[${reservation.rooms}]`),
-  }));
-
-  return { data };
 };
 
 export const groupAddUsers = async ({
@@ -2087,7 +1890,7 @@ export const getGroupReservations = async ({ groupId, page }: { groupId: any, pa
   const [dataRequest, countRequest] = await Promise.all([
     query({
       query: `SELECT r.id, r.name, r.from_date, r.to_date, COUNT(ur.userId) as users_count, CONCAT(u.first_name, ' ', u.last_name) as leader_name,
-      u.image as leader_image  
+      u.image as leader_image, s.icon as status_icon, s.display_name as status_name, s.color as status_color 
       FROM groups g 
       INNER JOIN reservations_groups rg ON rg.groupId = g.id
       INNER JOIN reservations r ON r.id = rg.reservationId
@@ -2114,7 +1917,7 @@ export const getGroupReservations = async ({ groupId, page }: { groupId: any, pa
 export const getGroupUsers = async ({ groupId, page }: { groupId: any, page: any }) => {
   const [dataRequest, countRequest] = await Promise.all([
     query({
-      query: `SELECT u.id, CONCAT(u.first_name, ' ', u.last_name), u.email, u.image, r.name, o.name, u.verified
+      query: `SELECT u.id, CONCAT(u.first_name, ' ', u.last_name) as name, u.email, u.image, r.name role, o.name as organization, u.verified
     FROM groups g
     INNER JOIN users_groups ug ON ug.groupId = g.id
     INNER JOIN users u ON ug.userId = u.id
@@ -2239,9 +2042,207 @@ export const getUserReservations = async ({ userId, page }: { userId: any, page:
 }
 
 export const getReservationDetail = async ({ reservationId }: { reservationId: any }) => {
-  const req = await query({
-    query: ``,
+  const dataRequest = await query({
+    query: `SELECT r.id, r.name, r.from_date, r.to_date, r.purpouse, u.image as leader_image, CONCAT(u.first_name, ' ', u.last_name) as leader_name,
+    u.email as leader_email, s.display_name as status_name, s.icon as status_icon, s.color as status_color, r.success_link, r.payment_symbol, r.reject_reason, s.id as status_id, r.instructions
+    FROM reservations r
+    INNER JOIN users u ON u.id = r.leader
+    INNER JOIN status s ON s.id = r.status
+    WHERE r.id = ?`,
+    values: [reservationId]
+  }) as any
+
+  const roomsRequest = await query({
+    query: `
+      SELECT ro.id, ro.people
+      FROM reservations r
+      LEFT JOIN reservations_rooms rr ON rr.reservationId = r.id
+      INNER JOIN rooms ro ON ro.id = rr.roomId
+      WHERE r.id = ?
+    `,
     values: [reservationId]
   })
 
+
+  const data = { ...dataRequest[0], rooms: roomsRequest }
+
+  return { data }
+}
+
+export const editReservationDate = async ({ reservationId, from_date, to_date }: { reservationId: any, from_date: any, to_date: any }) => {
+  const req = await query({
+    query: `UPDATE reservations SET from_date = ?, to_date = ? WHERE reservations.id = ?`,
+    values: [dayjs(from_date).format("YYYY-MM-DD"), dayjs(to_date).format("YYYY-MM-DD"), reservationId]
+  }) as any
+
+  return { success: req.affectedRows === 1 }
+}
+
+
+export const editReservationStatus = async ({ reservationId, newStatus }: { reservationId: any, newStatus: any }) => {
+  const req = await query({
+    query: `UPDATE reservations SET status = ? WHERE reservations.id = ?`,
+    values: [newStatus, reservationId]
+  }) as any
+
+  return { success: req.affectedRows === 1 }
+}
+
+export const editReservationDetail = async ({ reservationId, name, instructions, purpouse, paymentSymbol, successLink, rejectReason }:
+  { reservationId: any, name: any, instructions: any, purpouse: any, paymentSymbol: any, successLink: any, rejectReason: any }) => {
+
+  const req = await query({
+    query: `UPDATE reservations SET name = ?, instructions = ?, purpouse = ?, payment_symbol = ?, success_link = ?, reject_reason = ? WHERE reservations.id = ?`,
+    values: [name, instructions, purpouse, paymentSymbol, successLink, rejectReason, reservationId]
+  }) as any
+
+  return { success: req.affectedRows === 1 }
+}
+
+export const getReservationUsers = async ({ reservationId, page }: { reservationId: any, page: any }) => {
+
+  const [dataRequest, countRequest] = await Promise.all([
+    query({
+      query: `SELECT CONCAT(u.first_name, ' ', u.last_name) as name, u.id, u.email, u.image, ro.name as role_name, o.name as organization_name, u.verified
+      FROM reservations r 
+      INNER JOIN users_reservations ur ON ur.reservationId = r.id
+      INNER JOIN users u ON u.id = ur.userId
+      INNER JOIN roles ro ON ro.id = u.role
+      LEFT JOIN organization o ON o.id = u.organization
+      WHERE r.id = ?
+      LIMIT 10 OFFSET ?
+      `,
+      values: [reservationId, page * 10 - 10]
+    }),
+    query({
+      query: `SELECT COUNT(ur.userId) as count FROM reservations r
+      INNER JOIN users_reservations ur ON ur.reservationId = r.id
+      WHERE r.id = ?`,
+      values: [reservationId]
+    })
+  ]) as any
+
+
+  return { data: dataRequest, count: countRequest[0].count }
+}
+
+export const getReservationGroups = async ({ reservationId, page }: { reservationId: any, page: any }) => {
+
+  const [dataRequest, countRequest] = await Promise.all([
+    query({
+      query: `SELECT g.id, g.name, g.description, CONCAT(u.first_name, ' ', u.last_name) as owner_name, u.email as owner_email, u.image as owner_image FROM reservations r 
+      INNER JOIN reservations_groups rg ON rg.reservationId = r.id
+      INNER JOIN groups g ON g.id = rg.groupId
+      INNER JOIN users u ON u.id = g.owner 
+      WHERE r.id = ?
+      LIMIT 10 OFFSET ?
+      `,
+      values: [reservationId, page * 10 - 10]
+    }),
+    query({
+      query: `SELECT COUNT(rg.groupId) as count FROM reservations r
+      INNER JOIN reservations_groups rg ON rg.reservationId = r.id
+      WHERE r.id = ?`,
+      values: [reservationId]
+    })
+  ]) as any
+
+
+  return { data: dataRequest, count: countRequest[0].count }
+}
+
+export const getUserGroupsWidgetData = async ({ userId }: { userId: any }) => {
+  const dataRequest = await query({
+    query: `SELECT g.id, g.name, CONCAT(u.first_name, ' ', u.last_name) as leader_name FROM users_groups ug
+    INNER JOIN groups g ON g.id = ug.groupId
+    INNER JOIN users u ON u.id = g.owner
+    WHERE ug.userId = ?`,
+    values: [userId]
+  }) as any
+
+  return { data: dataRequest }
+}
+
+export const getUserReservationsWidgetData = async ({ userId }: { userId: any }) => {
+  const dataRequest = await query({
+    query: `SELECT r.id, r.name, r.from_date, r.to_date
+    FROM users_reservations ur
+    INNER JOIN reservations r ON r.id = ur.reservationId
+    WHERE ur.userId = ?`,
+    values: [userId]
+  }) as any
+
+  return { data: dataRequest }
+}
+
+export const editReservationRooms = async ({ reservationId, rooms }: { reservationId: any, rooms: any }) => {
+  const [_, req] = await Promise.all([
+    query({
+      query: `DELETE FROM reservations_rooms WHERE reservationId = ?`,
+      values: [reservationId]
+    }),
+    query({
+      query: `INSERT INTO reservations_rooms (reservationId, roomId) VALUES ?`,
+      values: [rooms.map((room: any) => [reservationId, room])]
+    })
+  ]) as any
+
+  return { success: req.affectedRows === rooms.length }
+
+}
+
+export const getUserGroupsWhereOwner = async ({ userId }: { userId: any }) => {
+  const dataRequest = await query({
+    query: `SELECT g.id, g.name, COUNT(ug.userId) as users_count FROM groups g 
+    INNER JOIN users_groups ug ON ug.groupId = g.id
+    WHERE g.owner = ?
+    GROUP BY g.id
+    `,
+    values: [userId]
+  })
+
+  return { data: dataRequest }
+}
+
+export const createNewReservation = async ({ from_date, to_date, groups, rooms, leader, purpouse, instructions, name }: any) => {
+
+  console.log(leader)
+  const request = await query({
+    query: `INSERT INTO reservations (from_date, to_date, name, purpouse, leader, instructions, status) VALUES (?,?,?,?,?,?,2)`,
+    values: [from_date, to_date, name, purpouse, leader, instructions]
+  }) as any
+
+  const [] = await Promise.all([
+    query({
+      query: `INSERT INTO reservations_rooms (reservationId, roomId) VALUES ?`,
+      values: [rooms.map((room: any) => [request.insertId, room])]
+    }),
+    query({
+      query: `INSERT INTO users_reservations (userId, reservationId) VALUES (?,?)`,
+      values: [leader, request.insertId]
+    }),
+    groups.length && query({
+      query: `INSERT INTO reservations_groups (reservationId, groupId) VALUES ?`,
+      values: [groups.map((group: any) => [request.insertId, group])]
+    }),
+    groups.length && query({
+      query: `
+    INSERT IGNORE INTO users_reservations (reservationId, userId)
+    SELECT ?, ug.userId 
+    FROM users_groups ug 
+    WHERE ug.groupId IN (?)`,
+      values: [request.insertId, groups]
+    })
+  ])
+
+  return { success: request.affectedRows === 1 }
+}
+
+export const getUsersBySearch = async () => {
+  const dataRequest = await query({
+    query: `SELECT u.id, u.email, CONCAT(u.first_name, ' ', u.last_name) as name FROM users u`,
+    values: []
+  })
+
+  return { data: dataRequest }
 }

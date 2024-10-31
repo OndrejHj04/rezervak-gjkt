@@ -1,14 +1,13 @@
 "use client";
-import LoadingButton from "@mui/lab/LoadingButton";
-import { Chip, Paper, TextField, Typography } from "@mui/material";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { Button, Chip, Paper, TextField, Typography } from "@mui/material";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { mailingTemplateEdit } from "@/lib/api";
 import { useRouter } from 'next/navigation';
 import CustomEditor from "../CustomEditor";
 
 export default function TemplateForm({ template }: { template?: any }) {
-  const router = useRouter()
+  const { push, refresh } = useRouter()
   const methods = useForm({
     defaultValues: template || null,
   });
@@ -17,17 +16,19 @@ export default function TemplateForm({ template }: { template?: any }) {
     handleSubmit,
     formState: { isValid, isDirty },
     control,
+    reset
   } = methods
 
   const onSubmit = (data: any) => {
+    reset()
     mailingTemplateEdit({
       ...data,
     }).then(({ success }) => {
-      success && toast.success(`Emailová šablona upravena`);
-      !success && toast.error("Něco se nepovedlo");
+      if (success) toast.success(`Emailová šablona upravena`);
+      else toast.error("Něco se nepovedlo");
 
-      router.push("/mailing/templates")
-      router.refresh()
+      push("/mailing/templates")
+      refresh()
     });
   };
 
@@ -38,13 +39,13 @@ export default function TemplateForm({ template }: { template?: any }) {
           <Typography variant="h5">
             {template ? "Úprava emailové šablony" : "Nová emailová šablona"}
           </Typography>
-          <LoadingButton
+          <Button
             type="submit"
             variant="contained"
             disabled={!isValid || !isDirty}
           >
             Uložit
-          </LoadingButton>
+          </Button>
         </div>
         <TextField
           {...register("name", { required: true })}

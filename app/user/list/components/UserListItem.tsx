@@ -100,7 +100,7 @@ export default function UserListItem({
           )}
         </TableCell>
         <TableCell align="right" className="min-w-[150px]">
-          <Link href={`/user/detail/${user.id}`} onClick={e => e.stopPropagation()}>
+          <Link href={`/user/detail/${user.id}/info`} onClick={e => e.stopPropagation()}>
             <Button>Detail</Button>
           </Link>
         </TableCell>

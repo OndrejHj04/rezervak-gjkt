@@ -11,7 +11,6 @@ export const store = create((set: any) => ({
     from_date: "",
     to_date: "",
     groups: [],
-    members: [],
     rooms: [],
     leader: 0,
     purpouse: "",

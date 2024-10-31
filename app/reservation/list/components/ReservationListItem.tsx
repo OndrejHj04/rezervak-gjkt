@@ -19,6 +19,7 @@ import React, { useState } from "react";
 import { reservationsDelete } from "@/lib/api";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { dayjsExtended } from "@/lib/dayjsExtended";
 
 export default function ReservationListItem({
   reservation,
@@ -75,13 +76,13 @@ export default function ReservationListItem({
           {reservation.name}
         </TableCell>
         <TableCell>
-          {dayjs(reservation.creation_date).format("DD. MMMM")}
+          {dayjsExtended(reservation.creation_date).format("DD. MMMM")}
         </TableCell>
         <TableCell>
-          {dayjs(reservation.from_date).format("DD. MMMM YYYY")}
+          {dayjsExtended(reservation.from_date).format("DD. MMMM YYYY")}
         </TableCell>
         <TableCell>
-          {dayjs(reservation.to_date).format("DD. MMMM. YYYY")}
+          {dayjs(reservation.to_date).format("DD. MMMM YYYY")}
         </TableCell>
         <TableCell>
           {reservation.users.length}
@@ -120,7 +121,7 @@ export default function ReservationListItem({
           </Button>
         </TableCell>
         <TableCell align="right">
-          <Link href={`/reservation/detail/${reservation.id}`} onClick={e => e.stopPropagation()}>
+          <Link href={`/reservation/detail/${reservation.id}/info`} onClick={e => e.stopPropagation()}>
             <Button>detail</Button>
           </Link>
         </TableCell>

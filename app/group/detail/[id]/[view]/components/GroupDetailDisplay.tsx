@@ -12,7 +12,7 @@ export default function GroupDetailDisplay({ groupDetail }: { groupDetail: any }
         <ListItemText>Popis: {groupDetail.description}</ListItemText>
       </ListItem>
       <ListItem disablePadding className="w-fit gap-2">
-        <ListItemText>Vedoucí rezervace: </ListItemText>
+        <ListItemText>Majitel skupiny: </ListItemText>
         <AvatarWrapper data={{ image: groupDetail.owner_image }} size={40} />
         <ListItemText primary={groupDetail.owner_name} secondary={groupDetail.owner_email}></ListItemText>
       </ListItem>

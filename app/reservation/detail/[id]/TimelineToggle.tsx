@@ -5,13 +5,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function TimelineToggle() {
   const searchParams = useSearchParams();
-  const value = searchParams.get("timelineDisplay") || "new";
+  const value = searchParams.get("timeline") || "new";
   const { replace } = useRouter();
   const pathname = usePathname();
 
   const handleChange = (_: any, label: any) => {
     const params = new URLSearchParams(searchParams);
-    params.set("timelineDisplay", label);
+    params.set("timeline", label);
     replace(`${pathname}?${params.toString()}`);
   }
 

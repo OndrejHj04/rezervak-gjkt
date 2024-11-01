@@ -5,9 +5,11 @@ import ReservationDetailDisplay from "./components/ReservationDetailDisplay"
 import ReservationDetailForm from "./components/ReservationDetailForm"
 import ReservationUsersTable from "./components/ReservationUsersTable"
 import ReservationGroupsTable from "./components/ReservationGroupsTable"
+import ReservationTimeline from "./components/ReservationTimeline"
+import ReservationRegistration from "./components/ReservationRegistration"
 
 export default async function ReservationDetailPage({ params, searchParams }: { params: any, searchParams: any }) {
-  const { page } = searchParams
+  const { page, timeline } = searchParams
   const { view, id } = params
   const { user } = await getServerSession(authOptions) as any
   const { data } = await getReservationDetail({ reservationId: id })
@@ -25,6 +27,14 @@ export default async function ReservationDetailPage({ params, searchParams }: { 
 
   if (view === "users") {
     return <ReservationUsersTable id={id} page={page} />
+  }
+
+  if (view === "timeline") {
+    return <ReservationTimeline id={id} page={page} timeline={timeline} />
+  }
+
+  if (view === "registration") {
+    return <ReservationRegistration id={id} page={page} />
   }
 
   return null

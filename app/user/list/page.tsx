@@ -12,6 +12,7 @@ export default async function UserListConfig({
 }) {
 
   const { user: currentUser } = await getServerSession(authOptions) as any
+  const isAdmin = currentUser.role.id !== 3
 
   const { data, count } = await getUserList({
     page: users || 1,
@@ -29,7 +30,6 @@ export default async function UserListConfig({
       <Table size="small">
         <TableHead>
           <TableRow className="[&_.MuiTableCell-root]:font-semibold [&_.MuiTableCell-root]:text-lg">
-            <TableCell />
             <TableCell />
             <TableCell>Jméno</TableCell>
             <TableCell>Email</TableCell>
@@ -49,6 +49,7 @@ export default async function UserListConfig({
               childrenData={user.children}
               avaliableGroups={avaliableGroups}
               avaliableReservations={avaliableReservations}
+              isAdmin={isAdmin}
             />
           ))}
         </TableBody>

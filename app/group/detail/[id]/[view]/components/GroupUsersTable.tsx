@@ -1,10 +1,15 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/options"
 import { getGroupUsers } from "@/lib/api"
 import AvatarWrapper from "@/ui-components/AvatarWrapper"
 import TableListPagination from "@/ui-components/TableListPagination"
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { getServerSession } from "next-auth"
+import GroupUsersRemoveButton from "./GroupUsersRemoveButton"
 
 export default async function GroupUsersTable({ id, page = 1 }: { id: any, page: any }) {
   const { data, count } = await getGroupUsers({ groupId: id, page: page })
+  const { user } = await getServerSession(authOptions) as any
+  const isAdmin = user.role.id !== 3
 
   return (
     <TableContainer>
@@ -34,7 +39,9 @@ export default async function GroupUsersTable({ id, page = 1 }: { id: any, page:
               <TableCell>{user.role}</TableCell>
               <TableCell>{user.organization}</TableCell>
               <TableCell>{user.verified}</TableCell>
-              <TableCell />
+              <TableCell align="right">
+                {isAdmin && <GroupUsersRemoveButton userId={user.id} groupId={id} />}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

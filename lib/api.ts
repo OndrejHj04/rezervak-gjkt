@@ -8,7 +8,6 @@ import dayjs from "dayjs";
 import { sign } from "jsonwebtoken";
 import { roomsEnum } from "@/app/constants/rooms";
 import { values } from "lodash";
-import { Z_VERSION_ERROR } from "zlib";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -904,21 +903,6 @@ export const setBlockedDates = async ({
   };
 };
 
-export const reservationsDelete = async ({
-  reservations,
-}: {
-  reservations: any;
-}) => {
-
-  const { affectedRows } = await query({
-    query: `DELETE FROM reservations WHERE id IN ?`,
-    values: [[reservations]],
-  }) as any
-
-
-  return { success: affectedRows === reservations.length };
-};
-
 export const reservationRemoveGroups = async ({
   reservation,
   groups,
@@ -1786,7 +1770,7 @@ export const getEmailSettings = async () => {
 
 export const allowReservationSignIn = async ({ reservation }: { reservation: any }) => {
   const { user } = await getServerSession(authOptions) as any
-  const reqBody = { name: reservation.name, from_date: dayjs(reservation.from_date).format("DD. MM. YYYY"), to_date: dayjs(reservation.to_date).format("DD. MM. YYYY"), instructions: reservation.instructions, leader: { first_name: reservation.leader.first_name, last_name: reservation.leader.last_name } }
+  const reqBody = { name: reservation.name, from_date: dayjs(reservation.from_date).format("DD. MM. YYYY"), to_date: dayjs(reservation.to_date).format("DD. MM. YYYY"), instructions: reservation.instructions, leader: { first_name: reservation.first_name, last_name: reservation.last_name } }
 
   const req = await fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: reqBody, action: "create" }) })
 
@@ -1807,7 +1791,6 @@ export const allowReservationSignIn = async ({ reservation }: { reservation: any
 }
 
 export const cancelRegistration = async ({ formId }: { formId: any }) => {
-
   await query({
     query: `INSERT INTO reservations_forms_changes (reservation_id, form_id, direction) SELECT rf.reservation_id, ?, 0 FROM reservations_forms rf WHERE rf.form_id = ?`,
     values: [formId, formId]
@@ -2205,8 +2188,6 @@ export const getUserGroupsWhereOwner = async ({ userId }: { userId: any }) => {
 }
 
 export const createNewReservation = async ({ from_date, to_date, groups, rooms, leader, purpouse, instructions, name }: any) => {
-
-  console.log(leader)
   const request = await query({
     query: `INSERT INTO reservations (from_date, to_date, name, purpouse, leader, instructions, status) VALUES (?,?,?,?,?,?,2)`,
     values: [from_date, to_date, name, purpouse, leader, instructions]
@@ -2246,3 +2227,79 @@ export const getUsersBySearch = async () => {
 
   return { data: dataRequest }
 }
+
+export const groupDelete = async ({ groupId }: { groupId: any }) => {
+  const request = await query({
+    query: `DELETE FROM groups WHERE groups.id = ?`,
+    values: [groupId]
+  }) as any
+
+  return { success: request.affectedRows === 1 }
+}
+
+export const reservationDelete = async ({ reservationId }: { reservationId: any }) => {
+  const request = await query({
+    query: `DELETE FROM reservations WHERE reservations .id = ?`,
+    values: [reservationId]
+  }) as any
+
+  return { success: request.affectedRows === 1 }
+}
+
+export const reservationDeleteUser = async ({ userId, reservationId }: { userId: any, reservationId: any }) => {
+  const request = await query({
+    query: `DELETE FROM users_reservations WHERE userId = ? AND reservationId = ?`,
+    values: [userId, reservationId]
+  }) as any
+
+  return { success: request.affectedRows === 1 }
+}
+
+export const groupDeleteUser = async ({ userId, groupId }: { userId: any, groupId: any }) => {
+  const request = await query({
+    query: `DELETE FROM users_groups WHERE userId = ? AND groupId = ?`,
+    values: [userId, groupId]
+  }) as any
+
+  return { success: request.affectedRows === 1 }
+}
+
+export const userDelete = async ({ userId }: { userId: any }) => {
+  const request = await query({
+    query: `DELETE FROM users WHERE id = ?`,
+    values: [userId]
+  }) as any
+
+  return { success: request.affectedRows === 1 }
+}
+
+export const getReservationRegistration = async ({ reservationId }: { reservationId: any }) => {
+  const dataRequest = await query({
+    query: `SELECT r.id, r.name, r.from_date, r.instructions, rf.form_id, rf.form_public_url, u.first_name, u.last_name, u.email FROM reservations r
+    INNER JOIN users u ON u.id = r.leader
+    LEFT JOIN reservations_forms rf ON rf.reservation_id = r.id
+    WHERE r.id = ?`,
+    values: [reservationId]
+  }) as any
+
+  return { data: dataRequest[0] }
+}
+
+export const getReservationRegisteredUsers = async ({ reservationId, page }: { reservationId: any, page: any }) => {
+  const dataRequest = await query({
+    query: `SELECT CONCAT(u.first_name, ' ', u.last_name) as name, u.email, ruc.timestamp FROM reservations_users_change ruc
+    INNER JOIN users u ON u.id = ruc.user_id
+    WHERE ruc.reservation_id = ?
+    LIMIT 10 OFFSET ?
+    `,
+    values: [reservationId, page * 10 - 10]
+  }) as any
+
+  const countRequest = await query({
+    query: `SELECT COUNT(ruc.user_id) as count FROM reservations_users_change ruc WHERE ruc.reservation_id = ?`,
+    values: [reservationId]
+  }) as any
+
+  return { data: dataRequest, count: countRequest[0].count }
+}
+

@@ -22,14 +22,14 @@ export default function GroupNewForm({
     register,
     handleSubmit,
     control,
-    formState: { isValid },
+    formState: { isValid, isDirty },
     reset
   } = useForm({
     defaultValues: {
       name: "", description: "", owner: options.find((item: any) => item.id === user.id)
     }
   });
-
+  const isAdmin = user.role.id !== 3
   const { push, refresh } = useRouter()
 
   const onSubmit = async (data: any) => {
@@ -53,7 +53,7 @@ export default function GroupNewForm({
           type="submit"
           variant="outlined"
           size="small"
-          disabled={!isValid}
+          disabled={!isValid || !isDirty}
         >
           Uložit
         </Button>
@@ -75,6 +75,7 @@ export default function GroupNewForm({
             render={({ field: { value, onChange } }) => (
               <Autocomplete
                 fullWidth
+                disabled={!isAdmin}
                 value={value}
                 onChange={(_, value) => {
                   onChange(value);
@@ -86,7 +87,7 @@ export default function GroupNewForm({
                   <Typography color="text.secondary">{option.email}</Typography>
                 </span></li>}
                 renderInput={(params) => (
-                  <TextField {...params} label="Majitel skupiny" />
+                  <TextField {...params} label="Majitel skupiny" helperText="Majitel skupiny bude automaticky přídán do skupiny a může poté spravovat její členy." />
                 )}
               />
             )}

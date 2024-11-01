@@ -19,8 +19,7 @@ import React, { useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { getFullName } from "@/app/constants/fullName";
-import { store } from "@/store/store";
-import { reservationAddUsers, userAddGroups, userAddReservations, usersDelete } from "@/lib/api";
+import { userAddGroups, userAddReservations, userDelete } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -28,12 +27,14 @@ export default function UserListItem({
   user,
   childrenData,
   avaliableGroups,
-  avaliableReservations
+  avaliableReservations,
+  isAdmin
 }: {
   user: any;
   childrenData: any;
   avaliableGroups: any
   avaliableReservations: any
+  isAdmin: any
 }) {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<any>(null)
@@ -71,6 +72,14 @@ export default function UserListItem({
     })
   }
 
+  const handleUserDelete = () => {
+    userDelete({ userId: user.id }).then(({ success }) => {
+      if (success) toast.success("Uživatel úspěšně odstraněn")
+      else toast.error("Něco se nepovedlo")
+      refresh()
+    })
+  }
+
   return (
     <React.Fragment key={user.id}>
       <TableRow onClick={setMenuPosition} selected={Boolean(anchorEl)}>
@@ -84,9 +93,11 @@ export default function UserListItem({
           </TableCell>
         )}
         <TableCell>
-          <AvatarWrapper data={user} />
+          <div className="flex items-center gap-2">
+            <AvatarWrapper data={user} />
+            {getFullName(user)}
+          </div>
         </TableCell>
-        <TableCell>{getFullName(user)}</TableCell>
         <TableCell>{user.email}</TableCell>
         <TableCell>{user.role.name}</TableCell>
         <TableCell>
@@ -118,6 +129,10 @@ export default function UserListItem({
           {avaliableReservations.map((reservation: any) => (
             <MenuItem disabled={reservation.users.includes(user.id)} key={reservation.id} onClick={() => handleAddToReservation(reservation.id)}>Přidat do rezervace {reservation.name}</MenuItem>
           ))}
+          {isAdmin && <React.Fragment>
+            <Divider />
+            <MenuItem onClick={handleUserDelete}>Odstranit uživatele</MenuItem>
+          </React.Fragment>}
         </Menu>
       </TableRow>
       {open && (
@@ -138,6 +153,7 @@ export default function UserListItem({
                           childrenData={null}
                           avaliableGroups={avaliableGroups}
                           avaliableReservations={avaliableReservations}
+                          isAdmin={isAdmin}
                         />
                       ))}
                     </TableBody>

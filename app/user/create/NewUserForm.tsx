@@ -19,7 +19,7 @@ export default function NewUserForm({
   const {
     register,
     handleSubmit,
-    formState: { isValid },
+    formState: { isValid, isDirty },
     control,
     reset
   } = useForm();
@@ -45,7 +45,7 @@ export default function NewUserForm({
           type="submit"
           variant="outlined"
           size="small"
-          disabled={!isValid}
+          disabled={!isValid || !isDirty}
         >
           Uložit
         </Button>

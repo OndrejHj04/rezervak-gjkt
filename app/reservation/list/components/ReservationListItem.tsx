@@ -16,7 +16,7 @@ import ReservationModal from "./ReservationModal";
 import { Cancel, CheckCircle } from "@mui/icons-material";
 import { store } from "@/store/store";
 import React, { useState } from "react";
-import { reservationsDelete } from "@/lib/api";
+import { reservationDelete } from "@/lib/api";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { dayjsExtended } from "@/lib/dayjsExtended";
@@ -32,46 +32,31 @@ export default function ReservationListItem({
 }) {
   const { refresh } = useRouter()
 
-  const [contextMenu, setContextMenu] = useState<any>(null)
-  const { selectedReservations, setSelectedReservations } = store()
-
-  const handleSelectReservation = () => {
-    if (selectedReservations.includes(reservation.id)) {
-      setSelectedReservations(selectedReservations.filter((res: any) => res !== reservation.id))
-    } else {
-      setSelectedReservations([...selectedReservations, reservation.id])
-    }
-  }
+  const [anchorEl, setAnchorEl] = useState<any>(null)
 
   const handleDeleteReservations = () => {
-    reservationsDelete({ reservations: selectedReservations }).then((res) => {
+    reservationDelete({ reservationId: reservation.id }).then((res) => {
       if (res.success) toast.success("Rezervace úspěšně odstraněny");
       else toast.error("Něco se pokazilo");
     });
     refresh()
-    setSelectedReservations([]);
   }
 
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault()
-    setContextMenu(
-      contextMenu === null && selectedReservations.includes(reservation.id)
+  const setMenuPosition = (e: any) => {
+    setAnchorEl(
+      anchorEl === null
         ? {
           mouseX: e.clientX + 2,
           mouseY: e.clientY - 6,
         }
-        : null,
-    );
-  };
-
-  const handleClose = () => {
-    setContextMenu(null);
+        : null
+    )
   }
 
   return (
     <React.Fragment>
       {allowModal && <ReservationModal reservation={reservation} />}
-      <TableRow onContextMenu={handleContextMenu} selected={selectedReservations.includes(reservation.id)} onClick={handleSelectReservation}>
+      <TableRow selected={Boolean(anchorEl)} onClick={setMenuPosition}>
         <TableCell>
           {reservation.name}
         </TableCell>
@@ -126,12 +111,11 @@ export default function ReservationListItem({
           </Link>
         </TableCell>
       </TableRow>
-      <Menu open={Boolean(contextMenu)}
-        onClose={handleClose}
-        className="[&_.MuiList-root]:!p-0"
+      <Menu open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
         anchorReference="anchorPosition"
-        anchorPosition={contextMenu !== null
-          ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+        anchorPosition={anchorEl !== null
+          ? { top: anchorEl.mouseY, left: anchorEl.mouseX }
           : undefined}
       >
         <MenuItem onClick={handleDeleteReservations}>Odstranit vybrané</MenuItem>

@@ -87,7 +87,7 @@ export default function ReservationDetailRender({ user, options }: { user: any, 
                   <Typography>{option.name}</Typography>
                   <Typography color="text.secondary">{option.email}</Typography>
                 </span></li>} getOptionLabel={(option: any) => option.name} renderInput={(params) => (
-                  <TextField {...params} label="Vedoucí" helperText="Vedoucí bude automaticky přidán jako účastník rezervace a poté může do rezervace přidávat další účastníky." />
+                  <TextField {...params} label="Vedoucí" helperText="Vedoucí bude automaticky přidán jako účastník rezervace a může poté spravovat její účastníky." />
                 )} />
             )}
           />

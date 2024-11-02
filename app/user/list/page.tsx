@@ -6,20 +6,19 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 export default async function UserListConfig({
-  searchParams: { users, search, organization, role },
+  searchParams,
 }: {
-  searchParams: { users: any, search: any, organization: any, role: any }
+  searchParams: any
 }) {
-
+  const { page, search, role, organization } = searchParams
   const { user: currentUser } = await getServerSession(authOptions) as any
   const isAdmin = currentUser.role.id !== 3
 
   const { data, count } = await getUserList({
-    page: users || 1,
+    page: page || 1,
     search: search || "",
     role: Number(role) || 0,
     organization: Number(organization) || 0,
-    withChildrenCollapsed: true,
   });
 
   const { groups: avaliableGroups } = await getUsersAvaliableGroups(currentUser.id)
@@ -37,7 +36,7 @@ export default async function UserListConfig({
             <TableCell>Organizace</TableCell>
             <TableCell>Ověření</TableCell>
             <TableCell padding="none">
-              <TableListPagination count={count} name={"users"} rpp={10} />
+              <TableListPagination count={count} name={"page"} rpp={10} />
             </TableCell>
           </TableRow>
         </TableHead>

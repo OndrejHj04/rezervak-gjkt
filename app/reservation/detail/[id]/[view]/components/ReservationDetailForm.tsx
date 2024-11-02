@@ -69,17 +69,19 @@ export default function ReservationDetailForm({ reservationDetail }: { reservati
     <React.Fragment>
       <form onSubmit={handleSubmit(onSubmit)} className="my-2 grid grid-cols-2 max-w-[420px] gap-3">
         <div className="col-span-2">
-          <Typography variant="h5">Vedoucí rezervace:</Typography>
-          <CardHeader
-            className="!p-0"
-            avatar={<AvatarWrapper data={{ image: reservationDetail.leader_image }} size={56} />}
-            title={
-              <Typography variant="h5">
-                {reservationDetail.leader_name}
-              </Typography>
-            }
-            subheader={reservationDetail.leader_email}
-          />
+          {reservationDetail.leader_name ? <React.Fragment>
+            <Typography variant="h5">Vedoucí rezervace</Typography>
+            <CardHeader
+              className="!p-0"
+              avatar={<AvatarWrapper data={{ image: reservationDetail.leader_image }} size={56} />}
+              title={
+                <Typography variant="h5">
+                  {reservationDetail.leader_name}
+                </Typography>
+              }
+              subheader={reservationDetail.leader_email}
+            />
+          </React.Fragment> : <Typography variant="h5">Vedoucí rezervace: neznámý uživatel</Typography>}
         </div>
         <TextField label="Název" {...register("name")} className="col-span-2" />
         <Controller control={control} name="from_date" render={({ field }) => (

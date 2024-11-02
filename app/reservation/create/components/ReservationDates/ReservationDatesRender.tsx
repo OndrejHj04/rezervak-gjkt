@@ -32,7 +32,6 @@ import resourceTimelineWeek from "@fullcalendar/resource-timeline"
 import csLocale from "@fullcalendar/core/locales/cs"
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { roomsEnum } from "@/app/constants/rooms";
-import { getFullName } from "@/app/constants/fullName";
 import { DatePicker } from "@mui/x-date-pickers";
 
 export default function ReservationDatesRender({
@@ -45,7 +44,7 @@ export default function ReservationDatesRender({
   const isValid = createReservation.from_date && createReservation.to_date
   const calendarRef = useRef(null)
   const [calendarTitle, setCalendarTitle] = useState("")
-  const { handleSubmit, control, watch, formState, reset, register, setValue } = useForm({
+  const { handleSubmit, control, watch, formState, reset, setValue } = useForm({
     defaultValues: { from_date: null, to_date: null, rooms: [1, 2, 3, 4, 5] },
   });
 
@@ -73,15 +72,15 @@ export default function ReservationDatesRender({
       title: reservation.name,
       start: reservation.from_date,
       end: dayjs(reservation.to_date).add(1, "day").format("YYYY-MM-DD"),
-      resourceIds: reservation.rooms.map(({ id }: any) => id),
-      leader: reservation.leader,
-      color: reservation.status.color,
-      icon: reservation.status.icon,
-      display_name: reservation.status.display_name
+      resourceIds: reservation.rooms.split(","),
+      leader: reservation.leader_name,
+      color: reservation.status_color,
+      icon: reservation.status_icon,
+      display_name: reservation.status_name
     }))
 
     if (from_date && to_date) {
-      reservationData.push({ id: "custom", title: "Nová rezervace", start: dayjs(from_date).toDate(), end: dayjs(to_date).add(1, "day").toDate(), resourceIds: rooms, leader: {} } as any)
+      reservationData.push({ id: "custom", title: "Nová rezervace", start: dayjs(from_date).toDate(), end: dayjs(to_date).add(1, "day").toDate(), resourceIds: rooms, leader: "" } as any)
     }
 
     return reservationData
@@ -128,7 +127,7 @@ export default function ReservationDatesRender({
 
     return <Tooltip title={<List className='p-0'>
       <ListItem className='!p-0'>
-        <ListItemText>Vedoucí: {getFullName(leader)}</ListItemText>
+        <ListItemText>Vedoucí: {leader}</ListItemText>
       </ListItem>
       <ListItem className="!p-0">
         <ListItemText>Status: {display_name}</ListItemText>
@@ -158,7 +157,7 @@ export default function ReservationDatesRender({
             )
           }
         >
-          <Typography variant="h6">Termín a pokoje rezervace</Typography>
+          <Typography variant="h6">Termín a pokoje</Typography>
         </AccordionSummary>
         <AccordionDetails className="p-2 flex md:flex-row flex-col gap-2">
           <div className="md:w-[810px] w-auto">

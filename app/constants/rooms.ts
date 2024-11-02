@@ -25,7 +25,7 @@ class RoomsEnum extends BaseEnum<any, any> {
       [Rooms[2]]: {
         id: 2,
         label: "Pokoj 2",
-        capacity: 2
+        capacity: 4
       },
       [Rooms[3]]: {
         id: 3,

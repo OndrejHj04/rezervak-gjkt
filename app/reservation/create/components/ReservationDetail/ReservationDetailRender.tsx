@@ -55,7 +55,7 @@ export default function ReservationDetailRender({ user, options }: { user: any, 
           )
         }
       >
-        <Typography variant="h6">Detail rezervace</Typography>
+        <Typography variant="h6">Detail</Typography>
       </AccordionSummary>
       <AccordionDetails className="p-2">
         <form

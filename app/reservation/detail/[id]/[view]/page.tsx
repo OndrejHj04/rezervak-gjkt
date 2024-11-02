@@ -13,20 +13,22 @@ export default async function ReservationDetailPage({ params, searchParams }: { 
   const { view, id } = params
   const { user } = await getServerSession(authOptions) as any
   const { data } = await getReservationDetail({ reservationId: id })
-
+  const isAdmin = user.role.id !== 3
+  const isLeader = data.leader_id === user.id
+  const editable = data.status_id !== 1 && (isAdmin || isLeader)
 
   if (view === "info") {
-    if (user.role.id === 1) {
-      return <ReservationDetailDisplay reservationDetail={data} />
+    if (editable) {
+      return <ReservationDetailForm reservationDetail={data} />
     }
-    return <ReservationDetailForm reservationDetail={data} />
+    return <ReservationDetailDisplay reservationDetail={data} />
   }
   if (view === "groups") {
     return <ReservationGroupsTable id={id} page={page} />
   }
 
   if (view === "users") {
-    return <ReservationUsersTable id={id} page={page} />
+    return <ReservationUsersTable id={id} page={page} editable={editable} />
   }
 
   if (view === "timeline") {

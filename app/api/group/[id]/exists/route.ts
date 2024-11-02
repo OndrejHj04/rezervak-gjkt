@@ -4,13 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(_: NextRequest, { params }: any) {
 
   const data = await query({
-    query: `SELECT owner FROM groups WHERE id = ?`,
+    query: `SELECT g.id FROM groups g WHERE g.id = ?`,
     values: [params.id]
   }) as any
 
-  if (!data.length) {
-    return NextResponse.json({ owner: null })
-  }
-
-  return NextResponse.json({ owner: data[0].owner })
+  return NextResponse.json({ exists: Boolean(data.length) })
 }
+

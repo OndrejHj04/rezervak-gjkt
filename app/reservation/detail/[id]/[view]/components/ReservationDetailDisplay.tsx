@@ -1,8 +1,6 @@
 import { dayjsExtended } from "@/lib/dayjsExtended"
-import { rooms } from "@/lib/rooms"
 import AvatarWrapper from "@/ui-components/AvatarWrapper"
 import { CardHeader, Icon, List, ListItem, ListItemIcon, ListItemText, Typography } from "@mui/material"
-import dayjs from "dayjs"
 import React from "react"
 
 export default function ReservationDetailDisplay({ reservationDetail }: { reservationDetail: any }) {
@@ -13,17 +11,21 @@ export default function ReservationDetailDisplay({ reservationDetail }: { reserv
 
   return (
     <React.Fragment>
-      <Typography variant="h5">Vedoucí rezervace:</Typography>
-      <CardHeader
-        className="!p-0"
-        avatar={<AvatarWrapper data={{ image: reservationDetail.leader_image }} size={56} />}
-        title={
-          <Typography variant="h5">
-            {reservationDetail.leader_name}
-          </Typography>
-        }
-        subheader={reservationDetail.leader_email}
-      />
+      {reservationDetail.leader_name ? <React.Fragment>
+        <Typography variant="h5">Vedoucí rezervace:</Typography>
+        <CardHeader
+          className="!p-0"
+          avatar={<AvatarWrapper data={{ image: reservationDetail.leader_image }} size={56} />}
+          title={
+            <Typography variant="h5">
+              {reservationDetail.leader_name}
+            </Typography>
+          }
+          subheader={reservationDetail.leader_email}
+        />
+      </React.Fragment> :
+        <Typography variant="h5">Vedoucí rezervace: neznámý uživatel</Typography>
+      }
       <List>
         <ListItem disablePadding>
           <ListItemText>Název: {reservationDetail.name}</ListItemText>

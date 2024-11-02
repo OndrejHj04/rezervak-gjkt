@@ -16,6 +16,7 @@ export const store = create((set: any) => ({
     purpouse: "",
     instructions: "",
     name: "",
+    family: false
   },
   setCreateReservation: (createReservation: any) => set({ createReservation }),
   selectedReservations: [],

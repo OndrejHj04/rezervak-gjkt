@@ -18,20 +18,12 @@ export default async function ReservationList({
 }: {
   searchParams: any;
 }) {
-  const { user } = await getServerSession(authOptions)
-  const page = searchParams["page"] || 1;
-  const status = searchParams["status"] || 0;
-  const search = searchParams["search"] || "";
-  const type = searchParams["type"] || "all";
-  const col = searchParams["col"];
-  const dir = searchParams["dir"];
-  const reservations = (await getReservationList({
+  const { user } = await getServerSession(authOptions) as any
+  const { page = 1, status = 0, search = "" } = searchParams
+  const { data, count } = (await getReservationList({
     page,
-    type,
     status: Number(status),
     search,
-    col,
-    dir,
   })) as any;
 
   return (
@@ -51,7 +43,7 @@ export default async function ReservationList({
               <TableCell>Status</TableCell>
               <TableCell padding="none">
                 <TableListPagination
-                  count={reservations.count || 0}
+                  count={count}
                   name="page"
                   rpp={10}
                 />
@@ -59,7 +51,7 @@ export default async function ReservationList({
             </TableRow>
           </TableHead>
           <TableBody className="overflow-scroll [&_.Mui-selected]:cursor-context-menu">
-            {reservations.data.map((reservation: any) => (
+            {data.map((reservation: any) => (
               <ReservationListItem
                 searchParams={searchParams}
                 key={reservation.id}

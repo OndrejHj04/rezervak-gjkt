@@ -23,6 +23,7 @@ export default function CreateButton() {
       purpouse: "",
       instructions: "",
       name: "",
+      family: false
     });
   };
   const handleSubmit = () => {

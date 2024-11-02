@@ -36,21 +36,12 @@ export default async function middleware(req: NextRequest) {
     }
 
     if (req.nextUrl.pathname.startsWith("/user/detail")) {
-      const userId = Number(req.nextUrl.pathname.split("/")[3])
+      const [, , , userId, tab, ...rest] = req.nextUrl.pathname.split("/")
       const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/exists`)
       const { exists } = await request.json()
+      const avaliableTabs = ['info', 'groups', 'reservations']
 
-      if (!exists) {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
-
-      // roles 1 and 2 can get into edit mode on any user
-      if (token.user.role.id !== 3) {
-        return NextResponse.next()
-      }
-
-      // user role 3 can edit only their profile
-      if (userId !== token.user.id && req.nextUrl.searchParams.get("mode") === "edit") {
+      if (!exists || avaliableTabs.indexOf(tab) < 0 || rest.length) {
         return NextResponse.redirect(new URL("/", req.url));
       }
 
@@ -58,22 +49,13 @@ export default async function middleware(req: NextRequest) {
     }
 
     if (req.nextUrl.pathname.startsWith("/reservation/detail")) {
-      const reservationId = Number(req.nextUrl.pathname.split("/")[3])
-      const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/${reservationId}/leader`)
-      const { leader } = await request.json()
+      const [, , , reservationId, tab, ...rest] = req.nextUrl.pathname.split("/")
+      const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/${reservationId}/exists`)
+      const { exists } = await request.json()
+      const avaliableTabs = ['info', 'groups', 'users', 'timeline', 'registration']
 
-      // redirect when group not exist
-      if (!leader) {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
-
-      // roles 1 and 2 can get into edit mode on any reservation
-      if (token.user.role.id !== 3) {
-        return NextResponse.next()
-      }
-
-      // disalow to edit reservation for user without rights
-      if (req.nextUrl.searchParams.get("mode") === "edit" && leader !== token.user.id) {
+      // redirect when reservation not exist
+      if (!exists || avaliableTabs.indexOf(tab) < 0 || rest.length) {
         return NextResponse.redirect(new URL("/", req.url));
       }
 
@@ -81,22 +63,13 @@ export default async function middleware(req: NextRequest) {
     }
 
     if (req.nextUrl.pathname.startsWith("/group/detail")) {
-      const groupId = Number(req.nextUrl.pathname.split("/")[3])
-      const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/${groupId}/leader`)
-      const { owner } = await request.json()
+      const [, , , groupId, tab, ...rest] = req.nextUrl.pathname.split("/")
+      const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group/${groupId}/exists`)
+      const { exists } = await request.json()
+      const avaliableTabs = ['info', 'users', 'reservations']
 
       // redirect when group not exist
-      if (!owner) {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
-
-      // roles 1 and 2 can get into edit mode on any group
-      if (token.user.role.id !== 3) {
-        return NextResponse.next()
-      }
-
-      // disalow to edit group for user without rights
-      if (req.nextUrl.searchParams.get("mode") === "edit" && owner !== token.user.id) {
+      if (!exists || avaliableTabs.indexOf(tab) < 0 || rest.length) {
         return NextResponse.redirect(new URL("/", req.url));
       }
 

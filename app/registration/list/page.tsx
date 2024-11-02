@@ -3,9 +3,8 @@ import { smartTime } from "@/app/constants/smartTime";
 import { getRegistrationList } from "@/lib/api";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import TableListPagination from "@/ui-components/TableListPagination";
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from "@mui/material";
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import dayjs from "dayjs";
-import CancelRegistrationButton from "./CancelRegistrationButton";
 import Link from "next/link";
 
 export default async function RegistrationList({ searchParams }: { searchParams: any }) {
@@ -25,12 +24,10 @@ export default async function RegistrationList({ searchParams }: { searchParams:
               Autor
             </TableCell>
             <TableCell>
-              Počet přihlášení přes formulář
+              Počet nevyřízených přihlašování
             </TableCell>
             <TableCell>
               Začátek rezervace
-            </TableCell>
-            <TableCell>
             </TableCell>
             <TableCell padding="none">
               <TableListPagination name={"registrations"} count={count} rpp={10} />
@@ -56,10 +53,10 @@ export default async function RegistrationList({ searchParams }: { searchParams:
                 {smartTime(registration.from_date)}
               </TableCell>
               <TableCell>
-                <Button component={Link} href={registration.form_public_url} target="_blank">Přihlašovací formulář</Button>
-              </TableCell>
-              <TableCell>
-                <CancelRegistrationButton formId={registration.form_id} />
+                <div className="flex gap-2 justify-end">
+                  <Button component={Link} size="small" href={registration.form_public_url} target="_blank">Přihlašovací formulář</Button>
+                  <Button component={Link} size="small" href={`/reservation/detail/${registration.reservation_id}/registration`} target="_blank">Detail přihlašování</Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}

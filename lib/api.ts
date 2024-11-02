@@ -19,186 +19,108 @@ export const getUserList = async ({
   search,
   role,
   organization,
-  rpp = 10,
-  withChildrenCollapsed = false,
 }: {
-  page?: any;
-  search?: any;
-  role?: any;
-  organization?: any;
-  rpp?: any;
-  withChildrenCollapsed?: any;
-} = {}) => {
+  page: any;
+  search: any;
+  role: any;
+  organization: any;
+}) => {
 
   const [users, count] = (await Promise.all([
     query({
-      query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.verified, users.birth_date, users.active, JSON_OBJECT('id', organization.id, 'name', organization.name) as organization, JSON_OBJECT('id', roles.id, 'name', roles.name) as role
-      ${withChildrenCollapsed ? `,GROUP_CONCAT(DISTINCT JSON_OBJECT(
-        'id', children_detail.id, 
-        'first_name', children_detail.first_name, 
-        'last_name', children_detail.last_name, 
-        'email', children_detail.email, 
-        'image', children_detail.image, 
-        'verified', children_detail.verified, 
-        'birth_date', users.birth_date, 
-        'active', users.active,
-        'organization', JSON_OBJECT(
-            'id', children_organization.id, 
-            'name', children_organization.name
-        ), 
-        'role', JSON_OBJECT(
-            'id', children_roles.id, 
-            'name', children_roles.name))) AS children`: ""}
-        FROM users INNER JOIN roles ON roles.id = users.role
-        LEFT JOIN organization ON organization.id = users.organization
-        ${withChildrenCollapsed ? `LEFT JOIN children_accounts ON children_accounts.parentId = users.id
-        LEFT JOIN users as children_detail ON children_detail.id = children_accounts.childrenId
-        LEFT JOIN roles as children_roles ON children_roles.id = children_detail.role
-        LEFT JOIN organization as children_organization ON children_organization.id = children_detail.organization`: ""}
-        WHERE 1=1
-        ${withChildrenCollapsed
-          ? `AND NOT EXISTS (SELECT 1 FROM children_accounts WHERE children_accounts.childrenId = users.id)`
-          : ""
-        }
-          ${search ? `AND CONCAT(users.first_name, ' ', users.last_name) LIKE "%${search}%"` : ""}
-          ${role ? `AND users.role = ${role}` : ""}
-          ${organization ? `AND users.organization = ${organization}` : ""}
-          GROUP BY users.id
-          ${page ? `LIMIT ${rpp} OFFSET ${page * rpp - rpp}` : ""}`,
-      values: [],
+      query: `
+SELECT 
+    u.id, 
+    CONCAT(u.first_name, ' ', u.last_name) AS name, 
+    u.email, 
+    u.verified, 
+    r.name AS role_name, 
+    r.id as role_id,
+    u.image, 
+    o.name AS organization_name,
+    CASE WHEN u_child.id IS NULL THEN NULL
+    ELSE GROUP_CONCAT(JSON_OBJECT('id', u_child.id, 'name', CONCAT(u_child.first_name, ' ', u_child.last_name), 'role', child_r.name, 'organization', child_o.name, 'role_id', child_r.id) separator '|||') END as children
+FROM users u
+INNER JOIN roles r ON r.id = u.role
+LEFT JOIN organization o ON o.id = u.organization
+LEFT JOIN users u_child ON u.email = u_child.email AND u_child.children = 1
+LEFT JOIN roles child_r ON child_r.id = u_child.role
+LEFT JOIN organization child_o ON child_o.id = u_child.organization
+WHERE u.children = 0 -- Only parents
+${search.length ? `AND CONCAT(u.first_name, ' ', u.last_name) LIKE "%${search}%"` : ""}
+${role > 0 ? `AND u.role = ${role}` : ""}
+${organization > 0 ? `AND u.organization = ${organization}` : ""}
+GROUP BY u.id
+LIMIT 10 OFFSET ?
+        
+      `,
+      values: [page * 10 - 10],
     }),
     query({
-      query: `SELECT COUNT(*) as total FROM users WHERE 1=1 
-      ${withChildrenCollapsed
-          ? `AND NOT EXISTS (SELECT 1 FROM children_accounts WHERE children_accounts.childrenId = users.id)`
-          : ""
-        }
-          ${search ? `AND CONCAT(users.first_name, ' ', users.last_name) LIKE "%${search}%"` : ""}
-          ${role ? `AND users.role = ${role}` : ""}
-          `,
-      values: [],
-    }),
+      query: `SELECT COUNT(*) as count FROM users u
+      INNER JOIN roles r ON r.id = u.role
+      LEFT JOIN organization o ON o.id = u.organization
+      WHERE u.children = 0
+      ${search.length ? `AND CONCAT(u.first_name, ' ', u.last_name) LIKE "%${search}%"` : ""}
+      ${role > 0 ? `AND u.role = ${role}` : ""}
+      ${organization > 0 ? `AND u.organization = ${organization}` : ""}
+      `,
+      values: []
+    })
   ])) as any;
 
   const data = users.map((user: any) => ({
     ...user,
-    role: JSON.parse(user.role),
-    organization: JSON.parse(user.organization).id
-      ? JSON.parse(user.organization)
-      : null,
-    children:
-      user.children && JSON.parse(`[${user.children}]`)[0].id
-        ? JSON.parse(`[${user.children}]`)
-        : [],
-  }));
-  return { data, count: count[0].total };
+    children: user.children ? user.children.split("|||").map((item: any) => JSON.parse(item)) : []
+  }))
+
+  return { data: data, count: count[0].count };
 };
 
 export const getReservationList = async ({
-  status,
   page,
+  status,
   search,
-  limit = 10,
-  type,
-  col,
-  dir,
-  notStatus,
-  limited,
 }: {
-  status?: any;
-  page?: any;
-  search?: any;
-  limit?: any;
-  type?: any;
-  col?: any;
-  dir?: any;
-  notStatus?: any;
-  limited?: any;
-} = {}) => {
-  const {
-    user: { role, id },
-  } = (await getServerSession(authOptions)) as any;
-  const isLimited = role.id > 2;
-  const guest = await checkUserSession();
-
-  const [reservations, count] = (await Promise.all([
+  page: any
+  status: any
+  search: any
+}) => {
+  const [dataRequest, countRequest] = (await Promise.all([
     query({
-      query: `
-        SELECT reservations.id, from_date, to_date, reservations.name, purpouse, leader, status, creation_date, reject_reason, payment_symbol, success_link,
-        JSON_OBJECT('id', status.id, 'name', status.name, 'color', status.color, 'display_name', status.display_name, 'icon', status.icon) as status,
-        JSON_OBJECT('id', users.id, 'first_name', users.first_name, 'last_name', users.last_name, 'email', users.email, 'image', users.image) as leader, 
-        GROUP_CONCAT(
-            DISTINCT groups.name
-          ) as groups,
-          JSON_OBJECT('active',
-          CASE WHEN reservations_forms.form_id IS NULL THEN false
-        ELSE true END
-          ) as form,
-        GROUP_CONCAT(DISTINCT userId) as users,
-        GROUP_CONCAT(
-          DISTINCT JSON_OBJECT('id', rooms.id, 'people', rooms.people)
-        ) as rooms
-        FROM reservations${guest ? "_mock as reservations" : ""}
-        INNER JOIN status ON status.id = reservations.status
-        LEFT JOIN reservations_forms ON reservations_forms.reservation_id = reservations.id
-        INNER JOIN users${guest ? "_mock as users" : ""
-        } ON users.id = reservations.leader
-        LEFT JOIN reservations_rooms${guest ? "_mock as reservations_rooms" : ""
-        } ON reservations_rooms.reservationId = reservations.id
-        LEFT JOIN rooms ON rooms.id = reservations_rooms.roomId
-        LEFT JOIN reservations_groups${guest ? "_mock as reservations_groups" : ""
-        } ON reservations_groups.reservationId = reservations.id
-        LEFT JOIN groups${guest ? "_mock as groups" : ""
-        } ON reservations_groups.groupId = groups.id 
-        LEFT JOIN users_reservations${guest ? "_mock as users_reservations" : ""
-        } ON users_reservations.reservationId = reservations.id
-        WHERE 1=1
-        ${status ? `AND status.id = ${status}` : ""}
-        ${limited && isLimited ? `AND reservations.leader = ${id}` : ""}
-        ${search ? `AND reservations.name LIKE "%${search}%"` : ""}
-        ${notStatus?.length
-          ? notStatus.map((stat: any) => `AND status.id <> ${stat}`).join(" ")
-          : ""
-        }
-        ${type === "expired" ? `AND to_date < CURDATE()` : ""}
-        GROUP BY reservations.id
-        ${col && dir ? `ORDER BY ${col} ${dir.toUpperCase()}` : ""}
-        ${page ? `LIMIT ${limit || 10} OFFSET ${page * limit - limit}` : ""}
+      query: `  
+        SELECT r.id, r.name, r.from_date, r.to_date, r.creation_date, CONCAT(u.first_name, ' ', u.last_name) as leader_name, u.image as leader_image,
+                s.icon as status_icon, s.color as status_color, s.display_name as status_name, s.id as status_id,
+               (SELECT COUNT(*) FROM users_reservations ur WHERE ur.reservationId = r.id AND ur.verified = 1) AS users_count,
+               (SELECT SUM(ro.people) 
+                FROM reservations_rooms rr 
+                LEFT JOIN rooms ro ON ro.id = rr.roomId 
+                WHERE rr.reservationId = r.id) AS beds_count,
+                (SELECT EXISTS (SELECT rf.user_id FROM reservations_forms rf WHERE rf.reservation_id = r.id)) as active_registration
+        FROM reservations r
+        LEFT JOIN users u ON u.id = r.leader
+        LEFT JOIN reservations_forms rf ON rf.reservation_id = r.id
+        INNER JOIN status s ON s.id = r.status
+        WHERE r.status <> 1
+              ${status > 0 ? `AND r.status = ${status}` : ''}
+              ${search.length ? `AND r.name LIKE "%${search}%"` : ""}
+        GROUP BY r.id
+        ORDER BY r.creation_date desc
+        LIMIT 10 OFFSET ?
       `,
-      values: [],
+      values: [page * 10 - 10],
     }),
     query({
-      query: `
-      SELECT COUNT(*) as total FROM reservations${guest ? "_mock as reservations" : ""
-        }
-      INNER JOIN status ON reservations.status = status.id
-      WHERE 1=1
-      ${status ? `AND status.id = ${status}` : ""}
-      ${search ? `AND reservations.name LIKE "%${search}%"` : ""}
-        ${limited && isLimited ? `AND reservations.leader = ${id}` : ""}
-      ${notStatus?.length
-          ? notStatus.map((stat: any) => `AND status.id <> ${stat}`).join(" ")
-          : ""
-        }
-      ${type === "expired" ? `AND to_date < CURDATE()` : ""}
+      query: `SELECT COUNT(r.id) as count FROM reservations r
+      WHERE r.status <> 1
+      ${status > 0 ? `AND r.status = ${status}` : ''}
+      ${search.length ? `AND r.name LIKE "%${search}%"` : ""}
       `,
-      values: [],
-    }),
+      values: []
+    })
   ])) as any;
 
-  const data = reservations.map((reservation: any) => ({
-    ...reservation,
-    leader: JSON.parse(reservation.leader),
-    form: JSON.parse(reservation.form),
-    status: JSON.parse(reservation.status),
-    groups: reservation.groups ? reservation.groups.split(",") : [],
-    users: reservation.users ? reservation.users.split(",").map(Number) : [],
-    rooms: JSON.parse(`[${reservation.rooms}]`).filter(
-      ({ id }: { id: any }) => id
-    ),
-  }));
-
-  return { data, count: count[0].total };
+  return { data: dataRequest, count: countRequest[0].count };
 };
 
 export const getReservationCalendarData = async ({ rooms = [] }: { rooms: any }) => {
@@ -213,7 +135,7 @@ export const getReservationCalendarData = async ({ rooms = [] }: { rooms: any })
         ) as rooms
           FROM reservations
         INNER JOIN status ON status.id = reservations.status
-        INNER JOIN users ON users.id = reservations.leader 
+        LEFT JOIN users ON users.id = reservations.leader 
         LEFT JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
         LEFT JOIN rooms ON reservations_rooms.roomId = rooms.id
         WHERE 1=1
@@ -395,26 +317,6 @@ export const userAddGroups = async ({
   return { success: affectedRows === groups.length };
 };
 
-export const userAddChildren = async ({
-  user,
-  children,
-}: {
-  user: any;
-  children: any;
-}) => {
-  const values = children.map((child: any) => [
-    child,
-    user
-  ])
-
-  const { affectedRows } = await query({
-    query: `INSERT INTO children_accounts (childrenId, parentId) VALUES ?`,
-    values: [values]
-  }) as any
-
-  return { success: affectedRows === children.length };
-};
-
 export const userAddReservations = async ({
   user,
   reservations,
@@ -566,7 +468,7 @@ export const importNewUsers = async ({ users }: { users: any }) => {
 export const userGoogleLogin = async ({ account }: { account: any }) => {
 
   const data = await query({
-    query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.theme, users.verified, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ? AND role <> 4`,
+    query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.theme, users.verified, JSON_OBJECT('id', roles.id, 'name', roles.name) as role, users.adress FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ? AND role <> 4`,
     values: [account.email]
   }) as any
 
@@ -586,7 +488,7 @@ export const userLogin = async ({
   password: any;
 }) => {
   const data = (await query({
-    query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.theme, users.verified, JSON_OBJECT('id', roles.id, 'name', roles.name) as role FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ? AND password = MD5(?) AND role <> 4`,
+    query: `SELECT users.id, users.first_name, users.last_name, users.email, users.image, users.theme, users.verified, JSON_OBJECT('id', roles.id, 'name', roles.name) as role, users.adress FROM users INNER JOIN roles ON roles.id = users.role WHERE email = ? AND password = MD5(?) AND role <> 4`,
     values: [email, password],
   })) as any;
 
@@ -602,13 +504,11 @@ export const createUserAccount = async ({
   last_name,
   email,
   role,
-  parent,
 }: {
   first_name: any;
   last_name: any;
   email: any;
   role: any;
-  parent: any;
 }) => {
   const eventId = 1;
   const password = Math.random().toString(36).slice(-9) as any;
@@ -622,20 +522,13 @@ export const createUserAccount = async ({
     return { success: false, msg: "Uživatel s tímto emailem už existuje" };
   }
 
-  const [{ affectedRows, insertId }, { data }] = (await Promise.all([
+  const [{ affectedRows }, { data }] = (await Promise.all([
     query({
-      query: `INSERT INTO users (first_name, last_name, email, role, password, verified, active) VALUES(?,?,?,?, MD5(?), 0, 1)`,
+      query: `INSERT INTO users (first_name, last_name, email, role, password, verified) VALUES(?,?,?,?, MD5(?), 0)`,
       values: [first_name, last_name, email, role, password],
     }),
     mailEventDetail({ id: eventId }),
   ])) as any;
-
-  if (parent) {
-    await query({
-      query: `INSERT INTO children_accounts (childrenId, parentId) VALUES(?,?)`,
-      values: [insertId, parent],
-    });
-  }
 
   await sendEmail({
     send: data.active,
@@ -649,23 +542,6 @@ export const createUserAccount = async ({
 
   return { success: affectedRows === 1 };
 };
-
-export const userRemoveChildren = async ({
-  user,
-  children,
-}: {
-  user: any;
-  children: any;
-}) => {
-
-  const { affectedRows } = await query({
-    query: `DELETE FROM children_accounts WHERE parentId = ? AND childrenId IN(?)`,
-    values: [user, children],
-  }) as any
-
-  return { success: affectedRows === children.length };
-};
-
 
 export const makeUserSleep = async ({
   id,
@@ -796,82 +672,6 @@ export const sendResetPasswordEmail = async ({ email }: { email: any }) => {
   return { success: false };
 };
 
-export const reservationAddUsers = async ({
-  reservation,
-  users,
-}: {
-  reservation: any;
-  users: any;
-}) => {
-  const eventId = 8;
-  const guest = await checkUserSession();
-  const { user } = await getServerSession(authOptions) as any
-
-  const values = users.map((user: any) => [
-    user,
-    reservation,
-  ]);
-
-  const [{ affectedRows }, { data }, reservationDetail, usersEmails, change] =
-    (await Promise.all([
-      query({
-        query: `INSERT INTO users_reservations (userId, reservationId) VALUES ?`,
-        values: [values],
-      }),
-      mailEventDetail({ id: eventId }),
-      query({
-        query: `SELECT reservations.from_date, reservations.to_date, status.display_name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as owner 
-      FROM reservations${guest ? "_mock as reservations" : ""
-          } INNER JOIN users${guest ? "_mock as users" : ""
-          } ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id = ? `,
-        values: [reservation],
-      }),
-      query({
-        query: `SELECT email FROM users${guest ? "_mock" : ""
-          } WHERE id IN(${users.map(() => "?")})`,
-        values: [...users],
-      }),
-      query({
-        query: `INSERT INTO reservations_users_change (user_id, reservation_id, direction) VALUES (?,?,1)`,
-        values: [user.id, reservation]
-      })
-    ])) as any;
-
-  await query({
-    query: `INSERT INTO reservations_users_change_users (user_id, change_id) VALUES ?`,
-    values: [users.map((user: any) => [user, change.insertId])]
-  })
-
-  const res = {
-    ...reservationDetail[0],
-    owner: JSON.parse(reservationDetail[0].owner),
-  };
-
-  await sendEmail({
-    send: data.active,
-    to: usersEmails.map(({ email }: { email: any }) => email),
-    template: data.template,
-    variables: [
-      {
-        name: "reservation_start",
-        value: dayjs(res.from_date).format("DD.MM.YYYY"),
-      },
-      {
-        name: "reservation_end",
-        value: dayjs(res.to_date).format("DD.MM.YYYY"),
-      },
-      { name: "reservation_status", value: res.display_name },
-      {
-        name: "leader_name",
-        value: res.owner.first_name + " " + res.owner.last_name,
-      },
-      { name: "leader_email", value: res.owner.email },
-    ],
-  });
-
-  return { success: affectedRows === users.length };
-};
-
 export const setBlockedDates = async ({
   from_date,
   to_date,
@@ -932,76 +732,6 @@ export const reservationRemoveGroups = async ({
   return { success: affectedRows === groups.length };
 };
 
-export const reservationRemoveUsers = async ({
-  reservation,
-  users,
-}: {
-  reservation: any;
-  users: any;
-}) => {
-  const eventId = 9;
-  const { user } = await getServerSession(authOptions) as any
-
-  const [{ affectedRows }, { data }, usersEmails, reservationDetail, change] =
-    (await Promise.all([
-      query({
-        query: `DELETE FROM users_reservations WHERE reservationId = ? AND userId IN ?`,
-        values: [reservation, [users]],
-      }),
-      mailEventDetail({ id: eventId }),
-      query({
-        query: `SELECT email FROM users WHERE id IN ?`,
-        values: [[users]],
-      }),
-      query({
-        query: `SELECT reservations.from_date, reservations.to_date, status.display_name, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader 
-      FROM reservations INNER JOIN users ON users.id = reservations.leader INNER JOIN status ON status.id = reservations.status WHERE reservations.id = ?`,
-        values: [reservation],
-      }),
-      query({
-        query: `INSERT INTO reservations_users_change (user_id, reservation_id, direction) VALUES (?, ?, false)`,
-        values: [user.id, reservation]
-      }),
-    ])) as any;
-
-  await query({
-    query: `INSERT INTO reservations_users_change_users (user_id, change_id) VALUES ?`,
-    values: [users.map((user: any) => [user, change.insertId])]
-  })
-
-  const res = {
-    ...reservationDetail[0],
-    leader: JSON.parse(reservationDetail[0].leader),
-  };
-
-  await sendEmail({
-    send: data.active,
-    to: usersEmails.map(({ email }: { email: any }) => email),
-    template: data.template,
-    variables: [
-      {
-        name: "reservation_start",
-        value: dayjs(res.from_date).format("DD.MM.YYYY"),
-      },
-      {
-        name: "reservation_end",
-        value: dayjs(res.to_date).format("DD.MM.YYYY"),
-      },
-      {
-        name: "reservation_status",
-        value: res.display_name,
-      },
-      {
-        name: "leader_name",
-        value: res.leader.first_name + " " + res.leader.last_name,
-      },
-      { name: "leader_email", value: res.leader.email },
-    ],
-  });
-
-  return { success: affectedRows === users.length };
-};
-
 export const getReservationsStatus = async ({ filter }: { filter: any }) => {
   const data = (await query({
     query: `SELECT * FROM status ${filter ? "WHERE id <> 5" : ""}`,
@@ -1041,15 +771,12 @@ export const reservationUpdateStatus = async ({
   const [reservation, { data }, _] = (await Promise.all([
     query({
       query: `SELECT reservations.from_date, reservations.status, reservations.name, reservations.to_date, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader, reservations.payment_symbol, reservations.success_link,
-      GROUP_CONCAT(distinct users.email) as emails FROM reservations${guest ? "_mock as reservations" : ""
-        } LEFT JOIN users_reservations${guest ? "_mock as users_reservations" : ""
-        } ON users_reservations.reservationId = reservations.id 
-        INNER JOIN status ON status.id = reservations.status
-        INNER JOIN users${guest ? "_mock as users" : ""
-        } ON users_reservations.userId = users.id
-        INNER JOIN users${guest ? "_mock" : " "
-        } as leader ON leader.id = reservations.leader
-       WHERE reservations.id = ? GROUP BY reservations.id`,
+      GROUP_CONCAT(distinct users.email) as emails FROM reservations
+      LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id 
+      INNER JOIN status ON status.id = reservations.status
+      LEFT JOIN users ON users_reservations.userId = users.id
+      LEFT JOIN users as leader ON leader.id = reservations.leader
+      WHERE reservations.id = ? GROUP BY reservations.id`,
       values: [id],
     }),
     mailEventDetail({ id: eventId }),
@@ -1677,56 +1404,59 @@ export const getReservationTimeline = async ({ reservationId: id, mode }: { rese
     })
   ]) as any
 
-  const formatedData = [...Object.values(reservationCoreDates[0]).map(((event: any, i: any) => ({
-    timestamp: event,
-    timelineEventTypeId: i,
-    ...((i === 1 || i === 2) && { dateFormat: "DD. MM." })
-  }))), ...reservationDateChanges.map((item: any) => ({
-    author: JSON.parse(item.author),
-    before: JSON.parse(item.before_change),
-    after: JSON.parse(item.after_change),
-    timestamp: item.timestamp,
-    timelineEventTypeId: 40
-  })), ...reservationDescChanges.map((item: any) => ({
-    author: JSON.parse(item.author),
-    before: JSON.parse(item.before_change),
-    after: JSON.parse(item.after_change),
-    difference: Object.keys(JSON.parse(item.before_change)).filter(k => JSON.parse(item.before_change)[k] !== JSON.parse(item.after_change)[k]),
-    timestamp: item.timestamp,
-    timelineEventTypeId: 30
-  })), ...reservationUserChanges.map((item: any) => ({
-    ...item,
-    author: JSON.parse(item.author),
-    users: item.users.split(";").map((item: any) => JSON.parse(item)),
-    timelineEventTypeId: item.direction ? 11 : 10
-  })), ...reservationGroupChange.map((item: any) => ({
-    ...item,
-    author: JSON.parse(item.author),
-    groups: item.groups.split(";").map((item: any) => JSON.parse(item)),
-    timelineEventTypeId: item.direction ? 21 : 20
-  })), ...reservationStatusChange.map((item: any) => ({
-    ...item,
-    author: JSON.parse(item.author),
-    before_status: JSON.parse(item.before_status),
-    after_status: JSON.parse(item.after_status),
-    timelineEventTypeId: Number(`5${JSON.parse(item.after_status).id}`)
-  })), ...reservationRoomsChange.map((item: any) => ({
-    ...item,
-    rooms: item.rooms.split(";"),
-    timelineEventTypeId: 60
-  })), ...reservationSigninChange.map((item: any) => ({
-    ...item,
-    timelineEventTypeId: item.direction ? 71 : 70
-  }))].filter((item) => {
-    if (mode === "new") {
-      return dayjs(item.timestamp).isBefore(new Date())
-    }
-    return dayjs(item.timestamp).isAfter(new Date())
-  }).sort((a, b) => {
-    const timeDiff = b.timestamp - a.timestamp
-    if (timeDiff !== 0) return timeDiff
-    return a.timelineEventyTypeId - b.timelineEventyTypeId
-  })
+  const { creation_date, from_date, to_date } = reservationCoreDates[0]
+
+  const formatedData = [
+    { timestamp: creation_date, timelineEventTypeId: 0 },
+    { timestamp: from_date, timelineEventTypeId: 1, dateFormat: "DD. MM." },
+    { timestamp: to_date, timelineEventTypeId: 2, dateFormat: "DD. MM" },
+    { timestamp: new Date(dayjs(to_date).add(3, "months") as any), timelineEventTypeId: 3 },
+    ...reservationDateChanges.map((item: any) => ({
+      author: JSON.parse(item.author),
+      before: JSON.parse(item.before_change),
+      after: JSON.parse(item.after_change),
+      timestamp: item.timestamp,
+      timelineEventTypeId: 40
+    })), ...reservationDescChanges.map((item: any) => ({
+      author: JSON.parse(item.author),
+      before: JSON.parse(item.before_change),
+      after: JSON.parse(item.after_change),
+      difference: Object.keys(JSON.parse(item.before_change)).filter(k => JSON.parse(item.before_change)[k] !== JSON.parse(item.after_change)[k]),
+      timestamp: item.timestamp,
+      timelineEventTypeId: 30
+    })), ...reservationUserChanges.map((item: any) => ({
+      ...item,
+      author: JSON.parse(item.author),
+      users: item.users.split(";").map((item: any) => JSON.parse(item)),
+      timelineEventTypeId: item.direction ? 11 : 10
+    })), ...reservationGroupChange.map((item: any) => ({
+      ...item,
+      author: JSON.parse(item.author),
+      groups: item.groups.split(";").map((item: any) => JSON.parse(item)),
+      timelineEventTypeId: item.direction ? 21 : 20
+    })), ...reservationStatusChange.map((item: any) => ({
+      ...item,
+      author: JSON.parse(item.author),
+      before_status: JSON.parse(item.before_status),
+      after_status: JSON.parse(item.after_status),
+      timelineEventTypeId: Number(`5${JSON.parse(item.after_status).id}`)
+    })), ...reservationRoomsChange.map((item: any) => ({
+      ...item,
+      rooms: item.rooms.split(";"),
+      timelineEventTypeId: 60
+    })), ...reservationSigninChange.map((item: any) => ({
+      ...item,
+      timelineEventTypeId: item.direction ? 71 : 70
+    }))].filter((item) => {
+      if (mode === "new") {
+        return dayjs(item.timestamp).isBefore(new Date())
+      }
+      return dayjs(item.timestamp).isAfter(new Date())
+    }).sort((a, b) => {
+      const timeDiff = b.timestamp - a.timestamp
+      if (timeDiff !== 0) return timeDiff
+      return a.timelineEventyTypeId - b.timelineEventyTypeId
+    })
 
   return { data: formatedData, count: formatedData.length }
 }
@@ -1811,11 +1541,11 @@ export const getRegistrationList = async ({ page }: { page: any }) => {
 
   const [data, count] = await Promise.all([
     query({
-      query: `SELECT rf.timestamp, r.from_date, rf.form_public_url, rf.form_id, JSON_OBJECT('id', u.id, 'first_name', u.first_name, 'last_name', u.last_name, 'image', u.image, 'email',u.email) as author, COUNT(ruc.id) as outside_registration_count 
+      query: `SELECT rf.timestamp, r.from_date, rf.form_public_url, rf.form_id, r.id as reservation_id, JSON_OBJECT('id', u.id, 'first_name', u.first_name, 'last_name', u.last_name, 'image', u.image, 'email',u.email) as author, COUNT(ur.userId) as outside_registration_count 
       FROM reservations_forms rf
       INNER JOIN users u ON u.id = rf.user_id
       INNER JOIN reservations r ON r.id = rf.reservation_id
-      LEFT JOIN reservations_users_change ruc ON ruc.reservation_id = rf.reservation_id AND ruc.direction = 1 AND ruc.outside = 1 AND ruc.timestamp > rf.timestamp
+      LEFT JOIN users_reservations ur ON ur.reservationId = r.id AND ur.verified = 0 AND ur.outside = 1
       GROUP BY rf.form_id
       ORDER BY r.from_date
       LIMIT 10 OFFSET ?
@@ -1856,7 +1586,11 @@ export const getUsersAvaliableGroups = async (id: any) => {
 
 export const getUsersAvaliableReservations = async (id: any) => {
   const data = await query({
-    query: `SELECT reservations.id, reservations.name, CONCAT('[', COALESCE(GROUP_CONCAT(users.id), ''), ']') AS users FROM reservations LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id LEFT JOIN users ON users.id = users_reservations.userId WHERE leader = ? GROUP BY reservations.id`,
+    query: `SELECT reservations.id, reservations.name, CONCAT('[', COALESCE(GROUP_CONCAT(users.id), ''), ']') AS users FROM reservations
+    LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id
+    LEFT JOIN users ON users.id = users_reservations.userId
+    WHERE leader = ? AND status <> 1 AND status <> 5
+    GROUP BY reservations.id`,
     values: [id]
   }) as any
 
@@ -1947,11 +1681,15 @@ export const editGroupDetail = async ({ groupId, name, description }: { groupId:
 
 export const getUserDetail = async ({ userId }: { userId: any }) => {
   const req = await query({
-    query: `SELECT u.id, CONCAT(u.first_name, ' ', u.last_name) as name, u.image, u.email, r.name as role, u.verified, u.adress, u.birth_date, u.ID_code, o.id as organization_id, o.name as organization_name
+    query: `SELECT u.id, CONCAT(u.first_name, ' ', u.last_name) as name, u.image, u.email, r.name as role, u.verified, u.adress, u.birth_date, u.ID_code, o.id as organization_id, o.name as organization_name, parent.id as parent_id, CONCAT(parent.first_name, ' ', parent.last_name) as parent_name, COUNT(ch.id) as children
     FROM users u 
     INNER JOIN roles r ON r.id = u.role
+    LEFT JOIN users parent ON parent.email = u.email AND parent.id <> u.id AND parent.children = 0
+    LEFT JOIN users ch ON ch.email = u.email AND ch.id <> u.id AND ch.children = 1 AND u.children <> 1
     LEFT JOIN organization o ON o.id = u.organization
-    WHERE u.id = ?`,
+    WHERE u.id = ?
+    GROUP BY u.id
+    `,
     values: [userId]
   }) as any
 
@@ -2001,10 +1739,10 @@ export const getUserReservations = async ({ userId, page }: { userId: any, page:
     query({
       query: `SELECT r.id, r.name, r.from_date, r.to_date, CONCAT(l.first_name, ' ', l.last_name) as leader_name, l.image as leader_image, COUNT(ur2.userId) as users_count, s.color as status_color, s.icon as status_icon, s.display_name as status_name
         FROM users u
-        INNER JOIN users_reservations ur ON ur.userId = u.id
+        INNER JOIN users_reservations ur ON ur.userId = u.id 
         INNER JOIN reservations r ON r.id = ur.reservationId
         INNER JOIN users l ON l.id = r.leader
-        INNER JOIN users_reservations ur2 ON ur2.reservationId = r.id  
+        INNER JOIN users_reservations ur2 ON ur2.reservationId = r.id  AND ur2.verified = 1
         INNER JOIN status s ON s.id = r.status
         WHERE u.id = ?
         GROUP BY r.id
@@ -2020,17 +1758,16 @@ export const getUserReservations = async ({ userId, page }: { userId: any, page:
     })
   ]) as any
 
-  console.log(dataRequest)
   return { data: dataRequest, count: countRequest[0].count }
 }
 
 export const getReservationDetail = async ({ reservationId }: { reservationId: any }) => {
   const dataRequest = await query({
     query: `SELECT r.id, r.name, r.from_date, r.to_date, r.purpouse, u.image as leader_image, CONCAT(u.first_name, ' ', u.last_name) as leader_name,
-    u.email as leader_email, s.display_name as status_name, s.icon as status_icon, s.color as status_color, r.success_link, r.payment_symbol, r.reject_reason, s.id as status_id, r.instructions
+    u.email as leader_email, s.display_name as status_name, s.icon as status_icon, s.color as status_color, r.success_link, r.payment_symbol, r.reject_reason, s.id as status_id, r.instructions, u.id as leader_id
     FROM reservations r
-    INNER JOIN users u ON u.id = r.leader
-    INNER JOIN status s ON s.id = r.status
+    LEFT JOIN users u ON u.id = r.leader
+    LEFT JOIN status s ON s.id = r.status
     WHERE r.id = ?`,
     values: [reservationId]
   }) as any
@@ -2088,7 +1825,7 @@ export const getReservationUsers = async ({ reservationId, page }: { reservation
     query({
       query: `SELECT CONCAT(u.first_name, ' ', u.last_name) as name, u.id, u.email, u.image, ro.name as role_name, o.name as organization_name, u.verified
       FROM reservations r 
-      INNER JOIN users_reservations ur ON ur.reservationId = r.id
+      INNER JOIN users_reservations ur ON ur.reservationId = r.id AND ur.verified = 1
       INNER JOIN users u ON u.id = ur.userId
       INNER JOIN roles ro ON ro.id = u.role
       LEFT JOIN organization o ON o.id = u.organization
@@ -2099,7 +1836,7 @@ export const getReservationUsers = async ({ reservationId, page }: { reservation
     }),
     query({
       query: `SELECT COUNT(ur.userId) as count FROM reservations r
-      INNER JOIN users_reservations ur ON ur.reservationId = r.id
+      INNER JOIN users_reservations ur ON ur.reservationId = r.id AND ur.verified = 1
       WHERE r.id = ?`,
       values: [reservationId]
     })
@@ -2187,7 +1924,9 @@ export const getUserGroupsWhereOwner = async ({ userId }: { userId: any }) => {
   return { data: dataRequest }
 }
 
-export const createNewReservation = async ({ from_date, to_date, groups, rooms, leader, purpouse, instructions, name }: any) => {
+export const createNewReservation = async ({ from_date, to_date, groups, rooms, leader, purpouse, instructions, name, family }: any) => {
+  const { user } = await getServerSession(authOptions) as any
+
   const request = await query({
     query: `INSERT INTO reservations (from_date, to_date, name, purpouse, leader, instructions, status) VALUES (?,?,?,?,?,?,2)`,
     values: [from_date, to_date, name, purpouse, leader, instructions]
@@ -2213,6 +1952,10 @@ export const createNewReservation = async ({ from_date, to_date, groups, rooms, 
     FROM users_groups ug 
     WHERE ug.groupId IN (?)`,
       values: [request.insertId, groups]
+    }),
+    family && query({
+      query: `INSERT INTO users_reservations (userId, reservationId) SELECT u.id, ? FROM users u WHERE u.email = ? AND children = 1`,
+      values: [request.insertId, user.email]
     })
   ])
 
@@ -2264,9 +2007,9 @@ export const groupDeleteUser = async ({ userId, groupId }: { userId: any, groupI
   return { success: request.affectedRows === 1 }
 }
 
-export const userDelete = async ({ userId }: { userId: any }) => {
+export const setUserAsOutside = async ({ userId }: { userId: any }) => {
   const request = await query({
-    query: `DELETE FROM users WHERE id = ?`,
+    query: `UPDATE users SET role = 4 WHERE id = ?`,
     values: [userId]
   }) as any
 
@@ -2275,10 +2018,12 @@ export const userDelete = async ({ userId }: { userId: any }) => {
 
 export const getReservationRegistration = async ({ reservationId }: { reservationId: any }) => {
   const dataRequest = await query({
-    query: `SELECT r.id, r.name, r.from_date, r.instructions, rf.form_id, rf.form_public_url, u.first_name, u.last_name, u.email FROM reservations r
-    INNER JOIN users u ON u.id = r.leader
+    query: `SELECT r.id, r.name, r.from_date, r.to_date, s.id as status_id, r.instructions, rf.form_id, rf.form_public_url, u.first_name, u.last_name, u.email FROM reservations r
+    LEFT JOIN users u ON u.id = r.leader
+    INNER JOIN status s ON s.id = r.status
     LEFT JOIN reservations_forms rf ON rf.reservation_id = r.id
-    WHERE r.id = ?`,
+    WHERE r.id = ?
+    `,
     values: [reservationId]
   }) as any
 
@@ -2287,19 +2032,142 @@ export const getReservationRegistration = async ({ reservationId }: { reservatio
 
 export const getReservationRegisteredUsers = async ({ reservationId, page }: { reservationId: any, page: any }) => {
   const dataRequest = await query({
-    query: `SELECT CONCAT(u.first_name, ' ', u.last_name) as name, u.email, ruc.timestamp FROM reservations_users_change ruc
-    INNER JOIN users u ON u.id = ruc.user_id
-    WHERE ruc.reservation_id = ?
+    query: `SELECT u.id, u.adress as user_adress, u.ID_code as user_ID_code, ur.timestamp, CONCAT(u.first_name, ' ', u.last_name) as name, u.email, r.id as role_id, r.name as role_name, ur.verified as verified_registration
+    FROM users_reservations ur
+    LEFT JOIN users u ON u.id = ur.userId
+    INNER JOIN roles r ON r.id = u.role
+    WHERE ur.reservationId = ? AND ur.outside = 1
+    ORDER BY ur.timestamp DESC
     LIMIT 10 OFFSET ?
     `,
     values: [reservationId, page * 10 - 10]
   }) as any
 
   const countRequest = await query({
-    query: `SELECT COUNT(ruc.user_id) as count FROM reservations_users_change ruc WHERE ruc.reservation_id = ?`,
+    query: `SELECT COUNT(*) as count FROM users_reservations ur WHERE ur.reservationId = ?  AND ur.outside = 1`,
     values: [reservationId]
   }) as any
 
   return { data: dataRequest, count: countRequest[0].count }
 }
 
+
+export const getReservationsByWeekCalendar = async () => {
+  const dataRequest = await query({
+    query: `SELECT r.id, r.name, r.from_date, r.to_date, GROUP_CONCAT(ro.id) as rooms, CONCAT(u.first_name, ' ', u.last_name) as leader_name, s.color as status_color, s.display_name as status_name, s.icon as status_icon 
+    FROM reservations r
+    LEFT JOIN reservations_rooms rr ON rr.reservationId = r.id
+    LEFT JOIN rooms ro ON ro.id = rr.roomId
+    LEFT JOIN users u ON u.id = r.leader
+    LEFT JOIN status s ON s.id = r.status
+    WHERE status <> 1
+    GROUP BY r.id
+    `,
+    values: []
+  }) as any
+
+  return { data: dataRequest }
+}
+
+
+export const getReservationsArchive = async ({ page }: { page: any }) => {
+  const [dataRequest, countRequest] = await Promise.all([
+    query({
+      query: `SELECT r.id, r.name, r.from_date, r.to_date, r.creation_date, COUNT(ur.userId) as users_count, u.image as leader_image,
+      CONCAT(u.first_name, ' ', u.last_name) as leader_name
+      FROM reservations r 
+      LEFT JOIN users_reservations ur ON ur.reservationId = r.id
+      LEFT JOIN users u ON u.id = r.leader
+      WHERE r.status = 1
+      GROUP BY r.id
+      ORDER BY r.from_date desc
+      LIMIT 10 OFFSET ? 
+      `,
+      values: [page * 10 - 10]
+    }),
+    query({
+      query: `SELECT COUNT(r.id) as count FROM reservations r WHERE status = 1`,
+      values: []
+    })
+  ]) as any
+
+  return { data: dataRequest, count: countRequest[0].count }
+}
+
+export const createFamilyAccount = async ({ birth_date, first_name, last_name, adress, ID_code, email }: { birth_date: any, first_name: any, last_name: any, adress: any, ID_code: any, email: any }) => {
+
+  const check = await query({
+    query: `SELECT u.id FROM users u WHERE u.ID_CODE = ?`,
+    values: [ID_code]
+  }) as any
+
+  if (check.length) {
+    return { success: false, msg: "Tato osoba už má v aplikaci vytvořený účet!" }
+  }
+
+  const request = await query({
+    query: `INSERT INTO users (first_name, last_name, role, password, email, verified, adress, birth_date, ID_code, children)
+    VALUES (?,?,4,NULL,?,1,?,?,?,1)`,
+    values: [first_name, last_name, email, adress, dayjs(birth_date).format("YYYY-MM-DD"), ID_code.length ? ID_code : null]
+  }) as any
+
+  return { success: request.affectedRows === 1 }
+}
+
+export const getUserFamily = async ({ userId }: { userId: any }) => {
+
+  const dataRequest = await query({
+    query: `SELECT family.id, CONCAT(family.first_name, ' ', family.last_name) as name FROM users u     INNER JOIN users family ON family.email = u.email AND family.children = 1 
+    WHERE u.id = ?
+    `,
+    values: [userId]
+  }) as any
+
+  return { data: dataRequest }
+}
+
+export const deleteUser = async ({ userId, reservationId }: { userId: any, reservationId: any }) => {
+  const [_, request] = await Promise.all([
+    query({
+      query: `DELETE FROM users WHERE users.id = ? AND users.role = 4 AND verified = 0`,
+      values: [userId]
+    }),
+    query({
+      query: `DELETE FROM users_reservations WHERE users_reservations.userId = ? AND users_reservations.reservationId = ?`,
+      values: [userId, reservationId]
+    })
+  ]) as any
+
+  return { success: request.affectedRows === 1 }
+}
+
+export const deleteUserWithChildren = async ({ userId }: { userId: any }) => {
+  await query({
+    query: `
+    DELETE FROM users 
+    WHERE 
+    (id = ${userId} AND children = 0) 
+    OR 
+    (email = (SELECT email FROM users WHERE id = ${userId}) AND children = 1) 
+    `,
+    values: []
+  })
+
+  return { success: true }
+}
+
+export const approveUserInReservation = async ({ userId, reservationId }: { userId: any, reservationId: any }) => {
+  const [request, _] = await Promise.all([
+    await query({
+      query: `UPDATE users_reservations SET verified = true WHERE users_reservations .userId = ? AND users_reservations .reservationId = ?`,
+      values: [userId, reservationId]
+    }),
+    await query({
+      query: `UPDATE users SET verified = true WHERE users.id = ?`,
+      values: [userId]
+    })
+  ]) as any
+
+
+  return { success: request.affectedRows === 1 }
+}

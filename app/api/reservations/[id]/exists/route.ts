@@ -4,13 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(_: NextRequest, { params }: any) {
 
   const data = await query({
-    query: `SELECT leader FROM reservations WHERE id = ?`,
+    query: `SELECT r.id FROM reservations r WHERE r.id = ? AND status <> 5`,
     values: [params.id]
   }) as any
 
-  if (!data.length) {
-    return NextResponse.json({ leader: null })
-  }
+  return NextResponse.json({ exists: data.length })
 
-  return NextResponse.json({ leader: data[0].leader })
 }

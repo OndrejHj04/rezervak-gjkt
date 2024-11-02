@@ -1,7 +1,7 @@
 "use client";
 import { createUserAccount } from "@/lib/api";
-import { Autocomplete, Button, MenuItem, Paper, TextField, Typography } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { Button, MenuItem, Paper, TextField, Typography } from "@mui/material";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -11,16 +11,11 @@ const roles = [
   { id: 3, label: "Uživatel" }
 ]
 
-export default function NewUserForm({
-  options,
-}: {
-  options: any;
-}) {
+export default function NewUserForm() {
   const {
     register,
     handleSubmit,
     formState: { isValid, isDirty },
-    control,
     reset
   } = useForm();
   const { refresh, push } = useRouter()
@@ -75,24 +70,6 @@ export default function NewUserForm({
               <MenuItem key={role.id} value={role.id}>{role.label}</MenuItem>
             ))}
           </TextField>
-          <Controller
-            control={control}
-            name="parent"
-            render={({ field: { value, onChange } }) => (
-              <Autocomplete
-                value={value}
-                onChange={(_, value) => {
-                  onChange(value);
-                }}
-                options={options}
-                getOptionLabel={(option: any) => option.name}
-                renderOption={(props: any, option: any) => (<li {...props}><span className="w-full flex justify-between"><Typography>{option.name}</Typography><Typography color="text.secondary">{option.email}</Typography></span></li>)}
-                renderInput={(params) => (
-                  <TextField {...params} label="Rodičovský účet" />
-                )}
-              />
-            )}
-          />
         </div>
       </Paper>
     </form>

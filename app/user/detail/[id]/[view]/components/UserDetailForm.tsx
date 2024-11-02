@@ -2,7 +2,8 @@
 
 import { editUserDetail } from "@/lib/api"
 import AvatarWrapper from "@/ui-components/AvatarWrapper"
-import { Button, CardHeader, List, ListItem, ListItemText, MenuItem, TextField, Typography } from "@mui/material"
+import { ArrowCircleRightRounded } from "@mui/icons-material"
+import { Alert, Button, CardHeader, List, ListItem, ListItemText, MenuItem, TextField, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import React from "react"
 import { useForm } from "react-hook-form"
@@ -47,6 +48,8 @@ export default function UserDetailForm({ userDetail }: { userDetail: any }) {
         </ListItem>
       </List>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3 w-[300px]">
+        {!!userDetail.parent_id && <Alert severity="info">Rodinný účet uživatele: {userDetail.parent_name}.</Alert>}
+        {!!userDetail.children && <Alert severity="info">Správce rodinných účtů.</Alert>}
         <TextField label="Číslo OP" {...register("ID_code", { required: true })} />
         <TextField label="Adresa" {...register("adress", { required: true })} />
         <TextField select {...register("organization")} defaultValue={userDetail.organization_id} label="Organizace">

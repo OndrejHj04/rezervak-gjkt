@@ -12,12 +12,14 @@ export default async function UserDetailPage({ params, searchParams }: { params:
   const { user } = await getServerSession(authOptions) as any
   const { data } = await getUserDetail({ userId: id })
 
+  console.log(data)
+  const editable = user.role.id !== 3 || data.parent_id === user.id || user.id === data.id
 
   if (view === "info") {
-    if (user.role.id === 3) {
-      return <UserDetailDisplay userDetail={data} />
+    if (editable) {
+      return <UserDetailForm userDetail={data} />
     }
-    return <UserDetailForm userDetail={data} />
+    return <UserDetailDisplay userDetail={data} />
   }
   if (view === "groups") {
     return <UserGroupsTable id={id} page={page} />

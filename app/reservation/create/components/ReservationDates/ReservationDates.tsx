@@ -1,7 +1,8 @@
 import ReservationDatesRender from "./ReservationDatesRender";
-import { getReservationList } from "@/lib/api";
+import { getReservationList, getReservationsByWeekCalendar } from "@/lib/api";
 
 export default async function ReservationDates() {
-  const { data } = await getReservationList({ notStatus: [1] });
+  const { data } = await getReservationsByWeekCalendar()
+
   return <ReservationDatesRender reservations={data} />;
 }

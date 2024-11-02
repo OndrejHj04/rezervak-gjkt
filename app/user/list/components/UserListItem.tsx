@@ -1,6 +1,7 @@
 "use client";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
+  Box,
   Button,
   Divider,
   IconButton,
@@ -9,6 +10,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableRow,
   Typography,
 } from "@mui/material";
@@ -18,8 +20,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { getFullName } from "@/app/constants/fullName";
-import { userAddGroups, userAddReservations, userDelete } from "@/lib/api";
+import { userAddGroups, userAddReservations, setUserAsOutside, deleteUser, deleteUserWithChildren } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -45,19 +46,21 @@ export default function UserListItem({
     setOpen(o => !o)
   }
 
-  const setMenuPosition = (e: any) => {
+  const setMenuPosition = (e: any, id: any, role: any) => {
     setAnchorEl(
       anchorEl === null
         ? {
           mouseX: e.clientX + 2,
           mouseY: e.clientY - 6,
+          id: id,
+          role: role
         }
         : null
     )
   }
 
   const handleAddToGroup = (groupId: any) => {
-    userAddGroups({ user: user.id, groups: [groupId] }).then(({ success }) => {
+    userAddGroups({ user: anchorEl.id, groups: [groupId] }).then(({ success }) => {
       if (success) toast.success("Uživatel úspěšně přidán do skupiny")
       else toast.error("Něco se nepovedlo")
       refresh()
@@ -65,15 +68,23 @@ export default function UserListItem({
   }
 
   const handleAddToReservation = (reservationId: any) => {
-    userAddReservations({ user: user.id, reservations: [reservationId] }).then(({ success }) => {
+    userAddReservations({ user: anchorEl.id, reservations: [reservationId] }).then(({ success }) => {
       if (success) toast.success("Uživatel úspěšně přidán do rezervace")
       else toast.error("Něco se nepovedlo")
       refresh()
     })
   }
 
-  const handleUserDelete = () => {
-    userDelete({ userId: user.id }).then(({ success }) => {
+  const handleUserSetPublic = () => {
+    setUserAsOutside({ userId: anchorEl.id }).then(({ success }) => {
+      if (success) toast.success("Uživatel nastaven jako veřejnost")
+      else toast.error("Něco se nepovedlo")
+      refresh()
+    })
+  }
+
+  const handleDeleteUser = () => {
+    deleteUserWithChildren({ userId: anchorEl.id }).then(({ success }) => {
       if (success) toast.success("Uživatel úspěšně odstraněn")
       else toast.error("Něco se nepovedlo")
       refresh()
@@ -82,7 +93,7 @@ export default function UserListItem({
 
   return (
     <React.Fragment key={user.id}>
-      <TableRow onClick={setMenuPosition} selected={Boolean(anchorEl)}>
+      <TableRow onClick={(e) => setMenuPosition(e, user.id, user.role_id)} selected={Boolean(anchorEl) && anchorEl.id === user.id}>
         {childrenData && (
           <TableCell>
             {!!childrenData.length && (
@@ -95,13 +106,13 @@ export default function UserListItem({
         <TableCell>
           <div className="flex items-center gap-2">
             <AvatarWrapper data={user} />
-            {getFullName(user)}
+            {user.name}
           </div>
         </TableCell>
         <TableCell>{user.email}</TableCell>
-        <TableCell>{user.role.name}</TableCell>
+        <TableCell>{user.role_name}</TableCell>
         <TableCell>
-          {user.organization && user.organization.name}
+          {user.organization_name}
         </TableCell>
         <TableCell>
           {user.verified ? (
@@ -123,38 +134,47 @@ export default function UserListItem({
             : undefined}
         >
           {avaliableGroups.map((group: any) => (
-            <MenuItem disabled={group.users.includes(user.id)} key={group.id} onClick={() => handleAddToGroup(group.id)}>Přidat do skupiny {group.name}</MenuItem>
+            <MenuItem disabled={group.users.includes(anchorEl?.id)} key={group.id} onClick={() => handleAddToGroup(group.id)}>Přidat do skupiny {group.name}</MenuItem>
           ))}
-          <Divider />
+          {!!avaliableReservations.length && !!avaliableGroups.length && <Divider className="!my-0" />}
           {avaliableReservations.map((reservation: any) => (
-            <MenuItem disabled={reservation.users.includes(user.id)} key={reservation.id} onClick={() => handleAddToReservation(reservation.id)}>Přidat do rezervace {reservation.name}</MenuItem>
+            <MenuItem disabled={reservation.users.includes(anchorEl?.id)} key={reservation.id} onClick={() => handleAddToReservation(reservation.id)}>Přidat do rezervace {reservation.name}</MenuItem>
           ))}
-          {isAdmin && <React.Fragment>
-            <Divider />
-            <MenuItem onClick={handleUserDelete}>Odstranit uživatele</MenuItem>
-          </React.Fragment>}
+          {!!avaliableGroups.length && !!isAdmin && <Divider className="!my-0" />}
+          {isAdmin && (
+            anchorEl?.role !== 4 ? <MenuItem onClick={handleUserSetPublic}>Nastavit jako veřejnost</MenuItem> :
+              <MenuItem onClick={handleDeleteUser}>Smazat účet</MenuItem>)
+          }
         </Menu>
       </TableRow>
       {open && (
         <React.Fragment>
-          {childrenData && childrenData.length && (
+          {!!childrenData.length && (
             <TableRow>
               <TableCell colSpan={10}>
                 <div className="m-3">
                   <Typography variant="h6">
-                    Dětské účty uživatele {user.first_name} {user.last_name}
+                    Rodina uživatele {user.name}
                   </Typography>
                   <Table size="small">
+                    <TableHead>
+                      <TableRow className="[&_.MuiTableCell-root]:font-semibold [&_.MuiTableCell-root]:text-lg">
+                        <TableCell>Jméno</TableCell>
+                        <TableCell>Role</TableCell>
+                        <TableCell>Organizace</TableCell>
+                        <TableCell />
+                      </TableRow>
+                    </TableHead>
                     <TableBody>
                       {childrenData.map((child: any) => (
-                        <UserListItem
-                          key={child.id}
-                          user={child}
-                          childrenData={null}
-                          avaliableGroups={avaliableGroups}
-                          avaliableReservations={avaliableReservations}
-                          isAdmin={isAdmin}
-                        />
+                        <TableRow key={child.id} onClick={(e) => setMenuPosition(e, child.id, child.role_id)} selected={Boolean(anchorEl) && anchorEl.id === child.id}>
+                          <TableCell>{child.name}</TableCell>
+                          <TableCell>{child.role}</TableCell>
+                          <TableCell>{child.organization}</TableCell>
+                          <TableCell align="right">
+                            <Button size="small" variant="text" component={Link} href={`/user/detail/${child.id}/info`} onClick={(e) => e.stopPropagation()}>detail</Button>
+                          </TableCell>
+                        </TableRow>
                       ))}
                     </TableBody>
                   </Table>
@@ -163,7 +183,8 @@ export default function UserListItem({
             </TableRow>
           )}
         </React.Fragment>
-      )}
-    </React.Fragment>
+      )
+      }
+    </React.Fragment >
   );
 }

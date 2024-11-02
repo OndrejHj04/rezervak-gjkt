@@ -89,7 +89,7 @@ export default function VerifyUser({ id }: { id?: number }) {
                 required: underFifteen ? false : "Toto pole je povinné",
                 pattern: {
                   value: /^\d{9}$/,
-                  message: "RČ musí být ve správném formátu",
+                  message: "Číslo OP musí být ve správném formátu",
                 },
               })}
               className="w-full"

@@ -185,6 +185,20 @@ export default function TimelineEventUi(event: any) {
             </TimelineContent>
           </React.Fragment>
         )
+      case 51:
+        return (
+          <React.Fragment>
+            <TimelineSeparator>
+              <TimelineDot color="grey" {...dotProps}>
+                <FolderDeleteOutlined />
+              </TimelineDot>
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent>
+              <Typography>Archivace</Typography>
+            </TimelineContent>
+          </React.Fragment>
+        )
       case 52:
         return (
           <React.Fragment>

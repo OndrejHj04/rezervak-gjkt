@@ -7,9 +7,9 @@ export default async function TopBarUserCard({ user }: { user: any }) {
   if (!user) return null
   return (
     <div className="flex">
-      <Button component={Link} href={`/user/detail/${user.id}`}>
+      <Button component={Link} href={`/user/detail/${user.id}/info`}>
         <div className="flex-col mx-4 items-end normal-case text-white sm:flex hidden">
-          <Typography className="!font-semibold capitalize" variant="body1">
+          <Typography className="!font-semibold" variant="body1">
             {user.first_name} {user.last_name}
           </Typography>
           <div className="flex gap-1 items-center">

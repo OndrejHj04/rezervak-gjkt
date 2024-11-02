@@ -4,9 +4,12 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
-  List,
-  ListItemButton,
-  ListItemText,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Select,
   Typography,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -15,20 +18,24 @@ import { useState } from "react";
 import { store } from "@/store/store";
 export default function ReservationMembersRender({
   groups,
+  family
 }: {
   groups: any;
+  family: any
 }) {
   const { setCreateReservation, createReservation } = store();
   const [expanded, setExpanded] = useState(false);
-  const isValid = createReservation.groups.length;
+  const isValid = createReservation.groups.length || createReservation.family;
   const [selectedGroups, setSelectedGroups] = useState<any>([])
+  const [checkFamily, setCheckFamily] = useState(false)
 
   const makeReset = () => {
     setSelectedGroups([]);
+    setCheckFamily(false)
     setCreateReservation({
       ...createReservation,
-      members: [],
       groups: [],
+      family: false
     });
   };
 
@@ -36,17 +43,10 @@ export default function ReservationMembersRender({
     setCreateReservation({
       ...createReservation,
       groups: selectedGroups,
+      family: checkFamily
     });
     setExpanded(false);
   };
-
-  const handleSelect = (id: any) => {
-    if (selectedGroups.includes(id)) {
-      setSelectedGroups((s: any) => s.filter((i: any) => i !== id))
-    } else {
-      setSelectedGroups((s: any) => ([...s, id]))
-    }
-  }
 
   return (
     <Accordion expanded={expanded}>
@@ -60,20 +60,36 @@ export default function ReservationMembersRender({
           )
         }
       >
-        <Typography variant="h6">Skupiny v rezervaci</Typography>
+        <Typography variant="h6">Skupiny a rodina</Typography>
       </AccordionSummary>
       <AccordionDetails className="p-2">
-        <Typography variant="h5">Přidejte vaše skupiny do rezervace</Typography>
-        <Typography>Všichni členové skupiny budou automaticky přidání do rezervace. Další uživatele budete moci přidat po vytvoření. Tato akce není povinná.</Typography>
-        <List className="w-[240px]">
-          {groups.length > 0 ? groups.map((group: any) => (
-            <ListItemButton className="!p-1" key={group.id} onClick={() => handleSelect(group.id)} selected={selectedGroups.includes(group.id)}>
-              <ListItemText primary={group.name} secondary={`${group.users_count} členů`} />
-            </ListItemButton>
-          )) : <Typography className="p-4">Nemáte vytvořené žádné skupiny!</Typography>}
-        </List>
-        <Button variant="contained" disabled={!selectedGroups.length || isValid} onClick={handleSubmit}>Uložit</Button>
-        <Button variant="contained" color="error" className="ml-2" onClick={makeReset} disabled={!isValid}>Zrušit</Button>
+        <Typography variant="h5">Přidejte vaše skupiny nebo rodinu do rezervace</Typography>
+        <Typography>Všichni budou automaticky přidání do rezervace jako účastníci. Další účastníky budete moci přidat po vytvoření rezervace. Tato akce není povinná.</Typography>
+
+        <div className="flex flex-col mt-2">
+          <FormControl className="w-[300px]">
+            <InputLabel id="demo-simple-select-label">Skupiny</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              multiple
+              value={selectedGroups}
+              disabled={!groups.length}
+              label="Skupiny"
+              onChange={(e) => setSelectedGroups(e.target.value)}
+            >
+              {groups.map((group: any) => (
+                <MenuItem key={group.id} value={group.id}>{group.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControlLabel disabled={!family.length} onChange={(e: any) => setCheckFamily(e.target.checked)} checked={checkFamily} control={<Checkbox />} label="Přidat celou rodinu" />
+          <div>
+            <Button variant="contained" disabled={isValid} onClick={handleSubmit}>Uložit</Button>
+            <Button variant="contained" color="error" className="ml-2" onClick={makeReset} disabled={!isValid}>Zrušit</Button>
+          </div>
+        </div>
       </AccordionDetails>
     </Accordion>
   );

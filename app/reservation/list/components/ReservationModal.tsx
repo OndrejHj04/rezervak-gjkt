@@ -18,7 +18,7 @@ import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { getReservationsStatus, reservationUpdateStatus } from "@/lib/api";
+import { reservationUpdateStatus } from "@/lib/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -28,12 +28,17 @@ const style = {
   transform: "translate(-50%, -50%)",
 };
 
+export const statuses = [
+  { id: 2, color: "#FCD34D", displayName: "Čeká na potvrzení", icon: "running_with_errors" },
+  { id: 3, color: "#34D399", displayName: "Potvrzeno", icon: "done_all" },
+  { id: 4, color: "#ED9191", displayName: "Zamítnuto", icon: "gpp_bad" },
+]
+
 export default function ReservationModal({
   reservation,
 }: {
   reservation: any;
 }) {
-  const [statuses, setStatuses] = useState([]);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const nextSearchParams = new URLSearchParams(searchParams)
@@ -46,24 +51,18 @@ export default function ReservationModal({
     resetField,
     formState: { isValid, dirtyFields },
   } = useForm({
-    defaultValues: { status: reservation.status, reason: reservation.reject_reason || "", successLink: reservation.success_link || "", paymentSymbol: reservation.payment_symbol || "" },
+    defaultValues: { status: statuses.find((item: any) => item.id === reservation.status_id), reason: reservation.reject_reason || "", successLink: reservation.success_link || "", paymentSymbol: reservation.payment_symbol || "" },
   });
   const selectedStatus = watch("status")
 
   const isActive = Number(searchParams.get("reservation_id")) === reservation.id;
-  useEffect(() => {
-    setLoading(false);
-    if (isActive) {
-      getReservationsStatus({ filter: true }).then((data) => setStatuses(data));
-    }
-  }, [isActive]);
 
   const onSubmit = (data: any) => {
     setLoading(true);
     reservationUpdateStatus({
       id: reservation.id,
       newStatus: data.status.id,
-      oldStatus: reservation.status.id,
+      oldStatus: reservation.status_id,
       ...(data.reason.length && { rejectReason: data.reason }),
       ...(data.paymentSymbol.length && { paymentSymbol: data.paymentSymbol }),
       ...(data.successLink.length && { successLink: data.successLink }),
@@ -94,8 +93,7 @@ export default function ReservationModal({
             Do: {dayjs(reservation.to_date).format("DD. MM. YYYY")}
           </Typography>
           <Typography variant="h6">
-            Vedoucí rezervace: {reservation.leader.first_name}{" "}
-            {reservation.leader.last_name}
+            Vedoucí rezervace: {reservation.leader_name}
           </Typography>
           <Controller
             control={control}
@@ -105,14 +103,14 @@ export default function ReservationModal({
                 value={value}
                 onChange={(_, value) => onChange(value)}
                 options={statuses}
-                getOptionLabel={(option: any) => option.display_name}
+                getOptionLabel={(option: any) => option.displayName}
                 renderOption={(props: any, option: any) => (
                   <ListItem disablePadding {...props}>
                     <ListItemIcon>
                       <Icon sx={{ color: option.color }}>{option.icon}</Icon>
                     </ListItemIcon>
                     <ListItemText
-                      primary={<Typography>{option.display_name}</Typography>}
+                      primary={<Typography>{option.displayName}</Typography>}
                     />
                   </ListItem>
                 )}

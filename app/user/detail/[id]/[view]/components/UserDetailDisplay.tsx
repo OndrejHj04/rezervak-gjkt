@@ -34,6 +34,8 @@ export default function UserDetailDisplay({ userDetail }: { userDetail: any }) {
           <ListItemText>Organizace: {userDetail.organization_name}</ListItemText>
         </ListItem>
         {!userDetail.verified && <Alert severity="error">Neověřený účet - uživatel se ještě nepřihlásil a nevyplnil údaje</Alert>}
+        {!!userDetail.parent_id && <Alert severity="info">Rodinný účet uživatele: {userDetail.parent_name}.</Alert>}
+        {!!userDetail.children && <Alert severity="info">Správce rodinných účtů.</Alert>}
       </List>
     </React.Fragment>
   )

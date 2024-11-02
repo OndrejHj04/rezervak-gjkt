@@ -3,13 +3,9 @@ import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import ReservationUsersRemoveButton from "./ReservationUsersRemoveButton";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-export default async function ReservationUsersTable({ id, page = 1 }: { id: any, page: any }) {
+export default async function ReservationUsersTable({ id, page = 1, editable }: { id: any, page: any, editable: any }) {
   const { data, count } = await getReservationUsers({ reservationId: id, page })
-  const { user } = await getServerSession(authOptions) as any
-  const isAdmin = user.role.id !== 3
 
   return (
     <TableContainer>
@@ -40,7 +36,7 @@ export default async function ReservationUsersTable({ id, page = 1 }: { id: any,
               <TableCell>{user.organization_name}</TableCell>
               <TableCell>{user.verified}</TableCell>
               <TableCell align="right">
-                {isAdmin && <ReservationUsersRemoveButton reservationId={id} userId={user.id} />}
+                {editable && <ReservationUsersRemoveButton reservationId={id} userId={user.id} />}
               </TableCell>
             </TableRow>
           ))}

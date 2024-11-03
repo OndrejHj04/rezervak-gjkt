@@ -12,7 +12,6 @@ export default async function UserDetailPage({ params, searchParams }: { params:
   const { user } = await getServerSession(authOptions) as any
   const { data } = await getUserDetail({ userId: id })
 
-  console.log(data)
   const editable = user.role.id !== 3 || data.parent_id === user.id || user.id === data.id
 
   if (view === "info") {

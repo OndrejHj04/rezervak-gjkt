@@ -1,6 +1,7 @@
 import { getFullName } from "@/app/constants/fullName";
 import { smartTime } from "@/app/constants/smartTime";
 import { getRegistrationList } from "@/lib/api";
+import { dayjsExtended } from "@/lib/dayjsExtended";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
@@ -38,7 +39,7 @@ export default async function RegistrationList({ searchParams }: { searchParams:
           {data.map((registration: any, i: any) => (
             <TableRow key={i}>
               <TableCell>
-                {dayjs(registration.timestamp).locale('cs').format("DD. MMMM HH:mm")}
+                {dayjsExtended(registration.timestamp).format("DD. MMMM HH:mm")}
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
@@ -55,7 +56,7 @@ export default async function RegistrationList({ searchParams }: { searchParams:
               <TableCell>
                 <div className="flex gap-2 justify-end">
                   <Button component={Link} size="small" href={registration.form_public_url} target="_blank">Přihlašovací formulář</Button>
-                  <Button component={Link} size="small" href={`/reservation/detail/${registration.reservation_id}/registration`} target="_blank">Detail přihlašování</Button>
+                  <Button component={Link} size="small" href={`/reservation/detail/${registration.reservation_id}/registration`}>Detail přihlašování</Button>
                 </div>
               </TableCell>
             </TableRow>

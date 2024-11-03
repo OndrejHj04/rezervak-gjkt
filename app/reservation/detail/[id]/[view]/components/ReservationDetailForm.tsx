@@ -38,13 +38,15 @@ export default function ReservationDetailForm({ reservationDetail }: { reservati
       editReservationDate({ reservationId: reservationDetail.id, from_date: data.from_date, to_date: data.to_date }).then(({ success }) => {
         if (success) toast.success("Datum rezervace úspěšně upraveno")
         else toast.error("Něco se nepovedlo")
+        reset({ ...data, status: (data.status === 4 || data.status === 3) ? 2 : data.status })
       })
     }
 
     if (dirtyFields.status) {
-      editReservationStatus({ reservationId: reservationDetail.id, newStatus: data.status }).then(({ success }) => {
+      editReservationStatus({ reservationId: reservationDetail.id, newStatus: data.status }).then(({ success, symbol, reject, link }) => {
         if (success) toast.success("Status rezervace úspěšně upraven")
         else toast.error("Něco se nepovedlo")
+        reset({ ...data, paymentSymbol: symbol || "", rejectReason: reject || "", successLink: link || "", status: data.status })
       })
     }
 
@@ -52,6 +54,7 @@ export default function ReservationDetailForm({ reservationDetail }: { reservati
       editReservationRooms({ reservationId: reservationDetail.id, rooms: data.rooms }).then(({ success }) => {
         if (success) toast.success("Pokoje pro rezervaci změněny")
         else toast.error("Něco se nepovedlo")
+        reset(data)
       })
     }
 
@@ -59,10 +62,9 @@ export default function ReservationDetailForm({ reservationDetail }: { reservati
       editReservationDetail({ reservationId: reservationDetail.id, name: data.name, instructions: data.instructions, purpouse: data.purpouse, paymentSymbol: data.paymentSymbol, successLink: data.successLink, rejectReason: data.rejectReason }).then(({ success }) => {
         if (success) toast.success("Detail rezervace úspěšně upraven")
         else toast.error("Něco se nepovedlo")
+        reset(data)
       })
     }
-
-    reset(data)
   }
 
   return (
@@ -92,14 +94,22 @@ export default function ReservationDetailForm({ reservationDetail }: { reservati
         )} />
         <TextField label="Pokyny pro účastníky" {...register("instructions")} className="col-span-2" />
         <TextField label="Důvod rezervace" {...register("purpouse")} />
-        <TextField label="Variabilní symbol pro platbu" {...register("paymentSymbol")} />
-        <TextField label="Odkaz na web Pece pod Sněžkou" {...register("successLink")} />
-        <TextField label="Důvod zamítnutí" {...register("rejectReason")} />
-        <TextField select label="Status" {...register("status")} className="col-span-2" defaultValue={reservationDetail.status_id}>
-          <MenuItem value={2}>Čeká na potvrzení</MenuItem>
-          <MenuItem value={3}>Potvrzeno</MenuItem>
-          <MenuItem value={4}>Zamítnuto</MenuItem>
-        </TextField>
+        <Controller control={control} name="paymentSymbol" render={({ field }) => (
+          <TextField {...field} label="Variabilní symbol pro platbu" />
+        )} />
+        <Controller control={control} name="successLink" render={({ field }) => (
+          <TextField {...field} label="Odkaz na web Pece pod Sněžkou" />
+        )} />
+        <Controller control={control} name="rejectReason" render={({ field }) => (
+          <TextField {...field} label="Důvod zamítnutí" />
+        )} />
+        <Controller control={control} name="status" render={({ field }) => (
+          <TextField {...field} select label="Status" className="col-span-2">
+            <MenuItem value={2}>Čeká na potvrzení</MenuItem>
+            <MenuItem value={3}>Potvrzeno</MenuItem>
+            <MenuItem value={4}>Zamítnuto</MenuItem>
+          </TextField>
+        )} />
         <Controller control={control} name="rooms" render={({ field }) => (
           <FormControl className="col-span-2">
             <InputLabel id="rooms-label">Pokoje</InputLabel>

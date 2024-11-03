@@ -72,7 +72,7 @@ export default function ReservationDatesRender({
       title: reservation.name,
       start: reservation.from_date,
       end: dayjs(reservation.to_date).add(1, "day").format("YYYY-MM-DD"),
-      resourceIds: reservation.rooms.split(","),
+      resourceIds: reservation.rooms ? reservation.rooms.split(",") : [],
       leader: reservation.leader_name,
       color: reservation.status_color,
       icon: reservation.status_icon,

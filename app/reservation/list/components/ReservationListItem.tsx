@@ -29,6 +29,7 @@ export default function ReservationListItem({
   searchParams: any
   allowModal: any
 }) {
+  const { reservation_id } = searchParams
   const { refresh } = useRouter()
   const blocation = reservation.status_id === 5
   const [anchorEl, setAnchorEl] = useState<any>(null)
@@ -54,7 +55,7 @@ export default function ReservationListItem({
 
   return (
     <React.Fragment>
-      {allowModal && <ReservationModal reservation={reservation} />}
+      {allowModal && Number(reservation_id) === reservation.id && <ReservationModal reservation={reservation} />}
       <TableRow selected={Boolean(anchorEl)} onClick={setMenuPosition}>
         <TableCell>
           {reservation.name}
@@ -66,7 +67,7 @@ export default function ReservationListItem({
           {dayjsExtended(reservation.from_date).format("DD. MMMM")}
         </TableCell>
         <TableCell>
-          {dayjs(reservation.to_date).format("DD. MMMM")}
+          {dayjsExtended(reservation.to_date).format("DD. MMMM")}
         </TableCell>
         <TableCell>
           {reservation.users_count}

@@ -10,7 +10,6 @@ import React, { useState } from "react"
 import { toast } from "react-toastify"
 
 export default function ReservationRegistrationToggle({ reservation, disabled, conflicts }: { reservation: any, disabled: any, conflicts: any }) {
-  console.log(reservation)
   const [loading, setLoading] = useState(false)
   const { refresh } = useRouter()
   const on = reservation.form_id && reservation.form_public_url
@@ -38,7 +37,7 @@ export default function ReservationRegistrationToggle({ reservation, disabled, c
   return (
     <div className="flex items-center gap-2">
       {loading && <CircularProgress size={30} />}
-      <Typography variant="h5" className="mr-auto">{on ? "Registrace běží" : "Registrace vypnuta"}</Typography>
+      <Typography variant="h5" className="!mr-auto">{on ? "Registrace běží" : "Registrace vypnuta"}</Typography>
       <Tooltip {...(!conflicts && { disableFocusListener: true, disableHoverListener: true, disableTouchListener: true })} title="Přihlašování nelze ukončit dokud nejsou vyřešené všechny konflikty">
         <FormControlLabel control={<Switch disabled={loading || disabled || conflicts} checked={on} />} onChange={handleToggle} label="Zapnutá registrace" />
       </Tooltip>

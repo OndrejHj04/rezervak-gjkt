@@ -7,7 +7,6 @@ import { transporter } from "./email";
 import dayjs from "dayjs";
 import { sign } from "jsonwebtoken";
 import { roomsEnum } from "@/app/constants/rooms";
-import { values } from "lodash";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -90,7 +89,7 @@ export const getReservationList = async ({
     query({
       query: `  
         SELECT r.id, r.name, r.from_date, r.to_date, r.creation_date, CONCAT(u.first_name, ' ', u.last_name) as leader_name, u.image as leader_image,
-                s.icon as status_icon, s.color as status_color, s.display_name as status_name, s.id as status_id,
+                s.icon as status_icon, s.color as status_color, s.display_name as status_name, s.id as status_id, r.reject_reason, r.success_link,
                (SELECT COUNT(*) FROM users_reservations ur WHERE ur.reservationId = r.id AND ur.verified = 1) AS users_count,
                (SELECT SUM(ro.people) 
                 FROM reservations_rooms rr 
@@ -743,107 +742,42 @@ export const getReservationsStatus = async ({ filter }: { filter: any }) => {
 
 export const reservationUpdateStatus = async ({
   id,
-  oldStatus,
   newStatus,
   rejectReason = null,
-  paymentSymbol = null,
   successLink = null,
 }: {
   id: any;
-  oldStatus: any;
   newStatus: any;
   rejectReason?: any
-  paymentSymbol?: any,
   successLink?: any,
 }) => {
-  let eventId = 10;
-  switch (newStatus) {
-    case 3:
-      eventId = 10
-      break;
-    case 4:
-      eventId = 11
-      break;
-  }
-  const guest = await checkUserSession();
-  const { user } = await getServerSession(authOptions) as any
 
-  const [reservation, { data }, _] = (await Promise.all([
-    query({
-      query: `SELECT reservations.from_date, reservations.status, reservations.name, reservations.to_date, JSON_OBJECT('first_name', users.first_name, 'last_name', users.last_name, 'email', users.email) as leader, reservations.payment_symbol, reservations.success_link,
-      GROUP_CONCAT(distinct users.email) as emails FROM reservations
-      LEFT JOIN users_reservations ON users_reservations.reservationId = reservations.id 
-      INNER JOIN status ON status.id = reservations.status
-      LEFT JOIN users ON users_reservations.userId = users.id
-      LEFT JOIN users as leader ON leader.id = reservations.leader
-      WHERE reservations.id = ? GROUP BY reservations.id`,
-      values: [id],
-    }),
-    mailEventDetail({ id: eventId }),
-    query({
-      query: `INSERT INTO reservation_status_change (user_id, reservation_id, before_status, after_status, reject_reason) VALUES (?,?,?,?,?)`,
-      values: [user.id, id, oldStatus, newStatus, rejectReason]
-    })
-  ])) as any;
+  const req = await query({
+    query: `UPDATE reservations SET status = ?, reject_reason = null, success_link = null, payment_symbol = null WHERE reservations.id = ?`,
+    values: [newStatus, id]
+  }) as any
 
-  if (reservation[0].success_link !== successLink || reservation[0].payment_symbol !== paymentSymbol) {
+  if (newStatus === 3 && successLink) {
     await query({
-      query: `INSERT INTO reservations_description_change (user_id, reservation_id, before_name, after_name, before_purpouse, after_purpouse, before_instructions, after_instructions, before_success_link, after_success_link, before_payment_symbol, after_payment_symbol) SELECT ?,?,reservations.name,reservations.name,reservations.purpouse,reservations.purpouse,reservations.instructions,reservations.instructions,reservations.success_link,?,reservations.payment_symbol,? FROM reservations WHERE id = ?        
-      `,
-      values: [user.id, id, successLink, paymentSymbol, id]
+      query: `UPDATE reservations SET success_link = ? WHERE reservations.id = ?`,
+      values: [successLink, id]
+    })
+
+    await query({
+      query: `UPDATE reservations SET payment_symbol = (SELECT CONCAT(SUBSTRING(r.from_date, 1, 10), SUBSTRING(r.to_date, LENGTH(r.to_date) - 5, 6))
+    FROM reservations r WHERE r.id = ?) WHERE reservations.id = ?`,
+      values: [id, id]
+    }) as any
+  }
+
+  if (newStatus === 4 && rejectReason) {
+    await query({
+      query: `UPDATE reservations SET reject_reason = ? WHERE reservations .id = ?`,
+      values: [rejectReason, id]
     })
   }
 
-  const formatRejectReason = (newStatus === 2 || newStatus === 3 || newStatus === 1) ? null : rejectReason
-
-  const [statuses, { affectedRows }] = (await Promise.all([
-    query({
-      query: `
-      SELECT status.display_name FROM status WHERE id = ?
-      UNION ALL
-      SELECT status.display_name FROM status WHERE id = ?
-    `,
-      values: [oldStatus, newStatus],
-    }),
-    query({
-      query: `UPDATE reservations SET status = ?, reject_reason = ?, payment_symbol = ?, success_link = ? WHERE id = ?`,
-      values: [newStatus, formatRejectReason, paymentSymbol, successLink, id],
-    }),
-  ])) as any
-
-  const resDetail = {
-    ...reservation[0],
-    leader: JSON.parse(reservation[0].leader),
-  };
-
-  await sendEmail({
-    send: data.active,
-    to: resDetail.emails.split(","),
-    template: data.template,
-    variables: [
-      {
-        name: "reservation_name",
-        value: resDetail.name,
-      },
-      {
-        name: "reservation_start",
-        value: dayjs(resDetail.from_date).format("DD.MM.YYYY"),
-      },
-      {
-        name: "reservation_end",
-        value: dayjs(resDetail.to_date).format("DD.MM.YYYY"),
-      },
-      { name: "status_before", value: statuses[0].display_name },
-      { name: "status_new", value: statuses[1].display_name },
-      { name: "leader_email", value: resDetail.leader.email },
-      {
-        name: "leader_name",
-        value: resDetail.leader.first_name + " " + resDetail.leader.last_name,
-      }
-    ],
-  });
-
-  return { success: affectedRows === 1, rejectReason: formatRejectReason };
+  return { success: req.affectedRows === 1 }
 };
 
 export const groupAddUsers = async ({
@@ -1791,7 +1725,7 @@ export const getReservationDetail = async ({ reservationId }: { reservationId: a
 
 export const editReservationDate = async ({ reservationId, from_date, to_date }: { reservationId: any, from_date: any, to_date: any }) => {
   const req = await query({
-    query: `UPDATE reservations SET from_date = ?, to_date = ? WHERE reservations.id = ?`,
+    query: `UPDATE reservations SET from_date = ?, to_date = ?, status = CASE WHEN status = 4 OR status = 3 THEN 2 ELSE status END WHERE reservations.id = ?`,
     values: [dayjs(from_date).format("YYYY-MM-DD"), dayjs(to_date).format("YYYY-MM-DD"), reservationId]
   }) as any
 
@@ -1801,9 +1735,36 @@ export const editReservationDate = async ({ reservationId, from_date, to_date }:
 
 export const editReservationStatus = async ({ reservationId, newStatus }: { reservationId: any, newStatus: any }) => {
   const req = await query({
-    query: `UPDATE reservations SET status = ? WHERE reservations.id = ?`,
+    query: `UPDATE reservations SET status = ?, reject_reason = null, payment_symbol = null, success_link = null WHERE reservations.id = ?`,
     values: [newStatus, reservationId]
   }) as any
+
+  // potvrzeno => nastaví var. symbol
+
+  if (newStatus === 3) {
+    const req = await query({
+      query: `UPDATE reservations SET payment_symbol = (SELECT CONCAT(SUBSTRING(r.from_date, 1, 10), SUBSTRING(r.to_date, LENGTH(r.to_date) - 5, 6))
+    FROM reservations r WHERE r.id = ?) WHERE reservations.id = ?`,
+      values: [reservationId, reservationId]
+    }) as any
+
+    const paymentSymbolData = await query({
+      query: `SELECT payment_symbol, reject_reason, success_link FROM reservations WHERE reservations.id = ?`,
+      values: [reservationId]
+    }) as any
+
+    return {
+      success: req.affectedRows === 1,
+      symbol: paymentSymbolData[0].payment_symbol,
+      reject: paymentSymbolData[0].reject_reason,
+      link: paymentSymbolData[0].success_link
+    }
+  } else {
+    const req = await query({
+      query: `UPDATE reservations SET payment_symbol = NULL WHERE reservations.id = ?`,
+      values: [reservationId]
+    }) as any
+  }
 
   return { success: req.affectedRows === 1 }
 }
@@ -1933,7 +1894,7 @@ export const createNewReservation = async ({ from_date, to_date, groups, rooms, 
   }) as any
 
   const [] = await Promise.all([
-    query({
+    rooms.length && query({
       query: `INSERT INTO reservations_rooms (reservationId, roomId) VALUES ?`,
       values: [rooms.map((room: any) => [request.insertId, room])]
     }),

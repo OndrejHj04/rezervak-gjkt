@@ -1,8 +1,8 @@
 import { getGroupReservations } from "@/lib/api";
+import { dayjsExtended } from "@/lib/dayjsExtended";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import TableListPagination from "@/ui-components/TableListPagination";
-import { Icon, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import dayjs from "dayjs";
+import { Icon, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 
 export default async function GroupReservationsTable({ id, page = 1 }: { id: any, page: any }) {
   const { data, count } = await getGroupReservations({ groupId: id, page })
@@ -27,8 +27,8 @@ export default async function GroupReservationsTable({ id, page = 1 }: { id: any
           {data.map((reservation: any) => (
             <TableRow key={reservation.id}>
               <TableCell>{reservation.name}</TableCell>
-              <TableCell>{dayjs(reservation.from_date).format("DD. MMMM YYYY")}</TableCell>
-              <TableCell>{dayjs(reservation.to_date).format("DD. MMMM YYYY")}</TableCell>
+              <TableCell>{dayjsExtended(reservation.from_date).format("DD. MMMM YYYY")}</TableCell>
+              <TableCell>{dayjsExtended(reservation.to_date).format("DD. MMMM YYYY")}</TableCell>
               <TableCell>{reservation.users_count}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">

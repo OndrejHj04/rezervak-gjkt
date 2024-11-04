@@ -21,20 +21,22 @@ export default async function SpeedComponent() {
       icon={<SpeedDialIcon />}
     >
       {actionMenu.map((action: any) => {
-        return (
-          <SpeedDialAction
-            key={action.name}
-            icon={
-              <Link
-                href={action.href}
-                className="flex justify-center items-center w-full h-full"
-              >
-                <Icon color="action">{action.icon}</Icon>
-              </Link>
-            }
-            tooltipTitle={action.name}
-          />
-        );
+        if (action.roles.includes(user.user.role.id)) {
+          return (
+            <SpeedDialAction
+              key={action.name}
+              icon={
+                <Link
+                  href={action.href}
+                  className="flex justify-center items-center w-full h-full"
+                >
+                  <Icon color="action">{action.icon}</Icon>
+                </Link>
+              }
+              tooltipTitle={action.name}
+            />
+          );
+        }
       })}
     </SpeedDial>
   );

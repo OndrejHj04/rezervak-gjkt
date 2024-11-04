@@ -11,7 +11,7 @@ const roles = [
   { id: 3, label: "Uživatel" }
 ]
 
-export default function NewUserForm() {
+export default function CreateUserForm({ role }: { role: any }) {
   const {
     register,
     handleSubmit,
@@ -25,10 +25,12 @@ export default function NewUserForm() {
     createUserAccount({
       ...data,
     }).then(({ success, msg }) => {
-      if (success) toast.success("Uživatel úspěšně vytvořen");
+      if (success) {
+        toast.success("Uživatel úspěšně vytvořen");
+        push("/user/list")
+        refresh()
+      }
       else toast.error(msg || "Něco se nepovedlo");
-      push("/user/list")
-      refresh()
     });
   };
 
@@ -66,8 +68,8 @@ export default function NewUserForm() {
             })}
           />
           <TextField {...register("role", { required: true })} select label="Role">
-            {roles.map((role) => (
-              <MenuItem key={role.id} value={role.id}>{role.label}</MenuItem>
+            {roles.map((urole) => (
+              <MenuItem key={urole.id} disabled={urole.id < role} value={urole.id}>{urole.label}</MenuItem>
             ))}
           </TextField>
         </div>

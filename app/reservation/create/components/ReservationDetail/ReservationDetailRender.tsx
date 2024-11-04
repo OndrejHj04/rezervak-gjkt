@@ -75,7 +75,7 @@ export default function ReservationDetailRender({ user, options }: { user: any, 
           <TextField
             {...register("instructions")}
             className="col-span-2"
-            label="Pokyny pro účastníky (dobrovolné)"
+            label="Pokyny pro účastníky"
           />
           <Controller
             control={control}

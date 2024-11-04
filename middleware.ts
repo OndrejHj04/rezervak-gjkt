@@ -3,8 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { decode } from "jsonwebtoken";
 import dayjs from "dayjs";
 import { actionMenu, otherRoutes, sideMenu } from "./lib/rolesConfig";
-import { access } from "fs";
-import { OtherHouses } from "@mui/icons-material";
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req }) as any
@@ -103,7 +101,8 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
-    const routes = [...sideMenu.flatMap((item) => item.href), ...actionMenu.flatMap((item) => item.href), ...otherRoutes]
+    const routes = [...sideMenu.flatMap((item) => item.roles.includes(token.user.role.id) ? item.href : []), ...actionMenu.flatMap((item) => item.roles.includes(token.user.role.id) ? item.href : []), ...otherRoutes]
+
     if (!routes.includes(req.nextUrl.pathname)) {
       return NextResponse.redirect(new URL("/", req.url));
     }

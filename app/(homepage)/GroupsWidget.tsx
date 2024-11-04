@@ -20,7 +20,7 @@ export default async function GroupWidget() {
         <Typography variant="h5">Moje skupiny</Typography>
         <GroupIcon color="primary" />
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-[100px]">
         <ClientScrollbar>
           <MenuList disablePadding>
             {data.map((group: any) => (

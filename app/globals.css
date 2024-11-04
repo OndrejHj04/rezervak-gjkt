@@ -27,3 +27,11 @@
 .fc .fc-license-message {
   display: none;
 }
+
+th {
+  text-wrap: nowrap;
+}
+
+td {
+  text-wrap: nowrap;
+}

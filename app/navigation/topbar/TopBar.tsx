@@ -6,9 +6,12 @@ import Typography from "@mui/material/Typography";
 import SideMenuButton from "./SideMenuButton"
 import Link from "next/link";
 import TopBarUserCard from "./UserCardMenu";
+import DarkModeToggle from "./DarkModeToggle";
+import { getUserTheme } from "@/lib/api";
 
 export default async function TopBar() {
   const data = (await getServerSession(authOptions)) as any;
+  const { theme } = await getUserTheme()
 
   return (
     <AppBar position="static" className="h-[52px]">
@@ -24,9 +27,8 @@ export default async function TopBar() {
             Chata GJKT
           </Typography>
         </div>
-        <div className="flex flex-col">
-        </div>
         <div className="flex-1 flex justify-end">
+          <DarkModeToggle user={data?.user} theme={theme} />
           <TopBarUserCard user={data?.user} />
         </div>
       </Toolbar>

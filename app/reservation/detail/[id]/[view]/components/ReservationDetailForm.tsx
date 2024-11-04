@@ -10,7 +10,7 @@ import React, { useMemo } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
-export default function ReservationDetailForm({ reservationDetail }: { reservationDetail: any }) {
+export default function ReservationDetailForm({ reservationDetail, isAdmin }: { reservationDetail: any, isAdmin: any }) {
   const { handleSubmit, watch, register, control, formState: { isValid, isDirty, dirtyFields }, reset } = useForm({
     defaultValues: {
       name: reservationDetail.name || "",
@@ -42,14 +42,6 @@ export default function ReservationDetailForm({ reservationDetail }: { reservati
       })
     }
 
-    if (dirtyFields.status) {
-      editReservationStatus({ reservationId: reservationDetail.id, newStatus: data.status }).then(({ success, symbol, reject, link }) => {
-        if (success) toast.success("Status rezervace úspěšně upraven")
-        else toast.error("Něco se nepovedlo")
-        reset({ ...data, paymentSymbol: symbol || "", rejectReason: reject || "", successLink: link || "", status: data.status })
-      })
-    }
-
     if (dirtyFields.rooms) {
       editReservationRooms({ reservationId: reservationDetail.id, rooms: data.rooms }).then(({ success }) => {
         if (success) toast.success("Pokoje pro rezervaci změněny")
@@ -63,6 +55,14 @@ export default function ReservationDetailForm({ reservationDetail }: { reservati
         if (success) toast.success("Detail rezervace úspěšně upraven")
         else toast.error("Něco se nepovedlo")
         reset(data)
+      })
+    }
+
+    if (dirtyFields.status) {
+      editReservationStatus({ reservationId: reservationDetail.id, newStatus: data.status }).then(({ success, symbol, reject, link }) => {
+        if (success) toast.success("Status rezervace úspěšně upraven")
+        else toast.error("Něco se nepovedlo")
+        reset({ ...data, paymentSymbol: symbol || "", rejectReason: reject || "", successLink: link || "", status: data.status })
       })
     }
   }
@@ -95,16 +95,16 @@ export default function ReservationDetailForm({ reservationDetail }: { reservati
         <TextField label="Pokyny pro účastníky" {...register("instructions")} className="col-span-2" />
         <TextField label="Důvod rezervace" {...register("purpouse")} />
         <Controller control={control} name="paymentSymbol" render={({ field }) => (
-          <TextField {...field} label="Variabilní symbol pro platbu" />
+          <TextField {...field} disabled={!isAdmin} label="Variabilní symbol pro platbu" />
         )} />
         <Controller control={control} name="successLink" render={({ field }) => (
-          <TextField {...field} label="Odkaz na web Pece pod Sněžkou" />
+          <TextField {...field} disabled={!isAdmin} label="Odkaz na web Pece pod Sněžkou" />
         )} />
         <Controller control={control} name="rejectReason" render={({ field }) => (
-          <TextField {...field} label="Důvod zamítnutí" />
+          <TextField {...field} disabled={!isAdmin} label="Důvod zamítnutí" />
         )} />
         <Controller control={control} name="status" render={({ field }) => (
-          <TextField {...field} select label="Status" className="col-span-2">
+          <TextField {...field} disabled={!isAdmin} select label="Status" className="col-span-2">
             <MenuItem value={2}>Čeká na potvrzení</MenuItem>
             <MenuItem value={3}>Potvrzeno</MenuItem>
             <MenuItem value={4}>Zamítnuto</MenuItem>

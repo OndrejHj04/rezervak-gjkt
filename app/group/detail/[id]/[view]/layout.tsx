@@ -7,7 +7,7 @@ export default function GroupDetailLayout({ params, children }: { params: any, c
 
   return (
     <React.Fragment>
-      <Tabs value={view}>
+      <Tabs value={view} variant="scrollable">
         <Tab value="info" label="Základní informace" component={Link} href={`/group/detail/${id}/info`} />
         <Tab value="users" label="Uživatelé" component={Link} href={`/group/detail/${id}/users`} />
         <Tab value="reservations" label="Rezervace" component={Link} href={`/group/detail/${id}/reservations`} />

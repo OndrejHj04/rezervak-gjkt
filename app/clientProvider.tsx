@@ -18,7 +18,7 @@ export default function ClientProvider({
 }): React.ReactNode {
   const mode = createTheme({
     palette: {
-      mode: theme ? "light" : "dark",
+      mode: theme ? "dark" : "light",
     },
   }, CzechComponents, CzechDatePickers);
 

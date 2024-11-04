@@ -1,7 +1,6 @@
 "use client";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import {
-  Box,
   Button,
   Divider,
   IconButton,
@@ -20,7 +19,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { userAddGroups, userAddReservations, setUserAsOutside, deleteUser, deleteUserWithChildren } from "@/lib/api";
+import { userAddGroups, userAddReservations, setUserAsOutside, deleteUserWithChildren } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -60,7 +59,7 @@ export default function UserListItem({
   }
 
   const handleAddToGroup = (groupId: any) => {
-    userAddGroups({ user: anchorEl.id, groups: [groupId] }).then(({ success }) => {
+    userAddGroups({ user: anchorEl.id, group: groupId }).then(({ success }) => {
       if (success) toast.success("Uživatel úspěšně přidán do skupiny")
       else toast.error("Něco se nepovedlo")
       refresh()
@@ -68,7 +67,7 @@ export default function UserListItem({
   }
 
   const handleAddToReservation = (reservationId: any) => {
-    userAddReservations({ user: anchorEl.id, reservations: [reservationId] }).then(({ success }) => {
+    userAddReservations({ user: anchorEl.id, reservation: reservationId }).then(({ success }) => {
       if (success) toast.success("Uživatel úspěšně přidán do rezervace")
       else toast.error("Něco se nepovedlo")
       refresh()
@@ -104,7 +103,7 @@ export default function UserListItem({
           </TableCell>
         )}
         <TableCell>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 whitespace-nowrap">
             <AvatarWrapper data={user} />
             {user.name}
           </div>
@@ -145,6 +144,9 @@ export default function UserListItem({
             anchorEl?.role !== 4 ? <MenuItem onClick={handleUserSetPublic}>Nastavit jako veřejnost</MenuItem> :
               <MenuItem onClick={handleDeleteUser}>Smazat účet</MenuItem>)
           }
+          {!avaliableGroups.length && !avaliableReservations.length && !isAdmin && (
+            <MenuItem disabled>Žádné možnosti</MenuItem>
+          )}
         </Menu>
       </TableRow>
       {open && (

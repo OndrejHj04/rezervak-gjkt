@@ -1,7 +1,10 @@
-import NewUserForm from "./NewUserForm";
-import { getUsersBySearch } from "@/lib/api";
+import { getServerSession } from "next-auth";
+import CreateUserForm from "./CreateUserForm";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-export default async function CreateUserForm() {
+export default async function UserCreate() {
+  const { user } = await getServerSession(authOptions) as any
+  const role = user.role.id
 
-  return <NewUserForm />;
+  return <CreateUserForm role={role} />
 }

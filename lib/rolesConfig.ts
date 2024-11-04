@@ -11,11 +11,11 @@ const sideMenu = [
 ];
 
 const actionMenu = [
-  { href: "/reservation/create", name: "Vytvořit rezervaci", icon: "edit_calendar" },
-  { href: "/group/create", name: "Vytvořit skupinu", icon: "group_add" },
-  { href: "/user/import", name: "Importovat uživatele", icon: "import_export" },
-  { href: "/user/create", name: "Vytvořit uživatele", icon: "person_add" },
-  { href: "/user/family", name: "Přidat rodinný účet", icon: "child_friendly" },
+  { href: "/reservation/create", name: "Vytvořit rezervaci", icon: "edit_calendar", roles: [1, 2, 3] },
+  { href: "/group/create", name: "Vytvořit skupinu", icon: "group_add", roles: [1, 2, 3] },
+  { href: "/user/import", name: "Importovat uživatele", icon: "import_export", roles: [1, 2] },
+  { href: "/user/create", name: "Vytvořit uživatele", icon: "person_add", roles: [1, 2, 3] },
+  { href: "/user/family", name: "Přidat rodinný účet", icon: "child_friendly", roles: [1, 2, 3] },
 ]
 
 const otherRoutes = ['/changelog', '/password-reset', '/vzorovy_soubor.csv', '/podminky.pdf']

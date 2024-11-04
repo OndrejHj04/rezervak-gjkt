@@ -41,7 +41,7 @@ export default async function ReservationList({
               <TableCell>Vedoucí</TableCell>
               <TableCell>Lůžka</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell padding="none">
+              <TableCell padding="none" className="w-[150px]">
                 <TableListPagination
                   count={count}
                   name="page"

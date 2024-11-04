@@ -22,7 +22,7 @@ export default async function ReservationsWidget() {
         <Typography variant="h5">Moje rezervace</Typography>
         <EventIcon color="primary" />
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-[100px]">
         <ClientScrollbar>
           <MenuList disablePadding>
             {data.map((reservation: any) => (

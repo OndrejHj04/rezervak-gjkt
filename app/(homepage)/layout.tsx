@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/options";
 import React from "react";
-import VerifyUser from "@/sub-components/VerifyUser";
 import WelcomeComponent from "./welcome/WelcomeComponent";
+import VerifyUser from "./VerifyUser";
 
 export default async function Layout({ children }: { children: any }) {
   const user = await getServerSession(authOptions) as any
@@ -11,7 +11,7 @@ export default async function Layout({ children }: { children: any }) {
     return <WelcomeComponent />;
   }
 
-
+  console.log(user.user)
   if (!user.user.verified) {
     return (
       <React.Fragment>

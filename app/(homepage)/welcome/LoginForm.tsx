@@ -23,9 +23,9 @@ export default function LoginForm() {
   }
 
   return (
-    <Paper className="p-2 max-w-[300px]">
+    <Paper className="p-2">
       <Typography variant="h6" className="text-center">Pro používání aplikace se přihlašte</Typography>
-      <Divider flexItem className="mb-2" />
+      <Divider flexItem className="!mb-2" />
       <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
         <TextField label="Email" {...register("email", { required: true })} />
         <TextField label="Heslo" {...register("password", { required: true })} type="password" />

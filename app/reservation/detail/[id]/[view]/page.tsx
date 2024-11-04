@@ -7,6 +7,9 @@ import ReservationUsersTable from "./components/ReservationUsersTable"
 import ReservationGroupsTable from "./components/ReservationGroupsTable"
 import ReservationTimeline from "./components/ReservationTimeline"
 import ReservationRegistration from "./components/ReservationRegistration"
+import React from "react"
+import ReservationRegistrationCustom from "./components/ReservationRegistrationCustom"
+import { Divider } from "@mui/material"
 
 export default async function ReservationDetailPage({ params, searchParams }: { params: any, searchParams: any }) {
   const { page, timeline } = searchParams
@@ -19,7 +22,7 @@ export default async function ReservationDetailPage({ params, searchParams }: { 
 
   if (view === "info") {
     if (editable) {
-      return <ReservationDetailForm reservationDetail={data} />
+      return <ReservationDetailForm reservationDetail={data} isAdmin={isAdmin} />
     }
     return <ReservationDetailDisplay reservationDetail={data} />
   }
@@ -36,7 +39,13 @@ export default async function ReservationDetailPage({ params, searchParams }: { 
   }
 
   if (view === "registration") {
-    return <ReservationRegistration id={id} page={page} />
+    return (
+      <React.Fragment>
+        <ReservationRegistration id={id} page={page} />
+        <Divider className="my-3" />
+        <ReservationRegistrationCustom id={id} />
+      </React.Fragment>
+    )
   }
 
   return null

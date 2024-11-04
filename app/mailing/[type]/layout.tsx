@@ -17,7 +17,7 @@ export default async function Layout({
   return (
     <div>
       <div className="flex justify-between items">
-        <Tabs value={navigation[type]} aria-label="basic tabs example">
+        <Tabs value={navigation[type]} variant="scrollable">
           <Tab
             label="Odesláno"
             component={Link}

@@ -3,10 +3,10 @@ import { create } from "zustand";
 export const store = create((set: any) => ({
   panel: false,
   setPanel: (panel: any) => set({ panel }),
-  selectedUsers: [],
-  setSelectedUsers: (selectedUsers: any) => set({ selectedUsers }),
-  selectedGroups: [],
-  setSelectedGroups: (selectedGroups: any) => set({ selectedGroups }),
+  selectedUser: null,
+  setSelectedUser: (selectedUser: any) => set({ selectedUser }),
+  selectedGroup: null,
+  setSelectedGroup: (selectedGroup: any) => set({ selectedGroup }),
   createReservation: {
     from_date: "",
     to_date: "",
@@ -19,9 +19,9 @@ export const store = create((set: any) => ({
     family: false
   },
   setCreateReservation: (createReservation: any) => set({ createReservation }),
-  selectedReservations: [],
-  setSelectedReservations: (selectedReservations: any) =>
-    set({ selectedReservations }),
+  selectedReservation: [],
+  setSelectedReservation: (selectedReservation: any) =>
+    set({ selectedReservation }),
   selectedTemplates: [],
   setSelectedTemplates: (selectedTemplates: any) => set({ selectedTemplates }),
 })) as any

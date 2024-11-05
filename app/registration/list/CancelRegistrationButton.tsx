@@ -13,7 +13,7 @@ export default function CancelRegistrationButton({ formId }: { formId: any }) {
   const handleCancel = () => {
     setLoading(true)
     cancelRegistration({ formId }).then(({ success }) => {
-      if (success) toast.success("Přihlašování na rezervaci úspěšně zastaveno")
+      if (success) toast.success("Registrace na rezervaci úspěšně zastavena")
       else toast.error("Něco se nepovedlo")
       refresh()
     })
@@ -22,7 +22,7 @@ export default function CancelRegistrationButton({ formId }: { formId: any }) {
   return (
     <div className="flex items-center justify-end">
       {loading && <CircularProgress size={24} />}
-      <Button disabled={loading} size="small" color="error" onClick={handleCancel}>Ukončit přihlašování</Button>
+      <Button disabled={loading} size="small" color="error" onClick={handleCancel}>Ukončit registrace</Button>
     </div>
   )
 }

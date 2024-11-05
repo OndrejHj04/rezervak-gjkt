@@ -7,16 +7,12 @@ import Link from "next/link";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export default function MailingEvents({ events }: { events: any }) {
-  const defaultValues = events
-    .reduce((acc: any, event: any) => acc.concat(event.children), [])
-    .reduce((obj: any, item: any) => {
-      obj[`Checkbox ${item.id}`] = Boolean(item.active);
-      return obj;
-    }, {});
-
+  const defaultValues = events.reduce((obj: any, item: any) => {
+    obj[`Checkbox ${item.id}`] = Boolean(item.active)
+    return obj
+  }, {})
   const { reset, control, watch, register, handleSubmit, formState: { isDirty } } = useForm({ defaultValues });
 
-  console.log(watch())
   const onSubmit = (data: any) => {
     mailingEventsEdit({ data }).then(() => {
       toast.success("Události úspěšně upraveny");
@@ -41,45 +37,34 @@ export default function MailingEvents({ events }: { events: any }) {
           </Button>
         </div>
         {events.map((event: any) => (
-          <Accordion key={event.name}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              {event.name}
-            </AccordionSummary>
-
-            <AccordionDetails>
-              {event.children.map((singleEvent: any) => (
-                <ListItem
-                  key={singleEvent.id}
-                  className="flex justify-between"
-                  sx={{ justifyContent: "space-between !important" }}
-                >
-                  <ListItemText
-                    primary={singleEvent.primary_txt}
-                    secondary={singleEvent.secondary_txt}
-                  />
-                  <div className="flex">
-                    <Controller
-                      {...register(`Checkbox ${singleEvent.id}`)}
-                      control={control}
-                      render={({ field: { value, onChange } }) => {
-                        return (
-                          <FormControlLabel
-                            control={<Switch checked={value} />}
-                            onChange={(_, value) => {
-                              onChange(value);
-                            }}
-                            label="Aktivní"
-                          />
-                        );
+          <ListItem
+            key={event.id}
+            className="flex justify-between"
+            sx={{ justifyContent: "space-between !important" }}
+          >
+            <ListItemText
+              primary={event.primary_txt}
+              secondary={event.secondary_txt}
+            />
+            <div className="flex">
+              <Controller
+                {...register(`Checkbox ${event.id}`)}
+                control={control}
+                render={({ field: { value, onChange } }) => {
+                  return (
+                    <FormControlLabel
+                      control={<Switch checked={value} />}
+                      onChange={(_, value) => {
+                        onChange(value);
                       }}
+                      label="Aktivní"
                     />
-                    <Button component={Link} href={`/mailing/templates/detail/${singleEvent.template.id}`}>Detail</Button>
-                  </div>
-                </ListItem>
-              ))}
-            </AccordionDetails>
-          </Accordion>
-        ))}
+                  );
+                }}
+              />
+              <Button component={Link} href={`/mailing/templates/detail/${event.template}`}>Detail</Button>
+            </div>
+          </ListItem>))}
       </Paper>
     </form>
   );

@@ -25,7 +25,7 @@ export default async function RegistrationList({ searchParams }: { searchParams:
               Autor
             </TableCell>
             <TableCell>
-              Počet nevyřízených přihlašování
+              Počet nevyřízených registrací
             </TableCell>
             <TableCell>
               Začátek rezervace
@@ -56,7 +56,7 @@ export default async function RegistrationList({ searchParams }: { searchParams:
               <TableCell>
                 <div className="flex gap-2 justify-end">
                   <Button component={Link} size="small" href={registration.form_public_url} target="_blank">Přihlašovací formulář</Button>
-                  <Button component={Link} size="small" href={`/reservation/detail/${registration.reservation_id}/registration`}>Detail přihlašování</Button>
+                  <Button component={Link} size="small" href={`/reservation/detail/${registration.reservation_id}/registration`}>Detail registrace</Button>
                 </div>
               </TableCell>
             </TableRow>

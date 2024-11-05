@@ -18,14 +18,14 @@ export default function ReservationRegistrationToggle({ reservation, disabled }:
 
     if (checked) {
       allowReservationSignIn({ reservation }).then(({ success }) => {
-        if (success) toast.success("Přihlašování na rezervaci bylo povoleno")
+        if (success) toast.success("Registrace rezervaci byla povolena")
         else toast.error("Něco se nepovedlo")
         setLoading(false)
         refresh()
       })
     } else {
       cancelRegistration({ formId: reservation.form.id }).then(({ success }) => {
-        if (success) toast.success("Přihlašování na rezervaci bylo ukončeno")
+        if (success) toast.success("Registrace na rezervaci byla ukončena")
         else toast.error("Něco se nepovedlo")
         setLoading(false)
         refresh()
@@ -35,7 +35,7 @@ export default function ReservationRegistrationToggle({ reservation, disabled }:
   return (
     <div className="flex items-center gap-2">
       {loading && <CircularProgress size={30} />}
-      <FormControlLabel control={<Switch disabled={loading || disabled} checked={on} />} onChange={handleToggle} label="Přihlašování na rezervaci" />
+      <FormControlLabel control={<Switch disabled={loading || disabled} checked={on} />} onChange={handleToggle} label="Registrace na rezervaci" />
       <Button variant="outlined" disabled={!on || loading} LinkComponent={Link} target="_blank" href={reservation.form.publicUrl}>Přihlašovací formulář</Button>
     </div>
   )

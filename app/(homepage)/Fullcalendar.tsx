@@ -26,7 +26,8 @@ export default function FullcalendarComponent({ searchParams, data, role }: { se
     leader: event.leader,
     color: event.status.color,
     icon: event.status.icon,
-    display_name: event.status.display_name
+    display_name: event.status.display_name,
+    ...(event.status.id !== 5 && { url: `/reservation/detail/${event.id}/info` })
   }))
 
   const calendarRef = useRef(null)
@@ -66,6 +67,7 @@ export default function FullcalendarComponent({ searchParams, data, role }: { se
     }
     setCalendarTitle(calendarApi.currentData.viewTitle)
   }
+
   const eventContentInjection = (event: any) => {
     const { leader, rooms, display_name, icon } = event.event.extendedProps
 
@@ -81,8 +83,7 @@ export default function FullcalendarComponent({ searchParams, data, role }: { se
       </ListItem>
       <ListItem className="!p-0">
         <ListItemText>Status: {display_name}</ListItemText>
-        <ListItemIcon className='min-w-0 ml-2'>
-          {<Icon sx={{ color: event.event.backgroundColor }}>{icon}</Icon>}    </ListItemIcon>      </ListItem>
+      </ListItem>
     </List>}>
       <p>{event.event.title}</p>
     </Tooltip>

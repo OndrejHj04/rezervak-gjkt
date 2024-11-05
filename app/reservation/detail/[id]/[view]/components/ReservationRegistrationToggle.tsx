@@ -20,14 +20,14 @@ export default function ReservationRegistrationToggle({ reservation, disabled, c
 
     if (checked) {
       allowReservationSignIn({ reservation }).then(({ success }) => {
-        if (success) toast.success("Přihlašování na rezervaci bylo povoleno")
+        if (success) toast.success("Registrace na rezervaci byla povolena")
         else toast.error("Něco se nepovedlo")
         setLoading(false)
         refresh()
       })
     } else {
       cancelRegistration({ formId: reservation.form_id }).then(({ success }) => {
-        if (success) toast.success("Přihlašování na rezervaci bylo ukončeno")
+        if (success) toast.success("Registrace na rezervaci byla ukončena")
         else toast.error("Něco se nepovedlo")
         setLoading(false)
         refresh()
@@ -38,7 +38,7 @@ export default function ReservationRegistrationToggle({ reservation, disabled, c
     <div className="flex items-center gap-2">
       {loading && <CircularProgress size={30} />}
       <Typography variant="h5" className="!mr-auto">{on ? "Registrace běží" : "Registrace vypnuta"}</Typography>
-      <Tooltip {...(!conflicts && { disableFocusListener: true, disableHoverListener: true, disableTouchListener: true })} title="Přihlašování nelze ukončit dokud nejsou vyřešené všechny konflikty">
+      <Tooltip {...(!conflicts && { disableFocusListener: true, disableHoverListener: true, disableTouchListener: true })} title="Registrace nelze ukončit dokud nejsou vyřešené všechny konflikty">
         <FormControlLabel control={<Switch disabled={loading || disabled || conflicts} checked={on} />} onChange={handleToggle} label="Zapnutá registrace" />
       </Tooltip>
       <Button variant="outlined" size="small" disabled={!on || loading} LinkComponent={Link} target="_blank" href={reservation.form_public_url}>Přihlašovací formulář</Button>

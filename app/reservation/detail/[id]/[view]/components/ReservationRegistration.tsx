@@ -7,7 +7,7 @@ import { smartTime } from "@/app/constants/smartTime";
 import TableListPagination from "@/ui-components/TableListPagination";
 import UserApproveButton from "./UserApproveButton";
 import UserRejectButton from "./UserRejectButton";
-import React, { useState } from "react";
+import React from "react";
 import dayjs from "dayjs";
 
 export default async function ReservationRegistration({ id, page = 1 }: { id: any, page: any }) {
@@ -15,7 +15,6 @@ export default async function ReservationRegistration({ id, page = 1 }: { id: an
   const { data } = await getReservationRegistration({ reservationId: id }) as any
   const { data: registerdUsers, count: registeredUsersCount } = await getReservationRegisteredUsers({ reservationId: id, page })
 
-  console.log(registerdUsers)
   const isAdmin = user.role.id !== 3
   const disabled = !isAdmin || data.status_id === 1
   const on = data.form_id && data.form_public_url

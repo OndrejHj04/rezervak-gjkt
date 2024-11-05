@@ -7,6 +7,7 @@ import { transporter } from "./email";
 import dayjs from "dayjs";
 import { sign } from "jsonwebtoken";
 import { roomsEnum } from "@/app/constants/rooms";
+import { values } from "lodash";
 
 const checkUserSession = async () => {
   const user = (await getServerSession(authOptions)) as any;
@@ -88,7 +89,7 @@ export const getReservationList = async ({
   const [dataRequest, countRequest] = (await Promise.all([
     query({
       query: `  
-        SELECT r.id, r.name, r.from_date, r.to_date, r.creation_date, CONCAT(u.first_name, ' ', u.last_name) as leader_name, u.image as leader_image,
+        SELECT r.id, r.name, r.from_date, r.to_date, r.creation_date, CONCAT(u.first_name, ' ', u.last_name) as leader_name, u.image as leader_image, u.id as leader_id,
                 s.icon as status_icon, s.color as status_color, s.display_name as status_name, s.id as status_id, r.reject_reason, r.success_link,
                (SELECT COUNT(*) FROM users_reservations ur WHERE ur.reservationId = r.id AND ur.verified = 1) AS users_count,
                (SELECT SUM(ro.people) 
@@ -757,48 +758,14 @@ export const mailingEventsEdit = async ({ data }: { data: any }) => {
   return { succes: affectedRows === array.length };
 };
 
-export const mailingEventsList = async () => {
-  const guest = await checkUserSession();
+export const getMailingEventsList = async () => {
+  const dataRequest = await query({
+    query: `SELECT * FROM events_children`,
+    values: []
+  }) as any
 
-  const events = (await query({
-    query: `
-      SELECT events.id, events.name,
-      GROUP_CONCAT(
-        JSON_OBJECT('id', events_children.id, 'primary_txt', events_children.primary_txt,
-        'secondary_txt', events_children.secondary_txt, 'variables', events_children.variables, 'template', 
-        IF(templates.id IS NULL, NULL, JSON_OBJECT('id', templates.id, 'name', templates.name, 'title', templates.title, 'text', templates.text)),
-        'active', events_children.active)
-      ) as children
-      FROM events INNER JOIN events_children${guest ? "_mock as events_children" : ""
-      } ON events_children.event = events.id
-      LEFT JOIN templates${guest ? "_mock as templates" : ""
-      } ON templates.id = events_children.template
-      GROUP BY events.id
-  `,
-    values: [],
-  })) as any;
-
-  const data = events.map((item: any) => {
-    let children = Array.isArray(item.children)
-      ? item.children
-      : JSON.parse(`[${item.children}]`);
-    return {
-      ...item,
-      children: children.map((child: any) => {
-        let template =
-          typeof child.template === "object"
-            ? child.template
-            : JSON.parse(`[${child.template}]`)[0];
-        return {
-          ...child,
-          variables: child.variables.split(","),
-          template: template,
-        };
-      }),
-    };
-  });
-  return data;
-};
+  return { data: dataRequest }
+}
 
 export const verifyUser = async ({
   ID_code,
@@ -1370,8 +1337,6 @@ WHERE reservations.id = ?;
     values: [reservationId]
   }) as any
 
-  console.log(reservationId, editedData)
-
   return {
     success: req.affectedRows === 1,
     symbol: editedData[0].payment_symbol,
@@ -1383,7 +1348,6 @@ WHERE reservations.id = ?;
 export const editReservationDetail = async ({ reservationId, name, instructions, purpouse, paymentSymbol, successLink, rejectReason }:
   { reservationId: any, name: any, instructions: any, purpouse: any, paymentSymbol: any, successLink: any, rejectReason: any }) => {
 
-  console.log(successLink, reservationId)
   const req = await query({
     query: `UPDATE reservations SET name = ?, instructions = ?, purpouse = ?, payment_symbol = ?, success_link = ?, reject_reason = ? WHERE reservations.id = ?`,
     values: [name, instructions, purpouse, paymentSymbol, successLink, rejectReason, reservationId]
@@ -1531,6 +1495,46 @@ export const createNewReservation = async ({ from_date, to_date, groups, rooms, 
       values: [request.insertId, user.email]
     })
   ])
+
+  const [userEmails, template, leaderData] = await Promise.all([
+    query({
+      query: `SELECT u.email FROM users_groups ug INNER JOIN users u ON u.id = ug.userId AND u.role <> 4 WHERE ug.groupId IN(?)`,
+      values: [groups]
+    }),
+    mailEventDetail({ id: 8 }),
+    query({
+      query: `SELECT CONCAT(u.first_name, ' ', u.last_name) as leader_name, u.email FROM users u WHERE u.id = ?`,
+      values: [leader]
+    })
+  ]) as any
+
+  await sendEmail({
+    send: template.data.active,
+    to: userEmails.map((item: any) => item.email),
+    template: template.data.template,
+    variables: [
+      {
+        name: "reservation_name",
+        value: name
+      },
+      {
+        name: "reservation_start",
+        value: dayjs(from_date).format("DD. MM. YYYY"),
+      },
+      {
+        name: "reservation_end",
+        value: dayjs(to_date).format("DD. MM. YYYY"),
+      },
+      {
+        name: "leader_email",
+        value: leaderData[0].email
+      },
+      {
+        name: "leader_name",
+        value: leaderData[0].leader_name
+      },
+    ],
+  })
 
   return { success: request.affectedRows === 1 }
 }
@@ -1714,16 +1718,18 @@ export const deleteUser = async ({ userId, reservationId }: { userId: any, reser
   return { success: request.affectedRows === 1 }
 }
 
-export const deleteUserWithChildren = async ({ userId }: { userId: any }) => {
-  await query({
-    query: `
-    DELETE FROM users 
-    WHERE 
-    (id = ${userId} AND children = 0) 
-    OR 
-    (email = (SELECT email FROM users WHERE id = ${userId}) AND children = 1) 
-    `,
-    values: []
+export const deleteUserWithChildren = async ({ userId, isParent }: { userId: any, isParent: any }) => {
+  if (!isParent) {
+    query({
+      query: `DELETE FROM users WHERE id = ?`,
+      values: [userId]
+    })
+    return { success: true }
+  }
+
+  query({
+    query: `DELETE FROM users WHERE email = (SELECT email FROM users WHERE users.id = ?)`,
+    values: [userId]
   })
 
   return { success: true }
@@ -1784,7 +1790,6 @@ const approveReservationSendMail = async ({ reservationId }: { reservationId: an
 }
 
 const rejectReservationSendMail = async ({ reservationId }: { reservationId: any }) => {
-  console.log(reservationId)
   const [data, template] = await Promise.all([
     query({
       query: `SELECT r.id, r.from_date, r.to_date, r.reject_reason, r.name, u.email as leader_email, CONCAT(u.first_name, ' ', u.last_name) as leader_name FROM reservations r INNER JOIN users u ON u.id = r.leader WHERE r.id = ?`,
@@ -1836,7 +1841,7 @@ export const createOutsideUser = async ({ first_name, last_name, email = null, a
 
   const { insertId } = await query({
     query: `INSERT INTO users (first_name, last_name, role, email, adress, birth_date, ID_code) VALUES (?,?,4,?,?,?,?)`,
-    values: [first_name, last_name, email, adress, dayjs(birth_date).format("YYYY-MM-DD"), ID_code]
+    values: [first_name, last_name, email, adress, birth_date ? dayjs(birth_date).format("YYYY-MM-DD") : null, ID_code]
   }) as any
 
   const [{ affectedRows }] = await Promise.all([

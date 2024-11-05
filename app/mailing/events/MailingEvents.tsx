@@ -1,8 +1,8 @@
-import { mailingEventsList, mailingTemplateEdit, malingTemplatesList } from "@/lib/api";
+import { getMailingEventsList } from "@/lib/api";
 import MailingEventsForm from "./MailingEventsForm";
 
 export default async function MailingEvents() {
-  const events = await mailingEventsList()
+  const { data } = await getMailingEventsList()
 
-  return <MailingEventsForm events={events} />
+  return <MailingEventsForm events={data} />
 }

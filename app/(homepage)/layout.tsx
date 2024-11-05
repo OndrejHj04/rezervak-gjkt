@@ -11,7 +11,6 @@ export default async function Layout({ children }: { children: any }) {
     return <WelcomeComponent />;
   }
 
-  console.log(user.user)
   if (!user.user.verified) {
     return (
       <React.Fragment>

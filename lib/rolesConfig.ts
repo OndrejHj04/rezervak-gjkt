@@ -3,7 +3,7 @@ const sideMenu = [
   { name: "Uživatelé", icon: "person", href: ["/user/list"], roles: [1, 2, 3] },
   { name: "Skupiny", icon: "group", href: ["/group/list"], roles: [1, 2, 3] },
   { name: "Rezervace", icon: "calendar_month", href: ["/reservation/list"], roles: [1, 2, 3] },
-  { name: "Aktivní přihlašování", icon: "assignment", href: ["/registration/list"], roles: [1, 2] },
+  { name: "Aktivní registrace", icon: "assignment", href: ["/registration/list"], roles: [1, 2] },
   { name: "Archiv", icon: "bookmark", href: ["/archive/list"], roles: [1, 2] },
   { name: "Mailing", icon: "alternate_email", href: ["/mailing/send", "/mailing/templates", "/mailing/events"], roles: [1, 2] },
   { name: "Galerie", icon: "panorama", href: ["/photogallery"], roles: [1, 2, 3] },

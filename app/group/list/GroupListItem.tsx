@@ -2,17 +2,17 @@
 
 import { getFullName } from "@/app/constants/fullName"
 import { groupDelete } from "@/lib/api"
+import { store } from "@/store/store"
 import AvatarWrapper from "@/ui-components/AvatarWrapper"
 import { Button, Menu, MenuItem, TableCell, TableRow } from "@mui/material"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import React, { useState } from "react"
+import React from "react"
 import { toast } from "react-toastify"
 
-export default function GroupListItem({ group }: { group: any }) {
-
-  const [anchorEl, setAnchorEl] = useState<any>(null)
+export default function GroupListItem({ group, allowMenu }: { group: any, allowMenu: any }) {
   const { refresh } = useRouter()
+  const { selectedGroup, setSelectedGroup } = store()
 
   const handleDeleteGroups = () => {
     groupDelete({ groupId: group.id }).then(({ success }) => {
@@ -22,19 +22,23 @@ export default function GroupListItem({ group }: { group: any }) {
     refresh()
   }
 
+  const isSelected = selectedGroup && selectedGroup.id === group.id
+
   const setMenuPosition = (e: any) => {
-    setAnchorEl(
-      anchorEl === null
-        ? {
-          mouseX: e.clientX + 2,
-          mouseY: e.clientY - 6,
-        }
-        : null
-    )
+    if (isSelected || !allowMenu) {
+      setSelectedGroup(null)
+    } else {
+      setSelectedGroup({
+        mouseX: e.clientX + 2,
+        mouseY: e.clientY - 6,
+        id: group.id
+      })
+    }
   }
+
   return (
     <React.Fragment>
-      <TableRow selected={Boolean(anchorEl)} onClick={setMenuPosition}>
+      <TableRow selected={isSelected} onClick={setMenuPosition}>
         <TableCell>{group.name}</TableCell>
         <TableCell>{group.description}</TableCell>
         <TableCell className="!flex !items-center !gap-2">
@@ -48,11 +52,11 @@ export default function GroupListItem({ group }: { group: any }) {
           <Button component={Link} href={`/group/detail/${group.id}/info`}>detail</Button>
         </TableCell>
       </TableRow>
-      <Menu open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
+      <Menu open={Boolean(isSelected)}
+        onClose={() => setSelectedGroup(null)}
         anchorReference="anchorPosition"
-        anchorPosition={anchorEl !== null
-          ? { top: anchorEl.mouseY, left: anchorEl.mouseX }
+        anchorPosition={selectedGroup !== null
+          ? { top: selectedGroup.mouseY, left: selectedGroup.mouseX }
           : undefined}
       >
         <MenuItem onClick={handleDeleteGroups}>Odstranit skupinu</MenuItem>

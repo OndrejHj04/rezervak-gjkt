@@ -9,30 +9,32 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import dayjs from "dayjs";
 import { Icon } from "@mui/material";
 import Link from "next/link";
 import ReservationModal from "./ReservationModal";
 import { Cancel, CheckCircle } from "@mui/icons-material";
-import React, { useState } from "react";
+import React from "react";
 import { reservationDelete } from "@/lib/api";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { dayjsExtended } from "@/lib/dayjsExtended";
+import { store } from "@/store/store";
 
 export default function ReservationListItem({
   reservation,
   searchParams,
-  allowModal
+  isAdmin,
+  userId
 }: {
   reservation: any;
   searchParams: any
-  allowModal: any
+  isAdmin: any
+  userId: any
 }) {
   const { reservation_id } = searchParams
   const { refresh } = useRouter()
   const blocation = reservation.status_id === 5
-  const [anchorEl, setAnchorEl] = useState<any>(null)
+  const { selectedReservation, setSelectedReservation } = store()
 
   const handleDeleteReservations = () => {
     reservationDelete({ reservationId: reservation.id }).then((res) => {
@@ -42,21 +44,25 @@ export default function ReservationListItem({
     refresh()
   }
 
+  const isSelected = selectedReservation && selectedReservation.id === reservation.id
+
   const setMenuPosition = (e: any) => {
-    setAnchorEl(
-      anchorEl === null
-        ? {
-          mouseX: e.clientX + 2,
-          mouseY: e.clientY - 6,
-        }
-        : null
-    )
+    const allowMenu = isAdmin || userId === reservation.leader_id
+    if (isSelected || !allowMenu) {
+      setSelectedReservation(null)
+    } else {
+      setSelectedReservation({
+        mouseX: e.clientX + 2,
+        mouseY: e.clientY - 6,
+        id: reservation.id
+      })
+    }
   }
 
   return (
     <React.Fragment>
-      {allowModal && Number(reservation_id) === reservation.id && <ReservationModal reservation={reservation} />}
-      <TableRow selected={Boolean(anchorEl)} onClick={setMenuPosition}>
+      {isAdmin && Number(reservation_id) === reservation.id && <ReservationModal reservation={reservation} />}
+      <TableRow selected={isSelected} onClick={setMenuPosition}>
         <TableCell>
           {reservation.name}
         </TableCell>
@@ -94,7 +100,7 @@ export default function ReservationListItem({
         </TableCell>
 
         <TableCell>
-          <Button className="!normal-case !text-inherit" onClick={e => e.stopPropagation()} {...(allowModal && !blocation && {
+          <Button className="!normal-case !text-inherit" onClick={e => e.stopPropagation()} {...(isAdmin && !blocation && {
             component: Link, href: {
               href: '/reservation/list',
               query: { ...searchParams, reservation_id: reservation.id }
@@ -113,15 +119,21 @@ export default function ReservationListItem({
           </Link>
           }</TableCell>
       </TableRow>
-      <Menu open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
+      < Menu open={isSelected}
+        onClose={() => setSelectedReservation(null)}
         anchorReference="anchorPosition"
-        anchorPosition={anchorEl !== null
-          ? { top: anchorEl.mouseY, left: anchorEl.mouseX }
+        anchorPosition={selectedReservation !== null
+          ? { top: selectedReservation.mouseY, left: selectedReservation.mouseX }
           : undefined}
       >
-        <MenuItem onClick={handleDeleteReservations}>Odstrait rezervaci</MenuItem>
+        {reservation.active_registration ?
+          <MenuItem disabled>Nelze odstranit dokud je spuštěná registrace</MenuItem>
+          :
+          <MenuItem onClick={handleDeleteReservations}>Odstranit rezervaci</MenuItem>
+        }
+
       </Menu>
+
     </React.Fragment >
   );
 }

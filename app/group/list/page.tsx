@@ -2,6 +2,8 @@ import TableListPagination from "@/ui-components/TableListPagination";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { getGroupList } from "@/lib/api";
 import GroupListItem from "./GroupListItem";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { getServerSession } from "next-auth";
 
 export default async function GroupList({
   searchParams: { groups, search }
@@ -9,6 +11,8 @@ export default async function GroupList({
   searchParams: any;
 }) {
   const { data, count } = await getGroupList({ page: groups || 1, search: search || "" })
+  const { user } = await getServerSession(authOptions) as any
+  const isAdmin = user.role.id !== 3
 
   return (
     <TableContainer>
@@ -25,9 +29,10 @@ export default async function GroupList({
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((group: any) => (
-            <GroupListItem key={group.id} group={group} />
-          ))}
+          {data.map((group: any) => {
+            const allowMenu = isAdmin || group.owner.id === user.id
+            return <GroupListItem key={group.id} group={group} allowMenu={allowMenu} />
+          })}
         </TableBody>
       </Table>
     </TableContainer>

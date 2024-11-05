@@ -50,7 +50,7 @@ export default async function middleware(req: NextRequest) {
       const [, , , reservationId, tab, ...rest] = req.nextUrl.pathname.split("/")
       const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/${reservationId}/exists`)
       const { exists } = await request.json()
-      const avaliableTabs = ['info', 'groups', 'users', 'timeline', 'registration']
+      const avaliableTabs = ['info', 'groups', 'users', 'registration']
 
       // redirect when reservation not exist
       if (!exists || avaliableTabs.indexOf(tab) < 0 || rest.length) {

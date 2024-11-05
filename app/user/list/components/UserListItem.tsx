@@ -22,6 +22,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { userAddGroups, userAddReservations, setUserAsOutside, deleteUserWithChildren } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { store } from "@/store/store";
 
 export default function UserListItem({
   user,
@@ -37,62 +38,75 @@ export default function UserListItem({
   isAdmin: any
 }) {
   const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<any>(null)
   const { refresh } = useRouter()
+  const { selectedUser, setSelectedUser } = store()
 
   const handleOpenSubRow = (e: any) => {
     e.stopPropagation()
     setOpen(o => !o)
   }
 
-  const setMenuPosition = (e: any, id: any, role: any) => {
-    setAnchorEl(
-      anchorEl === null
-        ? {
-          mouseX: e.clientX + 2,
-          mouseY: e.clientY - 6,
-          id: id,
-          role: role
-        }
-        : null
-    )
+  const isSelected = selectedUser && selectedUser.id === user.id
+  const isChildrenSelected = user.children.length && user.children.some((u: any) => u.id === selectedUser?.id)
+
+  const setMenuPosition = (e: any, userId: any, userRole: any) => {
+    if (isSelected) {
+      setSelectedUser(null)
+    } else {
+      setSelectedUser({
+        mouseX: e.clientX + 2,
+        mouseY: e.clientY - 6,
+        id: userId,
+        role: userRole
+      })
+    }
   }
 
   const handleAddToGroup = (groupId: any) => {
-    userAddGroups({ user: anchorEl.id, group: groupId }).then(({ success }) => {
+    userAddGroups({ user: selectedUser.id, group: groupId }).then(({ success }) => {
       if (success) toast.success("Uživatel úspěšně přidán do skupiny")
       else toast.error("Něco se nepovedlo")
       refresh()
     })
+    setSelectedUser(null)
   }
 
   const handleAddToReservation = (reservationId: any) => {
-    userAddReservations({ user: anchorEl.id, reservation: reservationId }).then(({ success }) => {
+    userAddReservations({ user: selectedUser.id, reservation: reservationId }).then(({ success }) => {
       if (success) toast.success("Uživatel úspěšně přidán do rezervace")
       else toast.error("Něco se nepovedlo")
       refresh()
     })
+    setSelectedUser(null)
   }
 
   const handleUserSetPublic = () => {
-    setUserAsOutside({ userId: anchorEl.id }).then(({ success }) => {
+    setUserAsOutside({ userId: selectedUser.id }).then(({ success }) => {
       if (success) toast.success("Uživatel nastaven jako veřejnost")
       else toast.error("Něco se nepovedlo")
       refresh()
     })
+    setSelectedUser(null)
   }
 
-  const handleDeleteUser = () => {
-    deleteUserWithChildren({ userId: anchorEl.id }).then(({ success }) => {
-      if (success) toast.success("Uživatel úspěšně odstraněn")
+  const handleDeleteUser = (e: any) => {
+    e.stopPropagation()
+    deleteUserWithChildren({ userId: selectedUser.id, isParent: selectedUser.id === user.id }).then(({ success }) => {
+      if (success) toast.success("Uživatel nastaven jako veřejnost")
       else toast.error("Něco se nepovedlo")
       refresh()
     })
+    setSelectedUser(null)
+  }
+
+  const handleCloseMenu = (e: any) => {
+    e.stopPropagation()
+    setSelectedUser(null)
   }
 
   return (
     <React.Fragment key={user.id}>
-      <TableRow onClick={(e) => setMenuPosition(e, user.id, user.role_id)} selected={Boolean(anchorEl) && anchorEl.id === user.id}>
+      <TableRow onClick={(e) => setMenuPosition(e, user.id, user.role_id)} selected={isSelected}>
         {childrenData && (
           <TableCell>
             {!!childrenData.length && (
@@ -125,23 +139,23 @@ export default function UserListItem({
             <Button>Detail</Button>
           </Link>
         </TableCell>
-        <Menu open={Boolean(anchorEl)}
-          onClose={() => setAnchorEl(null)}
+        <Menu open={Boolean(isSelected) || Boolean(isChildrenSelected)}
+          onClose={handleCloseMenu}
           anchorReference="anchorPosition"
-          anchorPosition={anchorEl !== null
-            ? { top: anchorEl.mouseY, left: anchorEl.mouseX }
+          anchorPosition={selectedUser !== null
+            ? { top: selectedUser.mouseY, left: selectedUser.mouseX }
             : undefined}
         >
           {avaliableGroups.map((group: any) => (
-            <MenuItem disabled={group.users.includes(anchorEl?.id)} key={group.id} onClick={() => handleAddToGroup(group.id)}>Přidat do skupiny {group.name}</MenuItem>
+            <MenuItem disabled={group.users.includes(selectedUser?.id)} key={group.id} onClick={() => handleAddToGroup(group.id)}>Přidat do skupiny {group.name}</MenuItem>
           ))}
           {!!avaliableReservations.length && !!avaliableGroups.length && <Divider className="!my-0" />}
           {avaliableReservations.map((reservation: any) => (
-            <MenuItem disabled={reservation.users.includes(anchorEl?.id)} key={reservation.id} onClick={() => handleAddToReservation(reservation.id)}>Přidat do rezervace {reservation.name}</MenuItem>
+            <MenuItem disabled={reservation.users.includes(selectedUser?.id)} key={reservation.id} onClick={() => handleAddToReservation(reservation.id)}>Přidat do rezervace {reservation.name}</MenuItem>
           ))}
           {!!avaliableGroups.length && !!isAdmin && <Divider className="!my-0" />}
           {isAdmin && (
-            anchorEl?.role !== 4 ? <MenuItem onClick={handleUserSetPublic}>Nastavit jako veřejnost</MenuItem> :
+            selectedUser?.role !== 4 ? <MenuItem onClick={handleUserSetPublic}>Nastavit jako veřejnost</MenuItem> :
               <MenuItem onClick={handleDeleteUser}>Smazat účet</MenuItem>)
           }
           {!avaliableGroups.length && !avaliableReservations.length && !isAdmin && (
@@ -169,7 +183,7 @@ export default function UserListItem({
                     </TableHead>
                     <TableBody>
                       {childrenData.map((child: any) => (
-                        <TableRow key={child.id} onClick={(e) => setMenuPosition(e, child.id, child.role_id)} selected={Boolean(anchorEl) && anchorEl.id === child.id}>
+                        <TableRow key={child.id} onClick={(e) => setMenuPosition(e, child.id, child.role_id)} selected={isChildrenSelected && selectedUser?.id === child.id}>
                           <TableCell>{child.name}</TableCell>
                           <TableCell>{child.role}</TableCell>
                           <TableCell>{child.organization}</TableCell>

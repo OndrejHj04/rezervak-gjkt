@@ -49,6 +49,7 @@ export default function ResetPasswordForm({ searchParams }: any) {
           value={password2 || ""}
         />
         <Button variant="contained" fullWidth type="submit" disabled={!isValid || !isDirty}>Změnit</Button>
+        <Typography variant="caption" className="text-center -mt-1.5">Odkaz na změnu hesla funguje jen 24 hodin.</Typography>
       </form>
     </Paper>
   );

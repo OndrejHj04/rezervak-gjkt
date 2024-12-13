@@ -19,12 +19,17 @@ export default async function middleware(req: NextRequest) {
 
   if (req.nextUrl.pathname.startsWith("/password-reset")) {
     const userId = req.nextUrl.searchParams.get("userId")
-    const token = decode(req.nextUrl.searchParams.get("token") as any) as any
+    try {
+      const token = decode(req.nextUrl.searchParams.get("token") as any) as any
 
-    // invalid token for reset password redirect
-    if (!userId || !token || Number(userId) !== token.id || dayjs(token.exp).isBefore(new Date())) {
+      if (!userId || !token || Number(userId) !== token.id || dayjs(token.exp).isBefore(new Date())) {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+    } catch (e) {
       return NextResponse.redirect(new URL("/", req.url));
     }
+
+    // invalid token for reset password redirect
   }
 
   if (token) {

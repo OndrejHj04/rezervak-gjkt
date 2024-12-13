@@ -22,6 +22,8 @@ export default function ClientProvider({
     },
   }, CzechComponents, CzechDatePickers);
 
+  console.log('313n xoxo https://www.youtube.com/watch?v=C4uXGzFZjqw')
+
   return (
     <ThemeProvider theme={mode}>
       <LocalizationProvider dateAdapter={AdapterDayjs}

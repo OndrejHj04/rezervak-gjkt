@@ -22,7 +22,6 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { userAddGroups, userAddReservations, setUserAsOutside, deleteUserWithChildren } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { store } from "@/store/store";
 
 export default function UserListItem({
   user,
@@ -39,7 +38,7 @@ export default function UserListItem({
 }) {
   const [open, setOpen] = useState(false);
   const { refresh } = useRouter()
-  const { selectedUser, setSelectedUser } = store()
+  const [selectedUser, setSelectedUser] = useState<null | { mouseX: number, mouseY: number, id: number, role: number }>(null)
 
   const handleOpenSubRow = (e: any) => {
     e.stopPropagation()
@@ -63,7 +62,7 @@ export default function UserListItem({
   }
 
   const handleAddToGroup = (groupId: any) => {
-    userAddGroups({ user: selectedUser.id, group: groupId }).then(({ success }) => {
+    userAddGroups({ user: selectedUser?.id, group: groupId }).then(({ success }) => {
       if (success) toast.success("Uživatel úspěšně přidán do skupiny")
       else toast.error("Něco se nepovedlo")
       refresh()
@@ -72,7 +71,7 @@ export default function UserListItem({
   }
 
   const handleAddToReservation = (reservationId: any) => {
-    userAddReservations({ user: selectedUser.id, reservation: reservationId }).then(({ success }) => {
+    userAddReservations({ user: selectedUser?.id, reservation: reservationId }).then(({ success }) => {
       if (success) toast.success("Uživatel úspěšně přidán do rezervace")
       else toast.error("Něco se nepovedlo")
       refresh()
@@ -81,7 +80,7 @@ export default function UserListItem({
   }
 
   const handleUserSetPublic = () => {
-    setUserAsOutside({ userId: selectedUser.id }).then(({ success }) => {
+    setUserAsOutside({ userId: selectedUser?.id }).then(({ success }) => {
       if (success) toast.success("Uživatel nastaven jako veřejnost")
       else toast.error("Něco se nepovedlo")
       refresh()
@@ -91,7 +90,7 @@ export default function UserListItem({
 
   const handleDeleteUser = (e: any) => {
     e.stopPropagation()
-    deleteUserWithChildren({ userId: selectedUser.id, isParent: selectedUser.id === user.id }).then(({ success }) => {
+    deleteUserWithChildren({ userId: selectedUser?.id, isParent: selectedUser?.id === user.id }).then(({ success }) => {
       if (success) toast.success("Uživatel nastaven jako veřejnost")
       else toast.error("Něco se nepovedlo")
       refresh()
@@ -106,7 +105,7 @@ export default function UserListItem({
 
   return (
     <React.Fragment key={user.id}>
-      <TableRow onClick={(e) => setMenuPosition(e, user.id, user.role_id)} selected={isSelected}>
+      <TableRow onClick={(e) => setMenuPosition(e, user.id, user.role_id)} selected={Boolean(isSelected)}>
         {childrenData && (
           <TableCell>
             {!!childrenData.length && (

@@ -5,8 +5,6 @@ export const store = create((set: any) => ({
   setPanel: (panel: any) => set({ panel }),
   selectedUser: null,
   setSelectedUser: (selectedUser: any) => set({ selectedUser }),
-  selectedGroup: null,
-  setSelectedGroup: (selectedGroup: any) => set({ selectedGroup }),
   createReservation: {
     from_date: "",
     to_date: "",

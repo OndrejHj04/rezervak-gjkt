@@ -81,11 +81,17 @@ export const getReservationList = async ({
   page,
   status,
   search,
+  sort,
+  direction
 }: {
   page: any
   status: any
   search: any
+  sort: any
+  direction: any
 }) => {
+  const sortDirecton = direction === "asc" ? "asc" : "desc"
+  const sortableColumns = ["name", "createion_date", "from_date", "to_date", "users_count", "active_registration", "leader_name", "beds_count", "status_id"]
   const [dataRequest, countRequest] = (await Promise.all([
     query({
       query: `  
@@ -105,7 +111,7 @@ export const getReservationList = async ({
               ${status > 0 ? `AND r.status = ${status}` : ''}
               ${search.length ? `AND r.name LIKE "%${search}%"` : ""}
         GROUP BY r.id
-        ORDER BY r.creation_date desc
+        ORDER BY ${sortableColumns.includes(sort) ? sort : "creation_date"} ${sortDirecton}
         LIMIT 10 OFFSET ?
       `,
       values: [page * 10 - 10],

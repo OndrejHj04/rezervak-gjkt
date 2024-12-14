@@ -13,12 +13,11 @@ import { Icon } from "@mui/material";
 import Link from "next/link";
 import ReservationModal from "./ReservationModal";
 import { Cancel, CheckCircle } from "@mui/icons-material";
-import React from "react";
+import React, { useState } from "react";
 import { reservationDelete } from "@/lib/api";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { dayjsExtended } from "@/lib/dayjsExtended";
-import { store } from "@/store/store";
 
 export default function ReservationListItem({
   reservation,
@@ -34,7 +33,7 @@ export default function ReservationListItem({
   const { reservation_id } = searchParams
   const { refresh } = useRouter()
   const blocation = reservation.status_id === 5
-  const { selectedReservation, setSelectedReservation } = store()
+  const [selectedReservation, setSelectedReservation] = useState<null | { mouseX: number, mouseY: number, id: number }>(null)
 
   const handleDeleteReservations = () => {
     reservationDelete({ reservationId: reservation.id }).then((res) => {
@@ -62,7 +61,7 @@ export default function ReservationListItem({
   return (
     <React.Fragment>
       {isAdmin && Number(reservation_id) === reservation.id && <ReservationModal reservation={reservation} />}
-      <TableRow selected={isSelected} onClick={setMenuPosition}>
+      <TableRow selected={Boolean(isSelected)} onClick={setMenuPosition}>
         <TableCell>
           {reservation.name}
         </TableCell>
@@ -119,7 +118,7 @@ export default function ReservationListItem({
           </Link>
           }</TableCell>
       </TableRow>
-      < Menu open={isSelected}
+      < Menu open={Boolean(isSelected)}
         onClose={() => setSelectedReservation(null)}
         anchorReference="anchorPosition"
         anchorPosition={selectedReservation !== null

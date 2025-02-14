@@ -181,9 +181,12 @@ export const sendEmail = async ({
     return text;
   }
 
+  const mainEmailRequest = await query({ query: `SELECT main_application_email FROM settings` }) as any
+  const mainEmail = mainEmailRequest[0].main_application_email
+
   const mailContent = MakeEmailText(template.text, variables)
   const mail = await transporter.sendMail({
-    from: process.env.EMAIL_ADRESS,
+    from: mainEmail,
     to,
     subject: template.title,
     html: mailContent
@@ -990,11 +993,14 @@ export const getEmailSettings = async () => {
 
 export const allowReservationSignIn = async ({ reservation }: { reservation: any }) => {
   const { user } = await getServerSession(authOptions) as any
+  const documentRequest = await query({ query: `SELECT registration_document_spreadsheet FROM settings` }) as any
+  const document = documentRequest[0].registration_document_spreadsheet
+
   const reqBody = { name: reservation.name, from_date: dayjs(reservation.from_date).format("DD. MM. YYYY"), to_date: dayjs(reservation.to_date).format("DD. MM. YYYY"), instructions: reservation.instructions, leader: { first_name: reservation.first_name, last_name: reservation.last_name } }
 
-  const req = await fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: reqBody, action: "create" }) })
+  const req = await fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: reqBody, action: "create", document }) })
 
-  const { success, formId, formPublicUrl } = await req.json()
+  const { formId, formPublicUrl } = await req.json()
 
   await Promise.all([
     query({

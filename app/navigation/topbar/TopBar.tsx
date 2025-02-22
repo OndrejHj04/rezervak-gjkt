@@ -8,6 +8,7 @@ import Link from "next/link";
 import TopBarUserCard from "./UserCardMenu";
 import DarkModeToggle from "./DarkModeToggle";
 import { getUserTheme } from "@/lib/api";
+import ToggleFullscreen from "./ToggleFullscreen";
 
 export default async function TopBar() {
   const data = (await getServerSession(authOptions)) as any;
@@ -28,6 +29,7 @@ export default async function TopBar() {
           </Typography>
         </div>
         <div className="flex-1 flex justify-end">
+          <ToggleFullscreen />
           <DarkModeToggle user={data?.user} theme={theme} />
           <TopBarUserCard user={data?.user} />
         </div>

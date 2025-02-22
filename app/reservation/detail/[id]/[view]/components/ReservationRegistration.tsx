@@ -15,8 +15,11 @@ export default async function ReservationRegistration({ id, page = 1 }: { id: an
   const { data } = await getReservationRegistration({ reservationId: id }) as any
   const { data: registerdUsers, count: registeredUsersCount } = await getReservationRegisteredUsers({ reservationId: id, page })
 
+  const isLeader = data.leader === user.id
   const isAdmin = user.role.id !== 3
-  const disabled = !isAdmin || data.status_id === 1
+  const deprecated = data.status_id === 1
+
+  const disabled = deprecated || (!isAdmin && !isLeader)
   const on = data.form_id && data.form_public_url
   const conflicts = registerdUsers.some((user: any) => !Boolean(user.verified_registration))
 
@@ -24,7 +27,6 @@ export default async function ReservationRegistration({ id, page = 1 }: { id: an
     <div className="flex flex-col gap-2">
       <ReservationRegistrationToggle reservation={data} disabled={disabled} conflicts={conflicts} />
       <Divider />
-      <Typography variant="h5">Registrovaní uživatelé</Typography>
       <TableContainer>
         <Table size="small">
           <TableHead>

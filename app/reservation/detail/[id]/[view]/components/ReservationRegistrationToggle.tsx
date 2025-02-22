@@ -1,8 +1,9 @@
 "use client"
 
 import { allowReservationSignIn, cancelRegistration } from "@/lib/api"
+import { ContentCopy } from "@mui/icons-material"
 import {
-  Button, CircularProgress, FormControlLabel, Switch, Tooltip, Typography
+  Button, CircularProgress, FormControlLabel, IconButton, Switch, Tooltip, Typography
 } from "@mui/material"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -34,14 +35,32 @@ export default function ReservationRegistrationToggle({ reservation, disabled, c
       })
     }
   }
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(reservation.form_public_url)
+    toast.success("Odkaz na formulář máte zkopírovaný (použijte ho ctrl-v)")
+  }
+
   return (
-    <div className="flex items-center gap-2">
-      {loading && <CircularProgress size={30} />}
-      <Typography variant="h5" className="!mr-auto">{on ? "Registrace běží" : "Registrace vypnuta"}</Typography>
+    <div className="flex items-center gap-2 justify-between">
+
+      {loading ? <div className="flex gap-2">
+        <Typography variant="h5">Registrace se načítá</Typography>
+        <CircularProgress size={30} />
+      </div> : on ? <div className="flex gap-2">
+        <Typography variant="h5">Registrace běží, formulář je k dispozici zde: </Typography>
+        <IconButton size="small" onClick={copyToClipboard}>
+          <ContentCopy />
+        </IconButton>
+      </div> : <div>
+        <Typography variant="h5">Registrace vypnuta</Typography>
+      </div>
+      }
+
+
       <Tooltip {...(!conflicts && { disableFocusListener: true, disableHoverListener: true, disableTouchListener: true })} title="Registrace nelze ukončit dokud nejsou vyřešené všechny konflikty">
         <FormControlLabel control={<Switch disabled={loading || disabled || conflicts} checked={on} />} onChange={handleToggle} label="Zapnutá registrace" />
       </Tooltip>
-      <Button variant="outlined" size="small" disabled={!on || loading} LinkComponent={Link} target="_blank" href={reservation.form_public_url}>Přihlašovací formulář</Button>
     </div >
   )
 }

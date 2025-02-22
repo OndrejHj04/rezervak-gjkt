@@ -999,6 +999,7 @@ export const allowReservationSignIn = async ({ reservation }: { reservation: any
   const reqBody = { name: reservation.name, from_date: dayjs(reservation.from_date).format("DD. MM. YYYY"), to_date: dayjs(reservation.to_date).format("DD. MM. YYYY"), instructions: reservation.instructions, leader: { first_name: reservation.first_name, last_name: reservation.last_name } }
 
   const req = await fetch(process.env.GOOGLE_FORM_API as any, { method: "POST", body: JSON.stringify({ data: reqBody, action: "create", document }) })
+  console.log(process.env.GOOGLE_FORM_API)
 
   const { formId, formPublicUrl } = await req.json()
 
@@ -1601,7 +1602,7 @@ export const setUserAsOutside = async ({ userId }: { userId: any }) => {
 
 export const getReservationRegistration = async ({ reservationId }: { reservationId: any }) => {
   const dataRequest = await query({
-    query: `SELECT r.id, r.name, r.from_date, r.to_date, s.id as status_id, r.instructions, rf.form_id, rf.form_public_url, u.first_name, u.last_name, u.email FROM reservations r
+    query: `SELECT r.id, r.name, r.leader, r.from_date, r.to_date, s.id as status_id, r.instructions, rf.form_id, rf.form_public_url, u.first_name, u.last_name, u.email FROM reservations r
     LEFT JOIN users u ON u.id = r.leader
     INNER JOIN status s ON s.id = r.status
     LEFT JOIN reservations_forms rf ON rf.reservation_id = r.id

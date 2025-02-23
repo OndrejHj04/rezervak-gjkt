@@ -11,6 +11,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -19,94 +20,125 @@ import Link from "next/link";
 import React, { useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { userAddGroups, userAddReservations, setUserAsOutside, deleteUserWithChildren } from "@/lib/api";
+import {
+  userAddGroups,
+  userAddReservations,
+  setUserAsOutside,
+  deleteUserWithChildren,
+  resendRegistraionMail,
+} from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { store } from "@/store/store";
+import ForwardToInboxIcon from "@mui/icons-material/ForwardToInbox";
 
 export default function UserListItem({
   user,
   childrenData,
   avaliableGroups,
   avaliableReservations,
-  isAdmin
+  isAdmin,
 }: {
   user: any;
   childrenData: any;
-  avaliableGroups: any
-  avaliableReservations: any
-  isAdmin: any
+  avaliableGroups: any;
+  avaliableReservations: any;
+  isAdmin: any;
 }) {
   const [open, setOpen] = useState(false);
-  const { refresh } = useRouter()
-  const { selectedUser, setSelectedUser } = store()
+  const { refresh } = useRouter();
+  const { selectedUser, setSelectedUser } = store();
 
   const handleOpenSubRow = (e: any) => {
-    e.stopPropagation()
-    setOpen(o => !o)
-  }
+    e.stopPropagation();
+    setOpen((o) => !o);
+  };
 
-  const isSelected = selectedUser && selectedUser.id === user.id
-  const isChildrenSelected = user.children.length && user.children.some((u: any) => u.id === selectedUser?.id)
+  const isSelected = selectedUser && selectedUser.id === user.id;
+  const isChildrenSelected =
+    user.children.length &&
+    user.children.some((u: any) => u.id === selectedUser?.id);
 
   const setMenuPosition = (e: any, userId: any, userRole: any) => {
     if (isSelected) {
-      setSelectedUser(null)
+      setSelectedUser(null);
     } else {
       setSelectedUser({
         mouseX: e.clientX + 2,
         mouseY: e.clientY - 6,
         id: userId,
-        role: userRole
-      })
+        role: userRole,
+      });
     }
-  }
+  };
 
   const handleAddToGroup = (groupId: any) => {
-    userAddGroups({ user: selectedUser.id, group: groupId }).then(({ success }) => {
-      if (success) toast.success("Uživatel úspěšně přidán do skupiny")
-      else toast.error("Něco se nepovedlo")
-      refresh()
-    })
-    setSelectedUser(null)
-  }
+    userAddGroups({ user: selectedUser.id, group: groupId }).then(
+      ({ success }) => {
+        if (success) toast.success("Uživatel úspěšně přidán do skupiny");
+        else toast.error("Něco se nepovedlo");
+        refresh();
+      }
+    );
+    setSelectedUser(null);
+  };
 
   const handleAddToReservation = (reservationId: any) => {
-    userAddReservations({ user: selectedUser.id, reservation: reservationId }).then(({ success }) => {
-      if (success) toast.success("Uživatel úspěšně přidán do rezervace")
-      else toast.error("Něco se nepovedlo")
-      refresh()
-    })
-    setSelectedUser(null)
-  }
+    userAddReservations({
+      user: selectedUser.id,
+      reservation: reservationId,
+    }).then(({ success }) => {
+      if (success) toast.success("Uživatel úspěšně přidán do rezervace");
+      else toast.error("Něco se nepovedlo");
+      refresh();
+    });
+    setSelectedUser(null);
+  };
 
   const handleUserSetPublic = () => {
     setUserAsOutside({ userId: selectedUser.id }).then(({ success }) => {
-      if (success) toast.success("Uživatel nastaven jako veřejnost")
-      else toast.error("Něco se nepovedlo")
-      refresh()
-    })
-    setSelectedUser(null)
-  }
+      if (success) toast.success("Uživatel nastaven jako veřejnost");
+      else toast.error("Něco se nepovedlo");
+      refresh();
+    });
+    setSelectedUser(null);
+  };
 
   const handleDeleteUser = (e: any) => {
-    e.stopPropagation()
-    deleteUserWithChildren({ userId: selectedUser.id, isParent: selectedUser.id === user.id }).then(({ success }) => {
-      if (success) toast.success("Uživatel nastaven jako veřejnost")
-      else toast.error("Něco se nepovedlo")
-      refresh()
-    })
-    setSelectedUser(null)
-  }
+    e.stopPropagation();
+    deleteUserWithChildren({
+      userId: selectedUser.id,
+      isParent: selectedUser.id === user.id,
+    }).then(({ success }) => {
+      if (success) toast.success("Uživatel nastaven jako veřejnost");
+      else toast.error("Něco se nepovedlo");
+      refresh();
+    });
+    setSelectedUser(null);
+  };
 
   const handleCloseMenu = (e: any) => {
-    e.stopPropagation()
-    setSelectedUser(null)
-  }
+    e.stopPropagation();
+    setSelectedUser(null);
+  };
+
+  const handleResendEmail = (e: any, user: any) => {
+    e.stopPropagation();
+    resendRegistraionMail({
+      user,
+    }).then(({ success }) => {
+      if (success) toast.success("Registrační email byl znovu odeslán");
+      else toast.error("Něco se nepovedlo");
+      refresh();
+    });
+  };
 
   return (
     <React.Fragment key={user.id}>
-      <TableRow onClick={(e) => setMenuPosition(e, user.id, user.role_id)} selected={isSelected}>
+      <TableRow
+        onClick={(e) => setMenuPosition(e, user.id, user.role_id)}
+        selected={isSelected}
+      >
         {childrenData && (
           <TableCell>
             {!!childrenData.length && (
@@ -124,43 +156,77 @@ export default function UserListItem({
         </TableCell>
         <TableCell>{user.email}</TableCell>
         <TableCell>{user.role_name}</TableCell>
+        <TableCell>{user.organization_name}</TableCell>
         <TableCell>
-          {user.organization_name}
+          <div className="flex items-center">
+            {user.verified ? (
+              <CheckCircleIcon color="success" />
+            ) : (
+              <>
+                <CancelIcon color="error" />
+                <Tooltip title="Znovu odeslat uživateli registrační email">
+                  <IconButton onClick={(e) => handleResendEmail(e, user)}>
+                    <ForwardToInboxIcon />
+                  </IconButton>
+                </Tooltip>
+              </>
+            )}
+          </div>
         </TableCell>
-        <TableCell>
-          {user.verified ? (
-            <CheckCircleIcon color="success" sx={{ width: 32, height: 32 }} />
-          ) : (
-            <CancelIcon color="error" sx={{ width: 32, height: 32 }} />
-          )}
-        </TableCell>
+
         <TableCell align="right" className="min-w-[150px]">
-          <Link href={`/user/detail/${user.id}/info`} onClick={e => e.stopPropagation()}>
+          <Link
+            href={`/user/detail/${user.id}/info`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <Button>Detail</Button>
           </Link>
         </TableCell>
-        <Menu open={Boolean(isSelected) || Boolean(isChildrenSelected)}
+        <Menu
+          open={Boolean(isSelected) || Boolean(isChildrenSelected)}
           onClose={handleCloseMenu}
           anchorReference="anchorPosition"
-          anchorPosition={selectedUser !== null
-            ? { top: selectedUser.mouseY, left: selectedUser.mouseX }
-            : undefined}
+          anchorPosition={
+            selectedUser !== null
+              ? { top: selectedUser.mouseY, left: selectedUser.mouseX }
+              : undefined
+          }
         >
           {avaliableGroups.map((group: any) => (
-            <MenuItem disabled={group.users.includes(selectedUser?.id)} key={group.id} onClick={() => handleAddToGroup(group.id)}>Přidat do skupiny {group.name}</MenuItem>
+            <MenuItem
+              disabled={group.users.includes(selectedUser?.id)}
+              key={group.id}
+              onClick={() => handleAddToGroup(group.id)}
+            >
+              Přidat do skupiny {group.name}
+            </MenuItem>
           ))}
-          {!!avaliableReservations.length && !!avaliableGroups.length && <Divider className="!my-0" />}
-          {avaliableReservations.map((reservation: any) => (
-            <MenuItem disabled={reservation.users.includes(selectedUser?.id)} key={reservation.id} onClick={() => handleAddToReservation(reservation.id)}>Přidat do rezervace {reservation.name}</MenuItem>
-          ))}
-          {!!avaliableGroups.length && !!isAdmin && <Divider className="!my-0" />}
-          {isAdmin && (
-            selectedUser?.role !== 4 ? <MenuItem onClick={handleUserSetPublic}>Nastavit jako veřejnost</MenuItem> :
-              <MenuItem onClick={handleDeleteUser}>Smazat účet</MenuItem>)
-          }
-          {!avaliableGroups.length && !avaliableReservations.length && !isAdmin && (
-            <MenuItem disabled>Žádné možnosti</MenuItem>
+          {!!avaliableReservations.length && !!avaliableGroups.length && (
+            <Divider className="!my-0" />
           )}
+          {avaliableReservations.map((reservation: any) => (
+            <MenuItem
+              disabled={reservation.users.includes(selectedUser?.id)}
+              key={reservation.id}
+              onClick={() => handleAddToReservation(reservation.id)}
+            >
+              Přidat do rezervace {reservation.name}
+            </MenuItem>
+          ))}
+          {!!avaliableGroups.length && !!isAdmin && (
+            <Divider className="!my-0" />
+          )}
+          {isAdmin &&
+            (selectedUser?.role !== 4 ? (
+              <MenuItem onClick={handleUserSetPublic}>
+                Nastavit jako veřejnost
+              </MenuItem>
+            ) : (
+              <MenuItem onClick={handleDeleteUser}>Smazat účet</MenuItem>
+            ))}
+          {!avaliableGroups.length &&
+            !avaliableReservations.length &&
+            !isAdmin && <MenuItem disabled>Žádné možnosti</MenuItem>}
         </Menu>
       </TableRow>
       {open && (
@@ -183,12 +249,28 @@ export default function UserListItem({
                     </TableHead>
                     <TableBody>
                       {childrenData.map((child: any) => (
-                        <TableRow key={child.id} onClick={(e) => setMenuPosition(e, child.id, child.role_id)} selected={isChildrenSelected && selectedUser?.id === child.id}>
+                        <TableRow
+                          key={child.id}
+                          onClick={(e) =>
+                            setMenuPosition(e, child.id, child.role_id)
+                          }
+                          selected={
+                            isChildrenSelected && selectedUser?.id === child.id
+                          }
+                        >
                           <TableCell>{child.name}</TableCell>
                           <TableCell>{child.role}</TableCell>
                           <TableCell>{child.organization}</TableCell>
                           <TableCell align="right">
-                            <Button size="small" variant="text" component={Link} href={`/user/detail/${child.id}/info`} onClick={(e) => e.stopPropagation()}>detail</Button>
+                            <Button
+                              size="small"
+                              variant="text"
+                              component={Link}
+                              href={`/user/detail/${child.id}/info`}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              detail
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -199,8 +281,7 @@ export default function UserListItem({
             </TableRow>
           )}
         </React.Fragment>
-      )
-      }
-    </React.Fragment >
+      )}
+    </React.Fragment>
   );
 }

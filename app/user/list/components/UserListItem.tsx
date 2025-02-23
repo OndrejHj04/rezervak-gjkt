@@ -175,12 +175,14 @@ export default function UserListItem({
         </TableCell>
 
         <TableCell align="right" className="min-w-[150px]">
-          <Link
+          {!!user.detail &&
+            <Link
             href={`/user/detail/${user.id}/info`}
             onClick={(e) => e.stopPropagation()}
           >
             <Button>Detail</Button>
           </Link>
+          }
         </TableCell>
         <Menu
           open={Boolean(isSelected) || Boolean(isChildrenSelected)}

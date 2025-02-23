@@ -5,6 +5,8 @@ import TableListPagination from "@/ui-components/TableListPagination";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
+const columns = ["children", "name", "email", "role", "organization", "verified", "detail"]
+
 export default async function UserListConfig({
   searchParams,
 }: {

@@ -1,15 +1,17 @@
 import { query } from "@/lib/db";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(_: NextRequest, { params }: any) {
+export async function POST(req: Request, {params}:any) {
+  const { user } = await req.json();
+  const data = (await query({
+    query: `
+      SELECT id 
+      FROM users 
+      WHERE id = ?
+      AND (? != 3 OR email = ?)
+    `,
+    values: [params.id, user.role.id, user.email],
+  })) as any;
 
-  const data = await query({
-    query: `SELECT id FROM users WHERE id = ?`,
-    values: [params.id]
-  }) as any
-  if (!data.length) {
-    return NextResponse.json({ exists: false })
-  }
-
-  return NextResponse.json({ exists: true })
+  return NextResponse.json({ exists: Boolean(data.length) });
 }

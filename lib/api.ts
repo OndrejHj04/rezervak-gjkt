@@ -1427,6 +1427,24 @@ export const getUserGroupsWidgetData = async ({ userId }: { userId: any }) => {
   return { data: dataRequest }
 }
 
+
+export const getUserRegistrationWidgetData = async ({ userId }: { userId: any }) => {
+  const dataRequest = await query({
+    query: `
+SELECT r.id, r.name, 
+       COUNT(CASE WHEN ur.outside = 1 AND ur.verified = 0 THEN ur.userId END) AS user_count
+FROM reservations_forms AS rf
+INNER JOIN reservations r ON r.id = rf.reservation_id
+LEFT JOIN users_reservations ur ON ur.reservationId = r.id
+WHERE rf.user_id = 1 OR r.leader = 1
+GROUP BY r.id, r.name;
+     `,
+    values: [userId, userId]
+  }) as any
+
+  return { data: dataRequest }
+}
+
 export const getUserReservationsWidgetData = async ({ userId }: { userId: any }) => {
   const dataRequest = await query({
     query: `SELECT r.id, r.name, r.from_date, r.to_date

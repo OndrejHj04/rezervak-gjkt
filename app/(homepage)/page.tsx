@@ -3,6 +3,7 @@ import CalendarWidget from "./CalendarWidget";
 import GroupWidget from "./GroupsWidget";
 import ReservationsWidget from "./ReservationsWidget";
 import { authOptions } from "../api/auth/[...nextauth]/options";
+import RegistrationWidget from "./RegistrationWidget";
 
 export default async function Page({ searchParams }: { searchParams: any }) {
   return (
@@ -11,7 +12,7 @@ export default async function Page({ searchParams }: { searchParams: any }) {
         <div
           className="flex flex-col gap-2"
         >
-          <GroupWidget />
+          <RegistrationWidget />
           <ReservationsWidget />
         </div>
         <CalendarWidget searchParams={searchParams} />

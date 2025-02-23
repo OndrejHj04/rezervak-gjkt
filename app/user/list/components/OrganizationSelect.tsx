@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 const organizations = [
   { id: 1, name: "ZO" },
   { id: 2, name: "Zaměstnanec" },
-  { id: 3, name: "Veřejnost" }
-]
+  { id: 3, name: "Veřejnost" },
+];
 
 export default function OrganizationSelect() {
   const searchParams = useSearchParams();
@@ -17,6 +17,7 @@ export default function OrganizationSelect() {
 
   const handleChange = (e: any) => {
     const params = new URLSearchParams(searchParams);
+    params.delete("page");
     params.set("organization", e.target.value);
     replace(`${pathname}?${params.toString()}`);
   };

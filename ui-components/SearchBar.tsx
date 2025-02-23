@@ -13,6 +13,7 @@ export default function SearchBar(props: any) {
 
   const makeSearch = (value: any) => {
     const params = new URLSearchParams(searchParams);
+    params.delete("page");
     if (value) params.set("search", value);
     else params.delete("search");
     replace(`${pathname}?${params.toString()}`);

@@ -10,7 +10,7 @@ export default async function UserListConfig({
 }: {
   searchParams: any
 }) {
-  const { page, search, role, organization } = searchParams
+  const { page, search, role, organization, verified } = searchParams
   const { user: currentUser } = await getServerSession(authOptions) as any
   const isAdmin = currentUser.role.id !== 3
 
@@ -19,6 +19,7 @@ export default async function UserListConfig({
     search: search || "",
     role: Number(role) || 0,
     organization: Number(organization) || 0,
+    verified: Number(verified) || 0
   });
 
   const { groups: avaliableGroups } = await getUsersAvaliableGroups(currentUser.id)

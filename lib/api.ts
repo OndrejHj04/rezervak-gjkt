@@ -19,11 +19,13 @@ export const getUserList = async ({
   search,
   role,
   organization,
+  verified,
 }: {
   page: any;
   search: any;
   role: any;
   organization: any;
+  verified: any;
 }) => {
   const [users, count] = (await Promise.all([
     query({
@@ -53,6 +55,8 @@ ${
 }
 ${role > 0 ? `AND u.role = ${role}` : ""}
 ${organization > 0 ? `AND u.organization = ${organization}` : ""}
+${verified > 0 ? `AND u.verified = ${verified === 2 ? 0 : verified}` : ""}
+
 GROUP BY u.id
 LIMIT 10 OFFSET ?
         
@@ -71,6 +75,7 @@ LIMIT 10 OFFSET ?
       }
       ${role > 0 ? `AND u.role = ${role}` : ""}
       ${organization > 0 ? `AND u.organization = ${organization}` : ""}
+      ${verified > 0 ? `AND u.verified = ${verified === 2 ? 0 : verified}` : ""}
       `,
       values: [],
     }),

@@ -155,34 +155,36 @@ export default function UserListItem({
           </div>
         </TableCell>
         <TableCell>{user.email}</TableCell>
-        <TableCell>{user.role_name}</TableCell>
-        <TableCell>{user.organization_name}</TableCell>
-        <TableCell>
-          <div className="flex items-center">
-            {user.verified ? (
-              <CheckCircleIcon color="success" />
-            ) : (
-              <>
-                <CancelIcon color="error" />
-                <Tooltip title="Znovu odeslat uživateli registrační email">
-                  <IconButton onClick={(e) => handleResendEmail(e, user)}>
-                    <ForwardToInboxIcon />
-                  </IconButton>
-                </Tooltip>
-              </>
-            )}
-          </div>
-        </TableCell>
+        {isAdmin && <TableCell>{user.role_name}</TableCell>}
+        {isAdmin && <TableCell>{user.organization_name}</TableCell>}
+        {isAdmin && (
+          <TableCell>
+            <div className="flex items-center">
+              {user.verified ? (
+                <CheckCircleIcon color="success" />
+              ) : (
+                <>
+                  <CancelIcon color="error" />
+                  <Tooltip title="Znovu odeslat uživateli registrační email">
+                    <IconButton onClick={(e) => handleResendEmail(e, user)}>
+                      <ForwardToInboxIcon />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              )}
+            </div>
+          </TableCell>
+        )}
 
         <TableCell align="right" className="min-w-[150px]">
-          {!!user.detail &&
+          {!!user.detail && (
             <Link
-            href={`/user/detail/${user.id}/info`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Button>Detail</Button>
-          </Link>
-          }
+              href={`/user/detail/${user.id}/info`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Button>Detail</Button>
+            </Link>
+          )}
         </TableCell>
         <Menu
           open={Boolean(isSelected) || Boolean(isChildrenSelected)}

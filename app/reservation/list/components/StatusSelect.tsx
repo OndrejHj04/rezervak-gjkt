@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 
 
 export const statuses = [
-  { id: 1, color: "#999999", displayName: "Archiv", icon: <FolderDelete /> },
   { id: 2, color: "#FCD34D", displayName: "Čeká na potvrzení", icon: <RunningWithErrors /> },
   { id: 3, color: "#34D399", displayName: "Potvrzeno", icon: <DoneAll /> },
   { id: 4, color: "#ED9191", displayName: "Zamítnuto", icon: <GppBad /> },

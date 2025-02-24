@@ -26,7 +26,7 @@ export default async function UserListConfig({
 
   const { groups: avaliableGroups } = await getUsersAvaliableGroups(currentUser.id)
   const { reservations: avaliableReservations } = await getUsersAvaliableReservations(currentUser.id)
-
+  
   return (
     <TableContainer>
       <Table size="small">
@@ -35,9 +35,9 @@ export default async function UserListConfig({
             <TableCell />
             <TableCell>Jméno</TableCell>
             <TableCell>Email</TableCell>
-            <TableCell>Role</TableCell>
-            <TableCell>Organizace</TableCell>
-            <TableCell>Ověření</TableCell>
+            {isAdmin && <TableCell>Role</TableCell>}
+            {isAdmin && <TableCell>Organizace</TableCell>}
+            {isAdmin && <TableCell>Ověření</TableCell>}
             <TableCell padding="none">
               <TableListPagination count={count} name={"page"} rpp={10} />
             </TableCell>

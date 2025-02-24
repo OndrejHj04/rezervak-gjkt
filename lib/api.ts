@@ -40,9 +40,15 @@ SELECT
     r.id as role_id,
     u.image, 
     o.name AS organization_name,
-    CASE WHEN ${user.role.id} IN (1, 2) OR u.id = ${user.id} THEN TRUE ELSE FALSE END AS detail,
+    CASE WHEN ${user.role.id} IN (1, 2) OR u.id = ${
+        user.id
+      } THEN TRUE ELSE FALSE END AS detail,
     CASE WHEN u_child.id IS NULL THEN NULL
-    ELSE GROUP_CONCAT(JSON_OBJECT('id', u_child.id, 'name', CONCAT(u_child.first_name, ' ', u_child.last_name), 'role', child_r.name, 'organization', child_o.name, 'role_id', child_r.id, 'detail', CASE WHEN ${user.role.id} IN (1, 2) OR u.id = ${user.id} THEN TRUE ELSE FALSE END) separator '|||') END as children
+    ELSE GROUP_CONCAT(JSON_OBJECT('id', u_child.id, 'name', CONCAT(u_child.first_name, ' ', u_child.last_name), 'role', child_r.name, 'organization', child_o.name, 'role_id', child_r.id, 'detail', CASE WHEN ${
+      user.role.id
+    } IN (1, 2) OR u.id = ${
+        user.id
+      } THEN TRUE ELSE FALSE END) separator '|||') END as children
 FROM users u
 INNER JOIN roles r ON r.id = u.role
 LEFT JOIN organization o ON o.id = u.organization
@@ -97,11 +103,14 @@ export const getReservationList = async ({
   page,
   status,
   search,
+  registration,
 }: {
   page: any;
   status: any;
   search: any;
+  registration: any;
 }) => {
+
   const [dataRequest, countRequest] = (await Promise.all([
     query({
       query: `  
@@ -120,6 +129,7 @@ export const getReservationList = async ({
         WHERE r.status <> 1
               ${status > 0 ? `AND r.status = ${status}` : ""}
               ${search.length ? `AND r.name LIKE "%${search}%"` : ""}
+              ${registration > 0 ? `AND ${registration === 2 ? "NOT" : ""} EXISTS (SELECT 1 FROM reservations_forms rf WHERE rf.reservation_id = r.id)` : "" }
         GROUP BY r.id
         ORDER BY r.creation_date desc
         LIMIT 10 OFFSET ?

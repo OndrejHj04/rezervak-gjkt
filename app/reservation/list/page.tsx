@@ -18,14 +18,15 @@ export default async function ReservationList({
 }: {
   searchParams: any;
 }) {
-  const { user } = await getServerSession(authOptions) as any
-  const { page = 1, status = 0, search = "" } = searchParams
+  const { user } = (await getServerSession(authOptions)) as any;
+  const { page = 1, status = 0, search = "", registration = 0 } = searchParams;
   const { data, count } = (await getReservationList({
     page,
     status: Number(status),
     search,
+    registration: Number(registration),
   })) as any;
-  const isAdmin = user.role.id !== 3
+  const isAdmin = user.role.id !== 3;
 
   return (
     <TableContainer>
@@ -42,11 +43,7 @@ export default async function ReservationList({
             <TableCell>Lůžka</TableCell>
             <TableCell>Status</TableCell>
             <TableCell padding="none" className="w-[150px]">
-              <TableListPagination
-                count={count}
-                name="page"
-                rpp={10}
-              />
+              <TableListPagination count={count} name="page" rpp={10} />
             </TableCell>
           </TableRow>
         </TableHead>
@@ -60,10 +57,10 @@ export default async function ReservationList({
                 userId={user.id}
                 isAdmin={isAdmin}
               />
-            )
+            );
           })}
         </TableBody>
       </Table>
     </TableContainer>
-  )
+  );
 }

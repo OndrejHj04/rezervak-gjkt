@@ -19,13 +19,24 @@ export const getUserList = async ({
   role,
   organization,
   verified,
+  sort,
+  dir,
 }: {
   page: any;
   search: any;
   role: any;
   organization: any;
   verified: any;
+  sort: any;
+  dir: any;
 }) => {
+  const allowedSort = [
+    "u.name",
+    "u.email",
+    "u.role",
+    "u.organization",
+    "u.verified",
+  ];
   const { user } = (await getServerSession(authOptions)) as any;
 
   const [users, count] = (await Promise.all([
@@ -66,6 +77,11 @@ ${organization > 0 ? `AND u.organization = ${organization}` : ""}
 ${verified > 0 ? `AND u.verified = ${verified === 2 ? 0 : verified}` : ""}
 
 GROUP BY u.id
+        ${
+          dir !== "" && allowedSort.includes(sort)
+            ? `ORDER BY ${sort} ${dir}`
+            : ""
+        }
 LIMIT 10 OFFSET ?
         
       `,
@@ -104,13 +120,23 @@ export const getReservationList = async ({
   status,
   search,
   registration,
+  sort,
+  dir,
 }: {
   page: any;
   status: any;
   search: any;
   registration: any;
+  sort: any;
+  dir: any;
 }) => {
-
+  const allowedSort = [
+    "r.name",
+    "r.creation_date",
+    "r.from_date",
+    "r.to_date",
+    "users_count",
+  ];
   const [dataRequest, countRequest] = (await Promise.all([
     query({
       query: `  
@@ -129,9 +155,19 @@ export const getReservationList = async ({
         WHERE r.status <> 1
               ${status > 0 ? `AND r.status = ${status}` : ""}
               ${search.length ? `AND r.name LIKE "%${search}%"` : ""}
-              ${registration > 0 ? `AND ${registration === 2 ? "NOT" : ""} EXISTS (SELECT 1 FROM reservations_forms rf WHERE rf.reservation_id = r.id)` : "" }
+              ${
+                registration > 0
+                  ? `AND ${
+                      registration === 2 ? "NOT" : ""
+                    } EXISTS (SELECT 1 FROM reservations_forms rf WHERE rf.reservation_id = r.id)`
+                  : ""
+              }
         GROUP BY r.id
-        ORDER BY r.creation_date desc
+        ${
+          dir !== "" && allowedSort.includes(sort)
+            ? `ORDER BY ${sort} ${dir}`
+            : "ORDER BY r.creation_date desc"
+        }
         LIMIT 10 OFFSET ?
       `,
       values: [page * 10 - 10],

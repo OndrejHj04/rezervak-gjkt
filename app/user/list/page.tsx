@@ -1,43 +1,76 @@
-import { getUserList, getUsersAvaliableGroups, getUsersAvaliableReservations } from "@/lib/api";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import {
+  getUserList,
+  getUsersAvaliableGroups,
+  getUsersAvaliableReservations,
+} from "@/lib/api";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import UserListItem from "./components/UserListItem";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import SortableColumn from "@/lib/SortableColumn";
 
-const columns = ["children", "name", "email", "role", "organization", "verified", "detail"]
+const columns = [
+  "children",
+  "name",
+  "email",
+  "role",
+  "organization",
+  "verified",
+  "detail",
+];
 
 export default async function UserListConfig({
   searchParams,
 }: {
-  searchParams: any
+  searchParams: any;
 }) {
-  const { page, search, role, organization, verified } = searchParams
-  const { user: currentUser } = await getServerSession(authOptions) as any
-  const isAdmin = currentUser.role.id !== 3
+  const {
+    page,
+    search,
+    role,
+    organization,
+    verified,
+    sort = "",
+    dir = "",
+  } = searchParams;
+  const { user: currentUser } = (await getServerSession(authOptions)) as any;
+  const isAdmin = currentUser.role.id !== 3;
 
   const { data, count } = await getUserList({
     page: page || 1,
     search: search || "",
     role: Number(role) || 0,
     organization: Number(organization) || 0,
-    verified: Number(verified) || 0
+    verified: Number(verified) || 0,
+    sort,
+    dir,
   });
 
-  const { groups: avaliableGroups } = await getUsersAvaliableGroups(currentUser.id)
-  const { reservations: avaliableReservations } = await getUsersAvaliableReservations(currentUser.id)
-  
+  const { groups: avaliableGroups } = await getUsersAvaliableGroups(
+    currentUser.id
+  );
+  const { reservations: avaliableReservations } =
+    await getUsersAvaliableReservations(currentUser.id);
+
   return (
     <TableContainer>
       <Table size="small">
         <TableHead>
           <TableRow className="[&_.MuiTableCell-root]:font-semibold [&_.MuiTableCell-root]:text-lg">
             <TableCell />
-            <TableCell>Jméno</TableCell>
-            <TableCell>Email</TableCell>
-            {isAdmin && <TableCell>Role</TableCell>}
-            {isAdmin && <TableCell>Organizace</TableCell>}
-            {isAdmin && <TableCell>Ověření</TableCell>}
+            <SortableColumn id="u.name">Jméno</SortableColumn>
+            <SortableColumn id="u.email">Email</SortableColumn>
+            {isAdmin && <SortableColumn id="u.role">Role</SortableColumn>}
+            {isAdmin && <SortableColumn id="u.organization">Organizace</SortableColumn>}
+            {isAdmin && <SortableColumn id="u.verified">Ověření</SortableColumn>}
             <TableCell padding="none">
               <TableListPagination count={count} name={"page"} rpp={10} />
             </TableCell>
@@ -57,5 +90,5 @@ export default async function UserListConfig({
         </TableBody>
       </Table>
     </TableContainer>
-  )
+  );
 }

@@ -12,6 +12,7 @@ import ReservationListItem from "../list/components/ReservationListItem";
 import React from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import SortableColumn from "../../../lib/SortableColumn";
 
 export default async function ReservationList({
   searchParams,
@@ -19,12 +20,21 @@ export default async function ReservationList({
   searchParams: any;
 }) {
   const { user } = (await getServerSession(authOptions)) as any;
-  const { page = 1, status = 0, search = "", registration = 0 } = searchParams;
+  const {
+    page = 1,
+    status = 0,
+    search = "",
+    registration = 0,
+    sort = "",
+    dir = "",
+  } = searchParams;
   const { data, count } = (await getReservationList({
     page,
     status: Number(status),
     search,
     registration: Number(registration),
+    sort,
+    dir,
   })) as any;
   const isAdmin = user.role.id !== 3;
 
@@ -33,11 +43,11 @@ export default async function ReservationList({
       <Table size="small">
         <TableHead>
           <TableRow className="[&_.MuiTableCell-root]:font-semibold [&_.MuiTableCell-root]:text-lg">
-            <TableCell>Název</TableCell>
-            <TableCell>Datum vytvoření</TableCell>
-            <TableCell>Začátek</TableCell>
-            <TableCell>Konec</TableCell>
-            <TableCell>Počet účastníků</TableCell>
+            <SortableColumn id="r.name">Název</SortableColumn>
+            <SortableColumn id="r.creation_date">Datum vytvoření</SortableColumn>
+            <SortableColumn id="r.from_date">Začátek</SortableColumn>
+            <SortableColumn id="r.to_date">Konec</SortableColumn>
+            <SortableColumn id="users_count">Počet účastníků</SortableColumn>
             <TableCell>Registrace</TableCell>
             <TableCell>Vedoucí</TableCell>
             <TableCell>Lůžka</TableCell>

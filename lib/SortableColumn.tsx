@@ -27,12 +27,14 @@ export default function SortableColumn({ children, id }: any) {
 
   return (
     <TableCell onClick={handleSortColumn} className="cursor-pointer group">
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 opacity-10">
         {children}
         {sortId === id && status === "asc" && <TrendingUp />}
         {sortId === id && status === "desc" && <TrendingDown />}
         {(sortId !== id || status === "") && (
-          <Sort className="opacity-0 group-hover:opacity-50" />
+          <div className="opacity-100 text-red-600!">
+            Test
+          </div>
         )}
       </div>
     </TableCell>

@@ -137,6 +137,8 @@ export const getReservationList = async ({
     "r.to_date",
     "users_count",
   ];
+  const { user } = (await getServerSession(authOptions)) as any;
+
   const [dataRequest, countRequest] = (await Promise.all([
     query({
       query: `  
@@ -147,7 +149,10 @@ export const getReservationList = async ({
                 FROM reservations_rooms rr 
                 LEFT JOIN rooms ro ON ro.id = rr.roomId 
                 WHERE rr.reservationId = r.id) AS beds_count,
-                (SELECT EXISTS (SELECT rf.user_id FROM reservations_forms rf WHERE rf.reservation_id = r.id)) as active_registration
+                (SELECT EXISTS (SELECT rf.user_id FROM reservations_forms rf WHERE rf.reservation_id = r.id)) as active_registration,
+                CASE WHEN ${user.role.id} IN (1, 2) OR r.leader = ${user.id}
+                OR EXISTS (SELECT 1 FROM users_reservations ur WHERE ur.reservationId = r.id AND ur.userId = ${user.id})
+                THEN TRUE ELSE FALSE END AS detail
         FROM reservations r
         LEFT JOIN users u ON u.id = r.leader
         LEFT JOIN reservations_forms rf ON rf.reservation_id = r.id
@@ -1606,41 +1611,59 @@ export const createNewReservation = async ({
     values: [from_date, to_date, name, purpouse, leader, instructions],
   })) as any;
 
-  const [] = await Promise.all([
-    rooms.length &&
+  const queries = [];
+
+  if (rooms.length) {
+    queries.push(
       query({
         query: `INSERT INTO reservations_rooms (reservationId, roomId) VALUES ?`,
         values: [rooms.map((room: any) => [request.insertId, room])],
-      }),
+      })
+    );
+  }
+  
+  queries.push(
     query({
       query: `INSERT INTO users_reservations (userId, reservationId) VALUES (?,?)`,
       values: [leader, request.insertId],
-    }),
-    groups.length &&
+    })
+  );
+  
+  if (groups.length) {
+    queries.push(
       query({
         query: `INSERT INTO reservations_groups (reservationId, groupId) VALUES ?`,
         values: [groups.map((group: any) => [request.insertId, group])],
-      }),
-    groups.length &&
+      })
+    );
+  
+    queries.push(
       query({
         query: `
-    INSERT IGNORE INTO users_reservations (reservationId, userId)
-    SELECT ?, ug.userId 
-    FROM users_groups ug 
-    WHERE ug.groupId IN (?)`,
+        INSERT IGNORE INTO users_reservations (reservationId, userId)
+        SELECT ?, ug.userId 
+        FROM users_groups ug 
+        WHERE ug.groupId IN (?)`,
         values: [request.insertId, groups],
-      }),
-    family &&
+      })
+    );
+  }
+  
+  if (family) {
+    queries.push(
       query({
-        query: `INSERT INTO users_reservations (userId, reservationId) SELECT u.id, ? FROM users u WHERE u.email = ? AND children = 1`,
+        query: `INSERT INTO users_reservations (userId, reservationId) 
+                SELECT u.id, ? FROM users u WHERE u.email = ? AND children = 1`,
         values: [request.insertId, user.email],
-      }),
-  ]);
-
+      })
+    );
+  }
+  
+  await Promise.all(queries);
   const [userEmails, template, leaderData] = (await Promise.all([
     query({
-      query: `SELECT u.email FROM users_groups ug INNER JOIN users u ON u.id = ug.userId AND u.role <> 4 WHERE ug.groupId IN(?)`,
-      values: [groups],
+      query: `SELECT u.email FROM users_reservations ur INNER JOIN users u ON u.id = ur.userId WHERE u.role <> 4 AND ur.reservationId = ?`,
+      values: [request.insertId],
     }),
     mailEventDetail({ id: 8 }),
     query({

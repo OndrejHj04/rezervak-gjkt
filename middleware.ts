@@ -51,7 +51,10 @@ export default async function middleware(req: NextRequest) {
 
     if (req.nextUrl.pathname.startsWith("/reservation/detail")) {
       const [, , , reservationId, tab, ...rest] = req.nextUrl.pathname.split("/")
-      const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/${reservationId}/exists`)
+      const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reservations/${reservationId}/exists`, {
+        method: "POST",
+        body: JSON.stringify({user: token.user})
+      })
       const { exists } = await request.json()
       const avaliableTabs = ['info', 'groups', 'users', 'registration']
 

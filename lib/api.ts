@@ -647,7 +647,7 @@ export const reservationUpdateStatus = async ({
       UPDATE reservations
       SET payment_symbol = (
           SELECT CONCAT(
-              SUBSTRING(r.from_date, 1, 4),        
+              SUBSTRING(r.from_date, 3, 2),        
               SUBSTRING(r.from_date, 6, 2),        
               SUBSTRING(r.from_date, 9, 2),        
               SUBSTRING(r.to_date, 6, 2),          

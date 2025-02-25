@@ -15,7 +15,7 @@ import UserListItem from "./components/UserListItem";
 import TableListPagination from "@/ui-components/TableListPagination";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import SortableColumn from "@/lib/SortableColumn";
+import SortableColumn from "@/app/libComponents/SortableColumn";
 
 const columns = [
   "children",
@@ -66,11 +66,15 @@ export default async function UserListConfig({
         <TableHead>
           <TableRow className="[&_.MuiTableCell-root]:font-semibold [&_.MuiTableCell-root]:text-lg">
             <TableCell />
-            <SortableColumn id="u.name">Jméno</SortableColumn>
+            <SortableColumn id="u.first_name">Jméno</SortableColumn>
             <SortableColumn id="u.email">Email</SortableColumn>
             {isAdmin && <SortableColumn id="u.role">Role</SortableColumn>}
-            {isAdmin && <SortableColumn id="u.organization">Organizace</SortableColumn>}
-            {isAdmin && <SortableColumn id="u.verified">Ověření</SortableColumn>}
+            {isAdmin && (
+              <SortableColumn id="u.organization">Organizace</SortableColumn>
+            )}
+            {isAdmin && (
+              <SortableColumn id="u.verified">Ověření</SortableColumn>
+            )}
             <TableCell padding="none">
               <TableListPagination count={count} name={"page"} rpp={10} />
             </TableCell>

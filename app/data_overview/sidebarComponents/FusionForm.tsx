@@ -8,14 +8,15 @@ export default function FusionForm() {
   const [firstRow, secondRow] = fusion;
 
   const handleCreateFuse = () => {
-    setFusion([])
+    setFusion([]);
     setFusionData([...fusionData, [firstRow, secondRow]]);
   };
 
   return (
-    <div className="p-1 flex flex-col justify-start gap-2">
-      <Typography className="text-xl">Fúze řádků</Typography>
+    <div className="flex flex-col justify-start gap-2">
+      <Typography className="text-xl text-center">Fúze řádků</Typography>
       <TextField
+        size="small"
         label="První řádek"
         value={firstRow?.name || ""}
         slotProps={{
@@ -25,6 +26,7 @@ export default function FusionForm() {
         }}
       />
       <TextField
+        size="small"
         label="Druhý řádek"
         value={secondRow?.name || ""}
         slotProps={{
@@ -33,7 +35,9 @@ export default function FusionForm() {
           },
         }}
       />
-      <Button onClick={handleCreateFuse}>Vytvořit fúzi</Button>
+      <Button onClick={handleCreateFuse} variant="outlined" size="small">
+        Vytvořit fúzi
+      </Button>
     </div>
   );
 }

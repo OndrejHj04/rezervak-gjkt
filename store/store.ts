@@ -16,7 +16,7 @@ export const store = create((set: any) => ({
     purpouse: "",
     instructions: "",
     name: "",
-    family: false
+    family: false,
   },
   setCreateReservation: (createReservation: any) => set({ createReservation }),
   selectedReservation: [],
@@ -25,6 +25,7 @@ export const store = create((set: any) => ({
   selectedTemplates: [],
   setSelectedTemplates: (selectedTemplates: any) => set({ selectedTemplates }),
   fusion: [],
-  setFusion: (fusion: any) =>
-    set({ fusion }),
-})) as any
+  setFusion: (fusion: any) => set({ fusion }),
+  fusionData: [],
+  setFusionData: (fusionData: any) => set({ fusionData }),
+})) as any;

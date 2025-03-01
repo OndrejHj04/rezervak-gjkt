@@ -11,32 +11,22 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { dayjsExtended } from "@/lib/dayjsExtended";
 import { MergeType } from "@mui/icons-material";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { store } from "@/store/store";
 
 export default function DataOverviewTableRow({ user }: any) {
-  const searchParams = useSearchParams();
   const [toggleDetail, setToggleDetail] = useState(false);
-  const { replace } = useRouter();
-  const pathname = usePathname();
   const { fusion, setFusion } = store();
   const isFuse = fusion.some((item: any) => item.id === user.id);
 
   const makeFusion = () => {
-    if (!fusion.length) {
-      const params = new URLSearchParams(searchParams);
-      params.set("fuse", "true");
-      replace(`${pathname}?${params.toString()}`);
-    }
-
     if (isFuse) {
       setFusion(fusion.filter((item: any) => item.id !== user.id));
     } else {
-      setFusion([...fusion, { id: user.id, name: user.name }]);
+      setFusion([...fusion, user]);
     }
   };
 

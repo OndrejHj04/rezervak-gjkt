@@ -3,8 +3,9 @@ import { store } from "@/store/store";
 import { Button } from "@mui/material";
 
 export function ResetFiltersButton({ className }: any) {
-  const { fusion, setFusion } = store();
+  const { setFusionData, setFusion } = store();
   const setDetaultSettings = () => {
+    setFusionData([]);
     setFusion([]);
   };
 

@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 
 import { getReservationDataOverview } from "@/lib/api";
-import DataOverviewTableRow from "./DataOverviewTableRow";
+import DataOverviewTable from "./DataOverviewTable";
 
 export default async function DataOverview() {
   const { data } = await getReservationDataOverview({});
@@ -26,9 +26,7 @@ export default async function DataOverview() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((user: any) => (
-              <DataOverviewTableRow key={user.id} user={user} />
-            ))}
+            <DataOverviewTable data={data} />
           </TableBody>
         </Table>
       </TableContainer>

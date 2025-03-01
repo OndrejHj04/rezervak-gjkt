@@ -32,15 +32,15 @@ export default function DataOverviewTableRow({ user }: any) {
 
   return (
     <React.Fragment>
-      <TableRow key={user.id}>
+      <TableRow>
         <TableCell>
           <IconButton size="small" onClick={() => setToggleDetail((c) => !c)}>
             {toggleDetail ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell>
+        <TableCell className="w-full">
           <div className="flex items-center gap-2 whitespace-nowrap">
-            <AvatarWrapper data={user} />
+            {user.hasOwnProperty("image") && <AvatarWrapper data={user} />}
             {user.name}
           </div>
         </TableCell>

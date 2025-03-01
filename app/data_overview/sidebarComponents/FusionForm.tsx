@@ -4,14 +4,14 @@ import { store } from "@/store/store";
 import { Button, TextField, Typography } from "@mui/material";
 
 export default function FusionForm() {
-  const { fusion, setFusionData, fusionData } = store();
+  const { fusion, setFusion, setFusionData, fusionData } = store();
   const [firstRow, secondRow] = fusion;
 
   const handleCreateFuse = () => {
+    setFusion([])
     setFusionData([...fusionData, [firstRow, secondRow]]);
   };
 
-  console.log(fusionData);
   return (
     <div className="p-1 flex flex-col justify-start gap-2">
       <Typography className="text-xl">Fúze řádků</Typography>

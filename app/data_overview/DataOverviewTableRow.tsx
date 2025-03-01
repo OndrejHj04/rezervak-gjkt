@@ -13,9 +13,19 @@ import React, { useState } from "react";
 import { dayjsExtended } from "@/lib/dayjsExtended";
 import { MergeType } from "@mui/icons-material";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function DataOverviewTableRow({ user }: any) {
+  const searchParams = useSearchParams();
   const [toggleDetail, setToggleDetail] = useState(false);
+  const { replace } = useRouter();
+  const pathname = usePathname();
+
+  const makeFusion = () => {
+    const params = new URLSearchParams(searchParams);
+    params.set("fuse", "true");
+    replace(`${pathname}?${params.toString()}`);
+  };
 
   return (
     <React.Fragment>
@@ -33,7 +43,7 @@ export default function DataOverviewTableRow({ user }: any) {
         </TableCell>
         <TableCell>{user.total_nights}</TableCell>
         <TableCell>
-          <IconButton>
+          <IconButton onClick={makeFusion}>
             <MergeType />
           </IconButton>
         </TableCell>

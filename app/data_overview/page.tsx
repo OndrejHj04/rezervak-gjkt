@@ -13,8 +13,9 @@ import {
 import { getReservationDataOverview } from "@/lib/api";
 import DataOverviewTableRow from "./DataOverviewTableRow";
 
-export default async function DataOverview() {
+export default async function DataOverview({ searchParams: { fuse } }: any) {
   const { data } = await getReservationDataOverview({});
+  const isFusing = fuse === "true"
 
   return (
     <>

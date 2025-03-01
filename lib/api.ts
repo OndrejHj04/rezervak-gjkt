@@ -2186,7 +2186,7 @@ GROUP BY p.id;
     }),
   ])) as any;
 
-  const data = reservationData.map((user) => ({
+  const data = reservationData.map((user:any) => ({
     ...user,
     user_detail: JSON.parse(user.user_detail),
     reservation_detail: JSON.parse(user.reservation_detail),

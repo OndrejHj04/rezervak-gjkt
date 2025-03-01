@@ -6,7 +6,8 @@ import { Button, TextField, Typography } from "@mui/material";
 export default function FusionForm() {
   const { fusion, setFusion, setFusionData, fusionData } = store();
   const [firstRow, secondRow] = fusion;
-
+  const inputValue = [firstRow?.name, secondRow?.name].toString();
+  console.log(inputValue);
   const handleCreateFuse = () => {
     setFusion([]);
     setFusionData([...fusionData, [firstRow, secondRow]]);
@@ -17,25 +18,20 @@ export default function FusionForm() {
       <Typography className="text-xl text-center">Fúze řádků</Typography>
       <TextField
         size="small"
-        label="První řádek"
-        value={firstRow?.name || ""}
+        label="Řádky"
+        value={firstRow || secondRow ? inputValue : " "}
         slotProps={{
           input: {
             readOnly: true,
           },
         }}
       />
-      <TextField
+      <Button
+        onClick={handleCreateFuse}
+        variant="outlined"
         size="small"
-        label="Druhý řádek"
-        value={secondRow?.name || ""}
-        slotProps={{
-          input: {
-            readOnly: true,
-          },
-        }}
-      />
-      <Button onClick={handleCreateFuse} variant="outlined" size="small">
+        disabled={!(firstRow && secondRow)}
+      >
         Vytvořit fúzi
       </Button>
     </div>

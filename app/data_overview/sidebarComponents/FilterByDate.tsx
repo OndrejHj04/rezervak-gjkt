@@ -11,7 +11,14 @@ export default function FilterByDate() {
   const from_date = searchParams.get("from_date");
   const to_date = searchParams.get("to_date");
 
-  const { control, handleSubmit, setValue } = useForm({
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { isDirty },
+  } = useForm({
+    mode: "onChange",
     defaultValues: {
       from_date: dayjs(from_date).isValid() ? dayjs(from_date) : null,
       to_date: dayjs(to_date).isValid() ? dayjs(to_date) : null,
@@ -28,6 +35,8 @@ export default function FilterByDate() {
     dayjs(from_date).isValid() && params.set("from_date", from_date.toString());
     dayjs(to_date).isValid() && params.set("to_date", to_date.toString());
     replace(`${pathname}?${params.toString()}`);
+
+    reset(data);
   };
 
   useEffect(() => {
@@ -54,7 +63,7 @@ export default function FilterByDate() {
           <DatePicker {...field} label="Konec" format="DD. MM. YYYY" />
         )}
       />
-      <Button variant="outlined" type="submit" size="small">
+      <Button variant="outlined" type="submit" size="small" disabled={!isDirty}>
         Filtrovat
       </Button>
     </form>

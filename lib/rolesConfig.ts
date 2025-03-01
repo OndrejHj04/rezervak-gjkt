@@ -8,6 +8,7 @@ const sideMenu = [
   { name: "Mailing", icon: "alternate_email", href: ["/mailing/send", "/mailing/templates", "/mailing/events"], roles: [1, 2] },
   { name: "Galerie", icon: "panorama", href: ["/photogallery"], roles: [1, 2, 3] },
   { name: "Počasí", icon: "wb_sunny", href: ["/weather"], roles: [1, 2, 3] },
+  { name: "Přehledné zobrazení", icon: "view_timeline", href: ["/data_overview"], roles: [1, 2] },
 ];
 
 const actionMenu = [

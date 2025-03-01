@@ -20,7 +20,7 @@ export default function CreateFamilyAccountForm({ user }: { user: any }) {
       first_name: "",
       last_name: "",
       adress: "",
-      ID_code: ""
+      ID_code: null
     }
   })
 
@@ -30,6 +30,7 @@ export default function CreateFamilyAccountForm({ user }: { user: any }) {
       .isSameOrBefore(dayjs(watch("birth_date")))) as any;
 
   const onSubmit = (data: any) => {
+    console.log(data)
     reset(data)
     createFamilyAccount({ ...data, email: user.email }).then(({ success, msg }) => {
       if (success) toast.success("Účet úspěšně vytvořen")
@@ -52,7 +53,7 @@ export default function CreateFamilyAccountForm({ user }: { user: any }) {
 
   useEffect(() => {
     if (underFifteen) {
-      setValue("ID_code", "", { shouldDirty: true, shouldValidate: true })
+      setValue("ID_code", null, { shouldDirty: true, shouldValidate: true })
     }
   }, [underFifteen])
 

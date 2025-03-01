@@ -1895,7 +1895,7 @@ export const createFamilyAccount = async ({
       email,
       adress,
       dayjs(birth_date).format("YYYY-MM-DD"),
-      ID_code.length ? ID_code : null,
+      ID_code,
     ],
   })) as any;
 

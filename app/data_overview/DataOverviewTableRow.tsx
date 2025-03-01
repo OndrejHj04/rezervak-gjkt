@@ -1,30 +1,43 @@
 "use client";
 import {
+  ButtonBase,
   IconButton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { dayjsExtended } from "@/lib/dayjsExtended";
 import { MergeType } from "@mui/icons-material";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { store } from "@/store/store";
 
 export default function DataOverviewTableRow({ user }: any) {
   const searchParams = useSearchParams();
   const [toggleDetail, setToggleDetail] = useState(false);
   const { replace } = useRouter();
   const pathname = usePathname();
+  const { fusion, setFusion } = store();
+  const isFuse = fusion.some((item: any) => item.id === user.id);
 
   const makeFusion = () => {
-    const params = new URLSearchParams(searchParams);
-    params.set("fuse", "true");
-    replace(`${pathname}?${params.toString()}`);
+    if (!fusion.length) {
+      const params = new URLSearchParams(searchParams);
+      params.set("fuse", "true");
+      replace(`${pathname}?${params.toString()}`);
+    }
+
+    if (isFuse) {
+      setFusion(fusion.filter((item: any) => item.id !== user.id));
+    } else {
+      setFusion([...fusion, { id: user.id, name: user.name }]);
+    }
   };
 
   return (
@@ -43,9 +56,15 @@ export default function DataOverviewTableRow({ user }: any) {
         </TableCell>
         <TableCell>{user.total_nights}</TableCell>
         <TableCell>
-          <IconButton onClick={makeFusion}>
-            <MergeType />
-          </IconButton>
+          <div className="flex items-center">
+            <IconButton
+              onClick={makeFusion}
+              color={isFuse ? "success" : "inherit"}
+            >
+              <MergeType />
+            </IconButton>
+            {!!isFuse && <Typography>Řádek určený k fúzi</Typography>}
+          </div>
         </TableCell>
       </TableRow>
       {toggleDetail && (
@@ -60,7 +79,7 @@ export default function DataOverviewTableRow({ user }: any) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {user.user_detail.map((detail) => (
+                  {user.user_detail.map((detail: any) => (
                     <TableRow key={detail.id}>
                       <TableCell>{detail.name}</TableCell>
                       <TableCell>{detail.total_nights}</TableCell>
@@ -78,7 +97,7 @@ export default function DataOverviewTableRow({ user }: any) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {user.reservation_detail.map((detail) => (
+                  {user.reservation_detail.map((detail: any) => (
                     <TableRow key={detail.id}>
                       <TableCell>{detail.name}</TableCell>
                       <TableCell>

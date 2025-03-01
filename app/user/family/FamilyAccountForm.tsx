@@ -30,7 +30,6 @@ export default function CreateFamilyAccountForm({ user }: { user: any }) {
       .isSameOrBefore(dayjs(watch("birth_date")))) as any;
 
   const onSubmit = (data: any) => {
-    console.log(data)
     reset(data)
     createFamilyAccount({ ...data, email: user.email }).then(({ success, msg }) => {
       if (success) toast.success("Účet úspěšně vytvořen")

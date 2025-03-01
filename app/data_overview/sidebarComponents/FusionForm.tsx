@@ -1,5 +1,6 @@
 "use client";
 
+import { store } from "@/store/store";
 import {
   Checkbox,
   FormControlLabel,
@@ -7,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function FusionForm() {
   const searchParams = useSearchParams();
@@ -15,26 +16,15 @@ export default function FusionForm() {
   const [checked, setChecked] = useState(fuse);
   const { replace } = useRouter();
   const pathname = usePathname();
-
-  const handleCheck = (e) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("fuse", `${e.target.checked}`);
-    replace(`${pathname}?${params.toString()}`);
-    setChecked(e.target.checked);
-  };
+  const { fusion } = store();
+  const [firstRow, secondRow] = fusion;
 
   return (
     <div className="p-1 flex flex-col justify-start gap-2">
-      <FormControlLabel
-        className="mr-auto"
-        labelPlacement="start"
-        checked={checked}
-        onChange={handleCheck}
-        control={<Checkbox />}
-        label={<Typography>Fúze řádků</Typography>}
-      />
+      <Typography className="text-xl">Fúze řádků</Typography>
       <TextField
         label="První řádek"
+        value={firstRow?.name || ""}
         slotProps={{
           input: {
             readOnly: true,
@@ -43,6 +33,7 @@ export default function FusionForm() {
       />
       <TextField
         label="Druhý řádek"
+        value={secondRow?.name || ""}
         slotProps={{
           input: {
             readOnly: true,

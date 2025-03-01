@@ -1,7 +1,4 @@
 import {
-  Button,
-  ButtonBase,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -13,9 +10,8 @@ import {
 import { getReservationDataOverview } from "@/lib/api";
 import DataOverviewTableRow from "./DataOverviewTableRow";
 
-export default async function DataOverview({ searchParams: { fuse } }: any) {
+export default async function DataOverview() {
   const { data } = await getReservationDataOverview({});
-  const isFusing = fuse === "true"
 
   return (
     <>
@@ -23,18 +19,14 @@ export default async function DataOverview({ searchParams: { fuse } }: any) {
         <Table size="small">
           <TableHead>
             <TableRow className="[&_.MuiTableCell-root]:font-semibold [&_.MuiTableCell-root]:text-lg">
-              <TableCell>
-                <ButtonBase className="font-semibold text-lg">
-                  Rozbalit detail
-                </ButtonBase>
-              </TableCell>
+              <TableCell>Rozbalit detail</TableCell>
               <TableCell>Uživatel</TableCell>
               <TableCell>Počet nocí</TableCell>
               <TableCell>Fúze řádků</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((user) => (
+            {data.map((user: any) => (
               <DataOverviewTableRow key={user.id} user={user} />
             ))}
           </TableBody>

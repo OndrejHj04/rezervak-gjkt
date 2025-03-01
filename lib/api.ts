@@ -151,7 +151,9 @@ export const getReservationList = async ({
                 WHERE rr.reservationId = r.id) AS beds_count,
                 (SELECT EXISTS (SELECT rf.user_id FROM reservations_forms rf WHERE rf.reservation_id = r.id)) as active_registration,
                 CASE WHEN ${user.role.id} IN (1, 2) OR r.leader = ${user.id}
-                OR EXISTS (SELECT 1 FROM users_reservations ur WHERE ur.reservationId = r.id AND ur.userId = ${user.id})
+                OR EXISTS (SELECT 1 FROM users_reservations ur WHERE ur.reservationId = r.id AND ur.userId = ${
+                  user.id
+                })
                 THEN TRUE ELSE FALSE END AS detail
         FROM reservations r
         LEFT JOIN users u ON u.id = r.leader
@@ -1621,14 +1623,14 @@ export const createNewReservation = async ({
       })
     );
   }
-  
+
   queries.push(
     query({
       query: `INSERT INTO users_reservations (userId, reservationId) VALUES (?,?)`,
       values: [leader, request.insertId],
     })
   );
-  
+
   if (groups.length) {
     queries.push(
       query({
@@ -1636,7 +1638,7 @@ export const createNewReservation = async ({
         values: [groups.map((group: any) => [request.insertId, group])],
       })
     );
-  
+
     queries.push(
       query({
         query: `
@@ -1648,7 +1650,7 @@ export const createNewReservation = async ({
       })
     );
   }
-  
+
   if (family) {
     queries.push(
       query({
@@ -1658,7 +1660,7 @@ export const createNewReservation = async ({
       })
     );
   }
-  
+
   await Promise.all(queries);
   const [userEmails, template, leaderData] = (await Promise.all([
     query({
@@ -2129,4 +2131,66 @@ export const resendRegistraionMail = async ({ user }: any) => {
   });
 
   return { success };
+};
+
+export const getReservationDataOverview = async ({}) => {
+  const [reservationData] = (await Promise.all([
+    query({
+      query: `
+SELECT 
+    p.id, 
+    p.image,
+    CONCAT(p.first_name, ' ', p.last_name) AS name, 
+    (
+        SELECT SUM(DATEDIFF(r.to_date, r.from_date))
+        FROM users_reservations ur
+        LEFT JOIN reservations r ON r.id = ur.reservationId
+        WHERE ur.userId IN (
+            SELECT id FROM users WHERE email = p.email
+        )
+    ) AS total_nights,
+    CONCAT('[', 
+        GROUP_CONCAT(
+            DISTINCT JSON_OBJECT(
+                'id', u.id, 
+                'name', CONCAT(u.first_name, ' ', u.last_name),
+                'total_nights', IFNULL(user_nights.total_nights, 0)
+            )
+        ), 
+    ']') AS user_detail,
+    CONCAT('[', 
+        GROUP_CONCAT(
+            DISTINCT JSON_OBJECT(
+                'id', pr.id, 
+                'from_date', pr.from_date, 
+                'to_date', pr.to_date,
+                'name', pr.name
+            )
+        ), 
+    ']') AS reservation_detail
+FROM users p
+LEFT JOIN users u ON u.email = p.email
+LEFT JOIN (
+    SELECT ur.userId, SUM(DATEDIFF(r.to_date, r.from_date)) AS total_nights
+    FROM users_reservations ur
+    LEFT JOIN reservations r ON r.id = ur.reservationId
+    GROUP BY ur.userId
+) AS user_nights ON user_nights.userId = u.id
+LEFT JOIN users_reservations pur ON pur.userId = p.id
+LEFT JOIN reservations pr ON pr.id = pur.reservationId
+WHERE p.children = 0
+GROUP BY p.id;
+
+      `,
+      values: [],
+    }),
+  ])) as any;
+
+  const data = reservationData.map((user) => ({
+    ...user,
+    user_detail: JSON.parse(user.user_detail),
+    reservation_detail: JSON.parse(user.reservation_detail),
+  }));
+
+  return { data };
 };

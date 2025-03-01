@@ -110,7 +110,7 @@ export default function UserListItem({
       userId: selectedUser.id,
       isParent: selectedUser.id === user.id,
     }).then(({ success }) => {
-      if (success) toast.success("Uživatel nastaven jako veřejnost");
+      if (success) toast.success("Uživatel byl odstraněn");
       else toast.error("Něco se nepovedlo");
       refresh();
     });

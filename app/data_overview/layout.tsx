@@ -12,7 +12,7 @@ export default function DataOverviewLayout({ children }: { children: any }) {
 
   useEffect(() => {
     const timestamp = dayjs(localStorage.getItem("fusion_timestamp"));
-    if (timestamp.isValid() && dayjs().diff(timestamp, "minute") > 5) {
+    if (timestamp.isValid() && dayjs().diff(timestamp, "hour") > 1) {
       localStorage.removeItem("fusion");
     }
 

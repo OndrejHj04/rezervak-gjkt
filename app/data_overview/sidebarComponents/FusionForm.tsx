@@ -17,7 +17,7 @@ export default function FusionForm() {
 
     const newData = [
       ...fusionData,
-      { [name]: [{ ids: [firstRow.id, secondRow.id] }] },
+      { [name]: [firstRow.id, secondRow.id] },
     ] as any;
 
     setFusionData(newData);

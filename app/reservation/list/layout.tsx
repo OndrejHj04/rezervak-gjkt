@@ -4,7 +4,6 @@ import SearchBar from "@/ui-components/SearchBar";
 import StatusSelect from "../list/components/StatusSelect";
 import ExportButton from "@/ui-components/ExportButton";
 import RegistrationState from "./components/RegistrationState";
-import ReservationDateFilter from "./components/ReservationDateFilter";
 
 export default function ReservationListLayout({
   children,

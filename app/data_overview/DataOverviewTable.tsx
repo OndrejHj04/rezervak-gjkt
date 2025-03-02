@@ -37,7 +37,7 @@ export default function DataOverviewTable({ data }: any) {
 
       delete fusedObject.image;
 
-      remainingData.push(fusedObject);
+      remainingData.unshift(fusedObject);
     });
 
     return remainingData;

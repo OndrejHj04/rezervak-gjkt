@@ -16,7 +16,7 @@ export default async function DataOverview({
   const { data } = await getReservationDataOverview({ from_date, to_date });
   return (
     <>
-      <TableContainer>
+      <TableContainer className="max-h-full">
         <Table size="small">
           <TableHead>
             <TableRow className="[&_.MuiTableCell-root]:font-semibold [&_.MuiTableCell-root]:text-lg">
@@ -27,7 +27,7 @@ export default async function DataOverview({
             </TableRow>
           </TableHead>
           <TableBody>
-            <DataOverviewTable data={data} fuse={fuse}/>
+            <DataOverviewTable data={data} fuse={fuse} />
           </TableBody>
         </Table>
       </TableContainer>

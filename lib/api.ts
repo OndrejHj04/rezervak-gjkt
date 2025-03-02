@@ -2201,8 +2201,9 @@ LEFT JOIN (
     AND (r.to_date <= ${toDate} OR ${toDate} IS NULL)
     GROUP BY ur.userId
 ) AS user_nights ON user_nights.userId = u.id
-WHERE p.children = 0
-GROUP BY p.id;
+WHERE p.children = 0 AND p.role <> 4
+GROUP BY p.id
+ORDER BY total_nights DESC;
       `,
       values: [],
     }),

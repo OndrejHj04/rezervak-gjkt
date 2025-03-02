@@ -132,7 +132,7 @@ export default function UserListItem({
       refresh();
     });
   };
-
+  console.log(user);
   return (
     <React.Fragment key={user.id}>
       <TableRow
@@ -165,11 +165,13 @@ export default function UserListItem({
               ) : (
                 <>
                   <CancelIcon color="error" />
-                  <Tooltip title="Znovu odeslat uživateli registrační email">
-                    <IconButton onClick={(e) => handleResendEmail(e, user)}>
-                      <ForwardToInboxIcon />
-                    </IconButton>
-                  </Tooltip>
+                  {user.role_id !== 4 && (
+                    <Tooltip title="Znovu odeslat uživateli registrační email">
+                      <IconButton onClick={(e) => handleResendEmail(e, user)}>
+                        <ForwardToInboxIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </>
               )}
             </div>

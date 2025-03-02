@@ -2133,7 +2133,17 @@ export const resendRegistraionMail = async ({ user }: any) => {
   return { success };
 };
 
-export const getReservationDataOverview = async ({}) => {
+export const getReservationDataOverview = async ({
+  from_date = null,
+  to_date = null,
+}: any) => {
+  const fromDate = dayjs(from_date).isValid()
+    ? `'${dayjs(from_date).format("YYYY-MM-DD")}'`
+    : "NULL";
+  const toDate = dayjs(to_date).isValid()
+    ? `'${dayjs(to_date).format("YYYY-MM-DD")}'`
+    : "NULL";
+
   const [reservationData] = (await Promise.all([
     query({
       query: `
@@ -2144,18 +2154,26 @@ SELECT
     (
         SELECT SUM(DATEDIFF(r.to_date, r.from_date))
         FROM users_reservations ur
-        LEFT JOIN reservations r ON r.id = ur.reservationId
+        INNER JOIN reservations r ON r.id = ur.reservationId
         WHERE ur.userId IN (
             SELECT id FROM users WHERE email = p.email
         )
+        AND (r.from_date >= ${fromDate} OR ${fromDate} IS NULL)
+        AND (r.to_date <= ${toDate} OR ${toDate} IS NULL)
     ) AS total_nights,
     CONCAT('[', 
         GROUP_CONCAT(
-            DISTINCT JSON_OBJECT(
-                'id', u.id, 
-                'name', CONCAT(u.first_name, ' ', u.last_name),
-                'total_nights', IFNULL(user_nights.total_nights, 0)
-            )
+            DISTINCT 
+            CASE 
+                WHEN IFNULL(user_nights.total_nights, 0) > 0 THEN 
+                    JSON_OBJECT(
+                        'id', u.id, 
+                        'name', CONCAT(u.first_name, ' ', u.last_name),
+                        'total_nights', user_nights.total_nights
+                    )
+                ELSE NULL
+            END
+        SEPARATOR ','
         ), 
     ']') AS user_detail,
     CONCAT('[', 
@@ -2166,27 +2184,31 @@ SELECT
                 'to_date', pr.to_date,
                 'name', pr.name
             )
+        SEPARATOR ','
         ), 
     ']') AS reservation_detail
 FROM users p
-LEFT JOIN users u ON u.email = p.email
+INNER JOIN users u ON u.email = p.email
+INNER JOIN users_reservations pur ON pur.userId = p.id
+INNER JOIN reservations pr ON pr.id = pur.reservationId 
+    AND (pr.from_date >= ${fromDate} OR ${fromDate} IS NULL)
+    AND (pr.to_date <= ${toDate} OR ${toDate} IS NULL)
 LEFT JOIN (
     SELECT ur.userId, SUM(DATEDIFF(r.to_date, r.from_date)) AS total_nights
     FROM users_reservations ur
-    LEFT JOIN reservations r ON r.id = ur.reservationId
+    INNER JOIN reservations r ON r.id = ur.reservationId
+    WHERE (r.from_date >= ${fromDate} OR ${fromDate} IS NULL)
+    AND (r.to_date <= ${toDate} OR ${toDate} IS NULL)
     GROUP BY ur.userId
 ) AS user_nights ON user_nights.userId = u.id
-LEFT JOIN users_reservations pur ON pur.userId = p.id
-LEFT JOIN reservations pr ON pr.id = pur.reservationId
 WHERE p.children = 0
 GROUP BY p.id;
-
       `,
       values: [],
     }),
   ])) as any;
 
-  const data = reservationData.map((user:any) => ({
+  const data = reservationData.map((user: any) => ({
     ...user,
     user_detail: JSON.parse(user.user_detail),
     reservation_detail: JSON.parse(user.reservation_detail),

@@ -1,7 +1,8 @@
 "use client";
 import { store } from "@/store/store";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React from "react";
 
 export function ResetFiltersButton({ className }: any) {
   const { setFusionData, setFusion, fusionData } = store();
@@ -13,19 +14,22 @@ export function ResetFiltersButton({ className }: any) {
     replace(`${pathname}`);
     setFusionData([]);
     setFusion([]);
+    localStorage.removeItem("fusion")
+    localStorage.removeItem("fusion_timestamp")
   };
 
   const isValid = searchParams.size || fusionData.length;
 
   return (
-    <Button
-      className={className}
-      color="error"
-      onClick={setDetaultSettings}
-      size="small"
-      disabled={!isValid}
-    >
-      Obnovit základní nastavení
-    </Button>
+    <div className={`${className} flex flex-col`}>
+      <Button
+        color="error"
+        onClick={setDetaultSettings}
+        size="small"
+        disabled={!isValid}
+      >
+        Obnovit základní nastavení
+      </Button>
+    </div>
   );
 }

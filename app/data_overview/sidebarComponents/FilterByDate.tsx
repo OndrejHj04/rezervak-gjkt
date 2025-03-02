@@ -1,4 +1,5 @@
 "use client";
+import { store } from "@/store/store";
 import { Button, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -10,6 +11,7 @@ export default function FilterByDate() {
   const searchParams = useSearchParams();
   const from_date = searchParams.get("from_date");
   const to_date = searchParams.get("to_date");
+  const { fusionData } = store();
 
   const {
     control,
@@ -63,9 +65,19 @@ export default function FilterByDate() {
           <DatePicker {...field} label="Konec" format="DD. MM. YYYY" />
         )}
       />
-      <Button variant="outlined" type="submit" size="small" disabled={!isDirty}>
+      <Button
+        variant="outlined"
+        disabled={fusionData.length || !isDirty}
+        type="submit"
+        size="small"
+      >
         Filtrovat
       </Button>
+      {!!fusionData.length && (
+        <Typography variant="caption" className="text-center" color="error">
+          Filtrování lze provádět pouze bez vytvořených fúzí
+        </Typography>
+      )}
     </form>
   );
 }

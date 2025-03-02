@@ -10,9 +10,10 @@ import {
 import { getReservationDataOverview } from "@/lib/api";
 import DataOverviewTable from "./DataOverviewTable";
 
-export default async function DataOverview() {
-  const { data } = await getReservationDataOverview({});
-
+export default async function DataOverview({
+  searchParams: { from_date, to_date, fuse },
+}: any) {
+  const { data } = await getReservationDataOverview({ from_date, to_date });
   return (
     <>
       <TableContainer>
@@ -26,7 +27,7 @@ export default async function DataOverview() {
             </TableRow>
           </TableHead>
           <TableBody>
-            <DataOverviewTable data={data} />
+            <DataOverviewTable data={data} fuse={fuse}/>
           </TableBody>
         </Table>
       </TableContainer>

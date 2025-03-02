@@ -2,15 +2,27 @@
 
 import { store } from "@/store/store";
 import { Button, TextField, Typography } from "@mui/material";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function FusionForm() {
   const { fusion, setFusion, setFusionData, fusionData } = store();
   const [firstRow, secondRow] = fusion;
+  const [name, setName] = useState("");
   const inputValue = [firstRow?.name, secondRow?.name].toString();
-  console.log(inputValue);
+
   const handleCreateFuse = () => {
     setFusion([]);
-    setFusionData([...fusionData, [firstRow, secondRow]]);
+    setName("");
+
+    const newData = [
+      ...fusionData,
+      { [name]: [{ ids: [firstRow.id, secondRow.id] }] },
+    ] as any;
+
+    setFusionData(newData);
+    localStorage.setItem("fusion", JSON.stringify(newData))
+    localStorage.setItem("fusion_timestamp", new Date().toString())
   };
 
   return (
@@ -19,18 +31,24 @@ export default function FusionForm() {
       <TextField
         size="small"
         label="Řádky"
-        value={firstRow || secondRow ? inputValue : " "}
+        value={firstRow || secondRow ? inputValue : ""}
         slotProps={{
           input: {
             readOnly: true,
           },
         }}
       />
+      <TextField
+        size="small"
+        label="Název fúze"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
       <Button
         onClick={handleCreateFuse}
         variant="outlined"
         size="small"
-        disabled={!(firstRow && secondRow)}
+        disabled={!(firstRow && secondRow && name)}
       >
         Vytvořit fúzi
       </Button>

@@ -20,7 +20,7 @@
 }
 
 .fc .fc-col-header-cell {
-  height: 26px
+  height: 26px;
 }
 
 /* sorry, Fullcalendar guys :( */
@@ -34,4 +34,10 @@ th {
 
 td {
   text-wrap: nowrap;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

@@ -1,11 +1,29 @@
 "use client";
 import { updateSettings } from "@/lib/api";
-import { Button, TextField } from "@mui/material";
+import {
+  Button,
+  InputAdornment,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function SettingsForm({ data }: any) {
-  const { main_application_email, registration_document_spreadsheet } = data;
+  const {
+    main_application_email,
+    registration_document_spreadsheet,
+    ZO_payment,
+    employees_payment,
+    public_payment,
+    whole_object,
+  } = data;
+
   const {
     register,
     handleSubmit,
@@ -15,6 +33,10 @@ export default function SettingsForm({ data }: any) {
     defaultValues: {
       main_application_email,
       registration_document_spreadsheet,
+      ZO_payment,
+      employees_payment,
+      public_payment,
+      whole_object,
     },
   });
 
@@ -41,6 +63,54 @@ export default function SettingsForm({ data }: any) {
         label="Spreadsheet registrací"
         helperText="Soubor v tabulkách google s informacemi o registracích"
       />
+
+      <div className="flex flex-col gap-2">
+        <Typography variant="h6">Ceník osoba/noc</Typography>
+        <TextField
+          label="ZO"
+          {...register("ZO_payment", { required: true })}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">Kč</InputAdornment>
+              ),
+            },
+          }}
+        />
+        <TextField
+          label="Zaměstnanci"
+          {...register("employees_payment", { required: true })}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">Kč</InputAdornment>
+              ),
+            },
+          }}
+        />
+        <TextField
+          label="Veřejnost"
+          {...register("public_payment", { required: true })}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">Kč</InputAdornment>
+              ),
+            },
+          }}
+        />
+        <TextField
+          label="Celá chata"
+          {...register("whole_object", { required: true })}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">Kč</InputAdornment>
+              ),
+            },
+          }}
+        />
+      </div>
       <Button
         variant="contained"
         size="small"

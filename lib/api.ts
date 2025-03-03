@@ -2220,7 +2220,15 @@ ORDER BY total_nights DESC;
 
 export const getSettings = async () => {
   const data = (await query({
-    query: `SELECT s.main_application_email, s.registration_document_spreadsheet FROM settings s`,
+    query: `
+      SELECT 
+        s.main_application_email, 
+        s.registration_document_spreadsheet, 
+        s.employees_payment, 
+        s.public_payment, 
+        s.ZO_payment, 
+        s.whole_object
+      FROM settings s`,
     values: [],
   })) as any;
 
@@ -2228,11 +2236,32 @@ export const getSettings = async () => {
 };
 
 export const updateSettings = async (data: any) => {
-  const { main_application_email, registration_document_spreadsheet } = data;
+  const {
+    main_application_email,
+    registration_document_spreadsheet,
+    whole_object,
+    public_payment,
+    employees_payment,
+    ZO_payment,
+  } = data;
 
   const req = (await query({
-    query: `UPDATE settings SET main_application_email = ? WHERE registration_document_spreadsheet = ?`,
-    values: [main_application_email, registration_document_spreadsheet],
+    query: `UPDATE settings SET 
+    main_application_email = ?, 
+    registration_document_spreadsheet = ?,
+    whole_object = ?,
+    public_payment = ?,
+    employees_payment = ?,
+    ZO_payment = ?
+    `,
+    values: [
+      main_application_email,
+      registration_document_spreadsheet,
+      whole_object,
+      public_payment,
+      employees_payment,
+      ZO_payment,
+    ],
   })) as any;
 
   return { success: req.changedRows };

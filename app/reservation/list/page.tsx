@@ -42,14 +42,14 @@ export default async function ReservationList({
     <TableContainer>
       <Table size="small">
         <TableHead>
-          <TableRow className="[&_.MuiTableCell-root]:font-semibold [&_.MuiTableCell-root]:text-lg">
+          <TableRow className="[&_.MuiTableCell-root]:font-semibold [&_.MuiTableCell-root]:text-lg [&_.MuiTableCell-root]:px-1">
             <SortableColumn id="r.name">Název</SortableColumn>
             <SortableColumn id="r.creation_date">
               Datum vytvoření
             </SortableColumn>
             <SortableColumn id="r.from_date">Začátek</SortableColumn>
             <SortableColumn id="r.to_date">Konec</SortableColumn>
-            <SortableColumn id="users_count">Počet účastníků</SortableColumn>
+            <SortableColumn id="users_count">Poč. účastníků</SortableColumn>
             <TableCell>Registrace</TableCell>
             <TableCell>Vedoucí</TableCell>
             <TableCell>Lůžka</TableCell>

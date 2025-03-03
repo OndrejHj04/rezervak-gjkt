@@ -9,6 +9,7 @@ const sideMenu = [
   { name: "Galerie", icon: "panorama", href: ["/photogallery"], roles: [1, 2, 3] },
   { name: "Počasí", icon: "wb_sunny", href: ["/weather"], roles: [1, 2, 3] },
   { name: "Přehledné zobrazení", icon: "view_timeline", href: ["/data_overview"], roles: [1, 2] },
+  { name: "Nastavení", icon: "settings", href: ["/settings"], roles: [1] },
 ];
 
 const actionMenu = [

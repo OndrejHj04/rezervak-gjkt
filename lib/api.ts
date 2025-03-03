@@ -2217,3 +2217,23 @@ ORDER BY total_nights DESC;
 
   return { data };
 };
+
+export const getSettings = async () => {
+  const data = (await query({
+    query: `SELECT s.main_application_email, s.registration_document_spreadsheet FROM settings s`,
+    values: [],
+  })) as any;
+
+  return { data: data[0] };
+};
+
+export const updateSettings = async (data: any) => {
+  const { main_application_email, registration_document_spreadsheet } = data;
+
+  const req = (await query({
+    query: `UPDATE settings SET main_application_email = ? WHERE registration_document_spreadsheet = ?`,
+    values: [main_application_email, registration_document_spreadsheet],
+  })) as any;
+
+  return { success: req.changedRows };
+};

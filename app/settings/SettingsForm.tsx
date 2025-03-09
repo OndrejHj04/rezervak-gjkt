@@ -22,6 +22,7 @@ export default function SettingsForm({ data }: any) {
     employees_payment,
     public_payment,
     whole_object,
+    bank_account_number
   } = data;
 
   const {
@@ -37,6 +38,7 @@ export default function SettingsForm({ data }: any) {
       employees_payment,
       public_payment,
       whole_object,
+      bank_account_number,
     },
   });
 
@@ -64,10 +66,16 @@ export default function SettingsForm({ data }: any) {
         helperText="Soubor v tabulkách google s informacemi o registracích"
       />
 
+      <TextField
+        {...register("bank_account_number", { required: true })}
+        label="Číslo účtu"
+        helperText="Číslo účtu zkontrolujte, vložená hodnota neprochází validací"
+      />
       <div className="flex flex-col gap-2">
         <Typography variant="h6">Ceník osoba/noc</Typography>
         <TextField
           label="ZO"
+          type="number"
           {...register("ZO_payment", { required: true })}
           slotProps={{
             input: {
@@ -79,6 +87,7 @@ export default function SettingsForm({ data }: any) {
         />
         <TextField
           label="Zaměstnanci"
+          type="number"
           {...register("employees_payment", { required: true })}
           slotProps={{
             input: {
@@ -90,6 +99,7 @@ export default function SettingsForm({ data }: any) {
         />
         <TextField
           label="Veřejnost"
+          type="number"
           {...register("public_payment", { required: true })}
           slotProps={{
             input: {
@@ -101,6 +111,7 @@ export default function SettingsForm({ data }: any) {
         />
         <TextField
           label="Celá chata"
+          type="number"
           {...register("whole_object", { required: true })}
           slotProps={{
             input: {

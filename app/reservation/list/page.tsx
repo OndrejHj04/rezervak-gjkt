@@ -49,7 +49,7 @@ export default async function ReservationList({
             </SortableColumn>
             <SortableColumn id="r.from_date">Začátek</SortableColumn>
             <SortableColumn id="r.to_date">Konec</SortableColumn>
-            <SortableColumn id="users_count">Poč. účastníků</SortableColumn>
+            <SortableColumn id="users_count">Účastníci</SortableColumn>
             <TableCell>Registrace</TableCell>
             <TableCell>Vedoucí</TableCell>
             <TableCell>Lůžka</TableCell>

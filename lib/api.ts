@@ -2227,7 +2227,8 @@ export const getSettings = async () => {
         s.employees_payment, 
         s.public_payment, 
         s.ZO_payment, 
-        s.whole_object
+        s.whole_object,
+        s.bank_account_number
       FROM settings s`,
     values: [],
   })) as any;
@@ -2243,6 +2244,7 @@ export const updateSettings = async (data: any) => {
     public_payment,
     employees_payment,
     ZO_payment,
+    bank_account_number
   } = data;
 
   const req = (await query({
@@ -2252,7 +2254,8 @@ export const updateSettings = async (data: any) => {
     whole_object = ?,
     public_payment = ?,
     employees_payment = ?,
-    ZO_payment = ?
+    ZO_payment = ?,
+    bank_account_number = ?
     `,
     values: [
       main_application_email,
@@ -2261,6 +2264,7 @@ export const updateSettings = async (data: any) => {
       public_payment,
       employees_payment,
       ZO_payment,
+      bank_account_number
     ],
   })) as any;
 

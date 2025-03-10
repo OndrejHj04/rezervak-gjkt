@@ -1,6 +1,7 @@
-import { Button, Paper, Typography } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 
 export default function Layout({ children }: any) {
+
   return (
     <div className="w-full h-full flex flex-col px-2">
       <div className="flex justify-between mb-1">

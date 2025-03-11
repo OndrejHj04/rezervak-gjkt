@@ -636,6 +636,13 @@ export const reservationUpdateStatus = async ({
     values: [newStatus, id],
   })) as any;
 
+  const { format } = (await query({
+    query: `SELECT payment_symbol_format as format FROM settings`,
+    values: [newStatus, id],
+  })) as any;
+
+  const payment_symbol = await generatePaymenetSymbol(id);
+
   if (newStatus === 3) {
     successLink &&
       successLink.length &&
@@ -647,20 +654,10 @@ export const reservationUpdateStatus = async ({
     (await query({
       query: `
       UPDATE reservations
-      SET payment_symbol = (
-          SELECT CONCAT(
-              SUBSTRING(r.from_date, 3, 2),        
-              SUBSTRING(r.from_date, 6, 2),        
-              SUBSTRING(r.from_date, 9, 2),        
-              SUBSTRING(r.to_date, 6, 2),          
-              SUBSTRING(r.to_date, 9, 2)           
-          )
-          FROM reservations r
-          WHERE r.id = ?
-      )
+      SET payment_symbol = ?
       WHERE reservations.id = ?;        
       `,
-      values: [id, id],
+      values: [payment_symbol, id],
     })) as any;
 
     approveReservationSendMail({ reservationId: id });
@@ -1370,28 +1367,20 @@ export const editReservationStatus = async ({
     values: [newStatus, reservationId],
   })) as any;
 
+  const payment_symbol = await generatePaymenetSymbol(reservationId);
+
   if (newStatus === 3) {
     const [req] = (await Promise.all([
       query({
         query: `
 UPDATE reservations
 SET 
-    payment_symbol = (
-        SELECT CONCAT(
-            SUBSTRING(r.from_date, 1, 4),        -- Year
-            SUBSTRING(r.from_date, 6, 2),        -- Month
-            SUBSTRING(r.from_date, 9, 2),        -- Day
-            SUBSTRING(r.to_date, 6, 2),          -- Month of to_date
-            SUBSTRING(r.to_date, 9, 2)           -- Day of to_date
-        )
-        FROM reservations r
-        WHERE r.id = ?
-    ),
+    payment_symbol = ?,
     reject_reason = null
 WHERE reservations.id = ?;
           
         `,
-        values: [reservationId, reservationId],
+        values: [payment_symbol, reservationId],
       }),
     ])) as any;
 
@@ -2283,4 +2272,52 @@ export const updateSettings = async (data: any) => {
     }
     return { success: false };
   }
+};
+
+const generatePaymenetSymbol = async (reservationId: any) => {
+  const [[{ format }], [data]] = (await Promise.all([
+    query({
+      query: `SELECT payment_symbol_format as format FROM settings`,
+      values: [],
+    }),
+    query({
+      query: `SELECT r.from_date, r.to_date, CONCAT(u.first_name, u.last_name) as name FROM reservations r INNER JOIN users u ON u.id = r.leader WHERE r.id = ?`,
+      values: [reservationId],
+    }),
+  ])) as any;
+
+  const variables = {
+    Z: [dayjs(data.from_date).format("DDMMYYYY"), 0],
+    K: [dayjs(data.to_date).format("DDMMYYYY"), 0],
+    J: [data.name.toLowerCase(), 0],
+  };
+
+  let payment_symbol = "";
+  for (let i = 0; i < format.length; i++) {
+    if (format[i] === "$") {
+      // Skip the "$" and move to the next character
+      i++;
+    }
+
+    const char = format[i];
+
+    if (char) {
+      if (char in variables) {
+        const [value, count] = variables[char];
+        variables[char][1] = count + 1;
+
+        payment_symbol += value[count];
+      } else if (char === "N") {
+        payment_symbol += String.fromCharCode(
+          65 + Math.floor(Math.random() * 26)
+        );
+      } else {
+        payment_symbol += char;
+      }
+    }
+  }
+
+  console.log(payment_symbol);
+
+  return payment_symbol;
 };

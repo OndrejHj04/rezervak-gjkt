@@ -7,7 +7,9 @@ import "material-icons/iconfont/material-icons.css";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CzechLocale from "dayjs/locale/cs";
+import { createContext, useState } from "react";
 
+export const PanelContext = createContext(null)
 
 export default function ClientProvider({
   children,
@@ -22,6 +24,8 @@ export default function ClientProvider({
     },
   }, CzechComponents, CzechDatePickers);
 
+  const [panel, setPanel] = useState(false)
+
   return (
     <ThemeProvider theme={mode}>
       <LocalizationProvider dateAdapter={AdapterDayjs}
@@ -31,7 +35,11 @@ export default function ClientProvider({
         }
       >
         <CssBaseline />
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <PanelContext value={{ panel, setPanel }}>
+            {children}
+          </PanelContext>
+        </SessionProvider>
       </LocalizationProvider>
     </ThemeProvider >
   );

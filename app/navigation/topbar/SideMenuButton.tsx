@@ -1,10 +1,11 @@
 "use client"
 import { IconButton, } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
-import { store } from "@/store/store"
+import { PanelContext } from "@/app/clientProvider"
+import { useContext } from "react"
 
 export default function SideMenuButton({ user }: { user: any }) {
-  const { setPanel } = store()
+  const { setPanel } = useContext(PanelContext)
 
   return (
     <IconButton

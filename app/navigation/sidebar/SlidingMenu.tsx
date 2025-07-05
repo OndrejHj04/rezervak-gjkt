@@ -1,7 +1,5 @@
 "use client";
-import * as React from "react";
 import Drawer from "@mui/material/Drawer";
-import { store } from "@/store/store";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
@@ -9,6 +7,8 @@ import { Icon, Typography } from "@mui/material";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import changelog from "@/app/changelog/changelog.data"
+import { PanelContext } from "@/app/clientProvider";
+import { useContext } from "react";
 
 export default function SlidingMenu({
   menuConfig,
@@ -18,7 +18,7 @@ export default function SlidingMenu({
   user: any
 }) {
   const currentVersion = changelog.versions[0].title
-  const { panel, setPanel } = store();
+  const { panel, setPanel } = useContext(PanelContext)
 
   return (
     <Drawer anchor="left" open={panel} onClose={() => setPanel(false)}>

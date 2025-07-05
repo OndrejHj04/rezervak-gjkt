@@ -1,8 +1,6 @@
 import { create } from "zustand";
 
 export const store = create((set: any) => ({
-  panel: false,
-  setPanel: (panel: any) => set({ panel }),
   selectedUser: null,
   setSelectedUser: (selectedUser: any) => set({ selectedUser }),
   selectedGroup: null,

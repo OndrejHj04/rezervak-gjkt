@@ -10,6 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 import "react-perfect-scrollbar/dist/css/styles.css";
 import SlidingMenuConfig from "./navigation/sidebar/SlidingMenuConfig";
 import { getUserTheme } from "@/lib/api";
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 export const metadata: Metadata = {
   title: "Chata GJKT",
@@ -26,16 +27,18 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* OMG 100dvh works like a charms!  f*/}
-        <div className="flex flex-col" style={{ height: "100dvh" }}>
-          <ClientProvider theme={theme}>
-            <TopBar />
-            <SlidingMenuConfig />
-            <SpeedComponent />
-            <div className="py-2 overflow-auto flex-grow">{children}</div>
-          </ClientProvider>
-          <ToastContainer />
-        </div>
+        <AppRouterCacheProvider>
+          {/* OMG 100dvh works like a charms!  f*/}
+          <div className="flex flex-col" style={{ height: "100dvh" }}>
+            <ClientProvider theme={theme}>
+              <TopBar />
+              <SlidingMenuConfig />
+              <SpeedComponent />
+              <div className="py-2 overflow-auto flex-grow">{children}</div>
+            </ClientProvider>
+            <ToastContainer />
+          </div>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

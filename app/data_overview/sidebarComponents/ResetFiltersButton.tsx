@@ -1,11 +1,11 @@
 "use client";
-import { store } from "@/store/store";
 import { Button, Typography } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React from "react";
+import React, { useContext } from "react";
+import { FusionContext } from "../layout";
 
 export function ResetFiltersButton({ className }: any) {
-  const { setFusionData, setFusion, fusionData } = store();
+  const { setFusionData, setFusion, fusionData } = useContext(FusionContext);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { replace } = useRouter();

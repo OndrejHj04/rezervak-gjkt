@@ -1,17 +1,17 @@
 "use client";
-import { store } from "@/store/store";
 import { Button, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { FusionContext } from "../layout";
 
 export default function FilterByDate() {
   const searchParams = useSearchParams();
   const from_date = searchParams.get("from_date");
   const to_date = searchParams.get("to_date");
-  const { fusionData } = store();
+  const { fusionData } = useContext(FusionContext);
 
   const {
     control,

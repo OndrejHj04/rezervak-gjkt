@@ -10,15 +10,15 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { dayjsExtended } from "@/lib/dayjsExtended";
 import { MergeType } from "@mui/icons-material";
 import AvatarWrapper from "@/ui-components/AvatarWrapper";
-import { store } from "@/store/store";
+import { FusionContext } from "./layout";
 
 export default function DataOverviewTableRow({ user }: any) {
   const [toggleDetail, setToggleDetail] = useState(false);
-  const { fusion, setFusion } = store();
+  const { fusion, setFusion } = useContext(FusionContext);
   const isFuse = fusion.some((item: any) => item.id === user.id);
 
   const makeFusion = () => {

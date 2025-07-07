@@ -1,10 +1,10 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useContext } from "react";
 import DataOverviewTableRow from "./DataOverviewTableRow";
-import { store } from "@/store/store";
+import { FusionContext } from "./layout";
 
 export default function DataOverviewTable({ data }: any) {
-  const { fusionData } = store();
+  const { fusionData } = useContext(FusionContext);
 
   const fusedData = useMemo(() => {
     if (!fusionData?.length) return data;

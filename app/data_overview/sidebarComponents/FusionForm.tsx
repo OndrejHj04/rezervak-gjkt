@@ -1,12 +1,12 @@
 "use client";
 
-import { store } from "@/store/store";
 import { Button, TextField, Typography } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { FusionContext } from "../layout";
 
 export default function FusionForm() {
-  const { fusion, setFusion, setFusionData, fusionData } = store();
+  const { fusion, setFusion, setFusionData, fusionData } = useContext(FusionContext);
   const [firstRow, secondRow] = fusion;
   const [name, setName] = useState("");
   const inputValue = [firstRow?.name, secondRow?.name].toString();

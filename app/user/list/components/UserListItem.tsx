@@ -29,7 +29,6 @@ import {
 } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { store } from "@/store/store";
 import ForwardToInboxIcon from "@mui/icons-material/ForwardToInbox";
 
 export default function UserListItem({
@@ -47,14 +46,14 @@ export default function UserListItem({
 }) {
   const [open, setOpen] = useState(false);
   const { refresh } = useRouter();
-  const { selectedUser, setSelectedUser } = store();
+  const [selectedUser, setSelectedUser] = useState<{ mouseX: number, mouseY: number, id: number, role: number } | null>(null)
 
   const handleOpenSubRow = (e: any) => {
     e.stopPropagation();
     setOpen((o) => !o);
   };
 
-  const isSelected = selectedUser && selectedUser.id === user.id;
+  const isSelected = selectedUser !== null && selectedUser.id === user.id;
   const isChildrenSelected =
     user.children.length &&
     user.children.some((u: any) => u.id === selectedUser?.id);
@@ -73,7 +72,7 @@ export default function UserListItem({
   };
 
   const handleAddToGroup = (groupId: any) => {
-    userAddGroups({ user: selectedUser.id, group: groupId }).then(
+    userAddGroups({ user: selectedUser?.id, group: groupId }).then(
       ({ success }) => {
         if (success) toast.success("Uživatel úspěšně přidán do skupiny");
         else toast.error("Něco se nepovedlo");
@@ -85,7 +84,7 @@ export default function UserListItem({
 
   const handleAddToReservation = (reservationId: any) => {
     userAddReservations({
-      user: selectedUser.id,
+      user: selectedUser?.id,
       reservation: reservationId,
     }).then(({ success }) => {
       if (success) toast.success("Uživatel úspěšně přidán do rezervace");
@@ -96,7 +95,7 @@ export default function UserListItem({
   };
 
   const handleUserSetPublic = () => {
-    setUserAsOutside({ userId: selectedUser.id }).then(({ success }) => {
+    setUserAsOutside({ userId: selectedUser?.id }).then(({ success }) => {
       if (success) toast.success("Uživatel nastaven jako veřejnost");
       else toast.error("Něco se nepovedlo");
       refresh();
@@ -107,8 +106,8 @@ export default function UserListItem({
   const handleDeleteUser = (e: any) => {
     e.stopPropagation();
     deleteUserWithChildren({
-      userId: selectedUser.id,
-      isParent: selectedUser.id === user.id,
+      userId: selectedUser?.id,
+      isParent: selectedUser?.id === user.id,
     }).then(({ success }) => {
       if (success) toast.success("Uživatel byl odstraněn");
       else toast.error("Něco se nepovedlo");

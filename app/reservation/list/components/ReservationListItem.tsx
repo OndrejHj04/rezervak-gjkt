@@ -7,18 +7,16 @@ import {
   MenuItem,
   TableCell,
   TableRow,
-  Typography,
 } from "@mui/material";
 import { Icon } from "@mui/material";
 import Link from "next/link";
 import ReservationModal from "./ReservationModal";
 import { Cancel, CheckCircle } from "@mui/icons-material";
-import React from "react";
+import React, { useState } from "react";
 import { reservationDelete } from "@/lib/api";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { dayjsExtended } from "@/lib/dayjsExtended";
-import { store } from "@/store/store";
 
 export default function ReservationListItem({
   reservation,
@@ -34,7 +32,7 @@ export default function ReservationListItem({
   const { reservation_id } = searchParams;
   const { refresh } = useRouter();
   const blocation = reservation.status_id === 5;
-  const { selectedReservation, setSelectedReservation } = store();
+  const [selectedReservation, setSelectedReservation] = useState<{ mouseX: number, mouseY: number, id: number } | null>(null)
 
   const handleDeleteReservations = () => {
     reservationDelete({ reservationId: reservation.id }).then((res) => {
@@ -44,8 +42,7 @@ export default function ReservationListItem({
     refresh();
   };
 
-  const isSelected =
-    selectedReservation && selectedReservation.id === reservation.id;
+  const isSelected = selectedReservation !== null && selectedReservation.id === reservation.id;
 
   const setMenuPosition = (e: any) => {
     const allowMenu = isAdmin || userId === reservation.leader_id;
@@ -109,12 +106,12 @@ export default function ReservationListItem({
             onClick={(e) => e.stopPropagation()}
             {...(isAdmin &&
               !blocation && {
-                component: Link,
-                href: {
-                  href: "/reservation/list",
-                  query: { ...searchParams, reservation_id: reservation.id },
-                },
-              })}
+              component: Link,
+              href: {
+                href: "/reservation/list",
+                query: { ...searchParams, reservation_id: reservation.id },
+              },
+            })}
           >
             <Icon sx={{ color: reservation.status_color }} className="mr-2">
               {reservation.status_icon}
@@ -140,9 +137,9 @@ export default function ReservationListItem({
         anchorPosition={
           selectedReservation !== null
             ? {
-                top: selectedReservation.mouseY,
-                left: selectedReservation.mouseX,
-              }
+              top: selectedReservation.mouseY,
+              left: selectedReservation.mouseX,
+            }
             : undefined
         }
       >

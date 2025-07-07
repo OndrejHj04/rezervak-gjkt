@@ -1,8 +1,6 @@
 import { create } from "zustand";
 
 export const store = create((set: any) => ({
-  selectedUser: null,
-  setSelectedUser: (selectedUser: any) => set({ selectedUser }),
   createReservation: {
     from_date: "",
     to_date: "",
@@ -15,9 +13,6 @@ export const store = create((set: any) => ({
     family: false,
   },
   setCreateReservation: (createReservation: any) => set({ createReservation }),
-  selectedReservation: [],
-  setSelectedReservation: (selectedReservation: any) =>
-    set({ selectedReservation }),
   fusion: [],
   setFusion: (fusion: any) => set({ fusion }),
   fusionData: [],

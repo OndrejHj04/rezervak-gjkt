@@ -1,14 +1,14 @@
 "use client";
 
-import { store } from "@/store/store";
 import { Button } from "@mui/material";
 import { toast } from "react-toastify";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createNewReservation } from "@/lib/api";
+import { ReservationContext } from "./layout";
 
 export default function CreateButton() {
-  const { createReservation, setCreateReservation } = store();
+  const { createReservation, setCreateReservation } = useContext(ReservationContext);
   const { push, refresh } = useRouter()
   const [loading, setLoading] = useState(false);
   const { from_date, to_date, name, purpouse } = createReservation

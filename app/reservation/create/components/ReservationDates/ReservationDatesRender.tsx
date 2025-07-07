@@ -21,11 +21,11 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 import { Controller, useForm } from "react-hook-form";
-import { store } from "@/store/store";
+import { ReservationContext } from "../../layout";
 import FullCalendar from "@fullcalendar/react";
 import resourceTimelineWeek from "@fullcalendar/resource-timeline"
 
@@ -39,7 +39,7 @@ export default function ReservationDatesRender({
 }: {
   reservations: any[];
 }) {
-  const { createReservation, setCreateReservation } = store();
+  const { createReservation, setCreateReservation } = useContext(ReservationContext);
   const [expanded, setExpanded] = useState(false);
   const isValid = createReservation.from_date && createReservation.to_date
   const calendarRef = useRef(null)

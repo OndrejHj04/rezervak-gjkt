@@ -9,14 +9,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Controller, useForm } from "react-hook-form";
-import { store } from "@/store/store";
+import { ReservationContext } from "../../layout";
 
 export default function ReservationDetailRender({ user, options }: { user: any, options: any }) {
-  const { createReservation, setCreateReservation } = store();
+  const { createReservation, setCreateReservation } = useContext(ReservationContext);
   const [expanded, setExpanded] = useState(false);
   const reservationValidation =
     createReservation.name && createReservation.purpouse && createReservation.leader;

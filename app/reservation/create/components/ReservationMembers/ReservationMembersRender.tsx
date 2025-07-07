@@ -14,8 +14,8 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useState } from "react";
-import { store } from "@/store/store";
+import { useContext, useState } from "react";
+import { ReservationContext } from "../../layout";
 export default function ReservationMembersRender({
   groups,
   family
@@ -23,7 +23,7 @@ export default function ReservationMembersRender({
   groups: any;
   family: any
 }) {
-  const { setCreateReservation, createReservation } = store();
+  const { setCreateReservation, createReservation } = useContext(ReservationContext);
   const [expanded, setExpanded] = useState(false);
   const isValid = createReservation.groups.length || createReservation.family;
   const [selectedGroups, setSelectedGroups] = useState<any>([])

@@ -2,17 +2,16 @@
 
 import { getFullName } from "@/app/constants/fullName"
 import { groupDelete } from "@/lib/api"
-import { store } from "@/store/store"
 import AvatarWrapper from "@/ui-components/AvatarWrapper"
 import { Button, Menu, MenuItem, TableCell, TableRow } from "@mui/material"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import React from "react"
+import React, { useState } from "react"
 import { toast } from "react-toastify"
 
 export default function GroupListItem({ group, allowMenu }: { group: any, allowMenu: any }) {
   const { refresh } = useRouter()
-  const { selectedGroup, setSelectedGroup } = store()
+  const [selectedGroup, setSelectedGroup] = useState<{ id: number, mouseX: number, mouseY: number } | null>(null)
 
   const handleDeleteGroups = () => {
     groupDelete({ groupId: group.id }).then(({ success }) => {
@@ -22,7 +21,7 @@ export default function GroupListItem({ group, allowMenu }: { group: any, allowM
     refresh()
   }
 
-  const isSelected = selectedGroup && selectedGroup.id === group.id
+  const isSelected = selectedGroup !== null && selectedGroup.id === group.id
 
   const setMenuPosition = (e: any) => {
     if (isSelected || !allowMenu) {

@@ -132,7 +132,7 @@ export default function UserListItem({
       refresh();
     });
   };
-  console.log(user);
+
   return (
     <React.Fragment key={user.id}>
       <TableRow

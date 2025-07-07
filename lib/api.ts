@@ -51,15 +51,12 @@ SELECT
     r.id as role_id,
     u.image, 
     o.name AS organization_name,
-    CASE WHEN ${user.role.id} IN (1, 2) OR u.id = ${
-        user.id
-      } THEN TRUE ELSE FALSE END AS detail,
+    CASE WHEN ${user.role.id} IN (1, 2) OR u.id = ${user.id
+        } THEN TRUE ELSE FALSE END AS detail,
     CASE WHEN u_child.id IS NULL THEN NULL
-    ELSE GROUP_CONCAT(JSON_OBJECT('id', u_child.id, 'name', CONCAT(u_child.first_name, ' ', u_child.last_name), 'role', child_r.name, 'organization', child_o.name, 'role_id', child_r.id, 'detail', CASE WHEN ${
-      user.role.id
-    } IN (1, 2) OR u.id = ${
-        user.id
-      } THEN TRUE ELSE FALSE END) separator '|||') END as children
+    ELSE GROUP_CONCAT(JSON_OBJECT('id', u_child.id, 'name', CONCAT(u_child.first_name, ' ', u_child.last_name), 'role', child_r.name, 'organization', child_o.name, 'role_id', child_r.id, 'detail', CASE WHEN ${user.role.id
+        } IN (1, 2) OR u.id = ${user.id
+        } THEN TRUE ELSE FALSE END) separator '|||') END as children
 FROM users u
 INNER JOIN roles r ON r.id = u.role
 LEFT JOIN organization o ON o.id = u.organization
@@ -67,20 +64,18 @@ LEFT JOIN users u_child ON u.email = u_child.email AND u_child.children = 1
 LEFT JOIN roles child_r ON child_r.id = u_child.role
 LEFT JOIN organization child_o ON child_o.id = u_child.organization
 WHERE u.children = 0
-${
-  search.length
-    ? `AND CONCAT(u.first_name, ' ', u.last_name) LIKE "%${search}%"`
-    : ""
-}
+${search.length
+          ? `AND CONCAT(u.first_name, ' ', u.last_name) LIKE "%${search}%"`
+          : ""
+        }
 ${role > 0 ? `AND u.role = ${role}` : ""}
 ${organization > 0 ? `AND u.organization = ${organization}` : ""}
 ${verified > 0 ? `AND u.verified = ${verified === 2 ? 0 : verified}` : ""}
 
 GROUP BY u.id
-        ${
-          dir !== "" && allowedSort.includes(sort)
-            ? `ORDER BY ${sort} ${dir}`
-            : ""
+        ${dir !== "" && allowedSort.includes(sort)
+          ? `ORDER BY ${sort} ${dir}`
+          : ""
         }
 LIMIT 10 OFFSET ?
         
@@ -92,11 +87,10 @@ LIMIT 10 OFFSET ?
       INNER JOIN roles r ON r.id = u.role
       LEFT JOIN organization o ON o.id = u.organization
       WHERE u.children = 0
-      ${
-        search.length
+      ${search.length
           ? `AND CONCAT(u.first_name, ' ', u.last_name) LIKE "%${search}%"`
           : ""
-      }
+        }
       ${role > 0 ? `AND u.role = ${role}` : ""}
       ${organization > 0 ? `AND u.organization = ${organization}` : ""}
       ${verified > 0 ? `AND u.verified = ${verified === 2 ? 0 : verified}` : ""}
@@ -151,9 +145,8 @@ export const getReservationList = async ({
                 WHERE rr.reservationId = r.id) AS beds_count,
                 (SELECT EXISTS (SELECT rf.user_id FROM reservations_forms rf WHERE rf.reservation_id = r.id)) as active_registration,
                 CASE WHEN ${user.role.id} IN (1, 2) OR r.leader = ${user.id}
-                OR EXISTS (SELECT 1 FROM users_reservations ur WHERE ur.reservationId = r.id AND ur.userId = ${
-                  user.id
-                })
+                OR EXISTS (SELECT 1 FROM users_reservations ur WHERE ur.reservationId = r.id AND ur.userId = ${user.id
+        })
                 THEN TRUE ELSE FALSE END AS detail
         FROM reservations r
         LEFT JOIN users u ON u.id = r.leader
@@ -162,18 +155,15 @@ export const getReservationList = async ({
         WHERE r.status <> 1
               ${status > 0 ? `AND r.status = ${status}` : ""}
               ${search.length ? `AND r.name LIKE "%${search}%"` : ""}
-              ${
-                registration > 0
-                  ? `AND ${
-                      registration === 2 ? "NOT" : ""
-                    } EXISTS (SELECT 1 FROM reservations_forms rf WHERE rf.reservation_id = r.id)`
-                  : ""
-              }
+              ${registration > 0
+          ? `AND ${registration === 2 ? "NOT" : ""
+          } EXISTS (SELECT 1 FROM reservations_forms rf WHERE rf.reservation_id = r.id)`
+          : ""
+        }
         GROUP BY r.id
-        ${
-          dir !== "" && allowedSort.includes(sort)
-            ? `ORDER BY ${sort} ${dir}`
-            : "ORDER BY r.creation_date desc"
+        ${dir !== "" && allowedSort.includes(sort)
+          ? `ORDER BY ${sort} ${dir}`
+          : "ORDER BY r.creation_date desc"
         }
         LIMIT 10 OFFSET ?
       `,
@@ -210,16 +200,15 @@ export const getReservationCalendarData = async ({
         LEFT JOIN reservations_rooms ON reservations_rooms.reservationId = reservations.id
         LEFT JOIN rooms ON reservations_rooms.roomId = rooms.id
         WHERE 1=1
-        ${
-          rooms.length
-            ? `AND ${rooms
-                .map((item: any, index: any) =>
-                  index === rooms.length - 1
-                    ? `rooms.id = ${item}`
-                    : `rooms.id = ${item} OR`
-                )
-                .join(" ")}`
-            : ""
+        ${rooms.length
+          ? `AND ${rooms
+            .map((item: any, index: any) =>
+              index === rooms.length - 1
+                ? `rooms.id = ${item}`
+                : `rooms.id = ${item} OR`
+            )
+            .join(" ")}`
+          : ""
         }
         GROUP BY reservations.id
         `,
@@ -511,11 +500,10 @@ export const validateImport = async ({ data }: { data: any }) => {
   const guest = await checkUserSession();
 
   const value = (await query({
-    query: `SELECT email FROM users${
-      guest ? "_mock" : ""
-    } WHERE email IN(${validData
-      .map((item: any) => `"${item[2]}"`)
-      .join(",")})`,
+    query: `SELECT email FROM users${guest ? "_mock" : ""
+      } WHERE email IN(${validData
+        .map((item: any) => `"${item[2]}"`)
+        .join(",")})`,
   })) as any;
 
   const set = new Set();
@@ -722,14 +710,11 @@ export const getGroupList = async ({
         GROUP_CONCAT(DISTINCT reservationId) AS reservations, GROUP_CONCAT(DISTINCT userId) AS users 
         FROM groups${guest ? "_mock as groups" : ""} 
         LEFT JOIN users${guest ? "_mock as users" : ""} ON users.id = owner 
-        LEFT JOIN users_groups${
-          guest ? "_mock as users_groups" : ""
+        LEFT JOIN users_groups${guest ? "_mock as users_groups" : ""
         } ON users_groups.groupId = groups.id 
-        LEFT JOIN reservations_groups${
-          guest ? "_mock as reservations_groups" : ""
+        LEFT JOIN reservations_groups${guest ? "_mock as reservations_groups" : ""
         } ON reservations_groups.groupId = groups.id 
-        LEFT JOIN reservations${
-          guest ? "_mock as reservations" : ""
+        LEFT JOIN reservations${guest ? "_mock as reservations" : ""
         } ON reservations.id = reservations_groups.groupId
         WHERE 1=1
         ${search ? `AND groups.name LIKE "%${search}%"` : ""}
@@ -741,15 +726,13 @@ export const getGroupList = async ({
       values: [],
     }),
     query({
-      query: `SELECT id, from_date, to_date, name FROM reservations${
-        guest ? "_mock" : ""
-      }`,
+      query: `SELECT id, from_date, to_date, name FROM reservations${guest ? "_mock" : ""
+        }`,
       values: [],
     }),
     query({
-      query: `SELECT first_name, last_name, email, id FROM users${
-        guest ? "_mock" : ""
-      }`,
+      query: `SELECT first_name, last_name, email, id FROM users${guest ? "_mock" : ""
+        }`,
       values: [],
     }),
     query({
@@ -769,10 +752,10 @@ export const getGroupList = async ({
       owner: JSON.parse(group.owner),
       reservations: group.reservations
         ? group.reservations
-            .split(",")
-            .map((res: any) =>
-              reservations.find((r: any) => r.id === Number(res))
-            )
+          .split(",")
+          .map((res: any) =>
+            reservations.find((r: any) => r.id === Number(res))
+          )
         : [],
       users: group.users ? group.users.split(",").map(Number) : [],
     };
@@ -796,9 +779,8 @@ export const mailingTemplateEdit = async ({
 
   const { affectedRows } = (await query({
     query: `
-    UPDATE templates${
-      guest ? "_mock" : ""
-    } SET name = ?, title = ?, text = ? WHERE id = ?
+    UPDATE templates${guest ? "_mock" : ""
+      } SET name = ?, title = ?, text = ? WHERE id = ?
   `,
     values: [name, title, text, id],
   })) as any;
@@ -822,9 +804,8 @@ export const malingTemplateDetail = async ({ id }: { id: any }) => {
     query: `
         SELECT templates.id, templates.name, templates.title, templates.text, events_children.variables 
         FROM templates${guest ? "_mock as templates" : ""}
-        INNER JOIN events_children${
-          guest ? "_mock as events_children" : ""
-        } ON events_children.template = templates.id
+        INNER JOIN events_children${guest ? "_mock as events_children" : ""
+      } ON events_children.template = templates.id
         WHERE templates.id = ?
   `,
     values: [id],
@@ -845,8 +826,8 @@ export const mailingEventsEdit = async ({ data }: { data: any }) => {
     query: `
             INSERT INTO events_children${guest ? "_mock" : ""} (id, active)
             VALUES ${array.map(
-              (item) => `(${item[0].split(" ")[1]}, ${item[1]})`
-            )}
+      (item) => `(${item[0].split(" ")[1]}, ${item[1]})`
+    )}
             ON DUPLICATE KEY UPDATE id=VALUES(id),
             active=VALUES(active), primary_txt = primary_txt, secondary_txt = secondary_txt, template = template, event = event, variables = variables`,
     values: [],
@@ -2316,8 +2297,6 @@ const generatePaymenetSymbol = async (reservationId: any) => {
       }
     }
   }
-
-  console.log(payment_symbol);
 
   return payment_symbol;
 };

@@ -1,0 +1,8 @@
+{
+  "mailing": {
+    "toggle": {
+      "success": "Nastevení odesílání emailů úspěšně změněno",
+      "error": "Změna se nezdařila"
+    }
+  }
+}

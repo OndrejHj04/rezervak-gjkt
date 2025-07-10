@@ -1,5 +1,5 @@
-import { toast } from "react-toastify"
 import messages from "./messages.json"
+import ToastManager from "./ToastManager";
 
 type Messages = typeof messages
 
@@ -30,6 +30,6 @@ export const withToast = async (func: Promise<{ success: boolean }>, path: Messa
     messageConfig = messageConfig[key]
   }
 
-  if (successfulyResolved) toast.success(messageConfig.success)
-  else toast.error(messageConfig.error)
+  if (successfulyResolved) ToastManager.show(messageConfig.success, 'success')
+  else ToastManager.show(messageConfig.success, 'error')
 }

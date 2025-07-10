@@ -8,6 +8,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CzechLocale from "dayjs/locale/cs";
 import { createContext, useState } from "react";
+import ToastContainer from "@/utils/toast/ToastContainer";
 
 export const PanelContext = createContext(null)
 
@@ -37,6 +38,7 @@ export default function ClientProvider({
         <CssBaseline />
         <SessionProvider>
           <PanelContext value={{ panel, setPanel }}>
+            <ToastContainer />
             {children}
           </PanelContext>
         </SessionProvider>

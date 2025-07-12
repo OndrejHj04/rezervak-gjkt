@@ -3,9 +3,7 @@ import EventIcon from "@mui/icons-material/Event";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import dayjs from "dayjs";
 import { getUserReservationsWidgetData } from "@/lib/api";
-import ClientScrollbar from "@/lib/ClientScrollbar";
 import { smartTime } from "../constants/smartTime";
 
 
@@ -23,16 +21,14 @@ export default async function ReservationsWidget() {
         <EventIcon color="primary" />
       </div>
       <div className="flex-1 overflow-y-auto min-[100px]">
-        <ClientScrollbar>
-          <MenuList disablePadding>
-            {data.map((reservation: any) => (
-              <MenuItem key={reservation.id} className="!px-0" component={Link} href={`/reservation/detail/${reservation.id}/info`}>
-                <ListItemText>{reservation.name}</ListItemText>
-                <Typography color="text.secondary">{smartTime(reservation.from_date)}</Typography>
-              </MenuItem>
-            ))}
-          </MenuList>
-        </ClientScrollbar>
+        <MenuList disablePadding>
+          {data.map((reservation: any) => (
+            <MenuItem key={reservation.id} className="!px-0" component={Link} href={`/reservation/detail/${reservation.id}/info`}>
+              <ListItemText>{reservation.name}</ListItemText>
+              <Typography color="text.secondary">{smartTime(reservation.from_date)}</Typography>
+            </MenuItem>
+          ))}
+        </MenuList>
       </div>
     </Paper>
   );

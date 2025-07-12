@@ -6,7 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 import TopBar from "@/app/navigation/topbar/TopBar";
 import SpeedComponent from "@/app/navigation/speed/SpeedComponent";
 const inter = Inter({ subsets: ["latin"] });
-import "react-perfect-scrollbar/dist/css/styles.css";
 import SlidingMenuConfig from "./navigation/sidebar/SlidingMenuConfig";
 import { getUserTheme } from "@/lib/api";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';

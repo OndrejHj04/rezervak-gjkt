@@ -1,8 +1,5 @@
-import { getServerSession } from "next-auth";
 import CalendarWidget from "./CalendarWidget";
-import GroupWidget from "./GroupsWidget";
 import ReservationsWidget from "./ReservationsWidget";
-import { authOptions } from "../api/auth/[...nextauth]/options";
 import RegistrationWidget from "./RegistrationWidget";
 
 export default async function Page({ searchParams }: { searchParams: any }) {

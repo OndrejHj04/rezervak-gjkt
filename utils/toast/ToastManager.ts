@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react"
-import { Toast } from "./types"
+import { MessagePaths, Toast } from "./types"
+import messages from "./messages.json"
 
 class ToastManager {
   private setMessages: Dispatch<SetStateAction<Toast[]>> | null = null
@@ -8,11 +9,20 @@ class ToastManager {
     this.setMessages = setMessages
   }
 
-  show(message: Toast["message"], type: Toast["type"]) {
+  show(message: `${MessagePaths}.success` | `${MessagePaths}.error`) {
     if (!this.setMessages) return
 
+    const keys = message.split('.')
+    const type = keys[keys.length - 1] as "success" | "error"
+
+    let messageConfig: any = messages
+
+    for (const key of keys) {
+      messageConfig = messageConfig[key]
+    }
+
     const id = Date.now().toString()
-    const toast: Toast = { id, message, type }
+    const toast: Toast = { id, message: messageConfig, type }
 
     this.setMessages(prev => [...prev, toast])
 

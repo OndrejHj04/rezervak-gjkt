@@ -26,8 +26,10 @@
     "password": {
       "reset": {
         "success": "Heslo úspěšně změněno!",
-        "error": "Něco se nepovedlo",
-        "mismatch": "Hesla se neshodují"
+        "error": "Něco se nepovedlo"
+      },
+      "mismatch": {
+        "error": "Hesla se neshodují"
       },
       "sendEmail": {
         "success": "Email na změnu hesla odeslán",

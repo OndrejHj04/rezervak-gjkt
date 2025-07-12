@@ -1,11 +1,11 @@
 "use client"
 
 import { resetUserPassword } from "@/lib/api"
+import ToastManager from "@/utils/toast/ToastManager"
 import { withToast } from "@/utils/toast/withToast"
 import { Button, Divider, Paper, TextField, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
-import { toast } from "react-toastify"
 
 export default function ResetPasswordForm({ searchParams }: any) {
   const { register, handleSubmit, formState: { isValid, isDirty }, watch, reset } = useForm({
@@ -15,17 +15,16 @@ export default function ResetPasswordForm({ searchParams }: any) {
   const [password1, password2] = watch(["password1", "password2"]);
 
   const onSubmit = (data: any) => {
-    if (data.password1 === data.password2) {
-      withToast(resetUserPassword({ id: searchParams.userId, password: data.password1 }),
-        {
-          message: "auth.password.reset",
-          onSuccess: () => replace("/")
-        })
-
-    } else {
-      toast.error("Hesla se neshodují");
+    if (data.password1 !== data.password2) {
+      reset();
+      return ToastManager.show("auth.password.mismatch.error")
     }
-    reset();
+
+    withToast(resetUserPassword({ id: searchParams.userId, password: data.password1 }),
+      {
+        message: "auth.password.reset",
+        onSuccess: () => replace("/")
+      })
   };
 
   return (

@@ -3,6 +3,186 @@
     "toggle": {
       "success": "Nastevení odesílání emailů úspěšně změněno",
       "error": "Změna se nezdařila"
+    },
+    "templates": {
+      "edit": {
+        "success": "Emailová šablona upravena",
+        "error": "Něco se nepovedlo"
+      }
+    },
+    "events": {
+      "edit": {
+        "success": "Události úspěšně upraveny"
+      }
+    }
+  },
+  "settings": {
+    "update": {
+      "success": "Nastavení úspěšně uloženo",
+      "error": "Něco se pokazilo"
+    }
+  },
+  "auth": {
+    "password": {
+      "reset": {
+        "success": "Heslo úspěšně změněno!",
+        "error": "Něco se nepovedlo",
+        "mismatch": "Hesla se neshodují"
+      },
+      "sendEmail": {
+        "success": "Email na změnu hesla odeslán",
+        "error": "Tento email není v aplikaci registrovaný"
+      }
+    },
+    "login": {
+      "error": "Přihlášení se nepodařilo"
+    }
+  },
+  "reservation": {
+    "create": {
+      "success": "Rezervace úspěšně vytvořena",
+      "error": "Něco se nepovedlo"
+    },
+    "delete": {
+      "success": "Rezervace úspěšně odstraněny",
+      "error": "Něco se pokazilo"
+    },
+    "status": {
+      "update": {
+        "success": "Status rezervace úspěšně upraven!",
+        "error": "Něco se nepovedlo"
+      }
+    },
+    "user": {
+      "remove": {
+        "success": "Uživatel úspěšně odstraněn z rezervace",
+        "error": "Něco se nepovedlo"
+      },
+      "approve": {
+        "success": "Uživatel úspěšně schválen",
+        "error": "Něco se nepovedlo"
+      },
+      "reject": {
+        "success": "Uživatel úspěšně odebrán z rezervace",
+        "error": "Něco se nepovedlo"
+      },
+      "add": {
+        "success": "Uživatel úspěšně přidán do rezervace",
+        "error": "Něco se nepovedlo"
+      }
+    },
+    "registration": {
+      "toggle": {
+        "allow": {
+          "success": "Registrace na rezervaci byla povolena",
+          "error": "Něco se nepovedlo"
+        },
+        "cancel": {
+          "success": "Registrace na rezervaci byla ukončena",
+          "error": "Něco se nepovedlo"
+        }
+      },
+      "formLink": {
+        "copy": {
+          "success": "Odkaz na formulář máte zkopírovaný (použijte ho ctrl-v)"
+        }
+      },
+      "cancel": {
+        "success": "Registrace na rezervaci úspěšně zastavena",
+        "error": "Něco se nepovedlo"
+      },
+      "outsideUser": {
+        "create": {
+          "success": "Uživatel úspěšně vytvořen a přidán do rezervace.",
+          "error": "Něco se nepovedlo"
+        }
+      }
+    },
+    "detail": {
+      "date": {
+        "update": {
+          "success": "Datum rezervace úspěšně upraveno",
+          "error": "Něco se nepovedlo"
+        }
+      },
+      "rooms": {
+        "update": {
+          "success": "Pokoje pro rezervaci změněny",
+          "error": "Něco se nepovedlo"
+        }
+      },
+      "info": {
+        "update": {
+          "success": "Detail rezervace úspěšně upraven",
+          "error": "Něco se nepovedlo"
+        }
+      },
+      "status": {
+        "update": {
+          "success": "Status rezervace úspěšně upraven",
+          "error": "Něco se nepovedlo"
+        }
+      }
+    }
+  },
+  "group": {
+    "create": {
+      "success": "Skupina  úspěšně vytvořena",
+      "error": "Něco se pokazilo"
+    },
+    "delete": {
+      "success": "Rezervace úspěšně odstraněny",
+      "error": "Něco se pokazilo"
+    },
+    "user": {
+      "remove": {
+        "success": "Uživatel úspěšně odstraněn ze skupiny",
+        "error": "Něco se nepovedlo"
+      },
+      "add": {
+        "success": "Uživatel úspěšně přidán do skupiny",
+        "error": "Něco se nepovedlo"
+      }
+    },
+    "detail": {
+      "update": {
+        "success": "Detail skupiny úspěšně upraven",
+        "error": "Něco se nepovedlo"
+      }
+    }
+  },
+  "user": {
+    "create": {
+      "success": "Uživatel úspěšně vytvořen",
+      "error": "Něco se nepovedlo"
+    },
+    "import": {
+      "success": "{count} uživatelů úspěšně importováno",
+      "error": "Něco se nepovedlo"
+    },
+    "family": {
+      "create": {
+        "success": "Účet úspěšně vytvořen",
+        "error": "Něco se nepovedlo"
+      }
+    },
+    "detail": {
+      "update": {
+        "success": "Detail uživatele úspěšně upraven",
+        "error": "Něco se nepovedlo"
+      }
+    },
+    "setAsOutside": {
+      "success": "Uživatel nastaven jako veřejnost",
+      "error": "Něco se nepovedlo"
+    },
+    "delete": {
+      "success": "Uživatel byl odstraněn",
+      "error": "Něco se nepovedlo"
+    },
+    "resendEmail": {
+      "success": "Registrační email byl znovu odeslán",
+      "error": "Něco se nepovedlo"
     }
   }
 }

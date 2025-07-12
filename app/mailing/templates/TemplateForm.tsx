@@ -1,13 +1,11 @@
 "use client";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { mailingTemplateEdit } from "@/lib/api";
-import { useRouter } from 'next/navigation';
 import CustomEditor from "../CustomEditor";
+import { withToast } from "@/utils/toast/withToast";
 
 export default function TemplateForm({ template }: { template: any }) {
-  const { push, refresh } = useRouter()
   const methods = useForm({
     defaultValues: template || null,
   });
@@ -20,16 +18,11 @@ export default function TemplateForm({ template }: { template: any }) {
   } = methods
 
   const onSubmit = (data: any) => {
-    reset()
-    mailingTemplateEdit({
-      ...data,
-    }).then(({ success }) => {
-      if (success) toast.success(`Emailová šablona upravena`);
-      else toast.error("Něco se nepovedlo");
+    withToast(mailingTemplateEdit(data), {
+      message: "mailing.templates.edit"
+    })
 
-      push("/mailing/templates")
-      refresh()
-    });
+    reset()
   };
 
   return (

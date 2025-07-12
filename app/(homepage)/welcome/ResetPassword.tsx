@@ -1,19 +1,19 @@
 "use client"
 
 import { sendResetPasswordEmail } from "@/lib/api"
+import { withToast } from "@/utils/toast/withToast"
 import { Button, Divider, Paper, TextField, Typography } from "@mui/material"
 import { useForm } from "react-hook-form"
-import { toast } from "react-toastify"
 
 export default function ResetPassword() {
   const { register, handleSubmit, formState: { isValid, isDirty }, reset } = useForm()
 
   const onSubmit = (data: any) => {
-    sendResetPasswordEmail({ email: data.email }).then(({ success, msg }) => {
-      if (success) toast.success("Email na změnu hesla odeslán")
-      else toast.error(msg || "Tento email není v aplikaci registrovaný")
-      reset(data)
+    withToast(sendResetPasswordEmail({ email: data.email }), {
+      message: 'auth.password.sendEmail'
     })
+
+    reset(data)
   }
 
   return (

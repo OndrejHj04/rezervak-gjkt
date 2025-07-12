@@ -21,15 +21,23 @@ type Join<T extends string[], D extends string> = T extends []
 
 type MessagePaths = Join<PathsToStringProps<Messages>, '.'>
 
-export const withToast = async (func: Promise<{ success: boolean }>, path: MessagePaths) => {
+export const withToast = async (func: Promise<{ success: boolean }>, { message, onSuccess, onError }: { message: MessagePaths, onSuccess?: () => void, onError?: () => void }) => {
   const { success: successfulyResolved } = await func
-  const keys = path.split('.')
+  const keys = message.split('.')
   let messageConfig: any = messages
 
   for (const key of keys) {
     messageConfig = messageConfig[key]
   }
 
-  if (successfulyResolved) ToastManager.show(messageConfig.success, 'success')
-  else ToastManager.show(messageConfig.success, 'error')
+  if (successfulyResolved) {
+    if (onSuccess) onSuccess()
+    ToastManager.show(messageConfig.success, 'success')
+  }
+  else {
+    if (onError) onError()
+    ToastManager.show(messageConfig.success, 'error')
+  }
+
+  return successfulyResolved
 }

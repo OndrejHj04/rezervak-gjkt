@@ -2,7 +2,6 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import ClientProvider from "./clientProvider";
-import "react-toastify/dist/ReactToastify.css";
 import TopBar from "@/app/navigation/topbar/TopBar";
 import SpeedComponent from "@/app/navigation/speed/SpeedComponent";
 const inter = Inter({ subsets: ["latin"] });

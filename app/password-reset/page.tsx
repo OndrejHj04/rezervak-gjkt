@@ -1,6 +1,7 @@
 "use client"
 
 import { resetUserPassword } from "@/lib/api"
+import { withToast } from "@/utils/toast/withToast"
 import { Button, Divider, Paper, TextField, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -15,13 +16,12 @@ export default function ResetPasswordForm({ searchParams }: any) {
 
   const onSubmit = (data: any) => {
     if (data.password1 === data.password2) {
-      resetUserPassword({ id: searchParams.userId, password: data.password1 }).then(({ success }) => {
-        if (success) {
-          toast.success("Heslo úspěšně změněno!");
-          replace("/")
-        }
-        else toast.error("Něco se nepovedlo")
-      })
+      withToast(resetUserPassword({ id: searchParams.userId, password: data.password1 }),
+        {
+          message: "auth.password.reset",
+          onSuccess: () => replace("/")
+        })
+
     } else {
       toast.error("Hesla se neshodují");
     }
